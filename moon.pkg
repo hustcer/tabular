@@ -1,0 +1,8 @@
+import {
+  "moonbitlang/core/builtin",
+  "hustcer/tabular/papergrid",
+}
+
+import {
+  "hustcer/tabular" @tabular,
+} for "test"

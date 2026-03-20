@@ -1,0 +1,7 @@
+import {
+  "hustcer/tabular" @tabular,
+}
+
+options(
+  "is-main": true,
+)
