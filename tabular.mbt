@@ -663,6 +663,52 @@ fn unique_cells(cells : Array[(Int, Int)]) -> Array[(Int, Int)] {
 }
 
 ///|
+fn unique_indexes(indexes : Array[Int]) -> Array[Int] {
+  let result = []
+  indexes.each(index => if !result.contains(index) { result.push(index) })
+  result
+}
+
+///|
+fn sort_indexes_desc(indexes : Array[Int]) -> Array[Int] {
+  let result = indexes.copy()
+  for i = 0; i < result.length(); i = i + 1 {
+    for j = i + 1; j < result.length(); j = j + 1 {
+      if result[j] > result[i] {
+        let current = result[i]
+        result[i] = result[j]
+        result[j] = current
+      }
+    }
+  }
+  result
+}
+
+///|
+fn remove_rows_at(rows : Array[Array[String]], indexes : Array[Int]) -> Unit {
+  let unique = unique_indexes(indexes)
+  let sorted = sort_indexes_desc(unique)
+  sorted.each(index => {
+    if index >= 0 && index < rows.length() {
+      rows.remove(index) |> ignore
+    }
+  })
+}
+
+///|
+fn remove_columns_at(rows : Array[Array[String]], indexes : Array[Int]) -> Unit {
+  let unique = unique_indexes(indexes)
+  let sorted = sort_indexes_desc(unique)
+  rows.each(row => {
+    sorted.each(index => {
+      if index >= 0 && index < row.length() {
+        row.remove(index) |> ignore
+      }
+    })
+  })
+}
+
+///|
 fn resolve_segment_cells(
   segment : Segment,
   row_count : Int,
@@ -1250,5 +1296,27 @@ pub fn Table::modify_by_column_name(
   resolve_columns_by_name(self.rows, by_name).each(column => {
     self.modify_columns(Columns::one(column), setting) |> ignore
   })
+  self
+}
+
+///|
+pub fn Table::remove_rows(self : Table, rows : Rows) -> Table {
+  remove_rows_at(self.rows, resolve_rows(rows, self.rows.length()))
+  self
+}
+
+///|
+pub fn Table::remove_columns(self : Table, columns : Columns) -> Table {
+  let column_count = @papergrid.IterRecords::new(self.rows).count_columns()
+  remove_columns_at(self.rows, resolve_columns(columns, column_count))
+  self
+}
+
+///|
+pub fn Table::remove_by_column_name(
+  self : Table,
+  by_name : ByColumnName,
+) -> Table {
+  remove_columns_at(self.rows, resolve_columns_by_name(self.rows, by_name))
   self
 }

@@ -1087,3 +1087,92 @@ test "padding by column name not existing" {
     ),
   )
 }
+
+///|
+test "remove rows" {
+  let table = @tabular.Table::from_rows([
+    ["N", "column 0", "column 1"],
+    ["0", "0-0", "0-1"],
+    ["1", "1-0", "1-1"],
+    ["2", "2-0", "2-1"],
+  ])
+  table.remove_rows(@tabular.Rows::new(1, 3)) |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|+---+----------+----------+
+      #|| N | column 0 | column 1 |
+      #|+---+----------+----------+
+      #|| 2 |   2-0    |   2-1    |
+      #|+---+----------+----------+
+    ),
+  )
+}
+
+///|
+test "remove header psql" {
+  let table = @tabular.Table::from_rows([
+    ["N", "column 0", "column 1"],
+    ["0", "0-0", "0-1"],
+    ["1", "1-0", "1-1"],
+  ])
+  table.apply(@tabular.Style::psql()) |> ignore
+  table.remove_rows(@tabular.Rows::first()) |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #| 0 | 0-0 | 0-1 
+      #|----+-----+------
+      #| 1 | 1-0 | 1-1 
+    ),
+  )
+}
+
+///|
+test "remove first column psql" {
+  let table = @tabular.Table::from_rows([
+    ["N", "column 0", "column 1"],
+    ["0", "0-0", "0-1"],
+    ["1", "1-0", "1-1"],
+  ])
+  table.apply(@tabular.Style::psql()) |> ignore
+  table.remove_columns(@tabular.Columns::first()) |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #| column 0 | column 1 
+      #|-----------+-----------
+      #|   0-0    |   0-1    
+      #|   1-0    |   1-1    
+    ),
+  )
+}
+
+///|
+test "remove column by name" {
+  let table = @tabular.Table::from_rows([
+    ["N", "column 0", "column 1", "column 2"],
+    ["0", "0-0", "0-1", "0-2"],
+    ["1", "1-0", "1-1", "1-2"],
+  ])
+  table.apply(@tabular.Style::psql()) |> ignore
+  table.remove_by_column_name(@tabular.ByColumnName::new("column 1")) |> ignore
+  table.remove_by_column_name(@tabular.ByColumnName::new("column 3")) |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #| N | column 0 | column 2 
+      #|----+----------+-----------
+      #| 0 |   0-0    |   0-2    
+      #| 1 |   1-0    |   1-2    
+    ),
+  )
+}
+
+///|
+test "remove all columns yields empty" {
+  let table = @tabular.Table::from_rows([["N", "column 0"], ["0", "0-0"]])
+  table.apply(@tabular.Style::psql()) |> ignore
+  table.remove_columns(@tabular.Columns::all()) |> ignore
+  inspect(table.to_string(), content="")
+}

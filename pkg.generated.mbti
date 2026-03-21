@@ -168,6 +168,9 @@ pub fn Table::modify_cell(Self, Cell, Setting) -> Self
 pub fn Table::modify_columns(Self, Columns, Setting) -> Self
 pub fn Table::modify_rows(Self, Rows, Setting) -> Self
 pub fn Table::modify_segment(Self, Segment, Setting) -> Self
+pub fn Table::remove_by_column_name(Self, ByColumnName) -> Self
+pub fn Table::remove_columns(Self, Columns) -> Self
+pub fn Table::remove_rows(Self, Rows) -> Self
 pub fn Table::set_alignment(Self, Alignment) -> Self
 pub fn Table::set_height(Self, Height) -> Self
 pub fn Table::set_padding(Self, Padding) -> Self
