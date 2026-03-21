@@ -4015,3 +4015,170 @@ test "spanned columns with collision modern" {
     ),
   )
 }
+
+// ──────────────────────────────────────────────────
+// Upstream span_row_negative_0 / span_row_zero_0
+// ──────────────────────────────────────────────────
+
+///|
+test "row span multiple negatives" {
+  let table = @tabular.Table::from_rows([
+    ["N", "column 0", "column 1", "column 2"],
+    ["0", "0-0", "0-1", "0-2"],
+    ["1", "1-0", "1-1", "1-2"],
+    ["2", "2-0", "2-1", "2-2"],
+  ])
+  table.modify_cell(@tabular.Cell::new(2, 1), @tabular.Span::row(-1)) |> ignore
+  table.modify_cell(@tabular.Cell::new(3, 2), @tabular.Span::row(-2)) |> ignore
+  table.modify_cell(@tabular.Cell::new(3, 3), @tabular.Span::row(-100))
+  |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|+---+----------+----------+-----+
+      #|| N | column 0 | column 1 | 2-2 |
+      #|+---+----------+----------+     +
+      #|| 0 |   1-0    |   2-1    |     |
+      #|+---+          +          +     +
+      #|| 1 |          |          |     |
+      #|+---+----------+          +     +
+      #|| 2 |   2-0    |          |     |
+      #|+---+----------+----------+-----+
+    ),
+  )
+}
+
+///|
+test "row span multiple zeros" {
+  let table = @tabular.Table::from_rows([
+    ["N", "column 0", "column 1", "column 2"],
+    ["0", "0-0", "0-1", "0-2"],
+    ["1", "1-0", "1-1", "1-2"],
+    ["2", "2-0", "2-1", "2-2"],
+  ])
+  table.modify_cell(@tabular.Cell::new(2, 1), @tabular.Span::row(0)) |> ignore
+  table.modify_cell(@tabular.Cell::new(3, 2), @tabular.Span::row(0)) |> ignore
+  table.modify_cell(@tabular.Cell::new(3, 3), @tabular.Span::row(0)) |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|+---+-----+-----+-----+
+      #|| N | 1-0 | 2-1 | 2-2 |
+      #|+---+     +     +     +
+      #|| 0 |     |     |     |
+      #|+---+     +     +     +
+      #|| 1 |     |     |     |
+      #|+---+     +     +     +
+      #|| 2 |     |     |     |
+      #|+---+-----+-----+-----+
+    ),
+  )
+}
+
+// ──────────────────────────────────────────────────
+// Upstream column span invalid position tests
+// ──────────────────────────────────────────────────
+
+///|
+test "column span invalid position row" {
+  let table = @tabular.Table::from_rows([
+    ["N", "column 0", "column 1", "column 2"],
+    ["0", "0-0", "0-1", "0-2"],
+    ["1", "1-0", "1-1", "1-2"],
+    ["2", "2-0", "2-1", "2-2"],
+  ])
+  table.modify_cell(@tabular.Cell::new(1000, 0), @tabular.Span::column(2))
+  |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|+---+----------+----------+----------+
+      #|| N | column 0 | column 1 | column 2 |
+      #|+---+----------+----------+----------+
+      #|| 0 |   0-0    |   0-1    |   0-2    |
+      #|+---+----------+----------+----------+
+      #|| 1 |   1-0    |   1-1    |   1-2    |
+      #|+---+----------+----------+----------+
+      #|| 2 |   2-0    |   2-1    |   2-2    |
+      #|+---+----------+----------+----------+
+    ),
+  )
+}
+
+///|
+test "column span invalid position column" {
+  let table = @tabular.Table::from_rows([
+    ["N", "column 0", "column 1", "column 2"],
+    ["0", "0-0", "0-1", "0-2"],
+    ["1", "1-0", "1-1", "1-2"],
+    ["2", "2-0", "2-1", "2-2"],
+  ])
+  table.modify_cell(@tabular.Cell::new(0, 1000), @tabular.Span::column(2))
+  |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|+---+----------+----------+----------+
+      #|| N | column 0 | column 1 | column 2 |
+      #|+---+----------+----------+----------+
+      #|| 0 |   0-0    |   0-1    |   0-2    |
+      #|+---+----------+----------+----------+
+      #|| 1 |   1-0    |   1-1    |   1-2    |
+      #|+---+----------+----------+----------+
+      #|| 2 |   2-0    |   2-1    |   2-2    |
+      #|+---+----------+----------+----------+
+    ),
+  )
+}
+
+///|
+test "row span invalid position column" {
+  let table = @tabular.Table::from_rows([
+    ["N", "column 0", "column 1", "column 2"],
+    ["0", "0-0", "0-1", "0-2"],
+    ["1", "1-0", "1-1", "1-2"],
+    ["2", "2-0", "2-1", "2-2"],
+  ])
+  table.modify_cell(@tabular.Cell::new(0, 1000), @tabular.Span::row(2))
+  |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|+---+----------+----------+----------+
+      #|| N | column 0 | column 1 | column 2 |
+      #|+---+----------+----------+----------+
+      #|| 0 |   0-0    |   0-1    |   0-2    |
+      #|+---+----------+----------+----------+
+      #|| 1 |   1-0    |   1-1    |   1-2    |
+      #|+---+----------+----------+----------+
+      #|| 2 |   2-0    |   2-1    |   2-2    |
+      #|+---+----------+----------+----------+
+    ),
+  )
+}
+
+///|
+test "row span invalid position both" {
+  let table = @tabular.Table::from_rows([
+    ["N", "column 0", "column 1", "column 2"],
+    ["0", "0-0", "0-1", "0-2"],
+    ["1", "1-0", "1-1", "1-2"],
+    ["2", "2-0", "2-1", "2-2"],
+  ])
+  table.modify_cell(@tabular.Cell::new(1000, 1000), @tabular.Span::row(2))
+  |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|+---+----------+----------+----------+
+      #|| N | column 0 | column 1 | column 2 |
+      #|+---+----------+----------+----------+
+      #|| 0 |   0-0    |   0-1    |   0-2    |
+      #|+---+----------+----------+----------+
+      #|| 1 |   1-0    |   1-1    |   1-2    |
+      #|+---+----------+----------+----------+
+      #|| 2 |   2-0    |   2-1    |   2-2    |
+      #|+---+----------+----------+----------+
+    ),
+  )
+}

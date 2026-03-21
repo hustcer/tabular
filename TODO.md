@@ -58,7 +58,7 @@ Already implemented and passing:
   - `Format::content`
   - `Format::positioned`
   - `Format::multiline`
-- Test count: `159`
+- Test count: `182`
 
 ## Constraints
 
@@ -202,7 +202,7 @@ Acceptance:
 
 ### Phase 5: Spans
 
-Status: in progress
+Status: complete
 
 This is likely the largest renderer change still missing.
 
@@ -273,18 +273,41 @@ Completed in this phase:
   - `span_multiline`: multiline content in spanned columns matches upstream
   - `indent_works_in_spaned_columns`: custom padding interaction with column spans matches upstream
   - `spaned_columns_with_collision`: complex multi-span collision with modern style matches upstream
-- Expanded the test suite to `159`
+- Ported upstream `span_row_negative_0` / `span_row_zero_0`
+  - multiple simultaneous row negative spans (`row(-1)`, `row(-2)`, `row(-100)`)
+  - multiple simultaneous row zero spans (`row(0)`, `row(-0)`)
+- Ported upstream column/row span invalid position tests
+  - column span at invalid row, column, and both
+  - row span at invalid column and both row+column
+- Ported extensive papergrid-level edge case tests from upstream `column_span.rs` / `row_span.rs`
+  - column span multilane with custom data
+  - column span collision with two spans at different widths
+  - column span all rows spanned
+  - column span with different length data
+  - column span no split style
+  - row span collision with multiline content
+  - row span 3x3 render with multiple row spans
+  - row span all columns spanned
+  - row span no split style
+  - row span with vertical padding
+  - combined row+column span at top-left corner
+  - combined row+column span at bottom-right corner
+  - combined row+column span large center block
+  - mixed row and column spans complex layout
+  - zero span in column dimension is ignored
+  - zero span grid all rows and cols spanned
+  - 5x2 row span spanning 4 rows
+- Expanded the test suite to `182`
 - Re-verified `moon fmt`, `moon check -d`, `moon build -d`, and `moon test -d`
 
-Remaining work:
+Remaining work deferred to Phase 6:
 
-- Port remaining upstream `span_test.rs` tests that need Panel/Highlight/BorderCorrection (Phase 6 dependencies)
-- Port additional edge case tests from upstream `column_span.rs` / `row_span.rs` if any remain
+- Port remaining upstream `span_test.rs` tests that need Panel/Highlight/BorderCorrection
 
 Acceptance:
 
-- Port a focused subset of upstream `span_test.rs`
-- Ensure no regressions in non-span rendering
+- Port a focused subset of upstream `span_test.rs` ✓
+- Ensure no regressions in non-span rendering ✓
 
 ### Phase 6: Highlight / Panel / Shadow / Merge / Split / Theme
 
