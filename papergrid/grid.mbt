@@ -664,7 +664,7 @@ pub fn IterGrid::to_string(self : IterGrid) -> String {
 
   let lines : Array[String] = []
   let top_left = match borders.top {
-    Some(_) => first_char([borders.top_left, borders.left, borders.top])
+    Some(_) => first_char([borders.top_left, borders.left])
     None => None
   }
   let top_intersection = match borders.top {
@@ -672,7 +672,7 @@ pub fn IterGrid::to_string(self : IterGrid) -> String {
     None => None
   }
   let top_right = match borders.top {
-    Some(_) => first_char([borders.top_right, borders.right, borders.top])
+    Some(_) => first_char([borders.top_right, borders.right])
     None => None
   }
   let top = borders.build_line(
@@ -789,7 +789,7 @@ pub fn IterGrid::to_string(self : IterGrid) -> String {
   }
 
   let bottom_left = match borders.bottom {
-    Some(_) => first_char([borders.bottom_left, borders.left, borders.bottom])
+    Some(_) => first_char([borders.bottom_left, borders.left])
     None => None
   }
   let bottom_intersection = match borders.bottom {
@@ -797,7 +797,7 @@ pub fn IterGrid::to_string(self : IterGrid) -> String {
     None => None
   }
   let bottom_right = match borders.bottom {
-    Some(_) => first_char([borders.bottom_right, borders.right, borders.bottom])
+    Some(_) => first_char([borders.bottom_right, borders.right])
     None => None
   }
   let bottom = borders.build_line(

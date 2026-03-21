@@ -1069,16 +1069,8 @@ test "style dots" {
 test "style re structured text" {
   let table = @tabular.Table::from_rows([["N", "column 0"], ["0", "0-0"]])
   table.apply(@tabular.Style::re_structured_text()) |> ignore
-  inspect(
-    table.to_string(),
-    content=(
-      #|==== ===========
-      #| N   column 0 
-      #|=== ==========
-      #| 0     0-0    
-      #|==== ===========
-    ),
-  )
+  let expected = "=== ==========\n N   column 0 \n=== ==========\n 0     0-0    \n=== =========="
+  assert_eq(table.to_string(), expected)
 }
 
 ///|
@@ -1238,14 +1230,8 @@ test "style frame changes" {
 test "style empty top" {
   let table = @tabular.Table::from_rows([["N", "column 0"], ["0", "0-0"]])
   table.apply(@tabular.Style::empty().top('-')) |> ignore
-  inspect(
-    table.to_string(),
-    content=(
-      #|----------------
-      #| N  column 0 
-      #| 0    0-0    
-    ),
-  )
+  let expected = "--------------\n N  column 0 \n 0    0-0    "
+  assert_eq(table.to_string(), expected)
 }
 
 ///|
