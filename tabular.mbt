@@ -60,10 +60,15 @@ pub struct Cell {
 pub enum Segment {
   All(Int, Int)
   Range(Int, Int, Int, Int, Int, Int)
+  RowsOnly(Rows, Int, Int)
+  ColumnsOnly(Columns, Int, Int)
+  CellOnly(Cell, Int, Int)
   Cross(Rows, Columns, Int, Int)
   InverseRows(Rows, Int, Int)
   InverseColumns(Columns, Int, Int)
   InverseCell(Cell, Int, Int)
+  Union2(Segment, Segment, Int, Int)
+  Diff2(Segment, Segment, Int, Int)
 }
 
 ///|
@@ -217,6 +222,11 @@ pub fn Rows::intersect(self : Rows, columns : Columns) -> Segment {
 }
 
 ///|
+pub fn Rows::as_segment(self : Rows) -> Segment {
+  RowsOnly(self, 0, 1)
+}
+
+///|
 pub fn Rows::inverse(self : Rows) -> Segment {
   InverseRows(self, 0, 1)
 }
@@ -297,6 +307,11 @@ pub fn Columns::intersect(self : Columns, rows : Rows) -> Segment {
 }
 
 ///|
+pub fn Columns::as_segment(self : Columns) -> Segment {
+  ColumnsOnly(self, 0, 1)
+}
+
+///|
 pub fn Columns::inverse(self : Columns) -> Segment {
   InverseColumns(self, 0, 1)
 }
@@ -352,6 +367,11 @@ pub fn Cell::new(row : Int, column : Int) -> Cell {
 }
 
 ///|
+pub fn Cell::as_segment(self : Cell) -> Segment {
+  CellOnly(self, 0, 1)
+}
+
+///|
 pub fn Cell::inverse(self : Cell) -> Segment {
   InverseCell(self, 0, 1)
 }
@@ -367,15 +387,30 @@ pub fn Segment::new(
 }
 
 ///|
+pub fn Segment::and_(self : Segment, other : Segment) -> Segment {
+  Union2(self, other, 0, 1)
+}
+
+///|
+pub fn Segment::not_(self : Segment, other : Segment) -> Segment {
+  Diff2(self, other, 0, 1)
+}
+
+///|
 pub fn Segment::skip(self : Segment, count : Int) -> Segment {
   match self {
     All(_, step) => All(count, step)
     Range(row_start, row_end, column_start, column_end, _, step) =>
       Range(row_start, row_end, column_start, column_end, count, step)
+    RowsOnly(rows, _, step) => RowsOnly(rows, count, step)
+    ColumnsOnly(columns, _, step) => ColumnsOnly(columns, count, step)
+    CellOnly(cell, _, step) => CellOnly(cell, count, step)
     Cross(rows, columns, _, step) => Cross(rows, columns, count, step)
     InverseRows(rows, _, step) => InverseRows(rows, count, step)
     InverseColumns(columns, _, step) => InverseColumns(columns, count, step)
     InverseCell(cell, _, step) => InverseCell(cell, count, step)
+    Union2(lhs, rhs, _, step) => Union2(lhs, rhs, count, step)
+    Diff2(lhs, rhs, _, step) => Diff2(lhs, rhs, count, step)
   }
 }
 
@@ -386,11 +421,16 @@ pub fn Segment::step_by(self : Segment, step : Int) -> Segment {
     All(skip_n, _) => All(skip_n, next_step)
     Range(row_start, row_end, column_start, column_end, skip_n, _) =>
       Range(row_start, row_end, column_start, column_end, skip_n, next_step)
+    RowsOnly(rows, skip_n, _) => RowsOnly(rows, skip_n, next_step)
+    ColumnsOnly(columns, skip_n, _) => ColumnsOnly(columns, skip_n, next_step)
+    CellOnly(cell, skip_n, _) => CellOnly(cell, skip_n, next_step)
     Cross(rows, columns, skip_n, _) => Cross(rows, columns, skip_n, next_step)
     InverseRows(rows, skip_n, _) => InverseRows(rows, skip_n, next_step)
     InverseColumns(columns, skip_n, _) =>
       InverseColumns(columns, skip_n, next_step)
     InverseCell(cell, skip_n, _) => InverseCell(cell, skip_n, next_step)
+    Union2(lhs, rhs, skip_n, _) => Union2(lhs, rhs, skip_n, next_step)
+    Diff2(lhs, rhs, skip_n, _) => Diff2(lhs, rhs, skip_n, next_step)
   }
 }
 
@@ -559,6 +599,13 @@ fn apply_skip_step_to_cells(
 }
 
 ///|
+fn unique_cells(cells : Array[(Int, Int)]) -> Array[(Int, Int)] {
+  let result = []
+  cells.each(cell => if !result.contains(cell) { result.push(cell) })
+  result
+}
+
+///|
 fn resolve_segment_cells(
   segment : Segment,
   row_count : Int,
@@ -577,6 +624,35 @@ fn resolve_segment_cells(
         skip_n,
         step_n,
       )
+    RowsOnly(rows, skip_n, step_n) => {
+      let row_indexes = resolve_rows(rows, row_count)
+      let cells = []
+      row_indexes.each(row => {
+        for column = 0; column < column_count; column = column + 1 {
+          cells.push((row, column))
+        }
+      })
+      return apply_skip_step_to_cells(cells, skip_n, step_n)
+    }
+    ColumnsOnly(columns, skip_n, step_n) => {
+      let column_indexes = resolve_columns(columns, column_count)
+      let cells = []
+      for row = 0; row < row_count; row = row + 1 {
+        column_indexes.each(column => cells.push((row, column)))
+      }
+      return apply_skip_step_to_cells(cells, skip_n, step_n)
+    }
+    CellOnly(cell, skip_n, step_n) => {
+      let cells = if cell.row >= 0 &&
+        cell.row < row_count &&
+        cell.column >= 0 &&
+        cell.column < column_count {
+        [(cell.row, cell.column)]
+      } else {
+        []
+      }
+      return apply_skip_step_to_cells(cells, skip_n, step_n)
+    }
     Cross(rows, columns, skip_n, step_n) => {
       let row_indexes = resolve_rows(rows, row_count)
       let column_indexes = resolve_columns(columns, column_count)
@@ -623,6 +699,22 @@ fn resolve_segment_cells(
         }
       }
       return apply_skip_step_to_cells(cells, skip_n, step_n)
+    }
+    Union2(lhs, rhs, skip_n, step_n) => {
+      let lhs_cells = resolve_segment_cells(lhs, row_count, column_count)
+      let rhs_cells = resolve_segment_cells(rhs, row_count, column_count)
+      return apply_skip_step_to_cells(
+        unique_cells(lhs_cells + rhs_cells),
+        skip_n,
+        step_n,
+      )
+    }
+    Diff2(lhs, rhs, skip_n, step_n) => {
+      let lhs_cells = resolve_segment_cells(lhs, row_count, column_count)
+      let rhs_cells = resolve_segment_cells(rhs, row_count, column_count)
+      let cells = []
+      lhs_cells.each(cell => if !rhs_cells.contains(cell) { cells.push(cell) })
+      return apply_skip_step_to_cells(unique_cells(cells), skip_n, step_n)
     }
   }
   let mut seen = 0

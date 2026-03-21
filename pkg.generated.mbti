@@ -41,6 +41,7 @@ pub struct Cell {
   row : Int
   column : Int
 }
+pub fn Cell::as_segment(Self) -> Segment
 pub fn Cell::inverse(Self) -> Segment
 pub fn Cell::new(Int, Int) -> Self
 
@@ -53,6 +54,7 @@ pub struct Columns {
   exclude_end : Int
 }
 pub fn Columns::all() -> Self
+pub fn Columns::as_segment(Self) -> Segment
 pub fn Columns::first() -> Self
 pub fn Columns::intersect(Self, Rows) -> Segment
 pub fn Columns::inverse(Self) -> Segment
@@ -88,6 +90,7 @@ pub struct Rows {
   exclude_end : Int
 }
 pub fn Rows::all() -> Self
+pub fn Rows::as_segment(Self) -> Segment
 pub fn Rows::first() -> Self
 pub fn Rows::intersect(Self, Columns) -> Segment
 pub fn Rows::inverse(Self) -> Segment
@@ -102,13 +105,20 @@ pub fn Rows::step_by(Self, Int) -> Self
 pub enum Segment {
   All(Int, Int)
   Range(Int, Int, Int, Int, Int, Int)
+  RowsOnly(Rows, Int, Int)
+  ColumnsOnly(Columns, Int, Int)
+  CellOnly(Cell, Int, Int)
   Cross(Rows, Columns, Int, Int)
   InverseRows(Rows, Int, Int)
   InverseColumns(Columns, Int, Int)
   InverseCell(Cell, Int, Int)
+  Union2(Segment, Segment, Int, Int)
+  Diff2(Segment, Segment, Int, Int)
 }
 pub fn Segment::all() -> Self
+pub fn Segment::and_(Self, Self) -> Self
 pub fn Segment::new(Int, Int, Int, Int) -> Self
+pub fn Segment::not_(Self, Self) -> Self
 pub fn Segment::skip(Self, Int) -> Self
 pub fn Segment::step_by(Self, Int) -> Self
 

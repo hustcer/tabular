@@ -850,3 +850,66 @@ test "modify inverse cell" {
     ),
   )
 }
+
+///|
+test "modify union of row and column segments" {
+  let table = @tabular.Table::from_rows([
+    ["N", "column 0", "column 1"],
+    ["0", "0-0", "0-1"],
+    ["1", "1-0", "1-1"],
+  ])
+  table.apply(@tabular.Style::psql()) |> ignore
+  table.modify_segment(
+    @tabular.Segment::all(),
+    @tabular.Setting::alignment(@tabular.Alignment::left()),
+  )
+  |> ignore
+  table.modify_segment(
+    @tabular.Rows::one(1)
+    .as_segment()
+    .and_(@tabular.Columns::one(2).as_segment()),
+    @tabular.Setting::alignment(@tabular.Alignment::right()),
+  )
+  |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #| N | column 0 | column 1 
+      #|----+----------+-----------
+      #| 0 |      0-0 |      0-1 
+      #| 1 | 1-0      |      1-1 
+    ),
+  )
+}
+
+///|
+test "modify segment difference by cell" {
+  let table = @tabular.Table::from_rows([
+    ["N", "column 0", "column 1"],
+    ["0", "0-0", "0-1"],
+    ["1", "1-0", "1-1"],
+  ])
+  table.apply(@tabular.Style::psql()) |> ignore
+  table.modify_segment(
+    @tabular.Segment::all(),
+    @tabular.Setting::alignment(@tabular.Alignment::left()),
+  )
+  |> ignore
+  table.modify_segment(
+    @tabular.Rows::one(1)
+    .as_segment()
+    .and_(@tabular.Columns::one(2).as_segment())
+    .not_(@tabular.Cell::new(1, 2).as_segment()),
+    @tabular.Setting::alignment(@tabular.Alignment::right()),
+  )
+  |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #| N | column 0 | column 1 
+      #|----+----------+-----------
+      #| 0 |      0-0 | 0-1      
+      #| 1 | 1-0      |      1-1 
+    ),
+  )
+}
