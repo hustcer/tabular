@@ -2715,26 +2715,40 @@ pub fn Builder::clean(self : Builder) -> Unit {
   if max_columns == 0 {
     return
   }
-
-  let keep = Array::make(max_columns, false)
+  // Determine which columns to keep (at least one non-empty cell)
+  let keep_col = Array::make(max_columns, false)
   self.rows.each(row => {
     for column = 0; column < max_columns; column = column + 1 {
       if column < row.length() && row[column] != "" {
-        keep[column] = true
+        keep_col[column] = true
       }
     }
   })
-
+  // Filter columns in-place
   self.rows.each(row => {
     let next = []
     for column = 0; column < max_columns; column = column + 1 {
-      if keep[column] {
+      if keep_col[column] {
         next.push(if column < row.length() { row[column] } else { "" })
       }
     }
     row.clear()
     next.each(value => row.push(value))
   })
+  // Remove empty rows (all cells empty or no cells)
+  let kept_rows : Array[Array[String]] = []
+  self.rows.each(row => {
+    let mut has_content = false
+    row.each(cell => if cell != "" { has_content = true })
+    if has_content || row.length() == 0 {
+      // Keep rows with content; drop all-empty rows
+      if has_content {
+        kept_rows.push(row)
+      }
+    }
+  })
+  self.rows.clear()
+  kept_rows.each(row => self.rows.push(row))
 }
 
 ///|
@@ -2761,6 +2775,162 @@ fn normalize_rows(
 ///|
 pub fn Builder::build(self : Builder) -> Table {
   Table::from_rows(normalize_rows(self.rows, self.empty_cell))
+}
+
+///|
+pub fn Builder::count_records(self : Builder) -> Int {
+  self.rows.length()
+}
+
+///|
+pub fn Builder::count_columns(self : Builder) -> Int {
+  let mut max = 0
+  self.rows.each(row => if row.length() > max { max = row.length() })
+  max
+}
+
+///|
+/// Create an IndexBuilder from this Builder for index/transpose operations.
+pub fn Builder::index(self : Builder) -> IndexBuilder {
+  {
+    rows: self.rows,
+    empty_cell: self.empty_cell,
+    index_column: None,
+    index_name: Some(""),
+    show_index: true,
+  }
+}
+
+///|
+pub struct IndexBuilder {
+  rows : Array[Array[String]]
+  empty_cell : String
+  mut index_column : Int?
+  mut index_name : String?
+  mut show_index : Bool
+}
+
+///|
+/// Use the specified column as the index column (0-based).
+pub fn IndexBuilder::column(self : IndexBuilder, col : Int) -> IndexBuilder {
+  self.index_column = Some(col)
+  self
+}
+
+///|
+/// Set the name for the index column. None removes the name row.
+pub fn IndexBuilder::name(self : IndexBuilder, name : String?) -> IndexBuilder {
+  self.index_name = name
+  self
+}
+
+///|
+/// Hide the index column.
+pub fn IndexBuilder::hide(self : IndexBuilder) -> IndexBuilder {
+  self.show_index = false
+  self
+}
+
+///|
+/// Transpose the table (swap rows and columns).
+pub fn IndexBuilder::transpose(self : IndexBuilder) -> IndexBuilder {
+  let norm = normalize_rows(self.rows, self.empty_cell)
+  let row_count = norm.length()
+  let col_count = if row_count > 0 { norm[0].length() } else { 0 }
+  if row_count == 0 || col_count == 0 {
+    return self
+  }
+  // After transpose, first column = original headers (row 0 values),
+  // remaining columns = original data rows, new header = row indices
+  let result : Array[Array[String]] = []
+  // Header row: empty + original row indices
+  let header : Array[String] = [""]
+  for r = 1; r < row_count; r = r + 1 {
+    header.push((r - 1).to_string())
+  }
+  result.push(header)
+  // Each original column becomes a data row
+  for c = 0; c < col_count; c = c + 1 {
+    let new_row : Array[String] = []
+    for r = 0; r < row_count; r = r + 1 {
+      new_row.push(norm[r][c])
+    }
+    result.push(new_row)
+  }
+  self.rows.clear()
+  result.each(row => self.rows.push(row))
+  // After transpose, index is already baked in; disable further index processing
+  self.show_index = false
+  self
+}
+
+///|
+/// Build the final Table from the IndexBuilder.
+pub fn IndexBuilder::build(self : IndexBuilder) -> Table {
+  let norm = normalize_rows(self.rows, self.empty_cell)
+  let row_count = norm.length()
+  let col_count = if row_count > 0 { norm[0].length() } else { 0 }
+  if row_count == 0 || col_count == 0 {
+    return Table::from_rows(norm)
+  }
+  match self.index_column {
+    None => {
+      // Default: add a numeric index column at position 0
+      if not(self.show_index) {
+        return Table::from_rows(norm)
+      }
+      let result : Array[Array[String]] = []
+      for i = 0; i < row_count; i = i + 1 {
+        let row : Array[String] = []
+        if i == 0 {
+          // Header row: index name or empty
+          row.push(self.index_name.unwrap_or(""))
+        } else {
+          row.push((i - 1).to_string())
+        }
+        norm[i].each(cell => row.push(cell))
+        result.push(row)
+      }
+      Table::from_rows(result)
+    }
+    Some(col_idx) => {
+      // Use specified column as index, move it to position 0
+      if col_idx >= col_count {
+        return Table::from_rows(norm)
+      }
+      let result : Array[Array[String]] = []
+      // First row: header with index name
+      let header_row : Array[String] = []
+      header_row.push("")
+      for c = 0; c < col_count; c = c + 1 {
+        if c != col_idx {
+          header_row.push(if row_count > 0 { norm[0][c] } else { "" })
+        }
+      }
+      result.push(header_row)
+      // Index name row (if set)
+      match self.index_name {
+        Some(name) => {
+          let name_row : Array[String] = Array::make(col_count, "")
+          name_row[0] = if name == "" { norm[0][col_idx] } else { name }
+          result.push(name_row)
+        }
+        None => ()
+      }
+      // Data rows: use column value as index
+      for r = 1; r < row_count; r = r + 1 {
+        let data_row : Array[String] = []
+        data_row.push(norm[r][col_idx])
+        for c = 0; c < col_count; c = c + 1 {
+          if c != col_idx {
+            data_row.push(norm[r][c])
+          }
+        }
+        result.push(data_row)
+      }
+      Table::from_rows(result)
+    }
+  }
 }
 
 ///|

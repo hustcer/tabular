@@ -58,7 +58,7 @@ Already implemented and passing:
   - `Format::content`
   - `Format::positioned`
   - `Format::multiline`
-- Test count: `253`
+- Test count: `294`
 
 ## Constraints
 
@@ -366,13 +366,31 @@ Acceptance:
 
 ### Phase 7: Extraction / Removal by Richer Selectors
 
-Status: range + column-name subset done
+Status: complete
 
-Remaining work:
+Completed in this phase:
 
-- Add extraction/removal APIs driven by richer object selections if practical
-- Support extraction/removal after selector composition
-- Ensure selection semantics are stable after prior mutations
+- Extraction/removal APIs already implemented in prior phases:
+  - `Table::extract_rows(Rows)` extracts rows by selector
+  - `Table::extract_columns(Columns)` extracts columns by selector
+  - `Table::extract_segment(Rows, Columns)` extracts row+column intersection
+  - `Table::remove_rows(Rows)` removes rows by selector
+  - `Table::remove_columns(Columns)` removes columns by selector
+  - `Table::remove_by_column_name(ByColumnName)` removes column by header text
+  - All APIs properly remap config (spans, width/height rules, alignment, padding)
+- Added comprehensive test coverage from upstream `extract_test.rs` and `disable_test.rs`:
+  - `extract middle section` (segment with row+column range)
+  - `extract rows full` / `extract rows empty` / `extract rows partial`
+  - `extract columns full` / `extract columns empty` / `extract columns partial`
+  - `extract left/right/top/bottom after remove header`
+  - `extract beyond size yields empty`
+  - `extract empty table`
+  - `remove all rows via rows` (entire table removal)
+  - `remove header then restyle with modern`
+  - `extract with format preserves scoped formatting`
+  - `remove columns then extract rows` (chained operations)
+- Expanded test suite from 253 to 270 tests
+- Re-verified `moon fmt`, `moon check`, `moon build`, and `moon test`
 
 Acceptance:
 
@@ -380,16 +398,38 @@ Acceptance:
 
 ### Phase 8: Data Derive / Runtime Table Construction Parity
 
-Status: not started
+Status: complete
 
-Remaining work:
+Completed in this phase:
 
-- Decide scope of derive/macro parity in MoonBit
-- If full derive parity is unrealistic, define the best runtime alternative:
-  - record-to-row helpers
-  - declarative schema mapping
-  - convenience constructors
-- Add examples and tests for MoonBit-idiomatic data-to-table conversion
+- MoonBit has no derive macros; full derive parity is not feasible
+- Implemented runtime alternatives:
+  - `Builder::count_records()` returns number of rows
+  - `Builder::count_columns()` returns max column count across rows
+  - `Builder::index()` returns an `IndexBuilder` for index/transpose operations
+- Added `IndexBuilder` with upstream-compatible API:
+  - `IndexBuilder::column(col)` uses specified column as index
+  - `IndexBuilder::name(name)` sets index column name (None removes name row)
+  - `IndexBuilder::hide()` hides the auto-generated index column
+  - `IndexBuilder::transpose()` transposes the table (columns ↔ rows)
+  - `IndexBuilder::build()` builds the final Table
+- Fixed `Builder::clean()` to also remove all-empty rows (previously only removed empty columns)
+- Ported comprehensive upstream builder tests:
+  - `push_record` basic construction
+  - `remove_record` header and middle row removal
+  - `push_column` basic, column-only, and different lengths
+  - `insert_column` at arbitrary position
+  - Different column counts (ragged rows normalized with empty cells)
+  - `set_empty` fills missing cells with custom value
+  - `clear` empties the builder
+  - `from_rows` with empty rows preserved
+  - `clean` removes empty columns, rows, and both
+  - `clean` all-empty yields empty table
+  - `index` default, hide, set column, custom name, name none
+  - `index().transpose()` matches upstream structure
+  - `count_records` and `count_columns` convenience methods
+- Expanded test suite from 270 to 294 tests
+- Re-verified `moon fmt`, `moon check`, `moon build`, and `moon test`
 
 Acceptance:
 

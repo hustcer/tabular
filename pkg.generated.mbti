@@ -26,9 +26,12 @@ pub struct Builder {
 pub fn Builder::build(Self) -> Table
 pub fn Builder::clean(Self) -> Unit
 pub fn Builder::clear(Self) -> Unit
+pub fn Builder::count_columns(Self) -> Int
+pub fn Builder::count_records(Self) -> Int
 pub fn Builder::default() -> Self
 pub fn Builder::extend(Self, Array[String]) -> Unit
 pub fn Builder::from_rows(Array[Array[String]]) -> Self
+pub fn Builder::index(Self) -> IndexBuilder
 pub fn Builder::insert_column(Self, Int, Array[String]) -> Unit
 pub fn Builder::insert_record(Self, Int, Array[String]) -> Unit
 pub fn Builder::push_column(Self, Array[String]) -> Unit
@@ -136,6 +139,19 @@ pub fn HorizontalLine::intersection(Self, Char) -> Self
 pub fn HorizontalLine::left(Self, Char) -> Self
 pub fn HorizontalLine::new(Char) -> Self
 pub fn HorizontalLine::right(Self, Char) -> Self
+
+pub struct IndexBuilder {
+  rows : Array[Array[String]]
+  empty_cell : String
+  mut index_column : Int?
+  mut index_name : String?
+  mut show_index : Bool
+}
+pub fn IndexBuilder::build(Self) -> Table
+pub fn IndexBuilder::column(Self, Int) -> Self
+pub fn IndexBuilder::hide(Self) -> Self
+pub fn IndexBuilder::name(Self, String?) -> Self
+pub fn IndexBuilder::transpose(Self) -> Self
 
 pub enum Merge {
   Horizontal

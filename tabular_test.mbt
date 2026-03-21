@@ -5894,3 +5894,853 @@ test "split_scattered_values_test" {
     ),
   )
 }
+
+///|
+test "extract middle section" {
+  let table = @tabular.Table::from_rows([
+    ["N", "column 0", "column 1", "column 2"],
+    ["0", "0-0", "0-1", "0-2"],
+    ["1", "1-0", "1-1", "1-2"],
+    ["2", "2-0", "2-1", "2-2"],
+  ])
+  table.modify_segment(
+    @tabular.Segment::all(),
+    @tabular.Setting::alignment(@tabular.Alignment::left()),
+  )
+  |> ignore
+  table.modify_segment(
+    @tabular.Segment::all(),
+    @tabular.Setting::padding(@tabular.Padding::new(3, 1, 0, 0)),
+  )
+  |> ignore
+  table.modify_segment(
+    @tabular.Segment::all(),
+    @tabular.Setting::format(@tabular.Format::surround("[", "]")),
+  )
+  |> ignore
+  table.extract_segment(@tabular.Rows::new(1, 3), @tabular.Columns::new(1, 4))
+  |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|+---------+---------+---------+
+      #||   [0-0] |   [0-1] |   [0-2] |
+      #|+---------+---------+---------+
+      #||   [1-0] |   [1-1] |   [1-2] |
+      #|+---------+---------+---------+
+    ),
+  )
+}
+
+///|
+test "extract rows full" {
+  let table = @tabular.Table::from_rows([
+    ["N", "column 0", "column 1"],
+    ["0", "0-0", "0-1"],
+    ["1", "1-0", "1-1"],
+    ["2", "2-0", "2-1"],
+  ])
+  table.extract_rows(@tabular.Rows::all()) |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|+---+----------+----------+
+      #|| N | column 0 | column 1 |
+      #|+---+----------+----------+
+      #|| 0 |   0-0    |   0-1    |
+      #|+---+----------+----------+
+      #|| 1 |   1-0    |   1-1    |
+      #|+---+----------+----------+
+      #|| 2 |   2-0    |   2-1    |
+      #|+---+----------+----------+
+    ),
+  )
+}
+
+///|
+test "extract rows empty" {
+  let table = @tabular.Table::from_rows([
+    ["N", "column 0"],
+    ["0", "0-0"],
+    ["1", "1-0"],
+  ])
+  table.extract_rows(@tabular.Rows::new(0, 0)) |> ignore
+  inspect(table.to_string(), content="")
+}
+
+///|
+test "extract rows partial" {
+  let table = @tabular.Table::from_rows([
+    ["N", "column 0", "column 1"],
+    ["0", "0-0", "0-1"],
+    ["1", "1-0", "1-1"],
+    ["2", "2-0", "2-1"],
+  ])
+  table.extract_rows(@tabular.Rows::new(0, 3)) |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|+---+----------+----------+
+      #|| N | column 0 | column 1 |
+      #|+---+----------+----------+
+      #|| 0 |   0-0    |   0-1    |
+      #|+---+----------+----------+
+      #|| 1 |   1-0    |   1-1    |
+      #|+---+----------+----------+
+    ),
+  )
+}
+
+///|
+test "extract columns full" {
+  let table = @tabular.Table::from_rows([
+    ["N", "column 0", "column 1"],
+    ["0", "0-0", "0-1"],
+    ["1", "1-0", "1-1"],
+  ])
+  table.extract_columns(@tabular.Columns::all()) |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|+---+----------+----------+
+      #|| N | column 0 | column 1 |
+      #|+---+----------+----------+
+      #|| 0 |   0-0    |   0-1    |
+      #|+---+----------+----------+
+      #|| 1 |   1-0    |   1-1    |
+      #|+---+----------+----------+
+    ),
+  )
+}
+
+///|
+test "extract columns empty" {
+  let table = @tabular.Table::from_rows([["N", "column 0"], ["0", "0-0"]])
+  table.extract_columns(@tabular.Columns::new(0, 0)) |> ignore
+  inspect(table.to_string(), content="")
+}
+
+///|
+test "extract columns partial" {
+  let table = @tabular.Table::from_rows([
+    ["N", "column 0", "column 1"],
+    ["0", "0-0", "0-1"],
+    ["1", "1-0", "1-1"],
+    ["2", "2-0", "2-1"],
+  ])
+  table.modify_segment(
+    @tabular.Segment::all(),
+    @tabular.Setting::alignment(@tabular.Alignment::left()),
+  )
+  |> ignore
+  table.modify_segment(
+    @tabular.Segment::all(),
+    @tabular.Setting::padding(@tabular.Padding::new(3, 1, 0, 0)),
+  )
+  |> ignore
+  table.modify_segment(
+    @tabular.Segment::all(),
+    @tabular.Setting::format(@tabular.Format::surround("[", "]")),
+  )
+  |> ignore
+  table.extract_columns(@tabular.Columns::new(0, 2)) |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|+-------+--------------+
+      #||   [N] |   [column 0] |
+      #|+-------+--------------+
+      #||   [0] |   [0-0]      |
+      #|+-------+--------------+
+      #||   [1] |   [1-0]      |
+      #|+-------+--------------+
+      #||   [2] |   [2-0]      |
+      #|+-------+--------------+
+    ),
+  )
+}
+
+///|
+test "extract left after remove header" {
+  let table = @tabular.Table::from_rows([
+    ["N", "column 0", "column 1", "column 2"],
+    ["0", "0-0", "0-1", "0-2"],
+    ["1", "1-0", "1-1", "1-2"],
+    ["2", "2-0", "2-1", "2-2"],
+  ])
+  table.remove_rows(@tabular.Rows::first()) |> ignore
+  table.extract_segment(@tabular.Rows::all(), @tabular.Columns::new(0, 1))
+  |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|+---+
+      #|| 0 |
+      #|+---+
+      #|| 1 |
+      #|+---+
+      #|| 2 |
+      #|+---+
+    ),
+  )
+}
+
+///|
+test "extract right after remove header" {
+  let table = @tabular.Table::from_rows([
+    ["N", "column 0", "column 1", "column 2"],
+    ["0", "0-0", "0-1", "0-2"],
+    ["1", "1-0", "1-1", "1-2"],
+    ["2", "2-0", "2-1", "2-2"],
+  ])
+  table.remove_rows(@tabular.Rows::first()) |> ignore
+  table.extract_segment(@tabular.Rows::all(), @tabular.Columns::new(2, 4))
+  |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|+-----+-----+
+      #|| 0-1 | 0-2 |
+      #|+-----+-----+
+      #|| 1-1 | 1-2 |
+      #|+-----+-----+
+      #|| 2-1 | 2-2 |
+      #|+-----+-----+
+    ),
+  )
+}
+
+///|
+test "extract top after remove header" {
+  let table = @tabular.Table::from_rows([
+    ["N", "column 0", "column 1", "column 2"],
+    ["0", "0-0", "0-1", "0-2"],
+    ["1", "1-0", "1-1", "1-2"],
+    ["2", "2-0", "2-1", "2-2"],
+  ])
+  table.remove_rows(@tabular.Rows::first()) |> ignore
+  table.extract_segment(@tabular.Rows::new(0, 1), @tabular.Columns::all())
+  |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|+---+-----+-----+-----+
+      #|| 0 | 0-0 | 0-1 | 0-2 |
+      #|+---+-----+-----+-----+
+    ),
+  )
+}
+
+///|
+test "extract bottom after remove header" {
+  let table = @tabular.Table::from_rows([
+    ["N", "column 0", "column 1", "column 2"],
+    ["0", "0-0", "0-1", "0-2"],
+    ["1", "1-0", "1-1", "1-2"],
+    ["2", "2-0", "2-1", "2-2"],
+  ])
+  table.remove_rows(@tabular.Rows::first()) |> ignore
+  table.extract_segment(@tabular.Rows::new(2, 3), @tabular.Columns::all())
+  |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|+---+-----+-----+-----+
+      #|| 2 | 2-0 | 2-1 | 2-2 |
+      #|+---+-----+-----+-----+
+    ),
+  )
+}
+
+///|
+test "extract beyond size yields empty" {
+  let table = @tabular.Table::from_rows([
+    ["N", "column 0", "column 1", "column 2"],
+    ["0", "0-0", "0-1", "0-2"],
+    ["1", "1-0", "1-1", "1-2"],
+    ["2", "2-0", "2-1", "2-2"],
+  ])
+  table.remove_rows(@tabular.Rows::first()) |> ignore
+  table.extract_segment(@tabular.Rows::new(3, 6), @tabular.Columns::new(3, 6))
+  |> ignore
+  inspect(table.to_string(), content="")
+}
+
+///|
+test "extract empty table" {
+  let table = @tabular.Table::from_rows([])
+  table.extract_segment(@tabular.Rows::all(), @tabular.Columns::all()) |> ignore
+  inspect(table.to_string(), content="")
+}
+
+///|
+test "remove all rows via rows" {
+  let table = @tabular.Table::from_rows([
+    ["N", "column 0", "column 1"],
+    ["0", "0-0", "0-1"],
+    ["1", "1-0", "1-1"],
+  ])
+  table.apply(@tabular.Style::psql()) |> ignore
+  table.remove_rows(@tabular.Rows::all()) |> ignore
+  inspect(table.to_string(), content="")
+}
+
+///|
+test "remove header then restyle with modern" {
+  let table = @tabular.Table::from_rows([
+    ["N", "column 0", "column 1"],
+    ["0", "0-0", "0-1"],
+    ["1", "1-0", "1-1"],
+    ["2", "2-0", "2-1"],
+  ])
+  table.modify_segment(
+    @tabular.Segment::all(),
+    @tabular.Setting::alignment(@tabular.Alignment::left()),
+  )
+  |> ignore
+  table.remove_rows(@tabular.Rows::new(0, 1)) |> ignore
+  table.apply(@tabular.Style::modern()) |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|┌───┬─────┬─────┐
+      #|│ 0 │ 0-0 │ 0-1 │
+      #|├───┼─────┼─────┤
+      #|│ 1 │ 1-0 │ 1-1 │
+      #|├───┼─────┼─────┤
+      #|│ 2 │ 2-0 │ 2-1 │
+      #|└───┴─────┴─────┘
+    ),
+  )
+}
+
+///|
+test "extract with format preserves scoped formatting" {
+  let table = @tabular.Table::from_rows([
+    ["N", "column 0", "column 1"],
+    ["0", "0-0", "0-1"],
+    ["1", "1-0", "1-1"],
+    ["2", "2-0", "2-1"],
+  ])
+  table.modify_segment(
+    @tabular.Segment::all(),
+    @tabular.Setting::format(@tabular.Format::surround("<", ">")),
+  )
+  |> ignore
+  table.extract_segment(@tabular.Rows::new(1, 3), @tabular.Columns::new(0, 2))
+  |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|+-----+-------+
+      #|| <0> | <0-0> |
+      #|+-----+-------+
+      #|| <1> | <1-0> |
+      #|+-----+-------+
+    ),
+  )
+}
+
+///|
+test "remove columns then extract rows" {
+  let table = @tabular.Table::from_rows([
+    ["N", "column 0", "column 1", "column 2"],
+    ["0", "0-0", "0-1", "0-2"],
+    ["1", "1-0", "1-1", "1-2"],
+    ["2", "2-0", "2-1", "2-2"],
+  ])
+  table.remove_columns(@tabular.Columns::new(0, 1)) |> ignore
+  table.extract_rows(@tabular.Rows::new(0, 2)) |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|+----------+----------+----------+
+      #|| column 0 | column 1 | column 2 |
+      #|+----------+----------+----------+
+      #||   0-0    |   0-1    |   0-2    |
+      #|+----------+----------+----------+
+    ),
+  )
+}
+
+///|
+test "builder push_record basic" {
+  let b = @tabular.Builder::default()
+  b.push_record(["1", "2", "3"])
+  b.push_record(["a", "b", "c"])
+  b.push_record(["d", "e", "f"])
+  let table = b.build()
+  inspect(
+    table.to_string(),
+    content=(
+      #|+---+---+---+
+      #|| 1 | 2 | 3 |
+      #|+---+---+---+
+      #|| a | b | c |
+      #|+---+---+---+
+      #|| d | e | f |
+      #|+---+---+---+
+    ),
+  )
+}
+
+///|
+test "builder remove_record header" {
+  let b = @tabular.Builder::default()
+  b.push_record(["1", "2", "3"])
+  b.push_record(["a", "b", "c"])
+  b.push_record(["d", "e", "f"])
+  b.remove_record(0)
+  let table = b.build()
+  inspect(
+    table.to_string(),
+    content=(
+      #|+---+---+---+
+      #|| a | b | c |
+      #|+---+---+---+
+      #|| d | e | f |
+      #|+---+---+---+
+    ),
+  )
+}
+
+///|
+test "builder remove_record middle with different col count" {
+  let b = @tabular.Builder::default()
+  b.push_record(["a", "b", "c"])
+  b.push_record(["1", "2", "3", "4", "5"])
+  b.push_record(["d", "e", "f"])
+  b.remove_record(1)
+  let table = b.build()
+  inspect(
+    table.to_string(),
+    content=(
+      #|+---+---+---+
+      #|| a | b | c |
+      #|+---+---+---+
+      #|| d | e | f |
+      #|+---+---+---+
+    ),
+  )
+}
+
+///|
+test "builder push_column basic" {
+  let b = @tabular.Builder::default()
+  b.push_record(["1", "2", "3"])
+  b.push_record(["a", "b", "c"])
+  b.push_record(["d", "e", "f"])
+  b.push_column(["4", "g", "h"])
+  let table = b.build()
+  inspect(
+    table.to_string(),
+    content=(
+      #|+---+---+---+---+
+      #|| 1 | 2 | 3 | 4 |
+      #|+---+---+---+---+
+      #|| a | b | c | g |
+      #|+---+---+---+---+
+      #|| d | e | f | h |
+      #|+---+---+---+---+
+    ),
+  )
+}
+
+///|
+test "builder push_column only" {
+  let b = @tabular.Builder::default()
+  b.push_column(["a", "d"])
+  b.push_column(["b", "e"])
+  b.push_column(["c", "f"])
+  b.push_column(["g", "h"])
+  let table = b.build()
+  inspect(
+    table.to_string(),
+    content=(
+      #|+---+---+---+---+
+      #|| a | b | c | g |
+      #|+---+---+---+---+
+      #|| d | e | f | h |
+      #|+---+---+---+---+
+    ),
+  )
+}
+
+///|
+test "builder push_column with different lengths" {
+  let b = @tabular.Builder::default()
+  b.push_column(["4", "g", "h"])
+  b.push_column(["5", "g", "h", "j"])
+  b.push_column(["6"])
+  let table = b.build()
+  inspect(
+    table.to_string(),
+    content=(
+      #|+---+---+---+
+      #|| 4 | 5 | 6 |
+      #|+---+---+---+
+      #|| g | g |   |
+      #|+---+---+---+
+      #|| h | h |   |
+      #|+---+---+---+
+      #||   | j |   |
+      #|+---+---+---+
+    ),
+  )
+}
+
+///|
+test "builder insert_column" {
+  let b = @tabular.Builder::default()
+  b.push_record(["a", "b", "c"])
+  b.push_record(["d", "e", "f"])
+  b.insert_column(2, ["k", "n"])
+  let table = b.build()
+  inspect(
+    table.to_string(),
+    content=(
+      #|+---+---+---+---+
+      #|| a | b | k | c |
+      #|+---+---+---+---+
+      #|| d | e | n | f |
+      #|+---+---+---+---+
+    ),
+  )
+}
+
+///|
+test "builder different column counts" {
+  let b = @tabular.Builder::default()
+  b.push_record(["1", "2"])
+  b.push_record(["a", "b", "c"])
+  b.push_record(["d"])
+  let table = b.build()
+  inspect(
+    table.to_string(),
+    content=(
+      #|+---+---+---+
+      #|| 1 | 2 |   |
+      #|+---+---+---+
+      #|| a | b | c |
+      #|+---+---+---+
+      #|| d |   |   |
+      #|+---+---+---+
+    ),
+  )
+}
+
+///|
+test "builder set_empty fills missing cells" {
+  let b = @tabular.Builder::default()
+  b.push_record(["1", "2"])
+  b.set_empty("NaN")
+  b.push_record(["a", "b", "c"])
+  b.push_record(["d"])
+  let table = b.build()
+  inspect(
+    table.to_string(),
+    content=(
+      #|+---+-----+-----+
+      #|| 1 |  2  | NaN |
+      #|+---+-----+-----+
+      #|| a |  b  |  c  |
+      #|+---+-----+-----+
+      #|| d | NaN | NaN |
+      #|+---+-----+-----+
+    ),
+  )
+}
+
+///|
+test "builder clear" {
+  let b = @tabular.Builder::default()
+  b.push_record(["1", "2", "3"])
+  b.push_record(["a", "b", "c"])
+  b.clear()
+  let table = b.build()
+  inspect(table.to_string(), content="")
+}
+
+///|
+test "builder from_rows with empty rows" {
+  let b = @tabular.Builder::from_rows([["1", "2", "3"], [], [], ["d", "e", "f"]])
+  let table = b.build()
+  inspect(
+    table.to_string(),
+    content=(
+      #|+---+---+---+
+      #|| 1 | 2 | 3 |
+      #|+---+---+---+
+      #||   |   |   |
+      #|+---+---+---+
+      #||   |   |   |
+      #|+---+---+---+
+      #|| d | e | f |
+      #|+---+---+---+
+    ),
+  )
+}
+
+///|
+test "builder clean removes empty columns" {
+  let b = @tabular.Builder::from_rows([
+    ["", "2", "3"],
+    ["", "b", "c"],
+    ["", "e", "f"],
+  ])
+  b.clean()
+  let table = b.build()
+  inspect(
+    table.to_string(),
+    content=(
+      #|+---+---+
+      #|| 2 | 3 |
+      #|+---+---+
+      #|| b | c |
+      #|+---+---+
+      #|| e | f |
+      #|+---+---+
+    ),
+  )
+}
+
+///|
+test "builder clean removes empty middle column" {
+  let b = @tabular.Builder::from_rows([
+    ["1", "", "3"],
+    ["a", "", "c"],
+    ["d", "", "f"],
+  ])
+  b.clean()
+  let table = b.build()
+  inspect(
+    table.to_string(),
+    content=(
+      #|+---+---+
+      #|| 1 | 3 |
+      #|+---+---+
+      #|| a | c |
+      #|+---+---+
+      #|| d | f |
+      #|+---+---+
+    ),
+  )
+}
+
+///|
+test "builder clean removes empty rows" {
+  let b = @tabular.Builder::from_rows([
+    ["", "", ""],
+    ["a", "b", "c"],
+    ["d", "e", "f"],
+  ])
+  b.clean()
+  let table = b.build()
+  inspect(
+    table.to_string(),
+    content=(
+      #|+---+---+---+
+      #|| a | b | c |
+      #|+---+---+---+
+      #|| d | e | f |
+      #|+---+---+---+
+    ),
+  )
+}
+
+///|
+test "builder clean removes empty middle row" {
+  let b = @tabular.Builder::from_rows([
+    ["1", "2", "3"],
+    ["", "", ""],
+    ["d", "e", "f"],
+  ])
+  b.clean()
+  let table = b.build()
+  inspect(
+    table.to_string(),
+    content=(
+      #|+---+---+---+
+      #|| 1 | 2 | 3 |
+      #|+---+---+---+
+      #|| d | e | f |
+      #|+---+---+---+
+    ),
+  )
+}
+
+///|
+test "builder clean removes both empty rows and columns" {
+  let b = @tabular.Builder::from_rows([
+    ["1", "", "3"],
+    ["", "", ""],
+    ["d", "", "f"],
+  ])
+  b.clean()
+  let table = b.build()
+  inspect(
+    table.to_string(),
+    content=(
+      #|+---+---+
+      #|| 1 | 3 |
+      #|+---+---+
+      #|| d | f |
+      #|+---+---+
+    ),
+  )
+}
+
+///|
+test "builder clean all empty yields empty" {
+  let b = @tabular.Builder::from_rows([["", "", ""], ["", "", ""], ["", "", ""]])
+  b.clean()
+  let table = b.build()
+  inspect(table.to_string(), content="")
+}
+
+///|
+test "builder index default" {
+  let b = @tabular.Builder::from_rows([
+    ["n", "name"],
+    ["0", "Dmitriy"],
+    ["1", "Vladislav"],
+  ])
+  let table = b.index().build()
+  inspect(
+    table.to_string(),
+    content=(
+      #|+---+---+-----------+
+      #||   | n |   name    |
+      #|+---+---+-----------+
+      #|| 0 | 0 |  Dmitriy  |
+      #|+---+---+-----------+
+      #|| 1 | 1 | Vladislav |
+      #|+---+---+-----------+
+    ),
+  )
+}
+
+///|
+test "builder index hide" {
+  let b = @tabular.Builder::from_rows([
+    ["n", "name"],
+    ["0", "Dmitriy"],
+    ["1", "Vladislav"],
+  ])
+  let table = b.index().hide().build()
+  inspect(
+    table.to_string(),
+    content=(
+      #|+---+-----------+
+      #|| n |   name    |
+      #|+---+-----------+
+      #|| 0 |  Dmitriy  |
+      #|+---+-----------+
+      #|| 1 | Vladislav |
+      #|+---+-----------+
+    ),
+  )
+}
+
+///|
+test "builder index set column" {
+  let b = @tabular.Builder::from_rows([
+    ["n", "name"],
+    ["0", "Dmitriy"],
+    ["1", "Vladislav"],
+  ])
+  let table = b.index().column(1).build()
+  inspect(
+    table.to_string(),
+    content=(
+      #|+-----------+---+
+      #||           | n |
+      #|+-----------+---+
+      #||   name    |   |
+      #|+-----------+---+
+      #||  Dmitriy  | 0 |
+      #|+-----------+---+
+      #|| Vladislav | 1 |
+      #|+-----------+---+
+    ),
+  )
+}
+
+///|
+test "builder index column with custom name" {
+  let b = @tabular.Builder::from_rows([
+    ["n", "name"],
+    ["0", "Dmitriy"],
+    ["1", "Vladislav"],
+  ])
+  let table = b.index().column(1).name(Some("Hello")).build()
+  inspect(
+    table.to_string(),
+    content=(
+      #|+-----------+---+
+      #||           | n |
+      #|+-----------+---+
+      #||   Hello   |   |
+      #|+-----------+---+
+      #||  Dmitriy  | 0 |
+      #|+-----------+---+
+      #|| Vladislav | 1 |
+      #|+-----------+---+
+    ),
+  )
+}
+
+///|
+test "builder index column name none" {
+  let b = @tabular.Builder::from_rows([
+    ["n", "name"],
+    ["0", "Dmitriy"],
+    ["1", "Vladislav"],
+  ])
+  let table = b.index().column(1).name(None).build()
+  inspect(
+    table.to_string(),
+    content=(
+      #|+-----------+---+
+      #||           | n |
+      #|+-----------+---+
+      #||  Dmitriy  | 0 |
+      #|+-----------+---+
+      #|| Vladislav | 1 |
+      #|+-----------+---+
+    ),
+  )
+}
+
+///|
+test "builder index transpose" {
+  let b = @tabular.Builder::from_rows([
+    ["n", "name", "zz"],
+    ["0", "Dmitriy", "123"],
+    ["1", "Vladislav", "123"],
+  ])
+  let table = b.index().transpose().build()
+  inspect(
+    table.to_string(),
+    content=(
+      #|+------+---------+-----------+
+      #||      |    0    |     1     |
+      #|+------+---------+-----------+
+      #||  n   |    0    |     1     |
+      #|+------+---------+-----------+
+      #|| name | Dmitriy | Vladislav |
+      #|+------+---------+-----------+
+      #||  zz  |   123   |    123    |
+      #|+------+---------+-----------+
+    ),
+  )
+}
+
+///|
+test "builder count_records and count_columns" {
+  let b = @tabular.Builder::default()
+  b.push_record(["a", "b", "c"])
+  b.push_record(["d", "e"])
+  inspect(b.count_records(), content="2")
+  inspect(b.count_columns(), content="3")
+}
