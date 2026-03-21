@@ -33,6 +33,9 @@ Already implemented and passing:
   - width wrap / truncate
   - height increase / limit
   - header-only horizontal separators
+- Selector-scoped width / height:
+  - row / column / segment / cell targeting
+  - stable under extraction / removal remapping
 - Builder operations:
   - `push_record`, `extend`, `insert_record`, `remove_record`
   - `insert_column`, `push_column`, `remove_column`
@@ -55,7 +58,7 @@ Already implemented and passing:
   - `Format::content`
   - `Format::positioned`
   - `Format::multiline`
-- Test count: `84`
+- Test count: `95`
 
 ## Constraints
 
@@ -168,21 +171,28 @@ Acceptance:
 
 ### Phase 4: Width / Height / Layout Parity
 
-Status: basic subset done
+Status: complete
 
-Remaining work:
+Completed in this phase:
 
-- Add selector-scoped width changes if practical
-- Add selector-scoped height changes if practical
-- Review upstream width tests for gaps:
+- Added selector-scoped width changes
+  - row / column / segment / cell targeting via `Setting::width`
+- Added selector-scoped height changes
+  - row / column / segment / cell targeting via `Setting::height`
+- Extended `papergrid` config with scoped width/height rules and per-cell resolution at render/dimension time
+- Added config remapping on structural mutations so scoped width/height/alignment/padding rules stay attached to the correct rows/columns after:
+  - row removal
+  - column removal
+  - row extraction
+  - column extraction
+  - segment extraction
+- Ported a focused subset of upstream `width_test.rs` / related render behavior:
   - width by object
   - width after selector combinations
   - width after formatting
   - width after extraction / removal
-- Review layout behavior for:
-  - empty tables
-  - one-column tables
-  - one-row tables
+  - one-column layout
+  - one-row layout
   - multiline mixed-height rows
 
 Acceptance:

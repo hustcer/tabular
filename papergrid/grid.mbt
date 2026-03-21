@@ -98,8 +98,6 @@ fn render_row(
   row_index : Int,
   count_columns : Int,
   config : SpannedConfig,
-  width_mode : WidthMode,
-  height_mode : HeightMode,
 ) -> Array[String] {
   let cell_lines = []
   let mut row_height = 0
@@ -107,7 +105,11 @@ fn render_row(
   let mut row_padding_bottom = 0
   for column = 0; column < count_columns; column = column + 1 {
     let content = if column < row.length() { row[column] } else { "" }
-    let lines = processed_lines(content, width_mode, height_mode)
+    let lines = processed_lines(
+      content,
+      config.width_mode_at(row_index, column),
+      config.height_mode_at(row_index, column),
+    )
     if lines.length() > row_height {
       row_height = lines.length()
     }
@@ -222,8 +224,6 @@ pub fn IterGrid::to_string(self : IterGrid) -> String {
   }
 
   let rows = self.records.rows()
-  let width_mode = self.config.width_mode()
-  let height_mode = self.config.height_mode()
   let horizontal_lines = self.config.horizontal_lines()
   for row_index = 0; row_index < rows.length(); row_index = row_index + 1 {
     render_row(
@@ -233,8 +233,6 @@ pub fn IterGrid::to_string(self : IterGrid) -> String {
       row_index,
       self.records.count_columns(),
       self.config,
-      width_mode,
-      height_mode,
     ).each(line => lines.push(line))
     let show_middle = match horizontal_lines {
       All => row_index + 1 < rows.length()

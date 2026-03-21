@@ -144,6 +144,8 @@ pub struct SpannedConfig {
   mut height_mode : HeightMode
   mut horizontal_lines : HorizontalLines
   custom_horizontal_lines : Array[(Int, HorizontalLine)]
+  width_rules : Array[(Int, Int, Int, WidthMode)]
+  height_rules : Array[(Int, Int, Int, HeightMode)]
   alignment_rules : Array[(Int, Int, Int, AlignmentHorizontal)]
   vertical_alignment_rules : Array[(Int, Int, Int, AlignmentVertical)]
   padding_rules : Array[(Int, Int, Int, Int, Int, Int, Int)]
@@ -163,6 +165,8 @@ pub fn SpannedConfig::default() -> SpannedConfig {
     height_mode: HeightMode::none(),
     horizontal_lines: HorizontalLines::all(),
     custom_horizontal_lines: [],
+    width_rules: [],
+    height_rules: [],
     alignment_rules: [],
     vertical_alignment_rules: [],
     padding_rules: [],
@@ -258,6 +262,59 @@ pub fn SpannedConfig::width_mode(self : SpannedConfig) -> WidthMode {
 }
 
 ///|
+pub fn SpannedConfig::set_width_mode_for_rows(
+  self : SpannedConfig,
+  start : Int,
+  end : Int,
+  mode : WidthMode,
+) -> Unit {
+  self.width_rules.push((0, start, end, mode))
+}
+
+///|
+pub fn SpannedConfig::set_width_mode_for_columns(
+  self : SpannedConfig,
+  start : Int,
+  end : Int,
+  mode : WidthMode,
+) -> Unit {
+  self.width_rules.push((1, start, end, mode))
+}
+
+///|
+pub fn SpannedConfig::set_width_mode_for_all(
+  self : SpannedConfig,
+  mode : WidthMode,
+) -> Unit {
+  self.width_rules.push((2, 0, 0, mode))
+}
+
+///|
+pub fn SpannedConfig::set_width_mode_for_cell(
+  self : SpannedConfig,
+  row : Int,
+  column : Int,
+  mode : WidthMode,
+) -> Unit {
+  self.width_rules.push((3, row, column, mode))
+}
+
+///|
+pub fn SpannedConfig::width_mode_at(
+  self : SpannedConfig,
+  row : Int,
+  column : Int,
+) -> WidthMode {
+  let mut value = self.width_mode
+  self.width_rules.each(rule => {
+    if scope_matches(rule.0, rule.1, rule.2, row, column) {
+      value = rule.3
+    }
+  })
+  value
+}
+
+///|
 pub fn SpannedConfig::set_height_mode(
   self : SpannedConfig,
   mode : HeightMode,
@@ -268,6 +325,59 @@ pub fn SpannedConfig::set_height_mode(
 ///|
 pub fn SpannedConfig::height_mode(self : SpannedConfig) -> HeightMode {
   self.height_mode
+}
+
+///|
+pub fn SpannedConfig::set_height_mode_for_rows(
+  self : SpannedConfig,
+  start : Int,
+  end : Int,
+  mode : HeightMode,
+) -> Unit {
+  self.height_rules.push((0, start, end, mode))
+}
+
+///|
+pub fn SpannedConfig::set_height_mode_for_columns(
+  self : SpannedConfig,
+  start : Int,
+  end : Int,
+  mode : HeightMode,
+) -> Unit {
+  self.height_rules.push((1, start, end, mode))
+}
+
+///|
+pub fn SpannedConfig::set_height_mode_for_all(
+  self : SpannedConfig,
+  mode : HeightMode,
+) -> Unit {
+  self.height_rules.push((2, 0, 0, mode))
+}
+
+///|
+pub fn SpannedConfig::set_height_mode_for_cell(
+  self : SpannedConfig,
+  row : Int,
+  column : Int,
+  mode : HeightMode,
+) -> Unit {
+  self.height_rules.push((3, row, column, mode))
+}
+
+///|
+pub fn SpannedConfig::height_mode_at(
+  self : SpannedConfig,
+  row : Int,
+  column : Int,
+) -> HeightMode {
+  let mut value = self.height_mode
+  self.height_rules.each(rule => {
+    if scope_matches(rule.0, rule.1, rule.2, row, column) {
+      value = rule.3
+    }
+  })
+  value
 }
 
 ///|
@@ -502,4 +612,191 @@ pub fn SpannedConfig::padding_at(
     }
   })
   (left, right, top, bottom)
+}
+
+///|
+fn map_index(index_map : Array[Int], index : Int) -> Int {
+  if index < 0 || index >= index_map.length() {
+    -1
+  } else {
+    index_map[index]
+  }
+}
+
+///|
+fn mapped_runs(
+  index_map : Array[Int],
+  start : Int,
+  end : Int,
+) -> Array[(Int, Int)] {
+  let runs = []
+  let mut run_start = -1
+  let mut previous = -1
+  for old = start; old < end; old = old + 1 {
+    let mapped = map_index(index_map, old)
+    if mapped < 0 {
+      continue
+    }
+    if run_start < 0 {
+      run_start = mapped
+      previous = mapped
+    } else if mapped == previous + 1 {
+      previous = mapped
+    } else {
+      runs.push((run_start, previous + 1))
+      run_start = mapped
+      previous = mapped
+    }
+  }
+  if run_start >= 0 {
+    runs.push((run_start, previous + 1))
+  }
+  runs
+}
+
+///|
+pub fn SpannedConfig::remap(
+  self : SpannedConfig,
+  row_map : Array[Int],
+  column_map : Array[Int],
+) -> Unit {
+  let next_alignment_rules = []
+  self.alignment_rules.each(rule => {
+    if rule.0 == 0 {
+      mapped_runs(row_map, rule.1, rule.2).each(run => {
+        next_alignment_rules.push((0, run.0, run.1, rule.3))
+      })
+    } else if rule.0 == 1 {
+      mapped_runs(column_map, rule.1, rule.2).each(run => {
+        next_alignment_rules.push((1, run.0, run.1, rule.3))
+      })
+    } else if rule.0 == 2 {
+      next_alignment_rules.push(rule)
+    } else {
+      let row = map_index(row_map, rule.1)
+      let column = map_index(column_map, rule.2)
+      if row >= 0 && column >= 0 {
+        next_alignment_rules.push((3, row, column, rule.3))
+      }
+    }
+  })
+  self.alignment_rules.clear()
+  next_alignment_rules.each(rule => self.alignment_rules.push(rule))
+
+  let next_vertical_alignment_rules = []
+  self.vertical_alignment_rules.each(rule => {
+    if rule.0 == 0 {
+      mapped_runs(row_map, rule.1, rule.2).each(run => {
+        next_vertical_alignment_rules.push((0, run.0, run.1, rule.3))
+      })
+    } else if rule.0 == 1 {
+      mapped_runs(column_map, rule.1, rule.2).each(run => {
+        next_vertical_alignment_rules.push((1, run.0, run.1, rule.3))
+      })
+    } else if rule.0 == 2 {
+      next_vertical_alignment_rules.push(rule)
+    } else {
+      let row = map_index(row_map, rule.1)
+      let column = map_index(column_map, rule.2)
+      if row >= 0 && column >= 0 {
+        next_vertical_alignment_rules.push((3, row, column, rule.3))
+      }
+    }
+  })
+  self.vertical_alignment_rules.clear()
+  next_vertical_alignment_rules.each(rule => {
+    self.vertical_alignment_rules.push(rule)
+  })
+
+  let next_padding_rules = []
+  self.padding_rules.each(rule => {
+    if rule.0 == 0 {
+      mapped_runs(row_map, rule.1, rule.2).each(run => {
+        next_padding_rules.push(
+          (0, run.0, run.1, rule.3, rule.4, rule.5, rule.6),
+        )
+      })
+    } else if rule.0 == 1 {
+      mapped_runs(column_map, rule.1, rule.2).each(run => {
+        next_padding_rules.push(
+          (1, run.0, run.1, rule.3, rule.4, rule.5, rule.6),
+        )
+      })
+    } else if rule.0 == 2 {
+      next_padding_rules.push(rule)
+    } else {
+      let row = map_index(row_map, rule.1)
+      let column = map_index(column_map, rule.2)
+      if row >= 0 && column >= 0 {
+        next_padding_rules.push(
+          (3, row, column, rule.3, rule.4, rule.5, rule.6),
+        )
+      }
+    }
+  })
+  self.padding_rules.clear()
+  next_padding_rules.each(rule => self.padding_rules.push(rule))
+
+  let next_width_rules = []
+  self.width_rules.each(rule => {
+    if rule.0 == 0 {
+      mapped_runs(row_map, rule.1, rule.2).each(run => {
+        next_width_rules.push((0, run.0, run.1, rule.3))
+      })
+    } else if rule.0 == 1 {
+      mapped_runs(column_map, rule.1, rule.2).each(run => {
+        next_width_rules.push((1, run.0, run.1, rule.3))
+      })
+    } else if rule.0 == 2 {
+      next_width_rules.push(rule)
+    } else {
+      let row = map_index(row_map, rule.1)
+      let column = map_index(column_map, rule.2)
+      if row >= 0 && column >= 0 {
+        next_width_rules.push((3, row, column, rule.3))
+      }
+    }
+  })
+  self.width_rules.clear()
+  next_width_rules.each(rule => self.width_rules.push(rule))
+
+  let next_height_rules = []
+  self.height_rules.each(rule => {
+    if rule.0 == 0 {
+      mapped_runs(row_map, rule.1, rule.2).each(run => {
+        next_height_rules.push((0, run.0, run.1, rule.3))
+      })
+    } else if rule.0 == 1 {
+      mapped_runs(column_map, rule.1, rule.2).each(run => {
+        next_height_rules.push((1, run.0, run.1, rule.3))
+      })
+    } else if rule.0 == 2 {
+      next_height_rules.push(rule)
+    } else {
+      let row = map_index(row_map, rule.1)
+      let column = map_index(column_map, rule.2)
+      if row >= 0 && column >= 0 {
+        next_height_rules.push((3, row, column, rule.3))
+      }
+    }
+  })
+  self.height_rules.clear()
+  next_height_rules.each(rule => self.height_rules.push(rule))
+
+  let next_custom_horizontal_lines = []
+  self.custom_horizontal_lines.each(line => {
+    let boundary = line.0
+    if boundary <= 0 || boundary >= row_map.length() {
+      return
+    }
+    let prev_row = map_index(row_map, boundary - 1)
+    let next_row = map_index(row_map, boundary)
+    if prev_row >= 0 && next_row >= 0 && next_row == prev_row + 1 {
+      next_custom_horizontal_lines.push((next_row, line.1))
+    }
+  })
+  self.custom_horizontal_lines.clear()
+  next_custom_horizontal_lines.each(line => {
+    self.custom_horizontal_lines.push(line)
+  })
 }

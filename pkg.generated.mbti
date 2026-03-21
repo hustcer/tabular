@@ -182,12 +182,16 @@ pub enum Setting {
   Align(Alignment)
   VAlign(VerticalAlignment)
   Pad(Padding)
+  W(Width)
+  H(Height)
   Fmt(Format)
 }
 pub fn Setting::alignment(Alignment) -> Self
 pub fn Setting::format(Format) -> Self
+pub fn Setting::height(Height) -> Self
 pub fn Setting::padding(Padding) -> Self
 pub fn Setting::vertical_alignment(VerticalAlignment) -> Self
+pub fn Setting::width(Width) -> Self
 
 pub struct Style {
   borders : @papergrid.Borders

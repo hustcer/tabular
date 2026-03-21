@@ -20,8 +20,8 @@ pub fn IterGridDimension::estimate(
     for column = 0; column < count; column = column + 1 {
       processed_lines(
         records.get_cell(row, column),
-        cfg.width_mode(),
-        cfg.height_mode(),
+        cfg.width_mode_at(row, column),
+        cfg.height_mode_at(row, column),
       ).each(line => {
         let (padding_left, padding_right, _, _) = cfg.padding_at(row, column)
         let width = line.length() + padding_left + padding_right

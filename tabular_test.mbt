@@ -260,6 +260,115 @@ test "table height limit" {
 }
 
 ///|
+test "modify columns width truncate with row exclusion" {
+  let table = @tabular.Table::from_rows([
+    ["N", "column 0", "column 1"],
+    ["0", "abcdef", "ghijkl"],
+    ["1", "mnopqr", "stuvwx"],
+  ])
+  table.apply(@tabular.Style::psql()) |> ignore
+  table.modify_segment(
+    @tabular.Columns::new(1, 3).not_rows(@tabular.Rows::first()),
+    @tabular.Setting::width(@tabular.Width::truncate(2, suffix=".")),
+  )
+  |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #| N | column 0 | column 1 
+      #|----+----------+-----------
+      #| 0 |    a.    |    g.    
+      #| 1 |    m.    |    s.    
+    ),
+  )
+}
+
+///|
+test "modify segment width wrap" {
+  let table = @tabular.Table::from_rows([
+    ["N", "text"],
+    ["0", "abcdef"],
+    ["1", "ghijkl"],
+  ])
+  table.set_alignment(@tabular.Alignment::left()) |> ignore
+  table.modify_columns(
+    @tabular.Columns::one(1),
+    @tabular.Setting::width(@tabular.Width::wrap(2)),
+  )
+  |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|+---+----+
+      #|| N | te |
+      #||   | xt |
+      #|+---+----+
+      #|| 0 | ab |
+      #||   | cd |
+      #||   | ef |
+      #|+---+----+
+      #|| 1 | gh |
+      #||   | ij |
+      #||   | kl |
+      #|+---+----+
+    ),
+  )
+}
+
+///|
+test "modify rows height increase" {
+  let table = @tabular.Table::from_rows([["N", "text"], ["0", "a"], ["1", "b"]])
+  table.set_alignment(@tabular.Alignment::left()) |> ignore
+  table.modify_rows(
+    @tabular.Rows::one(1),
+    @tabular.Setting::height(@tabular.Height::increase(3)),
+  )
+  |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|+---+------+
+      #|| N | text |
+      #|+---+------+
+      #|| 0 | a    |
+      #||   |      |
+      #||   |      |
+      #|+---+------+
+      #|| 1 | b    |
+      #|+---+------+
+    ),
+  )
+}
+
+///|
+test "modify cell height limit" {
+  let table = @tabular.Table::from_rows([
+    ["N", "text"],
+    ["0", "a\nb\nc"],
+    ["1", "x"],
+  ])
+  table.set_alignment(@tabular.Alignment::left()) |> ignore
+  table.modify_cell(
+    @tabular.Cell::new(1, 1),
+    @tabular.Setting::height(@tabular.Height::limit(2)),
+  )
+  |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|+---+------+
+      #|| N | text |
+      #|+---+------+
+      #|| 0 | a    |
+      #||   | b    |
+      #|+---+------+
+      #|| 1 | x    |
+      #|+---+------+
+    ),
+  )
+}
+
+///|
 test "table vertical alignment center" {
   let table = @tabular.Table::from_rows([
     ["left\ncell", "right one"],
@@ -1740,6 +1849,107 @@ test "format multiline then height limit" {
       #|| <a>    |
       #|| <b>    |
       #|+--------+
+    ),
+  )
+}
+
+///|
+test "extract segment keeps scoped width" {
+  let table = @tabular.Table::from_rows([
+    ["N", "text", "more"],
+    ["0", "abcdef", "ghijkl"],
+    ["1", "mnopqr", "stuvwx"],
+  ])
+  table.set_alignment(@tabular.Alignment::left()) |> ignore
+  table.modify_columns(
+    @tabular.Columns::one(1),
+    @tabular.Setting::width(@tabular.Width::wrap(2)),
+  )
+  |> ignore
+  table.extract_segment(@tabular.Rows::all(), @tabular.Columns::new(1, 3))
+  |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|+----+--------+
+      #|| te | more   |
+      #|| xt |        |
+      #|+----+--------+
+      #|| ab | ghijkl |
+      #|| cd |        |
+      #|| ef |        |
+      #|+----+--------+
+      #|| mn | stuvwx |
+      #|| op |        |
+      #|| qr |        |
+      #|+----+--------+
+    ),
+  )
+}
+
+///|
+test "remove columns with scoped width on remaining column" {
+  let table = @tabular.Table::from_rows([
+    ["N", "text", "drop"],
+    ["0", "abcdef", "X"],
+    ["1", "ghijkl", "Y"],
+  ])
+  table.set_alignment(@tabular.Alignment::left()) |> ignore
+  table.modify_columns(
+    @tabular.Columns::one(1),
+    @tabular.Setting::width(@tabular.Width::truncate(3)),
+  )
+  |> ignore
+  table.remove_columns(@tabular.Columns::last()) |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|+---+-----+
+      #|| N | tex |
+      #|+---+-----+
+      #|| 0 | abc |
+      #|+---+-----+
+      #|| 1 | ghi |
+      #|+---+-----+
+    ),
+  )
+}
+
+///|
+test "one column mixed height layout" {
+  let table = @tabular.Table::from_rows([["head"], ["a\nb"], ["c"]])
+  table.set_alignment(@tabular.Alignment::left()) |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|+------+
+      #|| head |
+      #|+------+
+      #|| a    |
+      #|| b    |
+      #|+------+
+      #|| c    |
+      #|+------+
+    ),
+  )
+}
+
+///|
+test "one row width wrap layout" {
+  let table = @tabular.Table::from_rows([["abcdef", "ghijkl"]])
+  table.set_alignment(@tabular.Alignment::left()) |> ignore
+  table.modify_segment(
+    @tabular.Segment::all(),
+    @tabular.Setting::width(@tabular.Width::wrap(3)),
+  )
+  |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|+-----+-----+
+      #|| abc | ghi |
+      #|| def | jkl |
+      #|+-----+-----+
     ),
   )
 }

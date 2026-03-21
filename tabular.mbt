@@ -98,6 +98,8 @@ pub enum Setting {
   Align(Alignment)
   VAlign(VerticalAlignment)
   Pad(Padding)
+  W(Width)
+  H(Height)
   Fmt(Format)
 }
 
@@ -904,6 +906,16 @@ pub fn Setting::format(format : Format) -> Setting {
 }
 
 ///|
+pub fn Setting::width(width : Width) -> Setting {
+  W(width)
+}
+
+///|
+pub fn Setting::height(height : Height) -> Setting {
+  H(height)
+}
+
+///|
 pub fn Padding::new(
   left : Int,
   right : Int,
@@ -1167,6 +1179,43 @@ fn sort_indexes_desc(indexes : Array[Int]) -> Array[Int] {
 }
 
 ///|
+fn build_identity_map(count : Int) -> Array[Int] {
+  let result = Array::make(count, -1)
+  for index = 0; index < count; index = index + 1 {
+    result[index] = index
+  }
+  result
+}
+
+///|
+fn build_extract_map(count : Int, indexes : Array[Int]) -> Array[Int] {
+  let result = Array::make(count, -1)
+  let mut next = 0
+  indexes.each(index => {
+    if index >= 0 && index < count && result[index] < 0 {
+      result[index] = next
+      next = next + 1
+    }
+  })
+  result
+}
+
+///|
+fn build_remove_map(count : Int, indexes : Array[Int]) -> Array[Int] {
+  let removed = unique_indexes(indexes)
+  let result = Array::make(count, -1)
+  let mut next = 0
+  for index = 0; index < count; index = index + 1 {
+    if removed.contains(index) {
+      continue
+    }
+    result[index] = next
+    next = next + 1
+  }
+  result
+}
+
+///|
 fn remove_rows_at(rows : Array[Array[String]], indexes : Array[Int]) -> Unit {
   let unique = unique_indexes(indexes)
   let sorted = sort_indexes_desc(unique)
@@ -1374,6 +1423,10 @@ fn apply_setting_to_row(
         padding.top,
         padding.bottom,
       )
+    W(width) =>
+      config.set_width_mode_for_rows(row, row + 1, convert_width(width))
+    H(height) =>
+      config.set_height_mode_for_rows(row, row + 1, convert_height(height))
     Fmt(_) => ()
   }
 }
@@ -1406,6 +1459,18 @@ fn apply_setting_to_column(
         padding.top,
         padding.bottom,
       )
+    W(width) =>
+      config.set_width_mode_for_columns(
+        column,
+        column + 1,
+        convert_width(width),
+      )
+    H(height) =>
+      config.set_height_mode_for_columns(
+        column,
+        column + 1,
+        convert_height(height),
+      )
     Fmt(_) => ()
   }
 }
@@ -1435,6 +1500,10 @@ fn apply_setting_to_cell(
         padding.top,
         padding.bottom,
       )
+    W(width) =>
+      config.set_width_mode_for_cell(row, column, convert_width(width))
+    H(height) =>
+      config.set_height_mode_for_cell(row, column, convert_height(height))
     Fmt(_) => ()
   }
 }
@@ -1470,6 +1539,8 @@ fn apply_setting_to_row_values(
           apply_format_to_cell(rows, row, column, format)
         }
       }
+    W(_) => ()
+    H(_) => ()
     _ => ()
   }
 }
@@ -1485,6 +1556,8 @@ fn apply_setting_to_column_values(
       for row = 0; row < rows.length(); row = row + 1 {
         apply_format_to_cell(rows, row, column, format)
       }
+    W(_) => ()
+    H(_) => ()
     _ => ()
   }
 }
@@ -1498,6 +1571,8 @@ fn apply_setting_to_cell_value(
 ) -> Unit {
   match setting {
     Fmt(format) => apply_format_to_cell(rows, row, column, format)
+    W(_) => ()
+    H(_) => ()
     _ => ()
   }
 }
@@ -1772,6 +1847,8 @@ pub fn Table::modify_segment(
             padding.top,
             padding.bottom,
           )
+        W(width) => self.config.set_width_mode_for_all(convert_width(width))
+        H(height) => self.config.set_height_mode_for_all(convert_height(height))
         Fmt(format) =>
           for row = 0; row < self.rows.length(); row = row + 1 {
             let row_values = self.rows[row]
@@ -1816,14 +1893,21 @@ pub fn Table::modify_by_column_name(
 
 ///|
 pub fn Table::remove_rows(self : Table, rows : Rows) -> Table {
-  remove_rows_at(self.rows, resolve_rows(rows, self.rows.length()))
+  let indexes = resolve_rows(rows, self.rows.length())
+  let row_map = build_remove_map(self.rows.length(), indexes)
+  let column_count = @papergrid.IterRecords::new(self.rows).count_columns()
+  remove_rows_at(self.rows, indexes)
+  self.config.remap(row_map, build_identity_map(column_count))
   self
 }
 
 ///|
 pub fn Table::remove_columns(self : Table, columns : Columns) -> Table {
   let column_count = @papergrid.IterRecords::new(self.rows).count_columns()
-  remove_columns_at(self.rows, resolve_columns(columns, column_count))
+  let indexes = resolve_columns(columns, column_count)
+  let column_map = build_remove_map(column_count, indexes)
+  remove_columns_at(self.rows, indexes)
+  self.config.remap(build_identity_map(self.rows.length()), column_map)
   self
 }
 
@@ -1832,23 +1916,31 @@ pub fn Table::remove_by_column_name(
   self : Table,
   by_name : ByColumnName,
 ) -> Table {
-  remove_columns_at(self.rows, resolve_columns_by_name(self.rows, by_name))
+  let column_count = @papergrid.IterRecords::new(self.rows).count_columns()
+  let indexes = resolve_columns_by_name(self.rows, by_name)
+  let column_map = build_remove_map(column_count, indexes)
+  remove_columns_at(self.rows, indexes)
+  self.config.remap(build_identity_map(self.rows.length()), column_map)
   self
 }
 
 ///|
 pub fn Table::extract_rows(self : Table, rows : Rows) -> Table {
-  self.rows = extract_rows_at(self.rows, resolve_rows(rows, self.rows.length()))
+  let indexes = resolve_rows(rows, self.rows.length())
+  let row_map = build_extract_map(self.rows.length(), indexes)
+  let column_count = @papergrid.IterRecords::new(self.rows).count_columns()
+  self.rows = extract_rows_at(self.rows, indexes)
+  self.config.remap(row_map, build_identity_map(column_count))
   self
 }
 
 ///|
 pub fn Table::extract_columns(self : Table, columns : Columns) -> Table {
   let column_count = @papergrid.IterRecords::new(self.rows).count_columns()
-  self.rows = extract_columns_at(
-    self.rows,
-    resolve_columns(columns, column_count),
-  )
+  let indexes = resolve_columns(columns, column_count)
+  let column_map = build_extract_map(column_count, indexes)
+  self.rows = extract_columns_at(self.rows, indexes)
+  self.config.remap(build_identity_map(self.rows.length()), column_map)
   self
 }
 
@@ -1858,14 +1950,13 @@ pub fn Table::extract_segment(
   rows : Rows,
   columns : Columns,
 ) -> Table {
-  let extracted_rows = extract_rows_at(
-    self.rows,
-    resolve_rows(rows, self.rows.length()),
-  )
-  let column_count = @papergrid.IterRecords::new(extracted_rows).count_columns()
-  self.rows = extract_columns_at(
-    extracted_rows,
-    resolve_columns(columns, column_count),
-  )
+  let row_indexes = resolve_rows(rows, self.rows.length())
+  let row_map = build_extract_map(self.rows.length(), row_indexes)
+  let extracted_rows = extract_rows_at(self.rows, row_indexes)
+  let original_column_count = @papergrid.IterRecords::new(self.rows).count_columns()
+  let column_indexes = resolve_columns(columns, original_column_count)
+  let column_map = build_extract_map(original_column_count, column_indexes)
+  self.rows = extract_columns_at(extracted_rows, column_indexes)
+  self.config.remap(row_map, column_map)
   self
 }
