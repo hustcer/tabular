@@ -76,6 +76,9 @@ pub struct SpannedConfig {
   mut width_mode : WidthMode
   mut height_mode : HeightMode
   mut horizontal_lines : HorizontalLines
+  alignment_rules : Array[(Int, Int, Int, AlignmentHorizontal)]
+  vertical_alignment_rules : Array[(Int, Int, Int, AlignmentVertical)]
+  padding_rules : Array[(Int, Int, Int, Int, Int, Int, Int)]
 }
 
 ///|
@@ -91,6 +94,9 @@ pub fn SpannedConfig::default() -> SpannedConfig {
     width_mode: WidthMode::none(),
     height_mode: HeightMode::none(),
     horizontal_lines: HorizontalLines::all(),
+    alignment_rules: [],
+    vertical_alignment_rules: [],
+    padding_rules: [],
   }
 }
 
@@ -206,4 +212,200 @@ pub fn SpannedConfig::set_horizontal_lines(
 ///|
 pub fn SpannedConfig::horizontal_lines(self : SpannedConfig) -> HorizontalLines {
   self.horizontal_lines
+}
+
+///|
+fn scope_matches(
+  kind : Int,
+  start : Int,
+  end : Int,
+  row : Int,
+  column : Int,
+) -> Bool {
+  if kind == 0 {
+    row >= start && row < end
+  } else if kind == 1 {
+    column >= start && column < end
+  } else if kind == 3 {
+    row == start && column == end
+  } else {
+    true
+  }
+}
+
+///|
+pub fn SpannedConfig::set_alignment_for_rows(
+  self : SpannedConfig,
+  start : Int,
+  end : Int,
+  alignment : AlignmentHorizontal,
+) -> Unit {
+  self.alignment_rules.push((0, start, end, alignment))
+}
+
+///|
+pub fn SpannedConfig::set_alignment_for_columns(
+  self : SpannedConfig,
+  start : Int,
+  end : Int,
+  alignment : AlignmentHorizontal,
+) -> Unit {
+  self.alignment_rules.push((1, start, end, alignment))
+}
+
+///|
+pub fn SpannedConfig::set_alignment_for_all(
+  self : SpannedConfig,
+  alignment : AlignmentHorizontal,
+) -> Unit {
+  self.alignment_rules.push((2, 0, 0, alignment))
+}
+
+///|
+pub fn SpannedConfig::set_alignment_for_cell(
+  self : SpannedConfig,
+  row : Int,
+  column : Int,
+  alignment : AlignmentHorizontal,
+) -> Unit {
+  self.alignment_rules.push((3, row, column, alignment))
+}
+
+///|
+pub fn SpannedConfig::alignment_at(
+  self : SpannedConfig,
+  row : Int,
+  column : Int,
+) -> AlignmentHorizontal {
+  let mut value = self.alignment
+  self.alignment_rules.each(rule => {
+    if scope_matches(rule.0, rule.1, rule.2, row, column) {
+      value = rule.3
+    }
+  })
+  value
+}
+
+///|
+pub fn SpannedConfig::set_vertical_alignment_for_rows(
+  self : SpannedConfig,
+  start : Int,
+  end : Int,
+  alignment : AlignmentVertical,
+) -> Unit {
+  self.vertical_alignment_rules.push((0, start, end, alignment))
+}
+
+///|
+pub fn SpannedConfig::set_vertical_alignment_for_columns(
+  self : SpannedConfig,
+  start : Int,
+  end : Int,
+  alignment : AlignmentVertical,
+) -> Unit {
+  self.vertical_alignment_rules.push((1, start, end, alignment))
+}
+
+///|
+pub fn SpannedConfig::set_vertical_alignment_for_all(
+  self : SpannedConfig,
+  alignment : AlignmentVertical,
+) -> Unit {
+  self.vertical_alignment_rules.push((2, 0, 0, alignment))
+}
+
+///|
+pub fn SpannedConfig::set_vertical_alignment_for_cell(
+  self : SpannedConfig,
+  row : Int,
+  column : Int,
+  alignment : AlignmentVertical,
+) -> Unit {
+  self.vertical_alignment_rules.push((3, row, column, alignment))
+}
+
+///|
+pub fn SpannedConfig::vertical_alignment_at(
+  self : SpannedConfig,
+  row : Int,
+  column : Int,
+) -> AlignmentVertical {
+  let mut value = self.vertical_alignment
+  self.vertical_alignment_rules.each(rule => {
+    if scope_matches(rule.0, rule.1, rule.2, row, column) {
+      value = rule.3
+    }
+  })
+  value
+}
+
+///|
+pub fn SpannedConfig::set_padding_for_rows(
+  self : SpannedConfig,
+  start : Int,
+  end : Int,
+  left : Int,
+  right : Int,
+  top : Int,
+  bottom : Int,
+) -> Unit {
+  self.padding_rules.push((0, start, end, left, right, top, bottom))
+}
+
+///|
+pub fn SpannedConfig::set_padding_for_columns(
+  self : SpannedConfig,
+  start : Int,
+  end : Int,
+  left : Int,
+  right : Int,
+  top : Int,
+  bottom : Int,
+) -> Unit {
+  self.padding_rules.push((1, start, end, left, right, top, bottom))
+}
+
+///|
+pub fn SpannedConfig::set_padding_for_all(
+  self : SpannedConfig,
+  left : Int,
+  right : Int,
+  top : Int,
+  bottom : Int,
+) -> Unit {
+  self.padding_rules.push((2, 0, 0, left, right, top, bottom))
+}
+
+///|
+pub fn SpannedConfig::set_padding_for_cell(
+  self : SpannedConfig,
+  row : Int,
+  column : Int,
+  left : Int,
+  right : Int,
+  top : Int,
+  bottom : Int,
+) -> Unit {
+  self.padding_rules.push((3, row, column, left, right, top, bottom))
+}
+
+///|
+pub fn SpannedConfig::padding_at(
+  self : SpannedConfig,
+  row : Int,
+  column : Int,
+) -> (Int, Int, Int, Int) {
+  let mut left = self.padding_left
+  let mut right = self.padding_right
+  let mut top = self.padding_top
+  let mut bottom = self.padding_bottom
+  self.padding_rules.each(rule => {
+    if scope_matches(rule.0, rule.1, rule.2, row, column) {
+      left = rule.3
+      right = rule.4
+      top = rule.5
+      bottom = rule.6
+    }
+  })
+  (left, right, top, bottom)
 }

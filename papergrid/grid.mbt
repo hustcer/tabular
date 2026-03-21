@@ -51,10 +51,9 @@ fn render_row_line(
   borders : Borders,
   widths : Array[Int],
   values : Array[String],
+  row_index : Int,
   count_columns : Int,
-  padding_left : Int,
-  padding_right : Int,
-  alignment : AlignmentHorizontal,
+  config : SpannedConfig,
 ) -> String {
   let mut out = match borders.left {
     Some(value) => value.to_string()
@@ -63,6 +62,10 @@ fn render_row_line(
 
   for column = 0; column < count_columns; column = column + 1 {
     let content = if column < values.length() { values[column] } else { "" }
+    let (padding_left, padding_right, _, _) = config.padding_at(
+      row_index, column,
+    )
+    let alignment = config.alignment_at(row_index, column)
     out = out +
       render_cell(
         content,
@@ -92,23 +95,28 @@ fn render_row(
   borders : Borders,
   widths : Array[Int],
   row : Array[String],
+  row_index : Int,
   count_columns : Int,
-  padding_left : Int,
-  padding_right : Int,
-  padding_top : Int,
-  padding_bottom : Int,
-  alignment : AlignmentHorizontal,
-  vertical_alignment : AlignmentVertical,
+  config : SpannedConfig,
   width_mode : WidthMode,
   height_mode : HeightMode,
 ) -> Array[String] {
   let cell_lines = []
   let mut row_height = 0
+  let mut row_padding_top = 0
+  let mut row_padding_bottom = 0
   for column = 0; column < count_columns; column = column + 1 {
     let content = if column < row.length() { row[column] } else { "" }
     let lines = processed_lines(content, width_mode, height_mode)
     if lines.length() > row_height {
       row_height = lines.length()
+    }
+    let (_, _, top, bottom) = config.padding_at(row_index, column)
+    if top > row_padding_top {
+      row_padding_top = top
+    }
+    if bottom > row_padding_bottom {
+      row_padding_bottom = bottom
     }
     cell_lines.push(lines)
   }
@@ -117,6 +125,7 @@ fn render_row(
   for column = 0; column < count_columns; column = column + 1 {
     let lines_for_cell = cell_lines[column]
     let missing = row_height - lines_for_cell.length()
+    let vertical_alignment = config.vertical_alignment_at(row_index, column)
     let top_fill = match vertical_alignment {
       Top => 0
       Bottom => missing
@@ -137,13 +146,15 @@ fn render_row(
   }
 
   let lines = []
-  for i = 0; i < padding_top; i = i + 1 {
+  for i = 0; i < row_padding_top; i = i + 1 {
     ignore(i)
-    let blank_values = Array::make(count_columns, "")
+    let blank_values = []
+    for column = 0; column < count_columns; column = column + 1 {
+      blank_values.push("")
+    }
     lines.push(
       render_row_line(
-        borders, widths, blank_values, count_columns, padding_left, padding_right,
-        alignment,
+        borders, widths, blank_values, row_index, count_columns, config,
       ),
     )
   }
@@ -160,18 +171,18 @@ fn render_row(
       )
     }
     lines.push(
-      render_row_line(
-        borders, widths, values, count_columns, padding_left, padding_right, alignment,
-      ),
+      render_row_line(borders, widths, values, row_index, count_columns, config),
     )
   }
-  for i = 0; i < padding_bottom; i = i + 1 {
+  for i = 0; i < row_padding_bottom; i = i + 1 {
     ignore(i)
-    let blank_values = Array::make(count_columns, "")
+    let blank_values = []
+    for column = 0; column < count_columns; column = column + 1 {
+      blank_values.push("")
+    }
     lines.push(
       render_row_line(
-        borders, widths, blank_values, count_columns, padding_left, padding_right,
-        alignment,
+        borders, widths, blank_values, row_index, count_columns, config,
       ),
     )
   }
@@ -199,12 +210,6 @@ pub fn IterGrid::to_string(self : IterGrid) -> String {
   }
 
   let rows = self.records.rows()
-  let padding_left = self.config.padding_left()
-  let padding_right = self.config.padding_right()
-  let padding_top = self.config.padding_top()
-  let padding_bottom = self.config.padding_bottom()
-  let alignment = self.config.alignment()
-  let vertical_alignment = self.config.vertical_alignment()
   let width_mode = self.config.width_mode()
   let height_mode = self.config.height_mode()
   let horizontal_lines = self.config.horizontal_lines()
@@ -213,13 +218,9 @@ pub fn IterGrid::to_string(self : IterGrid) -> String {
       borders,
       widths,
       rows[row_index],
+      row_index,
       self.records.count_columns(),
-      padding_left,
-      padding_right,
-      padding_top,
-      padding_bottom,
-      alignment,
-      vertical_alignment,
+      self.config,
       width_mode,
       height_mode,
     ).each(line => lines.push(line))

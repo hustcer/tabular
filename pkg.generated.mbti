@@ -37,6 +37,21 @@ pub fn Builder::remove_column(Self, Int) -> Unit
 pub fn Builder::remove_record(Self, Int) -> Unit
 pub fn Builder::set_empty(Self, String) -> Unit
 
+pub struct Columns {
+  start : Int
+  end_ : Int
+  skip_n : Int
+  step_n : Int
+  exclude_start : Int
+  exclude_end : Int
+}
+pub fn Columns::all() -> Self
+pub fn Columns::first() -> Self
+pub fn Columns::new(Int, Int) -> Self
+pub fn Columns::not(Self, Self) -> Self
+pub fn Columns::skip(Self, Int) -> Self
+pub fn Columns::step_by(Self, Int) -> Self
+
 pub enum Height {
   Increase(Int)
   Limit(Int)
@@ -51,6 +66,39 @@ pub struct Padding {
   bottom : Int
 }
 pub fn Padding::new(Int, Int, Int, Int) -> Self
+
+pub struct Rows {
+  start : Int
+  end_ : Int
+  skip_n : Int
+  step_n : Int
+  exclude_start : Int
+  exclude_end : Int
+}
+pub fn Rows::all() -> Self
+pub fn Rows::first() -> Self
+pub fn Rows::new(Int, Int) -> Self
+pub fn Rows::not(Self, Self) -> Self
+pub fn Rows::skip(Self, Int) -> Self
+pub fn Rows::step_by(Self, Int) -> Self
+
+pub enum Segment {
+  All(Int, Int)
+  Range(Int, Int, Int, Int, Int, Int)
+}
+pub fn Segment::all() -> Self
+pub fn Segment::new(Int, Int, Int, Int) -> Self
+pub fn Segment::skip(Self, Int) -> Self
+pub fn Segment::step_by(Self, Int) -> Self
+
+pub enum Setting {
+  Align(Alignment)
+  VAlign(VerticalAlignment)
+  Pad(Padding)
+}
+pub fn Setting::alignment(Alignment) -> Self
+pub fn Setting::padding(Padding) -> Self
+pub fn Setting::vertical_alignment(VerticalAlignment) -> Self
 
 pub struct Style {
   borders : @papergrid.Borders
@@ -70,6 +118,9 @@ pub struct Table {
 }
 pub fn Table::apply(Self, Style) -> Self
 pub fn Table::from_rows(Array[Array[String]]) -> Self
+pub fn Table::modify_columns(Self, Columns, Setting) -> Self
+pub fn Table::modify_rows(Self, Rows, Setting) -> Self
+pub fn Table::modify_segment(Self, Segment, Setting) -> Self
 pub fn Table::set_alignment(Self, Alignment) -> Self
 pub fn Table::set_height(Self, Height) -> Self
 pub fn Table::set_padding(Self, Padding) -> Self

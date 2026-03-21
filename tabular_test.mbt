@@ -315,3 +315,255 @@ test "table psql style" {
     ),
   )
 }
+
+///|
+test "modify segment alignment left" {
+  let table = @tabular.Table::from_rows([
+    ["N", "column 0", "column 1"],
+    ["0", "0-0", "0-1"],
+    ["1", "1-0", "1-1"],
+  ])
+  table.apply(@tabular.Style::psql()) |> ignore
+  table.modify_segment(
+    @tabular.Segment::all(),
+    @tabular.Setting::alignment(@tabular.Alignment::left()),
+  )
+  |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #| N | column 0 | column 1 
+      #|----+----------+-----------
+      #| 0 | 0-0      | 0-1      
+      #| 1 | 1-0      | 1-1      
+    ),
+  )
+}
+
+///|
+test "modify rows alignment" {
+  let table = @tabular.Table::from_rows([
+    ["N", "column 0", "column 1"],
+    ["0", "0-0", "0-1"],
+    ["1", "1-0", "1-1"],
+  ])
+  table.modify_rows(
+    @tabular.Rows::first(),
+    @tabular.Setting::alignment(@tabular.Alignment::left()),
+  )
+  |> ignore
+  table.modify_rows(
+    @tabular.Rows::new(1, 3),
+    @tabular.Setting::alignment(@tabular.Alignment::right()),
+  )
+  |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|+---+----------+----------+
+      #|| N | column 0 | column 1 |
+      #|+---+----------+----------+
+      #|| 0 |      0-0 |      0-1 |
+      #|+---+----------+----------+
+      #|| 1 |      1-0 |      1-1 |
+      #|+---+----------+----------+
+    ),
+  )
+}
+
+///|
+test "modify columns vertical alignment" {
+  let table = @tabular.Table::from_rows([
+    ["N", "column 0", "column 1"],
+    ["0", "E\nnde\navou\nros", "0-1"],
+    ["1", "Red\nHat", "https://\nwww\n.\nredhat\n.com\n/en"],
+  ])
+  table.apply(@tabular.Style::psql()) |> ignore
+  table.modify_columns(
+    @tabular.Columns::new(1, 3),
+    @tabular.Setting::vertical_alignment(@tabular.VerticalAlignment::bottom()),
+  )
+  |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #| N | column 0 | column 1 
+      #|----+----------+-----------
+      #| 0 |    E     |          
+      #|   |   nde    |          
+      #|   |   avou   |          
+      #|   |   ros    |   0-1    
+      #| 1 |          | https:// 
+      #|   |          |   www    
+      #|   |          |    .     
+      #|   |          |  redhat  
+      #|   |   Red    |   .com   
+      #|   |   Hat    |   /en    
+    ),
+  )
+}
+
+///|
+test "modify rows padding" {
+  let table = @tabular.Table::from_rows([
+    ["N", "column 0"],
+    ["0", "0-0"],
+    ["1", "1-0"],
+  ])
+  table.apply(@tabular.Style::psql()) |> ignore
+  table.modify_segment(
+    @tabular.Segment::all(),
+    @tabular.Setting::alignment(@tabular.Alignment::left()),
+  )
+  |> ignore
+  table.modify_rows(
+    @tabular.Rows::new(1, 3),
+    @tabular.Setting::padding(@tabular.Padding::new(1, 1, 0, 2)),
+  )
+  |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #| N | column 0 
+      #|----+-----------
+      #| 0 | 0-0      
+      #|   |          
+      #|   |          
+      #| 1 | 1-0      
+      #|   |          
+      #|   |          
+    ),
+  )
+}
+
+///|
+test "modify columns skip and not first" {
+  let table = @tabular.Table::from_rows([
+    ["N", "column 0", "column 1", "column 2"],
+    ["0", "0-0", "0-1", "0-2"],
+    ["1", "1-0", "1-1", "1-2"],
+    ["2", "2-0", "2-1", "2-2"],
+  ])
+  table.apply(@tabular.Style::psql()) |> ignore
+  table.modify_columns(
+    @tabular.Columns::all().not(@tabular.Columns::first()).skip(2),
+    @tabular.Setting::alignment(@tabular.Alignment::right()),
+  )
+  |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #| N | column 0 | column 1 | column 2 
+      #|----+----------+----------+-----------
+      #| 0 |   0-0    |   0-1    |      0-2 
+      #| 1 |   1-0    |   1-1    |      1-2 
+      #| 2 |   2-0    |   2-1    |      2-2 
+    ),
+  )
+}
+
+///|
+test "modify columns step by" {
+  let table = @tabular.Table::from_rows([
+    ["N", "column 0", "column 1", "column 2"],
+    ["0", "0-0", "0-1", "0-2"],
+    ["1", "1-0", "1-1", "1-2"],
+    ["2", "2-0", "2-1", "2-2"],
+  ])
+  table.apply(@tabular.Style::psql()) |> ignore
+  table.modify_columns(
+    @tabular.Columns::all().step_by(3),
+    @tabular.Setting::alignment(@tabular.Alignment::right()),
+  )
+  |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #| N | column 0 | column 1 | column 2 
+      #|----+----------+----------+-----------
+      #| 0 |   0-0    |   0-1    |      0-2 
+      #| 1 |   1-0    |   1-1    |      1-2 
+      #| 2 |   2-0    |   2-1    |      2-2 
+    ),
+  )
+}
+
+///|
+test "modify segment skip one cell" {
+  let table = @tabular.Table::from_rows([
+    ["N", "column 0", "column 1", "column 2"],
+    ["0", "0-0", "0-1", "0-2"],
+    ["1", "1-0", "1-1", "1-2"],
+    ["2", "2-0", "2-1", "2-2"],
+  ])
+  table.apply(@tabular.Style::psql()) |> ignore
+  table.modify_segment(
+    @tabular.Segment::all().skip(1),
+    @tabular.Setting::alignment(@tabular.Alignment::right()),
+  )
+  |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #| N | column 0 | column 1 | column 2 
+      #|----+----------+----------+-----------
+      #| 0 |      0-0 |      0-1 |      0-2 
+      #| 1 |      1-0 |      1-1 |      1-2 
+      #| 2 |      2-0 |      2-1 |      2-2 
+    ),
+  )
+}
+
+///|
+test "modify rows step by" {
+  let table = @tabular.Table::from_rows([
+    ["N", "column 0", "column 1"],
+    ["0", "0-0", "0-1"],
+    ["1", "1-0", "1-1"],
+    ["2", "2-0", "2-1"],
+  ])
+  table.set_alignment(@tabular.Alignment::left()) |> ignore
+  table.modify_rows(
+    @tabular.Rows::all().skip(1).step_by(2),
+    @tabular.Setting::alignment(@tabular.Alignment::right()),
+  )
+  |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|+---+----------+----------+
+      #|| N | column 0 | column 1 |
+      #|+---+----------+----------+
+      #|| 0 |      0-0 |      0-1 |
+      #|+---+----------+----------+
+      #|| 1 | 1-0      | 1-1      |
+      #|+---+----------+----------+
+      #|| 2 |      2-0 |      2-1 |
+      #|+---+----------+----------+
+    ),
+  )
+}
+
+///|
+test "modify segment range" {
+  let table = @tabular.Table::from_rows([
+    ["N", "column 0", "column 1"],
+    ["0", "0-0", "0-1"],
+    ["1", "1-0", "1-1"],
+  ])
+  table.apply(@tabular.Style::psql()) |> ignore
+  table.modify_segment(
+    @tabular.Segment::new(1, 3, 1, 3),
+    @tabular.Setting::alignment(@tabular.Alignment::right()),
+  )
+  |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #| N | column 0 | column 1 
+      #|----+----------+-----------
+      #| 0 |      0-0 |      0-1 
+      #| 1 |      1-0 |      1-1 
+    ),
+  )
+}
