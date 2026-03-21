@@ -593,7 +593,7 @@ test "row span on header row under psql" {
   inspect(
     table.to_string(),
     content=(
-      #| N | column 0 | column 1 
+      #|- N + column 0 + column 1 -
       #| 1 | 1-0      | 1-1      
     ),
   )
@@ -652,6 +652,125 @@ test "row span invalid position is a no-op" {
       #|+---+----------+----------+
       #|| 1 |   1-0    |   1-1    |
       #|+---+----------+----------+
+    ),
+  )
+}
+
+///|
+test "column span negative extends left" {
+  let table = @tabular.Table::from_rows([["a", "b", "c"], ["d", "e", "f"]])
+  table.apply(@tabular.Style::ascii()) |> ignore
+  table.modify_segment(
+    @tabular.Segment::all(),
+    @tabular.Setting::alignment(@tabular.Alignment::left()),
+  )
+  |> ignore
+  table.modify_cell(@tabular.Cell::new(0, 1), @tabular.Span::column(-1))
+  |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|+---+---+---+
+      #|| b     | c |
+      #|+---+---+---+
+      #|| d | e | f |
+      #|+---+---+---+
+    ),
+  )
+}
+
+///|
+test "column span zero extends to full row width and can be removed" {
+  let table = @tabular.Table::from_rows([["a", "b", "c"], ["d", "e", "f"]])
+  table.apply(@tabular.Style::ascii()) |> ignore
+  table.modify_segment(
+    @tabular.Segment::all(),
+    @tabular.Setting::alignment(@tabular.Alignment::left()),
+  )
+  |> ignore
+  table.modify_cell(@tabular.Cell::new(1, 2), @tabular.Span::column(0))
+  |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|+---+---+---+
+      #|| a | b | c |
+      #|+---+---+---+
+      #|| f         |
+      #|+---+---+---+
+    ),
+  )
+  table.modify_cell(@tabular.Cell::new(1, 2), @tabular.Span::column(1))
+  |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|+---+---+---+
+      #|| a | b | c |
+      #|+---+---+---+
+      #|| d | e | f |
+      #|+---+---+---+
+    ),
+  )
+}
+
+///|
+test "row span negative extends upward" {
+  let table = @tabular.Table::from_rows([["a", "b"], ["c", "d"], ["e", "f"]])
+  table.apply(@tabular.Style::ascii()) |> ignore
+  table.modify_segment(
+    @tabular.Segment::all(),
+    @tabular.Setting::alignment(@tabular.Alignment::left()),
+  )
+  |> ignore
+  table.modify_cell(@tabular.Cell::new(1, 0), @tabular.Span::row(-1)) |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|+---+---+
+      #|| c | b |
+      #|+   +---+
+      #||   | d |
+      #|+---+---+
+      #|| e | f |
+      #|+---+---+
+    ),
+  )
+}
+
+///|
+test "row span zero extends to full column height and can be removed" {
+  let table = @tabular.Table::from_rows([["a", "b"], ["c", "d"], ["e", "f"]])
+  table.apply(@tabular.Style::ascii()) |> ignore
+  table.modify_segment(
+    @tabular.Segment::all(),
+    @tabular.Setting::alignment(@tabular.Alignment::left()),
+  )
+  |> ignore
+  table.modify_cell(@tabular.Cell::new(2, 1), @tabular.Span::row(0)) |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|+---+---+
+      #|| a | f |
+      #|+---+   +
+      #|| c |   |
+      #|+---+   +
+      #|| e |   |
+      #|+---+---+
+    ),
+  )
+  table.modify_cell(@tabular.Cell::new(2, 1), @tabular.Span::row(1)) |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|+---+---+
+      #|| a | b |
+      #|+---+---+
+      #|| c | d |
+      #|+---+---+
+      #|| e | f |
+      #|+---+---+
     ),
   )
 }

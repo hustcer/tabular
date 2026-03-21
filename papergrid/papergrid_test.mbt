@@ -148,3 +148,49 @@ test "iter grid combined row and column span multiline output" {
     ),
   )
 }
+
+///|
+test "iter grid row span boundary content with centered vertical alignment" {
+  let cfg = SpannedConfig::default()
+  cfg.set_borders(Borders::ascii())
+  cfg.set_row_span(0, 0, 2)
+  cfg.set_row_span(0, 1, 2)
+  cfg.set_vertical_alignment_for_all(AlignmentVertical::center())
+  let records = IterRecords::new([["1as\nd\n", "a"], ["as\ndasdds\na", "asd"]])
+  let dims = IterGridDimension::default()
+  dims.estimate(records, cfg)
+  let grid = IterGrid::new(records, cfg, dims)
+  inspect(
+    grid.to_string(),
+    content=(
+      #|+-----+---+
+      #|| 1as |   |
+      #|+  d  + a +
+      #||     |   |
+      #|+-----+---+
+    ),
+  )
+}
+
+///|
+test "iter grid row span boundary content with bottom vertical alignment" {
+  let cfg = SpannedConfig::default()
+  cfg.set_borders(Borders::ascii())
+  cfg.set_row_span(0, 0, 2)
+  cfg.set_row_span(0, 1, 2)
+  cfg.set_vertical_alignment_for_all(AlignmentVertical::bottom())
+  let records = IterRecords::new([["1a\ns\nd", "a"], ["as\ndasdds\na", "asd"]])
+  let dims = IterGridDimension::default()
+  dims.estimate(records, cfg)
+  let grid = IterGrid::new(records, cfg, dims)
+  inspect(
+    grid.to_string(),
+    content=(
+      #|+----+---+
+      #|| 1a |   |
+      #|+ s  +   +
+      #|| d  | a |
+      #|+----+---+
+    ),
+  )
+}

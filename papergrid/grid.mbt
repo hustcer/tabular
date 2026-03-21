@@ -104,28 +104,9 @@ fn boundary_has_line(
 }
 
 ///|
-fn boundary_has_visible_line(
-  config : SpannedConfig,
-  boundary_row : Int,
-  count_rows : Int,
-  count_columns : Int,
-) -> Bool {
-  if !boundary_has_line(config, boundary_row, count_rows) {
-    return false
-  }
-  for column = 0; column < count_columns; column = column + 1 {
-    if !row_span_crosses_boundary(config, boundary_row, column) {
-      return true
-    }
-  }
-  false
-}
-
-///|
 fn count_range_boundaries(
   config : SpannedConfig,
   count_rows : Int,
-  count_columns : Int,
   start : Int,
   end_ : Int,
 ) -> Int {
@@ -133,9 +114,7 @@ fn count_range_boundaries(
   for boundary_row = start + 1
       boundary_row < end_
       boundary_row = boundary_row + 1 {
-    if boundary_has_visible_line(
-        config, boundary_row, count_rows, count_columns,
-      ) {
+    if boundary_has_line(config, boundary_row, count_rows) {
       total += 1
     }
   }
@@ -235,6 +214,15 @@ fn display_anchor_for(
 }
 
 ///|
+fn span_source_for_anchor(
+  config : SpannedConfig,
+  anchor_row : Int,
+  anchor_column : Int,
+) -> (Int, Int) {
+  config.span_source_at(anchor_row, anchor_column)
+}
+
+///|
 fn row_metrics(
   records : IterRecords,
   count_columns : Int,
@@ -249,13 +237,14 @@ fn row_metrics(
       if !config.is_cell_visible(row, column) {
         continue
       }
+      let source = span_source_for_anchor(config, row, column)
       let lines = processed_lines(
-        records.get_cell(row, column),
-        config.width_mode_at(row, column),
-        config.height_mode_at(row, column),
+        records.get_cell(source.0, source.1),
+        config.width_mode_at(source.0, source.1),
+        config.height_mode_at(source.0, source.1),
       )
       let rowspan = config.row_span_at(row, column)
-      let (_, _, top, bottom) = config.padding_at(row, column)
+      let (_, _, top, bottom) = config.padding_at(source.0, source.1)
       if rowspan > 1 {
         if top > top_paddings[row] {
           top_paddings[row] = top
@@ -291,18 +280,19 @@ fn row_metrics(
         if rowspan <= 1 || !config.is_cell_visible(row, column) {
           continue
         }
+        let source = span_source_for_anchor(config, row, column)
         let end_ = if row + rowspan < count_rows {
           row + rowspan
         } else {
           count_rows
         }
         let needed = processed_lines(
-          records.get_cell(row, column),
-          config.width_mode_at(row, column),
-          config.height_mode_at(row, column),
+          records.get_cell(source.0, source.1),
+          config.width_mode_at(source.0, source.1),
+          config.height_mode_at(source.0, source.1),
         ).length()
         let current = sum_range(content_heights, row, end_) +
-          count_range_boundaries(config, count_rows, count_columns, row, end_)
+          count_range_boundaries(config, count_rows, row, end_)
         if needed > current {
           inc_range(content_heights, needed - current, row, end_)
           changed = true
@@ -326,14 +316,15 @@ fn cell_content_for_row(
     Some(anchor) => anchor
     None => return ""
   }
+  let source = span_source_for_anchor(config, anchor.0, anchor.1)
   if anchor.0 == row && config.row_span_at(anchor.0, anchor.1) <= 1 {
     let lines = processed_lines(
-      records.get_cell(anchor.0, anchor.1),
-      config.width_mode_at(anchor.0, anchor.1),
-      config.height_mode_at(anchor.0, anchor.1),
+      records.get_cell(source.0, source.1),
+      config.width_mode_at(source.0, source.1),
+      config.height_mode_at(source.0, source.1),
     )
     let missing = row_heights[row] - lines.length()
-    let vertical_alignment = config.vertical_alignment_at(anchor.0, anchor.1)
+    let vertical_alignment = config.vertical_alignment_at(source.0, source.1)
     let top_fill = match vertical_alignment {
       Top => 0
       Bottom => missing
@@ -352,20 +343,14 @@ fn cell_content_for_row(
     row_heights.length()
   }
   let total_height = sum_range(row_heights, anchor.0, end_) +
-    count_range_boundaries(
-      config,
-      row_heights.length(),
-      records.count_columns(),
-      anchor.0,
-      end_,
-    )
+    count_range_boundaries(config, row_heights.length(), anchor.0, end_)
   let lines = processed_lines(
-    records.get_cell(anchor.0, anchor.1),
-    config.width_mode_at(anchor.0, anchor.1),
-    config.height_mode_at(anchor.0, anchor.1),
+    records.get_cell(source.0, source.1),
+    config.width_mode_at(source.0, source.1),
+    config.height_mode_at(source.0, source.1),
   )
   let missing = total_height - lines.length()
-  let vertical_alignment = config.vertical_alignment_at(anchor.0, anchor.1)
+  let vertical_alignment = config.vertical_alignment_at(source.0, source.1)
   let top_fill = match vertical_alignment {
     Top => 0
     Bottom => missing
@@ -374,12 +359,7 @@ fn cell_content_for_row(
   let mut offset = 0
   for index = anchor.0; index < row; index = index + 1 {
     offset = offset + row_heights[index]
-    if boundary_has_visible_line(
-        config,
-        index + 1,
-        row_heights.length(),
-        records.count_columns(),
-      ) {
+    if boundary_has_line(config, index + 1, row_heights.length()) {
       offset += 1
     }
   }
@@ -403,6 +383,7 @@ fn cell_content_for_boundary(
     Some(anchor) => anchor
     None => return ""
   }
+  let source = span_source_for_anchor(config, anchor.0, anchor.1)
   let rowspan = config.row_span_at(anchor.0, anchor.1)
   let end_ = if anchor.0 + rowspan < row_heights.length() {
     anchor.0 + rowspan
@@ -410,20 +391,14 @@ fn cell_content_for_boundary(
     row_heights.length()
   }
   let total_height = sum_range(row_heights, anchor.0, end_) +
-    count_range_boundaries(
-      config,
-      row_heights.length(),
-      records.count_columns(),
-      anchor.0,
-      end_,
-    )
+    count_range_boundaries(config, row_heights.length(), anchor.0, end_)
   let lines = processed_lines(
-    records.get_cell(anchor.0, anchor.1),
-    config.width_mode_at(anchor.0, anchor.1),
-    config.height_mode_at(anchor.0, anchor.1),
+    records.get_cell(source.0, source.1),
+    config.width_mode_at(source.0, source.1),
+    config.height_mode_at(source.0, source.1),
   )
   let missing = total_height - lines.length()
-  let vertical_alignment = config.vertical_alignment_at(anchor.0, anchor.1)
+  let vertical_alignment = config.vertical_alignment_at(source.0, source.1)
   let top_fill = match vertical_alignment {
     Top => 0
     Bottom => missing
@@ -433,12 +408,7 @@ fn cell_content_for_boundary(
   for row = anchor.0; row < boundary_row; row = row + 1 {
     absolute = absolute + row_heights[row]
     if row + 1 < boundary_row &&
-      boundary_has_visible_line(
-        config,
-        row + 1,
-        row_heights.length(),
-        records.count_columns(),
-      ) {
+      boundary_has_line(config, row + 1, row_heights.length()) {
       absolute += 1
     }
   }
@@ -460,13 +430,20 @@ fn render_split_line(
   row_heights : Array[Int],
 ) -> String {
   let mut has_uncovered = false
+  let mut has_content = false
   for column = 0; column < count_columns; column = column + 1 {
     if !row_span_crosses_boundary(config, boundary_row, column) {
       has_uncovered = true
-      break
+    }
+    if !has_content &&
+      cell_content_for_boundary(
+        records, config, row_heights, boundary_row, column,
+      ) !=
+      "" {
+      has_content = true
     }
   }
-  if !has_uncovered {
+  if !has_uncovered && !has_content {
     return ""
   }
 
@@ -481,11 +458,12 @@ fn render_split_line(
     let fill = match row_span_boundary_anchor(config, boundary_row, column) {
       Some(anchor) =>
         if anchor.1 == column {
+          let source = span_source_for_anchor(config, anchor.0, anchor.1)
           let (padding_left, padding_right, _, _) = config.padding_at(
-            anchor.0,
-            anchor.1,
+            source.0,
+            source.1,
           )
-          let alignment = config.alignment_at(anchor.0, anchor.1)
+          let alignment = config.alignment_at(source.0, source.1)
           let colspan = config.column_span_at(anchor.0, anchor.1)
           column = column + colspan
           render_cell(

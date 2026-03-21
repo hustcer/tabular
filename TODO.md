@@ -220,9 +220,9 @@ Completed in this phase:
   - split-line rendering that suppresses horizontal rules through active row spans
 - Added MoonBit-friendly public span entrypoints for the completed slice
   - `Span::column(size)` returns a setting usable with existing `modify_*` APIs
-  - currently supports `1` for span removal and `>1` for rightward column spans
+  - supports `1` for span removal, `>1` for rightward column spans, `0` for full-row span, and negative values for leftward spans
   - `Span::row(size)` returns a setting usable with existing `modify_*` APIs
-  - currently supports `1` for span removal and `>1` for downward row spans
+  - supports `1` for span removal, `>1` for downward row spans, `0` for full-column span, and negative values for upward spans
 - Ported a focused non-ANSI subset of upstream span behavior
   - low-level `papergrid` column span rendering
   - low-level `papergrid` row span rendering
@@ -235,20 +235,29 @@ Completed in this phase:
   - rowspan height accounting now treats visible crossed boundaries as usable vertical slots
   - extra rowspan height is distributed across the full span range instead of being pushed only into the last row
   - split-line rendering can now paint spanned-cell content in partially covered boundaries
+- Extended rowspan rendering further so fully covered boundaries can render content too
+  - split lines no longer disappear when every column is row-spanned but at least one spanned cell still has boundary content to paint
+  - added focused vertical-alignment coverage for boundary-rendered content
+  - updated the current `psql` header-row span snapshot to reflect boundary-carried content under the new renderer behavior
 - Ported a second focused span batch from upstream-inspired cases
   - low-level multiline rowspan collision behavior
   - low-level multiline combined row+column span behavior
   - invalid-position no-op coverage at the table layer
-- Expanded the test suite to `111`
+- Added a source-mapped safe span layer for non-forward spans
+  - negative and zero spans normalize to a visible top/left anchor without destructively moving stored cell values
+  - `Span::column(1)` / `Span::row(1)` can remove earlier negative/zero spans through the original source cell
+  - dimension and render paths now resolve span content from the stored source cell when anchor and source differ
+- Added focused high-level coverage for:
+  - `Span::column(-1)`
+  - `Span::column(0)` plus removal
+  - `Span::row(-1)`
+  - `Span::row(0)` plus removal
+- Expanded the test suite to `117`
 - Re-verified `moon info`, `moon fmt`, `moon check -d`, `moon build -d`, and `moon test -d`
 
 Remaining work:
 
 - Refine border junction behavior for span-heavy `psql` / markdown edge cases
-- Decide whether to support fully covered boundary content for broader upstream rowspan parity
-- Extend safe span semantics beyond the current non-destructive subset
-  - `0`
-  - negative values
 - Port more upstream `span_test.rs` coverage
 - Validate interaction with:
   - padding

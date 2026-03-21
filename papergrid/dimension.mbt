@@ -22,13 +22,17 @@ pub fn IterGridDimension::estimate(
       if !cfg.is_cell_visible(row, column) {
         continue
       }
+      let source = cfg.span_source_at(row, column)
       let colspan = cfg.column_span_at(row, column)
       processed_lines(
-        records.get_cell(row, column),
-        cfg.width_mode_at(row, column),
-        cfg.height_mode_at(row, column),
+        records.get_cell(source.0, source.1),
+        cfg.width_mode_at(source.0, source.1),
+        cfg.height_mode_at(source.0, source.1),
       ).each(line => {
-        let (padding_left, padding_right, _, _) = cfg.padding_at(row, column)
+        let (padding_left, padding_right, _, _) = cfg.padding_at(
+          source.0,
+          source.1,
+        )
         let width = line.length() + padding_left + padding_right
         if colspan <= 1 && width > widths[column] {
           widths[column] = width

@@ -1562,6 +1562,18 @@ fn span_intersects_row(
 }
 
 ///|
+fn resolved_span_anchor(
+  config : @papergrid.SpannedConfig,
+  row : Int,
+  column : Int,
+) -> (Int, Int) {
+  match config.span_anchor_for_source(row, column) {
+    Some(anchor) => anchor
+    None => (row, column)
+  }
+}
+
+///|
 fn apply_column_span(
   rows : Array[Array[String]],
   config : @papergrid.SpannedConfig,
@@ -1573,28 +1585,48 @@ fn apply_column_span(
     return
   }
   let column_count = @papergrid.IterRecords::new(rows).count_columns()
-  if column < 0 ||
-    column >= column_count ||
+  if column < 0 || column >= column_count {
+    return
+  }
+  let current_anchor = resolved_span_anchor(config, row, column)
+  if (current_anchor.0 == row && current_anchor.1 == column) &&
     !config.is_cell_visible(row, column) {
     return
   }
   if size == 1 {
-    config.set_column_span(row, column, 1)
+    config.set_column_span(current_anchor.0, current_anchor.1, 1)
+    config.clear_span_source_if_unused(current_anchor.0, current_anchor.1)
     return
   }
-  if size <= 0 {
-    return
-  }
+  config.set_column_span(current_anchor.0, current_anchor.1, 1)
+  config.clear_span_source_if_unused(current_anchor.0, current_anchor.1)
 
-  let span = if column + size > column_count {
-    column_count - column
+  let start = if size > 1 {
+    column
+  } else if size == 0 {
+    0
   } else {
-    size
+    let normalized = column + size
+    if normalized < 0 {
+      0
+    } else {
+      normalized
+    }
   }
-  if span <= 1 || span_intersects_column(config, row, column, span) {
+  let span = if size > 1 {
+    if start + size > column_count {
+      column_count - start
+    } else {
+      size
+    }
+  } else {
+    column - start + 1
+  }
+  if span <= 1 || span_intersects_column(config, row, start, span) {
     return
   }
-  config.set_column_span(row, column, span)
+  config.set_column_span(row, start, span)
+  config.set_span_source(row, start, row, column)
 }
 
 ///|
@@ -1609,23 +1641,48 @@ fn apply_row_span(
     return
   }
   let column_count = @papergrid.IterRecords::new(rows).count_columns()
-  if column < 0 ||
-    column >= column_count ||
+  if column < 0 || column >= column_count {
+    return
+  }
+  let current_anchor = resolved_span_anchor(config, row, column)
+  if (current_anchor.0 == row && current_anchor.1 == column) &&
     !config.is_cell_visible(row, column) {
     return
   }
   if size == 1 {
-    config.set_row_span(row, column, 1)
+    config.set_row_span(current_anchor.0, current_anchor.1, 1)
+    config.clear_span_source_if_unused(current_anchor.0, current_anchor.1)
     return
   }
-  if size <= 0 {
+  config.set_row_span(current_anchor.0, current_anchor.1, 1)
+  config.clear_span_source_if_unused(current_anchor.0, current_anchor.1)
+
+  let start = if size > 1 {
+    row
+  } else if size == 0 {
+    0
+  } else {
+    let normalized = row + size
+    if normalized < 0 {
+      0
+    } else {
+      normalized
+    }
+  }
+  let span = if size > 1 {
+    if row + size > rows.length() {
+      rows.length() - start
+    } else {
+      size
+    }
+  } else {
+    row - start + 1
+  }
+  if span <= 1 || span_intersects_row(config, start, column, span) {
     return
   }
-  let span = if row + size > rows.length() { rows.length() - row } else { size }
-  if span <= 1 || span_intersects_row(config, row, column, span) {
-    return
-  }
-  config.set_row_span(row, column, span)
+  config.set_row_span(start, column, span)
+  config.set_span_source(start, column, row, column)
 }
 
 ///|

@@ -156,10 +156,13 @@ pub struct SpannedConfig {
   padding_rules : Array[(Int, Int, Int, Int, Int, Int, Int)]
   column_spans : Array[(Int, Int, Int)]
   row_spans : Array[(Int, Int, Int)]
+  span_sources : Array[(Int, Int, Int, Int)]
 }
 pub fn SpannedConfig::alignment(Self) -> AlignmentHorizontal
 pub fn SpannedConfig::alignment_at(Self, Int, Int) -> AlignmentHorizontal
 pub fn SpannedConfig::borders(Self) -> Borders
+pub fn SpannedConfig::clear_span_source(Self, Int, Int) -> Unit
+pub fn SpannedConfig::clear_span_source_if_unused(Self, Int, Int) -> Unit
 pub fn SpannedConfig::column_span_at(Self, Int, Int) -> Int
 pub fn SpannedConfig::custom_horizontal_line(Self, Int) -> HorizontalLine?
 pub fn SpannedConfig::default() -> Self
@@ -201,6 +204,7 @@ pub fn SpannedConfig::set_padding_for_cell(Self, Int, Int, Int, Int, Int, Int) -
 pub fn SpannedConfig::set_padding_for_columns(Self, Int, Int, Int, Int, Int, Int) -> Unit
 pub fn SpannedConfig::set_padding_for_rows(Self, Int, Int, Int, Int, Int, Int) -> Unit
 pub fn SpannedConfig::set_row_span(Self, Int, Int, Int) -> Unit
+pub fn SpannedConfig::set_span_source(Self, Int, Int, Int, Int) -> Unit
 pub fn SpannedConfig::set_vertical_alignment(Self, AlignmentVertical) -> Unit
 pub fn SpannedConfig::set_vertical_alignment_for_all(Self, AlignmentVertical) -> Unit
 pub fn SpannedConfig::set_vertical_alignment_for_cell(Self, Int, Int, AlignmentVertical) -> Unit
@@ -211,6 +215,8 @@ pub fn SpannedConfig::set_width_mode_for_all(Self, WidthMode) -> Unit
 pub fn SpannedConfig::set_width_mode_for_cell(Self, Int, Int, WidthMode) -> Unit
 pub fn SpannedConfig::set_width_mode_for_columns(Self, Int, Int, WidthMode) -> Unit
 pub fn SpannedConfig::set_width_mode_for_rows(Self, Int, Int, WidthMode) -> Unit
+pub fn SpannedConfig::span_anchor_for_source(Self, Int, Int) -> (Int, Int)?
+pub fn SpannedConfig::span_source_at(Self, Int, Int) -> (Int, Int)
 pub fn SpannedConfig::vertical_alignment(Self) -> AlignmentVertical
 pub fn SpannedConfig::vertical_alignment_at(Self, Int, Int) -> AlignmentVertical
 pub fn SpannedConfig::width_mode(Self) -> WidthMode

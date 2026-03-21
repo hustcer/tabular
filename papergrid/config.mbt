@@ -151,6 +151,7 @@ pub struct SpannedConfig {
   padding_rules : Array[(Int, Int, Int, Int, Int, Int, Int)]
   column_spans : Array[(Int, Int, Int)]
   row_spans : Array[(Int, Int, Int)]
+  span_sources : Array[(Int, Int, Int, Int)]
 }
 
 ///|
@@ -174,6 +175,7 @@ pub fn SpannedConfig::default() -> SpannedConfig {
     padding_rules: [],
     column_spans: [],
     row_spans: [],
+    span_sources: [],
   }
 }
 
@@ -659,6 +661,91 @@ pub fn SpannedConfig::set_row_span(
 }
 
 ///|
+pub fn SpannedConfig::set_span_source(
+  self : SpannedConfig,
+  anchor_row : Int,
+  anchor_column : Int,
+  source_row : Int,
+  source_column : Int,
+) -> Unit {
+  let next = []
+  self.span_sources.each(item => {
+    if item.0 != anchor_row || item.1 != anchor_column {
+      next.push(item)
+    }
+  })
+  self.span_sources.clear()
+  next.each(item => self.span_sources.push(item))
+  if anchor_row != source_row || anchor_column != source_column {
+    self.span_sources.push(
+      (anchor_row, anchor_column, source_row, source_column),
+    )
+  }
+}
+
+///|
+pub fn SpannedConfig::clear_span_source(
+  self : SpannedConfig,
+  anchor_row : Int,
+  anchor_column : Int,
+) -> Unit {
+  let next = []
+  self.span_sources.each(item => {
+    if item.0 != anchor_row || item.1 != anchor_column {
+      next.push(item)
+    }
+  })
+  self.span_sources.clear()
+  next.each(item => self.span_sources.push(item))
+}
+
+///|
+pub fn SpannedConfig::clear_span_source_if_unused(
+  self : SpannedConfig,
+  anchor_row : Int,
+  anchor_column : Int,
+) -> Unit {
+  if self.column_span_at(anchor_row, anchor_column) <= 1 &&
+    self.row_span_at(anchor_row, anchor_column) <= 1 {
+    self.clear_span_source(anchor_row, anchor_column)
+  }
+}
+
+///|
+pub fn SpannedConfig::span_source_at(
+  self : SpannedConfig,
+  anchor_row : Int,
+  anchor_column : Int,
+) -> (Int, Int) {
+  let mut index = self.span_sources.length() - 1
+  while index >= 0 {
+    let item = self.span_sources[index]
+    if item.0 == anchor_row && item.1 == anchor_column {
+      return (item.2, item.3)
+    }
+    index = index - 1
+  }
+  (anchor_row, anchor_column)
+}
+
+///|
+pub fn SpannedConfig::span_anchor_for_source(
+  self : SpannedConfig,
+  source_row : Int,
+  source_column : Int,
+) -> (Int, Int)? {
+  let mut index = self.span_sources.length() - 1
+  while index >= 0 {
+    let item = self.span_sources[index]
+    if item.2 == source_row && item.3 == source_column {
+      return Some((item.0, item.1))
+    }
+    index = index - 1
+  }
+  None
+}
+
+///|
 pub fn SpannedConfig::get_column_span(
   self : SpannedConfig,
   row : Int,
@@ -1019,4 +1106,22 @@ pub fn SpannedConfig::remap(
   })
   self.row_spans.clear()
   next_row_spans.each(item => self.row_spans.push(item))
+
+  let next_span_sources = []
+  self.span_sources.each(item => {
+    let anchor_row = map_index(row_map, item.0)
+    let anchor_column = map_index(column_map, item.1)
+    let source_row = map_index(row_map, item.2)
+    let source_column = map_index(column_map, item.3)
+    if anchor_row >= 0 &&
+      anchor_column >= 0 &&
+      source_row >= 0 &&
+      source_column >= 0 {
+      next_span_sources.push(
+        (anchor_row, anchor_column, source_row, source_column),
+      )
+    }
+  })
+  self.span_sources.clear()
+  next_span_sources.each(item => self.span_sources.push(item))
 }
