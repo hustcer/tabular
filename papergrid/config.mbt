@@ -775,6 +775,18 @@ pub fn SpannedConfig::clear_span_source(
 }
 
 ///|
+/// Clear all spans and border override arrays.
+/// Used after operations like Split that completely reshape the table.
+pub fn SpannedConfig::clear_spans_and_overrides(self : SpannedConfig) -> Unit {
+  self.column_spans.clear()
+  self.row_spans.clear()
+  self.span_sources.clear()
+  self.border_horizontal.clear()
+  self.border_vertical.clear()
+  self.border_intersection.clear()
+}
+
+///|
 pub fn SpannedConfig::clear_span_source_if_unused(
   self : SpannedConfig,
   anchor_row : Int,
@@ -928,8 +940,27 @@ pub fn SpannedConfig::is_cell_covered_by_both_spans(
   row : Int,
   column : Int,
 ) -> Bool {
-  self.is_cell_covered_by_column_span(row, column) &&
-  self.is_cell_covered_by_row_span(row, column)
+  // Find anchor cells that have BOTH row and column spans,
+  // then check if (row, column) is strictly inside both ranges.
+  for i = 0; i < self.row_spans.length(); i = i + 1 {
+    let rs = self.row_spans[i]
+    let anchor_row = rs.0
+    let anchor_col = rs.1
+    let row_span = rs.2
+    if row > anchor_row && row < anchor_row + row_span {
+      // This anchor's row span covers our row. Check if it also has a column span.
+      for j = 0; j < self.column_spans.length(); j = j + 1 {
+        let cs = self.column_spans[j]
+        if cs.0 == anchor_row && cs.1 == anchor_col {
+          let col_span = cs.2
+          if column > anchor_col && column < anchor_col + col_span {
+            return true
+          }
+        }
+      }
+    }
+  }
+  false
 }
 
 ///|
@@ -1100,6 +1131,170 @@ pub fn SpannedConfig::has_cell_borders(self : SpannedConfig) -> Bool {
   not(self.border_horizontal.is_empty()) ||
   not(self.border_vertical.is_empty()) ||
   not(self.border_intersection.is_empty())
+}
+
+///|
+/// Get the effective cell border for a cell at (row, col) given table shape (count_rows, count_cols).
+/// Returns a CellBorder with the resolved border characters including overrides.
+pub fn SpannedConfig::get_cell_border(
+  self : SpannedConfig,
+  row : Int,
+  col : Int,
+  count_rows : Int,
+  count_cols : Int,
+) -> CellBorder {
+  let borders = self.borders()
+  // Top border
+  let top = if row == 0 {
+    match self.horizontal_override_at(0, col) {
+      Some(ch) => Some(ch)
+      None => borders.top
+    }
+  } else {
+    match self.horizontal_override_at(row, col) {
+      Some(ch) => Some(ch)
+      None => borders.horizontal
+    }
+  }
+  // Bottom border
+  let bottom = if row + 1 == count_rows {
+    match self.horizontal_override_at(count_rows, col) {
+      Some(ch) => Some(ch)
+      None => borders.bottom
+    }
+  } else {
+    match self.horizontal_override_at(row + 1, col) {
+      Some(ch) => Some(ch)
+      None => borders.horizontal
+    }
+  }
+  // Left border
+  let left = if col == 0 {
+    match self.vertical_override_at(row, 0) {
+      Some(ch) => Some(ch)
+      None => borders.left
+    }
+  } else {
+    match self.vertical_override_at(row, col) {
+      Some(ch) => Some(ch)
+      None => borders.vertical
+    }
+  }
+  // Right border
+  let right = if col + 1 == count_cols {
+    match self.vertical_override_at(row, count_cols) {
+      Some(ch) => Some(ch)
+      None => borders.right
+    }
+  } else {
+    match self.vertical_override_at(row, col + 1) {
+      Some(ch) => Some(ch)
+      None => borders.vertical
+    }
+  }
+  // Corners
+  let left_top = match self.intersection_override_at(row, col) {
+    Some(ch) => Some(ch)
+    None =>
+      if row == 0 && col == 0 {
+        borders.top_left
+      } else if row == 0 {
+        borders.top_intersection
+      } else if col == 0 {
+        borders.left_intersection
+      } else {
+        borders.intersection
+      }
+  }
+  let right_top = match self.intersection_override_at(row, col + 1) {
+    Some(ch) => Some(ch)
+    None =>
+      if row == 0 && col + 1 == count_cols {
+        borders.top_right
+      } else if row == 0 {
+        borders.top_intersection
+      } else if col + 1 == count_cols {
+        borders.right_intersection
+      } else {
+        borders.intersection
+      }
+  }
+  let left_bottom = match self.intersection_override_at(row + 1, col) {
+    Some(ch) => Some(ch)
+    None =>
+      if row + 1 == count_rows && col == 0 {
+        borders.bottom_left
+      } else if row + 1 == count_rows {
+        borders.bottom_intersection
+      } else if col == 0 {
+        borders.left_intersection
+      } else {
+        borders.intersection
+      }
+  }
+  let right_bottom = match self.intersection_override_at(row + 1, col + 1) {
+    Some(ch) => Some(ch)
+    None =>
+      if row + 1 == count_rows && col + 1 == count_cols {
+        borders.bottom_right
+      } else if row + 1 == count_rows {
+        borders.bottom_intersection
+      } else if col + 1 == count_cols {
+        borders.right_intersection
+      } else {
+        borders.intersection
+      }
+  }
+  {
+    top,
+    bottom,
+    left,
+    right,
+    left_top_corner: left_top,
+    right_top_corner: right_top,
+    left_bottom_corner: left_bottom,
+    right_bottom_corner: right_bottom,
+  }
+}
+
+///|
+/// Check if a cell has a "left" border (for border correction).
+/// Returns false if the cell is covered by a column span or both spans.
+pub fn SpannedConfig::has_left_border(
+  self : SpannedConfig,
+  row : Int,
+  col : Int,
+  count_rows : Int,
+  count_cols : Int,
+) -> Bool {
+  if self.is_cell_covered_by_both_spans(row, col) ||
+    self.is_cell_covered_by_column_span(row, col) {
+    return false
+  }
+  let border = self.get_cell_border(row, col, count_rows, count_cols)
+  not(border.left is None) ||
+  not(border.left_top_corner is None) ||
+  not(border.left_bottom_corner is None)
+}
+
+///|
+/// Check if a cell has a "top" border (for border correction).
+/// Returns false if the cell is covered by a row span or both spans.
+pub fn SpannedConfig::has_top_border(
+  self : SpannedConfig,
+  row : Int,
+  col : Int,
+  count_rows : Int,
+  count_cols : Int,
+) -> Bool {
+  if self.is_cell_covered_by_both_spans(row, col) ||
+    self.is_cell_covered_by_row_span(row, col) {
+    return false
+  }
+  let border = self.get_cell_border(row, col, count_rows, count_cols)
+  not(border.top is None) ||
+  not(border.left_top_corner is None) ||
+  not(border.right_top_corner is None)
 }
 
 ///|

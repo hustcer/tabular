@@ -173,20 +173,37 @@ pub struct SpannedConfig {
   border_horizontal : Array[(Int, Int, Char)]
   border_vertical : Array[(Int, Int, Char)]
   border_intersection : Array[(Int, Int, Char)]
+  mut margin_top : Int
+  mut margin_bottom : Int
+  mut margin_left : Int
+  mut margin_right : Int
+  mut margin_fill_top : Char
+  mut margin_fill_bottom : Char
+  mut margin_fill_left : Char
+  mut margin_fill_right : Char
+  mut margin_offset_top : Int
+  mut margin_offset_bottom : Int
+  mut margin_offset_left : Int
+  mut margin_offset_right : Int
 }
 pub fn SpannedConfig::alignment(Self) -> AlignmentHorizontal
 pub fn SpannedConfig::alignment_at(Self, Int, Int) -> AlignmentHorizontal
 pub fn SpannedConfig::borders(Self) -> Borders
 pub fn SpannedConfig::clear_span_source(Self, Int, Int) -> Unit
 pub fn SpannedConfig::clear_span_source_if_unused(Self, Int, Int) -> Unit
+pub fn SpannedConfig::clear_spans_and_overrides(Self) -> Unit
 pub fn SpannedConfig::column_span_at(Self, Int, Int) -> Int
 pub fn SpannedConfig::custom_horizontal_line(Self, Int) -> HorizontalLine?
 pub fn SpannedConfig::default() -> Self
+pub fn SpannedConfig::get_cell_border(Self, Int, Int, Int, Int) -> CellBorder
 pub fn SpannedConfig::get_column_span(Self, Int, Int) -> Int?
 pub fn SpannedConfig::get_row_span(Self, Int, Int) -> Int?
 pub fn SpannedConfig::has_cell_borders(Self) -> Bool
 pub fn SpannedConfig::has_column_spans(Self) -> Bool
+pub fn SpannedConfig::has_left_border(Self, Int, Int, Int, Int) -> Bool
+pub fn SpannedConfig::has_margin(Self) -> Bool
 pub fn SpannedConfig::has_row_spans(Self) -> Bool
+pub fn SpannedConfig::has_top_border(Self, Int, Int, Int, Int) -> Bool
 pub fn SpannedConfig::height_mode(Self) -> HeightMode
 pub fn SpannedConfig::height_mode_at(Self, Int, Int) -> HeightMode
 pub fn SpannedConfig::horizontal_lines(Self) -> HorizontalLines
@@ -218,6 +235,8 @@ pub fn SpannedConfig::set_height_mode_for_cell(Self, Int, Int, HeightMode) -> Un
 pub fn SpannedConfig::set_height_mode_for_columns(Self, Int, Int, HeightMode) -> Unit
 pub fn SpannedConfig::set_height_mode_for_rows(Self, Int, Int, HeightMode) -> Unit
 pub fn SpannedConfig::set_horizontal_lines(Self, HorizontalLines) -> Unit
+pub fn SpannedConfig::set_margin(Self, Int, Int, Int, Int, Char, Char, Char, Char) -> Unit
+pub fn SpannedConfig::set_margin_offset(Self, Int, Int, Int, Int) -> Unit
 pub fn SpannedConfig::set_padding(Self, Int, Int, Int, Int) -> Unit
 pub fn SpannedConfig::set_padding_for_all(Self, Int, Int, Int, Int) -> Unit
 pub fn SpannedConfig::set_padding_for_cell(Self, Int, Int, Int, Int, Int, Int) -> Unit

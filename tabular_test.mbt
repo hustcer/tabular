@@ -5272,3 +5272,625 @@ test "shadow_set_offset" {
     ),
   )
 }
+
+// Helper: create Matrix::table(6, 4) equivalent (7 rows x 5 cols with header+index, centered)
+
+///|
+fn matrix64() -> @tabular.Table {
+  let table = @tabular.Table::from_rows([
+    ["N", "column 0", "column 1", "column 2", "column 3"],
+    ["0", "0-0", "0-1", "0-2", "0-3"],
+    ["1", "1-0", "1-1", "1-2", "1-3"],
+    ["2", "2-0", "2-1", "2-2", "2-3"],
+    ["3", "3-0", "3-1", "3-2", "3-3"],
+    ["4", "4-0", "4-1", "4-2", "4-3"],
+    ["5", "5-0", "5-1", "5-2", "5-3"],
+  ])
+  table.modify_segment(
+    @tabular.Segment::all(),
+    @tabular.Setting::alignment(@tabular.Alignment::center()),
+  )
+  |> ignore
+  table
+}
+
+///|
+test "border_correction_column_span_with_panel" {
+  let table = @tabular.Table::from_rows([["0", "1", "2"], ["1", "2", "3"]])
+  table.apply(@tabular.Style::ascii()) |> ignore
+  table.apply_panel(@tabular.Panel::header("Tabled Releases")) |> ignore
+  table.modify_cell(@tabular.Cell::new(1, 0), @tabular.Span::column(2))
+  |> ignore
+  table.apply_border_correction() |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|+-----------------+
+      #|| Tabled Releases |
+      #|+-------+---------+
+      #||   0   |    2    |
+      #|+---+---+---------+
+      #|| 1 | 2 |    3    |
+      #|+---+---+---------+
+    ),
+  )
+}
+
+///|
+test "border_correction_column_span_with_panel_2" {
+  let table = @tabular.Table::from_rows([
+    ["0", "1", "2"],
+    ["1", "2", "3"],
+    ["4", "5", "6"],
+  ])
+  table.apply(@tabular.Style::ascii()) |> ignore
+  table.apply_panel(@tabular.Panel::header("Tabled Releases")) |> ignore
+  table.modify_cell(@tabular.Cell::new(2, 0), @tabular.Span::column(2))
+  |> ignore
+  table.apply_border_correction() |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|+-----------------+
+      #|| Tabled Releases |
+      #|+---+---+---------+
+      #|| 0 | 1 |    2    |
+      #|+---+---+---------+
+      #||   1   |    3    |
+      #|+---+---+---------+
+      #|| 4 | 5 |    6    |
+      #|+---+---+---------+
+    ),
+  )
+}
+
+///|
+test "border_correction_column_span_with_panel_3" {
+  let table = @tabular.Table::from_rows([
+    ["0", "1", "2"],
+    ["1", "2", "3"],
+    ["4", "5", "6"],
+  ])
+  table.apply(@tabular.Style::ascii()) |> ignore
+  table.apply_panel(@tabular.Panel::header("Tabled Releases")) |> ignore
+  table.modify_cell(@tabular.Cell::new(1, 0), @tabular.Span::column(2))
+  |> ignore
+  table.modify_cell(@tabular.Cell::new(2, 0), @tabular.Span::column(2))
+  |> ignore
+  table.apply_border_correction() |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|+-----------------+
+      #|| Tabled Releases |
+      #|+-------+---------+
+      #||   0   |    2    |
+      #|+-------+---------+
+      #||   1   |    3    |
+      #|+---+---+---------+
+      #|| 4 | 5 |    6    |
+      #|+---+---+---------+
+    ),
+  )
+}
+
+///|
+test "border_correction_row_span" {
+  let table = @tabular.Table::from_rows([["0", "1", "2"], ["1", "2", "3"]])
+  table.apply(@tabular.Style::ascii()) |> ignore
+  table.modify_cell(@tabular.Cell::new(0, 0), @tabular.Span::row(2)) |> ignore
+  table.apply_border_correction() |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|+---+---+---+
+      #|| 0 | 1 | 2 |
+      #||   +---+---+
+      #||   | 2 | 3 |
+      #|+---+---+---+
+    ),
+  )
+}
+
+///|
+test "border_correction_row_span_multi" {
+  let table = @tabular.Table::from_rows([
+    ["0", "1", "2"],
+    ["1", "2", "3"],
+    ["4", "5", "6"],
+  ])
+  table.apply(@tabular.Style::ascii()) |> ignore
+  table.modify_cell(@tabular.Cell::new(1, 0), @tabular.Span::row(2)) |> ignore
+  table.modify_cell(@tabular.Cell::new(0, 2), @tabular.Span::row(3)) |> ignore
+  table.apply_border_correction() |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|+---+---+---+
+      #|| 0 | 1 | 2 |
+      #|+---+---+   |
+      #|| 1 | 2 |   |
+      #||   +---+   |
+      #||   | 5 |   |
+      #|+---+---+---+
+    ),
+  )
+}
+
+///|
+test "border_correction_right_bottom_corner_0" {
+  let table = matrix33()
+  table.apply(@tabular.Style::modern()) |> ignore
+  table.modify_cell(@tabular.Cell::new(1, 1), @tabular.Span::column(3))
+  |> ignore
+  table.modify_cell(@tabular.Cell::new(1, 1), @tabular.Span::row(3)) |> ignore
+  table.apply_border_correction() |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|┌───┬──────────┬──────────┬──────────┐
+      #|│ N │ column 0 │ column 1 │ column 2 │
+      #|├───┼──────────┴──────────┴──────────┤
+      #|│ 0 │              0-0               │
+      #|├───┤                                │
+      #|│ 1 │                                │
+      #|├───┤                                │
+      #|│ 2 │                                │
+      #|└───┴────────────────────────────────┘
+    ),
+  )
+}
+
+///|
+test "border_correction_right_bottom_corner_1" {
+  let table = matrix33()
+  table.apply(@tabular.Style::modern()) |> ignore
+  table.modify_cell(@tabular.Cell::new(2, 2), @tabular.Span::column(2))
+  |> ignore
+  table.modify_cell(@tabular.Cell::new(2, 2), @tabular.Span::row(2)) |> ignore
+  table.apply_border_correction() |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|┌───┬──────────┬──────────┬──────────┐
+      #|│ N │ column 0 │ column 1 │ column 2 │
+      #|├───┼──────────┼──────────┼──────────┤
+      #|│ 0 │   0-0    │   0-1    │   0-2    │
+      #|├───┼──────────┼──────────┴──────────┤
+      #|│ 1 │   1-0    │         1-1         │
+      #|├───┼──────────┤                     │
+      #|│ 2 │   2-0    │                     │
+      #|└───┴──────────┴─────────────────────┘
+    ),
+  )
+}
+
+///|
+test "span_correct_test_0" {
+  let table = matrix64()
+  table.apply(@tabular.Style::ascii()) |> ignore
+  table.modify_cell(@tabular.Cell::new(0, 3), @tabular.Span::column(2))
+  |> ignore
+  table.modify_cell(@tabular.Cell::new(1, 0), @tabular.Span::column(3))
+  |> ignore
+  table.modify_cell(@tabular.Cell::new(2, 0), @tabular.Span::column(2))
+  |> ignore
+  table.modify_cell(@tabular.Cell::new(2, 3), @tabular.Span::column(2))
+  |> ignore
+  table.modify_cell(@tabular.Cell::new(3, 0), @tabular.Span::column(5))
+  |> ignore
+  table.modify_cell(@tabular.Cell::new(4, 1), @tabular.Span::column(4))
+  |> ignore
+  table.modify_cell(@tabular.Cell::new(5, 0), @tabular.Span::column(5))
+  |> ignore
+  table.modify_cell(@tabular.Cell::new(6, 0), @tabular.Span::column(5))
+  |> ignore
+  table.apply_border_correction() |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|+---+----------+----------+-----------+
+      #|| N | column 0 | column 1 | column 2  |
+      #|+---+----------+----------+-----+-----+
+      #||            0            | 0-2 | 0-3 |
+      #|+--------------+----------+-----+-----+
+      #||      1       |   1-1    |    1-2    |
+      #|+--------------+----------+-----------+
+      #||                  2                  |
+      #|+---+---------------------------------+
+      #|| 3 |               3-0               |
+      #|+---+---------------------------------+
+      #||                  4                  |
+      #|+-------------------------------------+
+      #||                  5                  |
+      #|+-------------------------------------+
+    ),
+  )
+}
+
+///|
+test "span_correct_test_1" {
+  let table = matrix64()
+  table.apply(@tabular.Style::ascii()) |> ignore
+  table.modify_cell(@tabular.Cell::new(0, 0), @tabular.Span::column(5))
+  |> ignore
+  table.modify_cell(@tabular.Cell::new(1, 0), @tabular.Span::column(3))
+  |> ignore
+  table.modify_cell(@tabular.Cell::new(2, 0), @tabular.Span::column(2))
+  |> ignore
+  table.modify_cell(@tabular.Cell::new(2, 3), @tabular.Span::column(2))
+  |> ignore
+  table.modify_cell(@tabular.Cell::new(3, 0), @tabular.Span::column(5))
+  |> ignore
+  table.modify_cell(@tabular.Cell::new(4, 1), @tabular.Span::column(4))
+  |> ignore
+  table.modify_cell(@tabular.Cell::new(5, 0), @tabular.Span::column(5))
+  |> ignore
+  table.modify_cell(@tabular.Cell::new(6, 0), @tabular.Span::column(5))
+  |> ignore
+  table.apply_border_correction() |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|+----------------------+
+      #||          N           |
+      #|+----------+-----+-----+
+      #||    0     | 0-2 | 0-3 |
+      #|+----+-----+-----+-----+
+      #|| 1  | 1-1 |    1-2    |
+      #|+----+-----+-----------+
+      #||          2           |
+      #|+---+------------------+
+      #|| 3 |       3-0        |
+      #|+---+------------------+
+      #||          4           |
+      #|+----------------------+
+      #||          5           |
+      #|+----------------------+
+    ),
+  )
+}
+
+///|
+/// Helper: create a 1-row table with a..z (26 columns)
+fn alpha_table() -> @tabular.Table {
+  let row : Array[String] = [
+    "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p",
+    "q", "r", "s", "t", "u", "v", "w", "x", "y", "z",
+  ]
+  @tabular.Table::from_rows([row])
+}
+
+///|
+test "split_column_test" {
+  let table = alpha_table()
+  table.apply(@tabular.Style::ascii()) |> ignore
+  table.apply_split(@tabular.Split::column(12)) |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|+---+---+---+---+---+---+---+---+---+---+---+---+
+      #|| a | b | c | d | e | f | g | h | i | j | k | l |
+      #|+---+---+---+---+---+---+---+---+---+---+---+---+
+      #|| m | n | o | p | q | r | s | t | u | v | w | x |
+      #|+---+---+---+---+---+---+---+---+---+---+---+---+
+      #|| y | z |   |   |   |   |   |   |   |   |   |   |
+      #|+---+---+---+---+---+---+---+---+---+---+---+---+
+    ),
+  )
+}
+
+///|
+test "split_column_2_test" {
+  let table = alpha_table()
+  table.apply(@tabular.Style::ascii()) |> ignore
+  table.apply_split(@tabular.Split::column(12)) |> ignore
+  table.apply_split(@tabular.Split::column(4)) |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|+---+---+---+---+
+      #|| a | b | c | d |
+      #|+---+---+---+---+
+      #|| e | f | g | h |
+      #|+---+---+---+---+
+      #|| i | j | k | l |
+      #|+---+---+---+---+
+      #|| m | n | o | p |
+      #|+---+---+---+---+
+      #|| q | r | s | t |
+      #|+---+---+---+---+
+      #|| u | v | w | x |
+      #|+---+---+---+---+
+      #|| y | z |   |   |
+      #|+---+---+---+---+
+    ),
+  )
+}
+
+///|
+test "split_column_retain_test" {
+  let table = alpha_table()
+  table.apply(@tabular.Style::ascii()) |> ignore
+  table.apply_split(@tabular.Split::column(12)) |> ignore
+  table.apply_split(@tabular.Split::column(4).retain()) |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|+---+---+---+---+
+      #|| a | b | c | d |
+      #|+---+---+---+---+
+      #|| e | f | g | h |
+      #|+---+---+---+---+
+      #|| i | j | k | l |
+      #|+---+---+---+---+
+      #|| m | n | o | p |
+      #|+---+---+---+---+
+      #|| q | r | s | t |
+      #|+---+---+---+---+
+      #|| u | v | w | x |
+      #|+---+---+---+---+
+      #|| y | z |   |   |
+      #|+---+---+---+---+
+      #||   |   |   |   |
+      #|+---+---+---+---+
+      #||   |   |   |   |
+      #|+---+---+---+---+
+    ),
+  )
+}
+
+///|
+test "split_row_test" {
+  let table = alpha_table()
+  table.apply(@tabular.Style::ascii()) |> ignore
+  table.apply_split(@tabular.Split::column(12)) |> ignore
+  table.apply_split(@tabular.Split::column(4)) |> ignore
+  table.apply_split(@tabular.Split::row(1).concat()) |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+      #|| a | b | c | d | e | f | g | h | i | j | k | l | m | n | o | p | q | r | s | t | u | v | w | x | y | z |
+      #|+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+    ),
+  )
+}
+
+///|
+test "split_row_2_test" {
+  let table = alpha_table()
+  table.apply(@tabular.Style::ascii()) |> ignore
+  table.apply_split(@tabular.Split::column(12)) |> ignore
+  table.apply_split(@tabular.Split::column(4)) |> ignore
+  table.apply_split(@tabular.Split::row(2).concat()) |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+      #|| a | b | c | d | i | j | k | l | q | r | s | t | y | z |
+      #|+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+      #|| e | f | g | h | m | n | o | p | u | v | w | x |   |   |
+      #|+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+    ),
+  )
+}
+
+///|
+test "split_column_index_beyond_size_test" {
+  let table = alpha_table()
+  table.apply(@tabular.Style::ascii()) |> ignore
+  table.apply_split(@tabular.Split::column(10000)) |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+      #|| a | b | c | d | e | f | g | h | i | j | k | l | m | n | o | p | q | r | s | t | u | v | w | x | y | z |
+      #|+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+    ),
+  )
+}
+
+///|
+test "split_row_index_beyond_size_test" {
+  let table = alpha_table()
+  table.apply(@tabular.Style::ascii()) |> ignore
+  table.apply_split(@tabular.Split::row(10000)) |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+      #|| a | b | c | d | e | f | g | h | i | j | k | l | m | n | o | p | q | r | s | t | u | v | w | x | y | z |
+      #|+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+    ),
+  )
+}
+
+///|
+test "split_empty_table_test" {
+  let table = @tabular.Table::from_rows([])
+  table.apply(@tabular.Style::ascii()) |> ignore
+  table.apply_split(@tabular.Split::column(10000)) |> ignore
+  inspect(table.to_string(), content="")
+}
+
+///|
+test "split_column_zero_argument_test" {
+  let table = alpha_table()
+  table.apply(@tabular.Style::ascii()) |> ignore
+  table.apply_split(@tabular.Split::column(0)) |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+      #|| a | b | c | d | e | f | g | h | i | j | k | l | m | n | o | p | q | r | s | t | u | v | w | x | y | z |
+      #|+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+    ),
+  )
+}
+
+///|
+test "split_row_zero_argument_test" {
+  let table = alpha_table()
+  table.apply(@tabular.Style::ascii()) |> ignore
+  table.apply_split(@tabular.Split::row(0)) |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+      #|| a | b | c | d | e | f | g | h | i | j | k | l | m | n | o | p | q | r | s | t | u | v | w | x | y | z |
+      #|+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+    ),
+  )
+}
+
+///|
+test "split_blank_table_test" {
+  let row : Array[String] = Array::make(26, "")
+  let table = @tabular.Table::from_rows([row])
+  table.apply(@tabular.Style::ascii()) |> ignore
+  table.apply_split(@tabular.Split::column(12)) |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|+--+--+--+--+--+--+--+--+--+--+--+--+
+      #||  |  |  |  |  |  |  |  |  |  |  |  |
+      #|+--+--+--+--+--+--+--+--+--+--+--+--+
+    ),
+  )
+}
+
+///|
+test "split_blank_table_2_test" {
+  let row : Array[String] = Array::make(26, "")
+  let table = @tabular.Table::from_rows([row])
+  table.apply(@tabular.Style::ascii()) |> ignore
+  table.apply_split(@tabular.Split::column(12).retain()) |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|+--+--+--+--+--+--+--+--+--+--+--+--+
+      #||  |  |  |  |  |  |  |  |  |  |  |  |
+      #|+--+--+--+--+--+--+--+--+--+--+--+--+
+      #||  |  |  |  |  |  |  |  |  |  |  |  |
+      #|+--+--+--+--+--+--+--+--+--+--+--+--+
+      #||  |  |  |  |  |  |  |  |  |  |  |  |
+      #|+--+--+--+--+--+--+--+--+--+--+--+--+
+    ),
+  )
+}
+
+///|
+test "split_zip_test" {
+  let table = alpha_table()
+  table.apply(@tabular.Style::ascii()) |> ignore
+  table.apply_split(@tabular.Split::column(6)) |> ignore
+  table.apply_split(@tabular.Split::row(2)) |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+      #|| a | m | y | b | n | z | c | o | d | p | e | q | f | r |
+      #|+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+      #|| g | s |   | h | t |   | i | u | j | v | k | w | l | x |
+      #|+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+    ),
+  )
+}
+
+///|
+test "split_concat_test" {
+  let table = alpha_table()
+  table.apply(@tabular.Style::ascii()) |> ignore
+  table.apply_split(@tabular.Split::column(6)) |> ignore
+  table.apply_split(@tabular.Split::row(2).concat()) |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+      #|| a | b | c | d | e | f | m | n | o | p | q | r | y | z |
+      #|+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+      #|| g | h | i | j | k | l | s | t | u | v | w | x |   |   |
+      #|+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+    ),
+  )
+}
+
+///|
+test "split_clean_test" {
+  let table = alpha_table()
+  table.apply(@tabular.Style::ascii()) |> ignore
+  table.apply_split(@tabular.Split::column(12)) |> ignore
+  table.apply_split(@tabular.Split::row(2)) |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+      #|| a | y | b | z | c | d | e | f | g | h | i | j | k | l |
+      #|+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+      #|| m |   | n |   | o | p | q | r | s | t | u | v | w | x |
+      #|+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+    ),
+  )
+}
+
+///|
+test "split_retain_test" {
+  let table = alpha_table()
+  table.apply(@tabular.Style::ascii()) |> ignore
+  table.apply_split(@tabular.Split::column(12)) |> ignore
+  table.apply_split(@tabular.Split::row(2).retain()) |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|+---+---+---+---+---+--+---+--+---+--+---+--+---+--+---+--+---+--+---+--+---+--+---+--+
+      #|| a | y | b | z | c |  | d |  | e |  | f |  | g |  | h |  | i |  | j |  | k |  | l |  |
+      #|+---+---+---+---+---+--+---+--+---+--+---+--+---+--+---+--+---+--+---+--+---+--+---+--+
+      #|| m |   | n |   | o |  | p |  | q |  | r |  | s |  | t |  | u |  | v |  | w |  | x |  |
+      #|+---+---+---+---+---+--+---+--+---+--+---+--+---+--+---+--+---+--+---+--+---+--+---+--+
+    ),
+  )
+}
+
+///|
+test "split_mostly_blank_test" {
+  let row : Array[String] = Array::make(33, "")
+  row.push("A")
+  let table = @tabular.Table::from_rows([row])
+  table.apply(@tabular.Style::ascii()) |> ignore
+  table.apply_split(@tabular.Split::column(5)) |> ignore
+  table.apply_split(@tabular.Split::row(2)) |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|+--+--+--+---+--+
+      #||  |  |  |   |  |
+      #|+--+--+--+---+--+
+      #||  |  |  | A |  |
+      #|+--+--+--+---+--+
+    ),
+  )
+}
+
+///|
+test "split_scattered_values_test" {
+  let row : Array[String] = Array::make(5, "")
+  row.push("g")
+  Array::make(27, "").each(fn(s) { row.push(s) })
+  row.push("A")
+  let table = @tabular.Table::from_rows([row])
+  table.apply(@tabular.Style::ascii()) |> ignore
+  table.apply_split(@tabular.Split::column(5)) |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|+---+--+--+---+--+
+      #||   |  |  |   |  |
+      #|+---+--+--+---+--+
+      #|| g |  |  |   |  |
+      #|+---+--+--+---+--+
+      #||   |  |  | A |  |
+      #|+---+--+--+---+--+
+    ),
+  )
+}

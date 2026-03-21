@@ -231,10 +231,37 @@ pub fn Setting::padding(Padding) -> Self
 pub fn Setting::vertical_alignment(VerticalAlignment) -> Self
 pub fn Setting::width(Width) -> Self
 
+pub struct Shadow {
+  size : Int
+  offset : Int
+  fill : Char
+  top : Bool
+  bottom : Bool
+  left : Bool
+  right : Bool
+}
+pub fn Shadow::new(Int) -> Self
+pub fn Shadow::set_bottom(Self) -> Self
+pub fn Shadow::set_fill(Self, Char) -> Self
+pub fn Shadow::set_left(Self) -> Self
+pub fn Shadow::set_offset(Self, Int) -> Self
+pub fn Shadow::set_right(Self) -> Self
+pub fn Shadow::set_top(Self) -> Self
+
 pub enum Span {
 }
 pub fn Span::column(Int) -> Setting
 pub fn Span::row(Int) -> Setting
+
+pub struct Split {
+  // private fields
+}
+pub fn Split::clean(Self) -> Self
+pub fn Split::column(Int) -> Self
+pub fn Split::concat(Self) -> Self
+pub fn Split::retain(Self) -> Self
+pub fn Split::row(Int) -> Self
+pub fn Split::zip(Self) -> Self
 
 pub struct Style {
   borders : @papergrid.Borders
@@ -284,9 +311,12 @@ pub struct Table {
   config : @papergrid.SpannedConfig
 }
 pub fn Table::apply(Self, Style) -> Self
+pub fn Table::apply_border_correction(Self) -> Self
 pub fn Table::apply_highlight(Self, Highlight) -> Self
 pub fn Table::apply_merge(Self, Merge) -> Self
 pub fn Table::apply_panel(Self, (Int, String, Bool)) -> Self
+pub fn Table::apply_shadow(Self, Shadow) -> Self
+pub fn Table::apply_split(Self, Split) -> Self
 pub fn Table::extract_columns(Self, Columns) -> Self
 pub fn Table::extract_rows(Self, Rows) -> Self
 pub fn Table::extract_segment(Self, Rows, Columns) -> Self

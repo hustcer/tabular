@@ -58,7 +58,7 @@ Already implemented and passing:
   - `Format::content`
   - `Format::positioned`
   - `Format::multiline`
-- Test count: `182`
+- Test count: `253`
 
 ## Constraints
 
@@ -311,23 +311,53 @@ Acceptance:
 
 ### Phase 6: Highlight / Panel / Shadow / Merge / Split / Theme
 
-Status: not started
+Status: complete
 
-Remaining work:
+Completed in this phase:
 
-- Evaluate each setting area for feasibility in MoonBit:
-  - `Highlight`
-  - `Panel`
-  - `Shadow`
-  - `Merge`
-  - `Split`
-  - theme-like abstractions
-- Implement in the lowest-risk order:
-  1. panel-like structural additions
-  2. highlight borders
-  3. merge/split behaviors
-  4. shadow/theme extras
-- Add snapshot-style tests for each area
+- Added `Panel` for structural table additions
+  - `Panel::header(text)` inserts full-width row at top
+  - `Panel::footer(text)` inserts full-width row at bottom
+  - `Panel::horizontal(row, text)` inserts at arbitrary row
+  - `Panel::vertical(col, text)` inserts full-height column
+  - `Panel::vertical_with_width(col, text, width)` with text wrapping
+  - Row/column span metadata shifts correctly on insertion
+- Added `Merge` for duplicate cell merging
+  - `Merge::horizontal()` merges adjacent duplicate cells across columns
+  - `Merge::vertical()` merges adjacent duplicate cells across rows
+- Added `Highlight` for per-cell border outlines
+  - `Highlight::new(segment, border)` outlines arbitrary cell regions
+  - Supports all border characters (top, bottom, left, right, corners)
+  - Works with any style preset and selector combination
+- Added `Shadow` for table shadow effects
+  - `Shadow::right(size, offset, fill)` adds right shadow margin
+  - `Shadow::left(size, offset, fill)` adds left shadow margin
+  - `Shadow::top(size, offset, fill)` adds top shadow margin
+  - `Shadow::bottom(size, offset, fill)` adds bottom shadow margin
+  - Shadow renders via margin config in papergrid
+- Added `BorderCorrection` for span-aware border fix-up
+  - 3-phase algorithm: column spans → row spans → combined spans
+  - `get_cell_border()` resolves effective borders with overrides
+  - `has_left_border()` / `has_top_border()` for neighbor checks
+  - Fixed `is_cell_covered_by_both_spans` for combined span detection
+  - Fixed `render_split_line` to honor intersection overrides at left, middle, and right junctions
+- Added `Split` for table reshaping
+  - `Split::column(index)` / `Split::row(index)` split by direction
+  - `Split::concat()` pushes redistributed cells to end
+  - `Split::zip()` interleaves cells (default)
+  - `Split::clean()` filters empty rows/cols (default)
+  - `Split::retain()` keeps all cells
+  - `Table::apply_split(split)` applies the split transformation
+  - Handles edge cases: zero index, beyond-size index, empty table, blank cells
+- Theme support already covered by Style presets (ascii, modern, rounded, etc.)
+- Expanded test suite from 182 to 253 tests
+  - 9 Panel tests (header, footer, horizontal, vertical, with spans)
+  - 3 Merge tests (horizontal, vertical, combined)
+  - 11 Highlight tests (cell, row, column, segment, custom borders)
+  - 5 Shadow tests (all 4 directions + combined)
+  - 9 BorderCorrection tests (column spans, row spans, combined spans)
+  - 18 Split tests (column, row, zip, concat, clean, retain, edge cases)
+- Re-verified `moon fmt`, `moon check`, `moon build`, and `moon test`
 
 Acceptance:
 

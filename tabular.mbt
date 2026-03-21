@@ -406,6 +406,181 @@ fn merge_vertical(
 }
 
 ///|
+/// Correct border junctions at span boundaries so merged cells display proper corners.
+pub fn Table::apply_border_correction(self : Table) -> Table {
+  let count_rows = self.rows.length()
+  if count_rows == 0 {
+    return self
+  }
+  let count_cols = self.rows[0].length()
+  if count_cols == 0 {
+    return self
+  }
+  let cfg = self.config
+  let borders = cfg.borders()
+  // Phase 1: Fix column span junctions
+  for row = 0; row < count_rows; row = row + 1 {
+    for col = 0; col < count_cols; col = col + 1 {
+      let span = match cfg.get_column_span(row, col) {
+        Some(s) => s
+        None => continue
+      }
+      if span <= 1 {
+        continue
+      }
+      for c = col; c < col + span && c < count_cols; c = c + 1 {
+        if c == 0 {
+          continue
+        }
+        let is_first = c == col
+        let has_up = row > 0 &&
+          cfg.has_left_border(row - 1, c, count_rows, count_cols)
+        let has_down = row + 1 < count_rows &&
+          cfg.has_left_border(row + 1, c, count_rows, count_cols)
+        let border = cfg.get_cell_border(row, c, count_rows, count_cols)
+        // Fix top-left corner
+        let has_top_border = not(border.left_top_corner is None) &&
+          not(border.top is None)
+        let new_ltc = if has_top_border {
+          if has_up && is_first {
+            borders.intersection
+          } else if has_up {
+            borders.bottom_intersection
+          } else if is_first {
+            borders.top_intersection
+          } else {
+            border.top
+          }
+        } else {
+          None
+        }
+        // Fix bottom-left corner
+        let has_bottom_border = not(border.left_bottom_corner is None) &&
+          not(border.bottom is None)
+        let new_lbc = if has_bottom_border {
+          if has_down && is_first {
+            borders.intersection
+          } else if has_down {
+            borders.top_intersection
+          } else if is_first {
+            borders.bottom_intersection
+          } else {
+            border.bottom
+          }
+        } else {
+          None
+        }
+        let cb : @papergrid.CellBorder = {
+          top: None,
+          bottom: None,
+          left: None,
+          right: None,
+          left_top_corner: new_ltc,
+          right_top_corner: None,
+          left_bottom_corner: new_lbc,
+          right_bottom_corner: None,
+        }
+        cfg.set_cell_border(row, c, cb)
+      }
+    }
+  }
+  // Phase 2: Fix row span junctions
+  for row = 0; row < count_rows; row = row + 1 {
+    for col = 0; col < count_cols; col = col + 1 {
+      let span = match cfg.get_row_span(row, col) {
+        Some(s) => s
+        None => continue
+      }
+      if span <= 1 {
+        continue
+      }
+      for r = row + 1; r < row + span && r < count_rows; r = r + 1 {
+        let border = cfg.get_cell_border(r, col, count_rows, count_cols)
+        // Fix left-top corner (left junction)
+        let new_ltc = if not(border.left_top_corner is None) {
+          let has_left = col > 0 &&
+            cfg.has_top_border(r, col - 1, count_rows, count_cols)
+          if has_left {
+            borders.right_intersection
+          } else {
+            borders.vertical
+          }
+        } else {
+          None
+        }
+        // Fix right-top corner (right junction)
+        let new_rtc = if not(border.right_top_corner is None) {
+          let has_right = col + 1 < count_cols &&
+            cfg.has_top_border(r, col + 1, count_rows, count_cols)
+          if has_right {
+            borders.left_intersection
+          } else {
+            borders.vertical
+          }
+        } else {
+          None
+        }
+        let cb : @papergrid.CellBorder = {
+          top: None,
+          bottom: None,
+          left: None,
+          right: None,
+          left_top_corner: new_ltc,
+          right_top_corner: new_rtc,
+          left_bottom_corner: None,
+          right_bottom_corner: None,
+        }
+        cfg.set_cell_border(r, col, cb)
+      }
+    }
+  }
+  // Phase 3: Fix cells covered by both row and column spans
+  for row = 0; row < count_rows; row = row + 1 {
+    for col = 0; col < count_cols; col = col + 1 {
+      if not(cfg.is_cell_covered_by_both_spans(row, col)) {
+        continue
+      }
+      if row == 0 {
+        continue
+      }
+      let border = cfg.get_cell_border(row, col, count_rows, count_cols)
+      let has_right = col + 1 < count_cols &&
+        cfg.has_top_border(row, col + 1, count_rows, count_cols)
+      let has_up = cfg.has_left_border(row - 1, col, count_rows, count_cols)
+      let has_down = row + 1 < count_rows &&
+        cfg.has_left_border(row + 1, col, count_rows, count_cols)
+      let mut new_rtc : Char? = None
+      let mut new_lbc : Char? = None
+      if has_up && not(has_right) {
+        new_rtc = borders.right_intersection
+      }
+      if not(has_up) && has_right {
+        new_rtc = borders.left_intersection
+      }
+      if has_down {
+        new_lbc = borders.top_intersection
+      }
+      if not(has_down) && not(has_up) && not(has_right) {
+        new_rtc = borders.vertical
+        new_lbc = border.bottom
+      }
+      let cb : @papergrid.CellBorder = {
+        top: None,
+        bottom: None,
+        left: None,
+        right: None,
+        left_top_corner: None,
+        right_top_corner: new_rtc,
+        left_bottom_corner: new_lbc,
+        right_bottom_corner: None,
+      }
+      cfg.set_cell_border(row, col, cb)
+    }
+  }
+  self
+}
+
+///|
 pub enum HighlightTarget {
   HCell(Cell)
   HRows(Rows)
@@ -2886,4 +3061,256 @@ pub fn Table::extract_segment(
   self.rows = extract_columns_at(extracted_rows, column_indexes)
   self.config.remap(row_map, column_map)
   self
+}
+
+///|
+priv enum SplitDirection {
+  SplitColumn
+  SplitRow
+}
+
+///|
+priv enum SplitBehavior {
+  SplitConcat
+  SplitZip
+}
+
+///|
+priv enum SplitDisplay {
+  SplitClean
+  SplitRetain
+} derive(Eq)
+
+///|
+pub struct Split {
+  priv direction : SplitDirection
+  priv mut behavior : SplitBehavior
+  priv mut display : SplitDisplay
+  priv index : Int
+}
+
+///|
+pub fn Split::column(index : Int) -> Split {
+  { direction: SplitColumn, behavior: SplitZip, display: SplitClean, index }
+}
+
+///|
+pub fn Split::row(index : Int) -> Split {
+  { direction: SplitRow, behavior: SplitZip, display: SplitClean, index }
+}
+
+///|
+pub fn Split::concat(self : Split) -> Split {
+  self.behavior = SplitConcat
+  self
+}
+
+///|
+pub fn Split::zip(self : Split) -> Split {
+  self.behavior = SplitZip
+  self
+}
+
+///|
+pub fn Split::clean(self : Split) -> Split {
+  self.display = SplitClean
+  self
+}
+
+///|
+pub fn Split::retain(self : Split) -> Split {
+  self.display = SplitRetain
+  self
+}
+
+///|
+fn split_ceil_div(x : Int, y : Int) -> Int {
+  1 + (x - 1) / y
+}
+
+///|
+/// Apply a Split setting to reshape the table.
+/// This resets config (spans, borders) since Split fundamentally changes the table shape.
+pub fn Table::apply_split(self : Table, split : Split) -> Table {
+  let section_length = split.index
+  let count_rows = self.rows.length()
+  let count_cols = if count_rows > 0 { self.rows[0].length() } else { 0 }
+  // Early return for empty table or zero index
+  if count_cols == 0 || count_rows == 0 || section_length == 0 {
+    return self
+  }
+  let (primary_length, secondary_length) = match split.direction {
+    SplitColumn => (count_cols, count_rows)
+    SplitRow => (count_rows, count_cols)
+  }
+  let sections_per_direction = split_ceil_div(primary_length, section_length)
+  let (outer_start, outer_end, inner_start, inner_end) = match split.behavior {
+    SplitConcat => (1, sections_per_direction, 0, secondary_length)
+    SplitZip => (0, secondary_length, 1, sections_per_direction)
+  }
+  let mut filtered_sections = 0
+  for outer_index = outer_start
+      outer_index < outer_end
+      outer_index = outer_index + 1 {
+    let from_secondary_index = outer_index * sections_per_direction -
+      filtered_sections
+    for inner_index = inner_start
+        inner_index < inner_end
+        inner_index = inner_index + 1 {
+      let (section_index, from_sec, to_sec) = match split.behavior {
+        SplitConcat => {
+          let si = outer_index
+          let fs = inner_index
+          let ts = inner_index +
+            outer_index * secondary_length -
+            filtered_sections
+          (si, fs, ts)
+        }
+        SplitZip => {
+          let si = inner_index
+          let fs = from_secondary_index
+          let ts = outer_index * sections_per_direction +
+            inner_index -
+            filtered_sections
+          (si, fs, ts)
+        }
+      }
+      // Insert new row/column
+      match (split.direction, split.behavior) {
+        (SplitColumn, SplitConcat) => split_push_row(self.rows)
+        (SplitColumn, SplitZip) => split_insert_row(self.rows, to_sec)
+        (SplitRow, SplitConcat) => split_push_column(self.rows)
+        (SplitRow, SplitZip) => split_insert_column(self.rows, to_sec)
+      }
+      // Copy cells from overflow position to new position
+      let section_is_empty = split_copy_section(
+        self.rows,
+        section_length,
+        section_index,
+        primary_length,
+        from_sec,
+        to_sec,
+        split.direction,
+      )
+      // If section is empty and display is Clean, delete the inserted row/column
+      if section_is_empty && split.display == SplitClean {
+        match split.direction {
+          SplitColumn => split_remove_row(self.rows, to_sec)
+          SplitRow => split_remove_column(self.rows, to_sec)
+        }
+        filtered_sections = filtered_sections + 1
+      }
+    }
+  }
+  // Cleanup: remove extra columns/rows beyond section_length
+  for segment = primary_length - 1
+      segment >= section_length
+      segment = segment - 1 {
+    match split.direction {
+      SplitColumn => split_remove_column_all(self.rows, segment)
+      SplitRow => split_remove_row(self.rows, segment)
+    }
+  }
+  // Clear spans and border overrides since the table shape changed completely
+  self.config.clear_spans_and_overrides()
+  self
+}
+
+///|
+fn split_push_row(rows : Array[Array[String]]) -> Unit {
+  let col_count = if rows.length() > 0 { rows[0].length() } else { 0 }
+  rows.push(Array::make(col_count, ""))
+}
+
+///|
+fn split_insert_row(rows : Array[Array[String]], index : Int) -> Unit {
+  let col_count = if rows.length() > 0 { rows[0].length() } else { 0 }
+  rows.insert(index, Array::make(col_count, ""))
+}
+
+///|
+fn split_push_column(rows : Array[Array[String]]) -> Unit {
+  for i = 0; i < rows.length(); i = i + 1 {
+    rows[i].push("")
+  }
+}
+
+///|
+fn split_insert_column(rows : Array[Array[String]], col : Int) -> Unit {
+  for i = 0; i < rows.length(); i = i + 1 {
+    rows[i].insert(col, "")
+  }
+}
+
+///|
+fn split_remove_row(rows : Array[Array[String]], index : Int) -> Unit {
+  rows.remove(index) |> ignore
+}
+
+///|
+fn split_remove_column_all(rows : Array[Array[String]], col : Int) -> Unit {
+  for i = 0; i < rows.length(); i = i + 1 {
+    if col < rows[i].length() {
+      rows[i].remove(col) |> ignore
+    }
+  }
+}
+
+///|
+fn split_remove_column(rows : Array[Array[String]], col : Int) -> Unit {
+  for i = 0; i < rows.length(); i = i + 1 {
+    if col < rows[i].length() {
+      rows[i].remove(col) |> ignore
+    }
+  }
+}
+
+///|
+fn split_format_position(
+  direction : SplitDirection,
+  primary_index : Int,
+  secondary_index : Int,
+) -> (Int, Int) {
+  match direction {
+    SplitColumn => (secondary_index, primary_index)
+    SplitRow => (primary_index, secondary_index)
+  }
+}
+
+///|
+fn split_copy_section(
+  rows : Array[Array[String]],
+  section_length : Int,
+  section_index : Int,
+  primary_length : Int,
+  from_secondary_index : Int,
+  to_secondary_index : Int,
+  direction : SplitDirection,
+) -> Bool {
+  let mut section_is_empty = true
+  for to_primary_index = 0
+      to_primary_index < section_length
+      to_primary_index = to_primary_index + 1 {
+    let from_primary_index = to_primary_index + section_index * section_length
+    if from_primary_index < primary_length {
+      let (from_row, from_col) = split_format_position(
+        direction, from_primary_index, from_secondary_index,
+      )
+      if from_row < rows.length() && from_col < rows[from_row].length() {
+        if rows[from_row][from_col] != "" {
+          section_is_empty = false
+        }
+        let (to_row, to_col) = split_format_position(
+          direction, to_primary_index, to_secondary_index,
+        )
+        if to_row < rows.length() && to_col < rows[to_row].length() {
+          // Swap the cells
+          let tmp = rows[from_row][from_col]
+          rows[from_row][from_col] = rows[to_row][to_col]
+          rows[to_row][to_col] = tmp
+        }
+      }
+    }
+  }
+  section_is_empty
 }

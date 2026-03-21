@@ -447,9 +447,13 @@ fn render_split_line(
     return ""
   }
 
-  let mut out = match first_char([borders.left_intersection, borders.left]) {
-    Some(value) => value.to_string()
-    None => ""
+  let mut out = match config.intersection_override_at(boundary_row, 0) {
+    Some(ch) => ch.to_string()
+    None =>
+      match first_char([borders.left_intersection, borders.left]) {
+        Some(value) => value.to_string()
+        None => ""
+      }
   }
   let mut column = 0
   while column < count_columns {
@@ -502,39 +506,52 @@ fn render_split_line(
         column - 1,
       )
       let next_anchor = row_span_boundary_anchor(config, boundary_row, column)
-      let join = match current_anchor {
-        Some(_) =>
-          if current_anchor == next_anchor {
+      let join = match config.intersection_override_at(boundary_row, column) {
+        Some(ch) =>
+          if current_anchor == next_anchor && current_anchor is Some(_) {
             ""
           } else {
-            match
-              first_char([
-                borders.intersection,
-                borders.vertical,
-                borders.horizontal,
-              ]) {
-              Some(value) => value.to_string()
-              None => ""
-            }
+            ch.to_string()
           }
         None =>
-          match
-            first_char([
-              borders.intersection,
-              borders.vertical,
-              borders.horizontal,
-            ]) {
-            Some(value) => value.to_string()
-            None => ""
+          match current_anchor {
+            Some(_) =>
+              if current_anchor == next_anchor {
+                ""
+              } else {
+                match
+                  first_char([
+                    borders.intersection,
+                    borders.vertical,
+                    borders.horizontal,
+                  ]) {
+                  Some(value) => value.to_string()
+                  None => ""
+                }
+              }
+            None =>
+              match
+                first_char([
+                  borders.intersection,
+                  borders.vertical,
+                  borders.horizontal,
+                ]) {
+                Some(value) => value.to_string()
+                None => ""
+              }
           }
       }
       out = out + join
     }
   }
   out +
-  (match first_char([borders.right_intersection, borders.right]) {
-    Some(value) => value.to_string()
-    None => ""
+  (match config.intersection_override_at(boundary_row, count_columns) {
+    Some(ch) => ch.to_string()
+    None =>
+      match first_char([borders.right_intersection, borders.right]) {
+        Some(value) => value.to_string()
+        None => ""
+      }
   })
 }
 
