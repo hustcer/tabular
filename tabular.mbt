@@ -63,6 +63,11 @@ pub struct Cell {
 }
 
 ///|
+pub struct ByColumnName {
+  name : String
+}
+
+///|
 pub enum Segment {
   All(Int, Int)
   Range(Int, Int, Int, Int, Int, Int)
@@ -384,6 +389,11 @@ pub fn Cell::new(row : Int, column : Int) -> Cell {
 }
 
 ///|
+pub fn ByColumnName::new(name : String) -> ByColumnName {
+  { name, }
+}
+
+///|
 pub fn Cell::as_segment(self : Cell) -> Segment {
   CellOnly(self, 0, 1)
 }
@@ -605,6 +615,23 @@ fn resolve_columns(columns : Columns, count : Int) -> Array[Int] {
     columns.skip_n,
     columns.step_n,
   )
+}
+
+///|
+fn resolve_columns_by_name(
+  rows : Array[Array[String]],
+  by_name : ByColumnName,
+) -> Array[Int] {
+  if rows.is_empty() {
+    return []
+  }
+  let result = []
+  rows[0].eachi((index, value) => {
+    if value == by_name.name {
+      result.push(index)
+    }
+  })
+  result
 }
 
 ///|
@@ -1211,5 +1238,17 @@ pub fn Table::modify_cell(
 ) -> Table {
   apply_setting_to_cell_value(self.rows, cell.row, cell.column, setting)
   apply_setting_to_cell(self.config, cell.row, cell.column, setting)
+  self
+}
+
+///|
+pub fn Table::modify_by_column_name(
+  self : Table,
+  by_name : ByColumnName,
+  setting : Setting,
+) -> Table {
+  resolve_columns_by_name(self.rows, by_name).each(column => {
+    self.modify_columns(Columns::one(column), setting) |> ignore
+  })
   self
 }

@@ -1000,3 +1000,90 @@ test "format cell value" {
     ),
   )
 }
+
+///|
+test "padding by column name" {
+  let table = @tabular.Table::from_rows([
+    ["N", "column 0", "column 1"],
+    ["0", "0-0", "0-1"],
+    ["1", "1-0", "1-1"],
+  ])
+  table.apply(@tabular.Style::psql()) |> ignore
+  table.modify_by_column_name(
+    @tabular.ByColumnName::new("column 0"),
+    @tabular.Setting::padding(@tabular.Padding::new(3, 3, 0, 0)),
+  )
+  |> ignore
+  table.modify_segment(
+    @tabular.Segment::all(),
+    @tabular.Setting::alignment(@tabular.Alignment::center()),
+  )
+  |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #| N |   column 0   | column 1 
+      #|----+--------------+-----------
+      #| 0 |     0-0      |   0-1    
+      #| 1 |     1-0      |   1-1    
+    ),
+  )
+}
+
+///|
+test "padding by column name not first row" {
+  let table = @tabular.Table::from_rows([
+    ["N", "column 0", "column 1"],
+    ["0", "0-0", "0-1"],
+    ["1", "1-0", "1-1"],
+  ])
+  table.apply(@tabular.Style::psql()) |> ignore
+  table.modify_by_column_name(
+    @tabular.ByColumnName::new("0-1"),
+    @tabular.Setting::padding(@tabular.Padding::new(3, 3, 0, 0)),
+  )
+  |> ignore
+  table.modify_segment(
+    @tabular.Segment::all(),
+    @tabular.Setting::alignment(@tabular.Alignment::center()),
+  )
+  |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #| N | column 0 | column 1 
+      #|----+----------+-----------
+      #| 0 |   0-0    |   0-1    
+      #| 1 |   1-0    |   1-1    
+    ),
+  )
+}
+
+///|
+test "padding by column name not existing" {
+  let table = @tabular.Table::from_rows([
+    ["N", "column 0", "column 1"],
+    ["0", "0-0", "0-1"],
+    ["1", "1-0", "1-1"],
+  ])
+  table.apply(@tabular.Style::psql()) |> ignore
+  table.modify_by_column_name(
+    @tabular.ByColumnName::new("column 01123123"),
+    @tabular.Setting::padding(@tabular.Padding::new(3, 3, 0, 0)),
+  )
+  |> ignore
+  table.modify_segment(
+    @tabular.Segment::all(),
+    @tabular.Setting::alignment(@tabular.Alignment::center()),
+  )
+  |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #| N | column 0 | column 1 
+      #|----+----------+-----------
+      #| 0 |   0-0    |   0-1    
+      #| 1 |   1-0    |   1-1    
+    ),
+  )
+}

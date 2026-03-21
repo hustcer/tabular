@@ -37,6 +37,11 @@ pub fn Builder::remove_column(Self, Int) -> Unit
 pub fn Builder::remove_record(Self, Int) -> Unit
 pub fn Builder::set_empty(Self, String) -> Unit
 
+pub struct ByColumnName {
+  name : String
+}
+pub fn ByColumnName::new(String) -> Self
+
 pub struct Cell {
   row : Int
   column : Int
@@ -158,6 +163,7 @@ pub struct Table {
 }
 pub fn Table::apply(Self, Style) -> Self
 pub fn Table::from_rows(Array[Array[String]]) -> Self
+pub fn Table::modify_by_column_name(Self, ByColumnName, Setting) -> Self
 pub fn Table::modify_cell(Self, Cell, Setting) -> Self
 pub fn Table::modify_columns(Self, Columns, Setting) -> Self
 pub fn Table::modify_rows(Self, Rows, Setting) -> Self
