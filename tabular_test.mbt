@@ -1,4 +1,9 @@
 ///|
+fn to_upper(text : String) -> String {
+  text.to_upper()
+}
+
+///|
 test "table ascii style" {
   let table = @tabular.Table::from_rows([
     ["language", "year"],
@@ -1115,6 +1120,319 @@ test "format cell value" {
       #|----+--------
       #| 0 | alice 
       #| 1 |   X   
+    ),
+  )
+}
+
+///|
+test "format content full segment" {
+  let table = @tabular.Table::from_rows([
+    ["N", "column 0", "column 1", "column 2"],
+    ["0", "0-0", "0-1", "0-2"],
+    ["1", "1-0", "1-1", "1-2"],
+    ["2", "2-0", "2-1", "2-2"],
+  ])
+  table.modify_segment(
+    @tabular.Segment::all(),
+    @tabular.Setting::format(
+      @tabular.Format::content(value => "[" + value + "]"),
+    ),
+  )
+  |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|+-----+------------+------------+------------+
+      #|| [N] | [column 0] | [column 1] | [column 2] |
+      #|+-----+------------+------------+------------+
+      #|| [0] |   [0-0]    |   [0-1]    |   [0-2]    |
+      #|+-----+------------+------------+------------+
+      #|| [1] |   [1-0]    |   [1-1]    |   [1-2]    |
+      #|+-----+------------+------------+------------+
+      #|| [2] |   [2-0]    |   [2-1]    |   [2-2]    |
+      #|+-----+------------+------------+------------+
+    ),
+  )
+}
+
+///|
+test "format content using function" {
+  let table = @tabular.Table::from_rows([
+    ["N", "column 0", "column 1"],
+    ["0", "0-0", "0-1"],
+    ["1", "1-0", "1-1"],
+  ])
+  table.apply(@tabular.Style::markdown()) |> ignore
+  table.modify_rows(
+    @tabular.Rows::first(),
+    @tabular.Setting::format(@tabular.Format::content(to_upper)),
+  )
+  |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|| N | COLUMN 0 | COLUMN 1 |
+      #||---|----------|----------|
+      #|| 0 |   0-0    |   0-1    |
+      #|| 1 |   1-0    |   1-1    |
+    ),
+  )
+}
+
+///|
+test "format positioned first row" {
+  let table = @tabular.Table::from_rows([
+    ["N", "column 0", "column 1", "column 2"],
+    ["0", "0-0", "0-1", "0-2"],
+    ["1", "1-0", "1-1", "1-2"],
+  ])
+  table.apply(@tabular.Style::markdown()) |> ignore
+  table.modify_rows(
+    @tabular.Rows::first(),
+    @tabular.Setting::format(
+      @tabular.Format::positioned((value, row, column) => {
+        if row == 0 && column < 3 {
+          "(" + row.to_string() + ", " + column.to_string() + ")"
+        } else {
+          value
+        }
+      }),
+    ),
+  )
+  |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|| (0, 0) | (0, 1) | (0, 2) | column 2 |
+      #||--------|--------|--------|----------|
+      #||   0    |  0-0   |  0-1   |   0-2    |
+      #||   1    |  1-0   |  1-1   |   1-2    |
+    ),
+  )
+}
+
+///|
+test "format multiline content" {
+  let table = @tabular.Table::from_rows([
+    ["N", "column 0", "column 1"],
+    ["0", "0-0", "E\nnde\navou\nros"],
+    ["1", "1-0", "https://\nwww\n.\nredhat\n.com\n/en"],
+  ])
+  table.apply(@tabular.Style::psql()) |> ignore
+  table.modify_segment(
+    @tabular.Segment::all(),
+    @tabular.Setting::format(
+      @tabular.Format::content(value => "(x) " + value).multiline(),
+    ),
+  )
+  |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #| (x) N | (x) column 0 | (x) column 1 
+      #|--------+--------------+---------------
+      #| (x) 0 |   (x) 0-0    |    (x) E     
+      #|       |              |   (x) nde    
+      #|       |              |   (x) avou   
+      #|       |              |   (x) ros    
+      #| (x) 1 |   (x) 1-0    | (x) https:// 
+      #|       |              |   (x) www    
+      #|       |              |    (x) .     
+      #|       |              |  (x) redhat  
+      #|       |              |   (x) .com   
+      #|       |              |   (x) /en    
+    ),
+  )
+}
+
+///|
+test "format intersection content" {
+  let table = @tabular.Table::from_rows([
+    ["N", "column 0", "column 1", "column 2"],
+    ["0", "0-0", "0-1", "0-2"],
+    ["1", "1-0", "1-1", "1-2"],
+    ["2", "2-0", "2-1", "2-2"],
+  ])
+  table.apply(@tabular.Style::psql()) |> ignore
+  table.modify_segment(
+    @tabular.Columns::new(1, 3).intersect(@tabular.Rows::new(1, 3)),
+    @tabular.Setting::format(@tabular.Format::content(value => "(x) " + value)),
+  )
+  |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #| N | column 0 | column 1 | column 2 
+      #|----+----------+----------+-----------
+      #| 0 | (x) 0-0  | (x) 0-1  |   0-2    
+      #| 1 | (x) 1-0  | (x) 1-1  |   1-2    
+      #| 2 |   2-0    |   2-1    |   2-2    
+    ),
+  )
+}
+
+///|
+test "format inverse columns content" {
+  let table = @tabular.Table::from_rows([
+    ["N", "column 0", "column 1", "column 2"],
+    ["0", "0-0", "0-1", "0-2"],
+    ["1", "1-0", "1-1", "1-2"],
+  ])
+  table.apply(@tabular.Style::psql()) |> ignore
+  table.modify_segment(
+    @tabular.Columns::one(0).inverse(),
+    @tabular.Setting::format(@tabular.Format::content(value => "(x) " + value)),
+  )
+  |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #| N | (x) column 0 | (x) column 1 | (x) column 2 
+      #|----+--------------+--------------+---------------
+      #| 0 |   (x) 0-0    |   (x) 0-1    |   (x) 0-2    
+      #| 1 |   (x) 1-0    |   (x) 1-1    |   (x) 1-2    
+    ),
+  )
+}
+
+///|
+test "format union and difference content" {
+  let table = @tabular.Table::from_rows([
+    ["N", "column 0", "column 1", "column 2"],
+    ["0", "0-0", "0-1", "0-2"],
+    ["1", "1-0", "1-1", "1-2"],
+    ["2", "2-0", "2-1", "2-2"],
+  ])
+  table.apply(@tabular.Style::psql()) |> ignore
+  table.modify_segment(
+    @tabular.Columns::one(0)
+    .and_rows(@tabular.Rows::one(0))
+    .not_cell(@tabular.Cell::new(0, 0)),
+    @tabular.Setting::format(@tabular.Format::content(value => "(x) " + value)),
+  )
+  |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|   N   | (x) column 0 | (x) column 1 | (x) column 2 
+      #|--------+--------------+--------------+---------------
+      #| (x) 0 |     0-0      |     0-1      |     0-2      
+      #| (x) 1 |     1-0      |     1-1      |     1-2      
+      #| (x) 2 |     2-0      |     2-1      |     2-2      
+    ),
+  )
+}
+
+///|
+test "format content keeps padding and alignment" {
+  let table = @tabular.Table::from_rows([
+    ["N", "column 0", "column 1"],
+    ["0", "0-0", "0-1"],
+    ["1", "1-0", "1-1"],
+  ])
+  table.modify_segment(
+    @tabular.Segment::all(),
+    @tabular.Setting::alignment(@tabular.Alignment::left()),
+  )
+  |> ignore
+  table.modify_segment(
+    @tabular.Segment::all(),
+    @tabular.Setting::padding(@tabular.Padding::new(3, 1, 0, 0)),
+  )
+  |> ignore
+  table.modify_segment(
+    @tabular.Segment::all(),
+    @tabular.Setting::format(
+      @tabular.Format::content(value => "[" + value + "]"),
+    ),
+  )
+  |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|+-------+--------------+--------------+
+      #||   [N] |   [column 0] |   [column 1] |
+      #|+-------+--------------+--------------+
+      #||   [0] |   [0-0]      |   [0-1]      |
+      #|+-------+--------------+--------------+
+      #||   [1] |   [1-0]      |   [1-1]      |
+      #|+-------+--------------+--------------+
+    ),
+  )
+}
+
+///|
+test "format content then width truncate" {
+  let table = @tabular.Table::from_rows([["name"], ["alphabet"]])
+  table.set_alignment(@tabular.Alignment::left()) |> ignore
+  table.modify_segment(
+    @tabular.Segment::all(),
+    @tabular.Setting::format(
+      @tabular.Format::content(value => "[" + value + "]"),
+    ),
+  )
+  |> ignore
+  table.set_width(@tabular.Width::truncate(6, suffix="...")) |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|+--------+
+      #|| [name] |
+      #|+--------+
+      #|| [al... |
+      #|+--------+
+    ),
+  )
+}
+
+///|
+test "format content then width wrap" {
+  let table = @tabular.Table::from_rows([["name"], ["alphabet"]])
+  table.set_alignment(@tabular.Alignment::left()) |> ignore
+  table.modify_segment(
+    @tabular.Segment::all(),
+    @tabular.Setting::format(
+      @tabular.Format::content(value => "[" + value + "]"),
+    ),
+  )
+  |> ignore
+  table.set_width(@tabular.Width::wrap(4)) |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|+------+
+      #|| [nam |
+      #|| e]   |
+      #|+------+
+      #|| [alp |
+      #|| habe |
+      #|| t]   |
+      #|+------+
+    ),
+  )
+}
+
+///|
+test "format multiline then height limit" {
+  let table = @tabular.Table::from_rows([["text"], ["a\nb\nc"]])
+  table.set_alignment(@tabular.Alignment::left()) |> ignore
+  table.modify_segment(
+    @tabular.Segment::all(),
+    @tabular.Setting::format(
+      @tabular.Format::content(value => "<" + value + ">").multiline(),
+    ),
+  )
+  |> ignore
+  table.set_height(@tabular.Height::limit(2)) |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|+--------+
+      #|| <text> |
+      #|+--------+
+      #|| <a>    |
+      #|| <b>    |
+      #|+--------+
     ),
   )
 }

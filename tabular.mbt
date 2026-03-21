@@ -32,8 +32,10 @@ pub enum Height {
 
 ///|
 pub enum Format {
-  Surround(String, String)
-  Value(String)
+  Surround(String, String, Bool)
+  Value(String, Bool)
+  Content((String) -> String, Bool)
+  Positioned((String, Int, Int) -> String, Bool)
 }
 
 ///|
@@ -208,12 +210,32 @@ pub fn Height::limit(size : Int) -> Height {
 
 ///|
 pub fn Format::surround(prefix : String, suffix : String) -> Format {
-  Surround(prefix, suffix)
+  Surround(prefix, suffix, false)
 }
 
 ///|
 pub fn Format::value(text : String) -> Format {
-  Value(text)
+  Value(text, false)
+}
+
+///|
+pub fn Format::content(transform : (String) -> String) -> Format {
+  Content(transform, false)
+}
+
+///|
+pub fn Format::positioned(transform : (String, Int, Int) -> String) -> Format {
+  Positioned(transform, false)
+}
+
+///|
+pub fn Format::multiline(self : Format) -> Format {
+  match self {
+    Surround(prefix, suffix, _) => Surround(prefix, suffix, true)
+    Value(text, _) => Value(text, true)
+    Content(transform, _) => Content(transform, true)
+    Positioned(transform, _) => Positioned(transform, true)
+  }
 }
 
 ///|
@@ -679,11 +701,55 @@ fn convert_height(height : Height) -> @papergrid.HeightMode {
 }
 
 ///|
-fn format_content(value : String, format : Format) -> String {
-  match format {
-    Surround(prefix, suffix) => prefix + value + suffix
-    Value(text) => text
+fn join_lines(lines : Array[String]) -> String {
+  let mut result = ""
+  for index = 0; index < lines.length(); index = index + 1 {
+    if index > 0 {
+      result += "\n"
+    }
+    result += lines[index]
   }
+  result
+}
+
+///|
+fn format_content_once(
+  value : String,
+  format : Format,
+  row : Int,
+  column : Int,
+) -> String {
+  match format {
+    Surround(prefix, suffix, _) => prefix + value + suffix
+    Value(text, _) => text
+    Content(transform, _) => transform(value)
+    Positioned(transform, _) => transform(value, row, column)
+  }
+}
+
+///|
+fn format_content(
+  value : String,
+  format : Format,
+  row : Int,
+  column : Int,
+) -> String {
+  let multiline = match format {
+    Surround(_, _, multiline) => multiline
+    Value(_, multiline) => multiline
+    Content(_, multiline) => multiline
+    Positioned(_, multiline) => multiline
+  }
+  if !multiline {
+    return format_content_once(value, format, row, column)
+  }
+
+  let lines = @papergrid.split_lines(value)
+  let formatted = []
+  lines.each(line => {
+    formatted.push(format_content_once(line, format, row, column))
+  })
+  join_lines(formatted)
 }
 
 ///|
@@ -1138,7 +1204,7 @@ fn apply_format_to_cell(
   if column < 0 || column >= row_values.length() {
     return
   }
-  row_values[column] = format_content(row_values[column], format)
+  row_values[column] = format_content(row_values[column], format, row, column)
 }
 
 ///|

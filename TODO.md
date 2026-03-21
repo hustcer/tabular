@@ -40,10 +40,13 @@ Already implemented and passing:
   - `modify_by_column_name`
   - `remove_rows`, `remove_columns`, `remove_by_column_name`
   - `extract_rows`, `extract_columns`, `extract_segment`
-- First-pass `Format`:
+- `Format`:
   - `Format::surround`
   - `Format::value`
-- Test count: `62`
+  - `Format::content`
+  - `Format::positioned`
+  - `Format::multiline`
+- Test count: `73`
 
 ## Constraints
 
@@ -92,23 +95,28 @@ Acceptance:
 
 ### Phase 2: Expand `Format` Toward Upstream
 
-Status: minimal subset only
+Status: complete
 
-Remaining work:
+Completed in this phase:
 
-- Add closure-like content transforms if MoonBit function values make this practical
-- Add positioned formatting variants
+- Added closure-like content transforms
+  - `Format::content((String) -> String)`
+  - supports lambdas and named functions
+- Added positioned formatting variants
+  - `Format::positioned((String, Int, Int) -> String)`
   - format based on `(row, column)`
-- Add multiline-aware formatting behavior
-- Verify formatting interacts correctly with:
+- Added multiline-aware formatting behavior
+  - `Format::multiline()`
+- Verified formatting interacts correctly with:
   - width wrap
   - width truncate
-  - height limit / increase
+  - height limit
   - padding
   - alignment
-- Add formatting composition tests
-  - segment + row + column + cell
-  - union/intersection/inverse selectors
+- Added formatting composition tests covering:
+  - segment + row + cell
+  - union / difference / intersection / inverse selectors
+  - function-based and positioned formatting
 
 Acceptance:
 

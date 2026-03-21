@@ -87,9 +87,14 @@ pub enum Entity {
 }
 
 pub enum Format {
-  Surround(String, String)
-  Value(String)
+  Surround(String, String, Bool)
+  Value(String, Bool)
+  Content((String) -> String, Bool)
+  Positioned((String, Int, Int) -> String, Bool)
 }
+pub fn Format::content((String) -> String) -> Self
+pub fn Format::multiline(Self) -> Self
+pub fn Format::positioned((String, Int, Int) -> String) -> Self
 pub fn Format::surround(String, String) -> Self
 pub fn Format::value(String) -> Self
 
