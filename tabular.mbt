@@ -60,6 +60,10 @@ pub struct Cell {
 pub enum Segment {
   All(Int, Int)
   Range(Int, Int, Int, Int, Int, Int)
+  Cross(Rows, Columns, Int, Int)
+  InverseRows(Rows, Int, Int)
+  InverseColumns(Columns, Int, Int)
+  InverseCell(Cell, Int, Int)
 }
 
 ///|
@@ -208,6 +212,16 @@ pub fn Rows::all() -> Rows {
 }
 
 ///|
+pub fn Rows::intersect(self : Rows, columns : Columns) -> Segment {
+  Cross(self, columns, 0, 1)
+}
+
+///|
+pub fn Rows::inverse(self : Rows) -> Segment {
+  InverseRows(self, 0, 1)
+}
+
+///|
 pub fn Rows::not(self : Rows, other : Rows) -> Rows {
   {
     start: self.start,
@@ -278,6 +292,16 @@ pub fn Columns::all() -> Columns {
 }
 
 ///|
+pub fn Columns::intersect(self : Columns, rows : Rows) -> Segment {
+  Cross(rows, self, 0, 1)
+}
+
+///|
+pub fn Columns::inverse(self : Columns) -> Segment {
+  InverseColumns(self, 0, 1)
+}
+
+///|
 pub fn Columns::not(self : Columns, other : Columns) -> Columns {
   {
     start: self.start,
@@ -328,6 +352,11 @@ pub fn Cell::new(row : Int, column : Int) -> Cell {
 }
 
 ///|
+pub fn Cell::inverse(self : Cell) -> Segment {
+  InverseCell(self, 0, 1)
+}
+
+///|
 pub fn Segment::new(
   row_start : Int,
   row_end : Int,
@@ -343,6 +372,10 @@ pub fn Segment::skip(self : Segment, count : Int) -> Segment {
     All(_, step) => All(count, step)
     Range(row_start, row_end, column_start, column_end, _, step) =>
       Range(row_start, row_end, column_start, column_end, count, step)
+    Cross(rows, columns, _, step) => Cross(rows, columns, count, step)
+    InverseRows(rows, _, step) => InverseRows(rows, count, step)
+    InverseColumns(columns, _, step) => InverseColumns(columns, count, step)
+    InverseCell(cell, _, step) => InverseCell(cell, count, step)
   }
 }
 
@@ -353,6 +386,11 @@ pub fn Segment::step_by(self : Segment, step : Int) -> Segment {
     All(skip_n, _) => All(skip_n, next_step)
     Range(row_start, row_end, column_start, column_end, skip_n, _) =>
       Range(row_start, row_end, column_start, column_end, skip_n, next_step)
+    Cross(rows, columns, skip_n, _) => Cross(rows, columns, skip_n, next_step)
+    InverseRows(rows, skip_n, _) => InverseRows(rows, skip_n, next_step)
+    InverseColumns(columns, skip_n, _) =>
+      InverseColumns(columns, skip_n, next_step)
+    InverseCell(cell, skip_n, _) => InverseCell(cell, skip_n, next_step)
   }
 }
 
@@ -500,6 +538,27 @@ fn resolve_columns(columns : Columns, count : Int) -> Array[Int] {
 }
 
 ///|
+fn apply_skip_step_to_cells(
+  cells : Array[(Int, Int)],
+  skip_n : Int,
+  step_n : Int,
+) -> Array[(Int, Int)] {
+  let result = []
+  let mut seen = 0
+  cells.each(cell => {
+    if seen < skip_n {
+      seen = seen + 1
+    } else {
+      if step_n <= 1 || (seen - skip_n) % step_n == 0 {
+        result.push(cell)
+      }
+      seen = seen + 1
+    }
+  })
+  result
+}
+
+///|
 fn resolve_segment_cells(
   segment : Segment,
   row_count : Int,
@@ -518,6 +577,53 @@ fn resolve_segment_cells(
         skip_n,
         step_n,
       )
+    Cross(rows, columns, skip_n, step_n) => {
+      let row_indexes = resolve_rows(rows, row_count)
+      let column_indexes = resolve_columns(columns, column_count)
+      let cells = []
+      row_indexes.each(row => {
+        column_indexes.each(column => cells.push((row, column)))
+      })
+      return apply_skip_step_to_cells(cells, skip_n, step_n)
+    }
+    InverseRows(rows, skip_n, step_n) => {
+      let excluded = resolve_rows(rows, row_count)
+      let cells = []
+      for row = 0; row < row_count; row = row + 1 {
+        if excluded.contains(row) {
+          continue
+        }
+        for column = 0; column < column_count; column = column + 1 {
+          cells.push((row, column))
+        }
+      }
+      return apply_skip_step_to_cells(cells, skip_n, step_n)
+    }
+    InverseColumns(columns, skip_n, step_n) => {
+      let excluded = resolve_columns(columns, column_count)
+      let cells = []
+      for row = 0; row < row_count; row = row + 1 {
+        for column = 0; column < column_count; column = column + 1 {
+          if excluded.contains(column) {
+            continue
+          }
+          cells.push((row, column))
+        }
+      }
+      return apply_skip_step_to_cells(cells, skip_n, step_n)
+    }
+    InverseCell(cell, skip_n, step_n) => {
+      let cells = []
+      for row = 0; row < row_count; row = row + 1 {
+        for column = 0; column < column_count; column = column + 1 {
+          if row == cell.row && column == cell.column {
+            continue
+          }
+          cells.push((row, column))
+        }
+      }
+      return apply_skip_step_to_cells(cells, skip_n, step_n)
+    }
   }
   let mut seen = 0
   for row = row_start; row < row_end; row = row + 1 {

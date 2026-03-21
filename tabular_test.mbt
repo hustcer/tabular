@@ -750,3 +750,103 @@ test "modify column by last offset" {
     ),
   )
 }
+
+///|
+test "modify intersect rows and columns" {
+  let table = @tabular.Table::from_rows([
+    ["N", "column 0", "column 1", "column 2"],
+    ["0", "0-0", "0-1", "0-2"],
+    ["1", "1-0", "1-1", "1-2"],
+    ["2", "2-0", "2-1", "2-2"],
+  ])
+  table.apply(@tabular.Style::psql()) |> ignore
+  table.modify_segment(
+    @tabular.Columns::new(1, 3).intersect(@tabular.Rows::new(1, 3)),
+    @tabular.Setting::alignment(@tabular.Alignment::right()),
+  )
+  |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #| N | column 0 | column 1 | column 2 
+      #|----+----------+----------+-----------
+      #| 0 |      0-0 |      0-1 |   0-2    
+      #| 1 |      1-0 |      1-1 |   1-2    
+      #| 2 |   2-0    |   2-1    |   2-2    
+    ),
+  )
+}
+
+///|
+test "modify intersect rows and columns with skip" {
+  let table = @tabular.Table::from_rows([
+    ["N", "column 0", "column 1", "column 2"],
+    ["0", "0-0", "0-1", "0-2"],
+    ["1", "1-0", "1-1", "1-2"],
+    ["2", "2-0", "2-1", "2-2"],
+  ])
+  table.apply(@tabular.Style::psql()) |> ignore
+  table.modify_segment(
+    @tabular.Rows::new(1, 3).intersect(@tabular.Columns::new(1, 4)).skip(2),
+    @tabular.Setting::alignment(@tabular.Alignment::right()),
+  )
+  |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #| N | column 0 | column 1 | column 2 
+      #|----+----------+----------+-----------
+      #| 0 |   0-0    |   0-1    |      0-2 
+      #| 1 |      1-0 |      1-1 |      1-2 
+      #| 2 |   2-0    |   2-1    |   2-2    
+    ),
+  )
+}
+
+///|
+test "modify inverse columns" {
+  let table = @tabular.Table::from_rows([
+    ["N", "column 0", "column 1", "column 2"],
+    ["0", "0-0", "0-1", "0-2"],
+    ["1", "1-0", "1-1", "1-2"],
+  ])
+  table.apply(@tabular.Style::psql()) |> ignore
+  table.modify_segment(
+    @tabular.Columns::one(0).inverse(),
+    @tabular.Setting::alignment(@tabular.Alignment::right()),
+  )
+  |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #| N | column 0 | column 1 | column 2 
+      #|----+----------+----------+-----------
+      #| 0 |      0-0 |      0-1 |      0-2 
+      #| 1 |      1-0 |      1-1 |      1-2 
+    ),
+  )
+}
+
+///|
+test "modify inverse cell" {
+  let table = @tabular.Table::from_rows([
+    ["N", "column 0", "column 1"],
+    ["0", "0-0", "0-1"],
+    ["1", "1-0", "1-1"],
+  ])
+  table.apply(@tabular.Style::psql()) |> ignore
+  table.modify_segment(
+    @tabular.Cell::new(0, 0).inverse(),
+    @tabular.Setting::alignment(@tabular.Alignment::right()),
+  )
+  |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #| N | column 0 | column 1 
+      #|----+----------+-----------
+      #| 0 |      0-0 |      0-1 
+      #| 1 |      1-0 |      1-1 
+    ),
+  )
+}
