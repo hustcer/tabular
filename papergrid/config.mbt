@@ -199,6 +199,19 @@ pub struct SpannedConfig {
   border_vertical : Array[(Int, Int, Char)]
   // (row_boundary, column_boundary, char) — intersection/corner overrides
   border_intersection : Array[(Int, Int, Char)]
+  // Margin: per-side size, fill char, and offset
+  mut margin_top : Int
+  mut margin_bottom : Int
+  mut margin_left : Int
+  mut margin_right : Int
+  mut margin_fill_top : Char
+  mut margin_fill_bottom : Char
+  mut margin_fill_left : Char
+  mut margin_fill_right : Char
+  mut margin_offset_top : Int
+  mut margin_offset_bottom : Int
+  mut margin_offset_left : Int
+  mut margin_offset_right : Int
 }
 
 ///|
@@ -226,6 +239,18 @@ pub fn SpannedConfig::default() -> SpannedConfig {
     border_horizontal: [],
     border_vertical: [],
     border_intersection: [],
+    margin_top: 0,
+    margin_bottom: 0,
+    margin_left: 0,
+    margin_right: 0,
+    margin_fill_top: ' ',
+    margin_fill_bottom: ' ',
+    margin_fill_left: ' ',
+    margin_fill_right: ' ',
+    margin_offset_top: 0,
+    margin_offset_bottom: 0,
+    margin_offset_left: 0,
+    margin_offset_right: 0,
   }
 }
 
@@ -1075,6 +1100,50 @@ pub fn SpannedConfig::has_cell_borders(self : SpannedConfig) -> Bool {
   not(self.border_horizontal.is_empty()) ||
   not(self.border_vertical.is_empty()) ||
   not(self.border_intersection.is_empty())
+}
+
+///|
+pub fn SpannedConfig::set_margin(
+  self : SpannedConfig,
+  top : Int,
+  bottom : Int,
+  left : Int,
+  right : Int,
+  fill_top : Char,
+  fill_bottom : Char,
+  fill_left : Char,
+  fill_right : Char,
+) -> Unit {
+  self.margin_top = top
+  self.margin_bottom = bottom
+  self.margin_left = left
+  self.margin_right = right
+  self.margin_fill_top = fill_top
+  self.margin_fill_bottom = fill_bottom
+  self.margin_fill_left = fill_left
+  self.margin_fill_right = fill_right
+}
+
+///|
+pub fn SpannedConfig::set_margin_offset(
+  self : SpannedConfig,
+  top : Int,
+  bottom : Int,
+  left : Int,
+  right : Int,
+) -> Unit {
+  self.margin_offset_top = top
+  self.margin_offset_bottom = bottom
+  self.margin_offset_left = left
+  self.margin_offset_right = right
+}
+
+///|
+pub fn SpannedConfig::has_margin(self : SpannedConfig) -> Bool {
+  self.margin_top > 0 ||
+  self.margin_bottom > 0 ||
+  self.margin_left > 0 ||
+  self.margin_right > 0
 }
 
 ///|

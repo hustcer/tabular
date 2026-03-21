@@ -697,6 +697,103 @@ pub fn Table::apply_highlight(self : Table, highlight : Highlight) -> Table {
 }
 
 ///|
+pub struct Shadow {
+  size : Int
+  offset : Int
+  fill : Char
+  top : Bool
+  bottom : Bool
+  left : Bool
+  right : Bool
+}
+
+///|
+/// Create a shadow with default direction (bottom-right) and default fill '▒'.
+pub fn Shadow::new(size : Int) -> Shadow {
+  {
+    size,
+    offset: 1,
+    fill: '▒',
+    top: false,
+    bottom: true,
+    left: false,
+    right: true,
+  }
+}
+
+///|
+pub fn Shadow::set_fill(self : Shadow, c : Char) -> Shadow {
+  { ..self, fill: c }
+}
+
+///|
+pub fn Shadow::set_offset(self : Shadow, offset : Int) -> Shadow {
+  { ..self, offset, }
+}
+
+///|
+pub fn Shadow::set_top(self : Shadow) -> Shadow {
+  { ..self, top: true, bottom: false }
+}
+
+///|
+pub fn Shadow::set_bottom(self : Shadow) -> Shadow {
+  { ..self, top: false, bottom: true }
+}
+
+///|
+pub fn Shadow::set_left(self : Shadow) -> Shadow {
+  { ..self, left: true, right: false }
+}
+
+///|
+pub fn Shadow::set_right(self : Shadow) -> Shadow {
+  { ..self, left: false, right: true }
+}
+
+///|
+pub fn Table::apply_shadow(self : Table, shadow : Shadow) -> Table {
+  let fill = shadow.fill
+  let top_size = if shadow.top { shadow.size } else { 0 }
+  let bottom_size = if shadow.bottom { shadow.size } else { 0 }
+  let left_size = if shadow.left { shadow.size } else { 0 }
+  let right_size = if shadow.right { shadow.size } else { 0 }
+  self.config.set_margin(
+    top_size, bottom_size, left_size, right_size, fill, fill, fill, fill,
+  )
+  // Set offsets: the offset determines where fill starts on perpendicular sides
+  let h_offset = shadow.offset
+  let v_offset = shadow.offset
+  // For right+bottom (default): start offset on both
+  // For left: end offset on vertical, start offset on horizontal
+  // For top: end offset on horizontal, start offset on vertical
+  let top_offset = if shadow.top {
+    if shadow.left {
+      h_offset
+    } else {
+      h_offset
+    }
+  } else {
+    0
+  }
+  let bottom_offset = if shadow.bottom {
+    if shadow.left {
+      h_offset
+    } else {
+      h_offset
+    }
+  } else {
+    0
+  }
+  let left_offset = if shadow.left { v_offset } else { 0 }
+  let right_offset = if shadow.right { v_offset } else { 0 }
+  self.config.set_margin_offset(
+    top_offset, bottom_offset, left_offset, right_offset,
+  )
+  self
+}
+
+///|
 pub fn Style::ascii() -> Style {
   {
     borders: @papergrid.Borders::ascii(),

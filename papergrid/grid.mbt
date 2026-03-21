@@ -952,5 +952,134 @@ pub fn IterGrid::to_string(self : IterGrid) -> String {
     lines.push(bottom)
   }
 
+  // Apply margin if configured
+  if self.config.has_margin() {
+    let total_width = if lines.is_empty() { 0 } else { lines[0].length() }
+    let full_width = total_width +
+      self.config.margin_left +
+      self.config.margin_right
+    let table_height = lines.length()
+    // Add left/right margins to each line
+    if self.config.margin_left > 0 || self.config.margin_right > 0 {
+      for i = 0; i < lines.length(); i = i + 1 {
+        let left = margin_vertical_str(
+          self.config.margin_fill_left,
+          self.config.margin_left,
+          self.config.margin_offset_left,
+          i,
+          table_height,
+        )
+        let right = margin_vertical_str(
+          self.config.margin_fill_right,
+          self.config.margin_right,
+          self.config.margin_offset_right,
+          i,
+          table_height,
+        )
+        lines[i] = left + lines[i] + right
+      }
+    }
+    // Prepend top margin lines
+    if self.config.margin_top > 0 {
+      let top_lines = margin_horizontal_lines(
+        self.config.margin_fill_top,
+        self.config.margin_top,
+        self.config.margin_offset_top,
+        full_width,
+      )
+      for i = top_lines.length() - 1; i >= 0; i = i - 1 {
+        lines.insert(0, top_lines[i])
+      }
+    }
+    // Append bottom margin lines
+    if self.config.margin_bottom > 0 {
+      let bottom_lines = margin_horizontal_lines(
+        self.config.margin_fill_bottom,
+        self.config.margin_bottom,
+        self.config.margin_offset_bottom,
+        full_width,
+      )
+      for i = 0; i < bottom_lines.length(); i = i + 1 {
+        lines.push(bottom_lines[i])
+      }
+    }
+  }
+
   lines.join("\n")
+}
+
+///|
+/// Build a vertical margin string for left/right margins.
+/// `offset` uses Start semantics: lines before offset get spaces, lines at/after get fill.
+fn margin_vertical_str(
+  fill : Char,
+  size : Int,
+  offset : Int,
+  line : Int,
+  height : Int,
+) -> String {
+  if size == 0 {
+    return ""
+  }
+  let offset = if offset > height { height } else { offset }
+  if offset >= 0 {
+    // Start offset: line < offset → spaces, line >= offset → fill
+    if line >= offset {
+      fill.to_string().repeat(size)
+    } else {
+      " ".repeat(size)
+    }
+  } else {
+    // End offset: from end
+    let abs_off = -offset
+    let abs_off = if abs_off > height { height } else { abs_off }
+    let pos = height - abs_off
+    if line >= pos {
+      " ".repeat(size)
+    } else {
+      fill.to_string().repeat(size)
+    }
+  }
+}
+
+///|
+/// Build horizontal margin lines (top or bottom).
+/// `offset` uses Start semantics: columns before offset get spaces, rest get fill.
+fn margin_horizontal_lines(
+  fill : Char,
+  size : Int,
+  offset : Int,
+  width : Int,
+) -> Array[String] {
+  if size == 0 {
+    return []
+  }
+  let start_offset = if offset >= 0 {
+    if offset > width {
+      width
+    } else {
+      offset
+    }
+  } else {
+    0
+  }
+  let end_offset = if offset < 0 {
+    let abs_off = -offset
+    if abs_off > width {
+      width
+    } else {
+      abs_off
+    }
+  } else {
+    0
+  }
+  let indent_size = width - start_offset - end_offset
+  let result = []
+  for i = 0; i < size; i = i + 1 {
+    let line = " ".repeat(start_offset) +
+      fill.to_string().repeat(indent_size) +
+      " ".repeat(end_offset)
+    result.push(line)
+  }
+  result
 }

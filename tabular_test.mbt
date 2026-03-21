@@ -5132,3 +5132,143 @@ test "highlingt_complex_rows_and_columns" {
     ),
   )
 }
+
+///|
+fn shadow_matrix() -> @tabular.Table {
+  @tabular.Table::from_rows([
+    ["i32", "i32", "i32"],
+    ["123", "456", "789"],
+    ["234", "567", "891"],
+  ])
+}
+
+///|
+test "shadow_bottom_right" {
+  let table = shadow_matrix()
+  table.apply(@tabular.Style::psql()) |> ignore
+  table.apply_shadow(@tabular.Shadow::new(1)) |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #| i32 | i32 | i32  
+      #|-----+-----+-----▒
+      #| 123 | 456 | 789 ▒
+      #| 234 | 567 | 891 ▒
+      #| ▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒
+    ),
+  )
+}
+
+///|
+test "shadow_bottom_left" {
+  let table = shadow_matrix()
+  table.apply(@tabular.Style::psql()) |> ignore
+  table.apply_shadow(@tabular.Shadow::new(1).set_left()) |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|  i32 | i32 | i32 
+      #|▒-----+-----+-----
+      #|▒ 123 | 456 | 789 
+      #|▒ 234 | 567 | 891 
+      #| ▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒
+    ),
+  )
+}
+
+///|
+test "shadow_top_right" {
+  let table = shadow_matrix()
+  table.apply(@tabular.Style::psql()) |> ignore
+  table.apply_shadow(@tabular.Shadow::new(1).set_top()) |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #| ▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒
+      #| i32 | i32 | i32  
+      #|-----+-----+-----▒
+      #| 123 | 456 | 789 ▒
+      #| 234 | 567 | 891 ▒
+    ),
+  )
+}
+
+///|
+test "shadow_top_left" {
+  let table = shadow_matrix()
+  table.apply(@tabular.Style::psql()) |> ignore
+  table.apply_shadow(@tabular.Shadow::new(1).set_top().set_left()) |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #| ▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒
+      #|  i32 | i32 | i32 
+      #|▒-----+-----+-----
+      #|▒ 123 | 456 | 789 
+      #|▒ 234 | 567 | 891 
+    ),
+  )
+}
+
+///|
+test "shadow_set_fill" {
+  let table = shadow_matrix()
+  table.apply(@tabular.Style::ascii()) |> ignore
+  table.apply_shadow(@tabular.Shadow::new(1).set_fill('#')) |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|+-----+-----+-----+ 
+      #|| i32 | i32 | i32 |#
+      #|+-----+-----+-----+#
+      #|| 123 | 456 | 789 |#
+      #|+-----+-----+-----+#
+      #|| 234 | 567 | 891 |#
+      #|+-----+-----+-----+#
+      #| ###################
+    ),
+  )
+}
+
+///|
+test "shadow_size_2" {
+  let table = shadow_matrix()
+  table.apply(@tabular.Style::ascii()) |> ignore
+  table.apply_shadow(@tabular.Shadow::new(2).set_fill('#')) |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|+-----+-----+-----+  
+      #|| i32 | i32 | i32 |##
+      #|+-----+-----+-----+##
+      #|| 123 | 456 | 789 |##
+      #|+-----+-----+-----+##
+      #|| 234 | 567 | 891 |##
+      #|+-----+-----+-----+##
+      #| ####################
+      #| ####################
+    ),
+  )
+}
+
+///|
+test "shadow_set_offset" {
+  let table = shadow_matrix()
+  table.apply(@tabular.Style::ascii()) |> ignore
+  table.apply_shadow(@tabular.Shadow::new(2).set_fill('#').set_offset(3))
+  |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|+-----+-----+-----+  
+      #|| i32 | i32 | i32 |  
+      #|+-----+-----+-----+  
+      #|| 123 | 456 | 789 |##
+      #|+-----+-----+-----+##
+      #|| 234 | 567 | 891 |##
+      #|+-----+-----+-----+##
+      #|   ##################
+      #|   ##################
+    ),
+  )
+}
