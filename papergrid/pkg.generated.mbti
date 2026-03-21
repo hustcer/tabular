@@ -2,6 +2,13 @@
 package "hustcer/tabular/papergrid"
 
 // Values
+pub fn apply_height(Array[String], HeightMode) -> Array[String]
+
+pub fn apply_width(String, WidthMode) -> Array[String]
+
+pub fn processed_lines(String, WidthMode, HeightMode) -> Array[String]
+
+pub fn split_lines(String) -> Array[String]
 
 // Errors
 
@@ -38,6 +45,15 @@ pub fn Borders::empty() -> Self
 pub fn Borders::modern() -> Self
 pub fn Borders::rounded() -> Self
 
+pub enum HeightMode {
+  None
+  Increase(Int)
+  Limit(Int)
+}
+pub fn HeightMode::increase(Int) -> Self
+pub fn HeightMode::limit(Int) -> Self
+pub fn HeightMode::none() -> Self
+
 pub struct IterGrid {
   records : IterRecords
   config : SpannedConfig
@@ -70,17 +86,32 @@ pub struct SpannedConfig {
   mut padding_top : Int
   mut padding_bottom : Int
   mut alignment : AlignmentHorizontal
+  mut width_mode : WidthMode
+  mut height_mode : HeightMode
 }
 pub fn SpannedConfig::alignment(Self) -> AlignmentHorizontal
 pub fn SpannedConfig::borders(Self) -> Borders
 pub fn SpannedConfig::default() -> Self
+pub fn SpannedConfig::height_mode(Self) -> HeightMode
 pub fn SpannedConfig::padding_bottom(Self) -> Int
 pub fn SpannedConfig::padding_left(Self) -> Int
 pub fn SpannedConfig::padding_right(Self) -> Int
 pub fn SpannedConfig::padding_top(Self) -> Int
 pub fn SpannedConfig::set_alignment(Self, AlignmentHorizontal) -> Unit
 pub fn SpannedConfig::set_borders(Self, Borders) -> Unit
+pub fn SpannedConfig::set_height_mode(Self, HeightMode) -> Unit
 pub fn SpannedConfig::set_padding(Self, Int, Int, Int, Int) -> Unit
+pub fn SpannedConfig::set_width_mode(Self, WidthMode) -> Unit
+pub fn SpannedConfig::width_mode(Self) -> WidthMode
+
+pub enum WidthMode {
+  None
+  Wrap(Int)
+  Truncate(Int, String)
+}
+pub fn WidthMode::none() -> Self
+pub fn WidthMode::truncate(Int, String) -> Self
+pub fn WidthMode::wrap(Int) -> Self
 
 // Type aliases
 

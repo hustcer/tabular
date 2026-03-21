@@ -179,3 +179,77 @@ test "table custom padding" {
     ),
   )
 }
+
+///|
+test "table width wrap" {
+  let table = @tabular.Table::from_rows([["text"], ["abcdef"]])
+  table.set_alignment(@tabular.Alignment::left()) |> ignore
+  table.set_width(@tabular.Width::wrap(2)) |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|+----+
+      #|| te |
+      #|| xt |
+      #|+----+
+      #|| ab |
+      #|| cd |
+      #|| ef |
+      #|+----+
+    ),
+  )
+}
+
+///|
+test "table width truncate" {
+  let table = @tabular.Table::from_rows([["text"], ["abcdef"]])
+  table.set_alignment(@tabular.Alignment::left()) |> ignore
+  table.set_width(@tabular.Width::truncate(4, suffix="..")) |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|+------+
+      #|| text |
+      #|+------+
+      #|| ab.. |
+      #|+------+
+    ),
+  )
+}
+
+///|
+test "table height increase" {
+  let table = @tabular.Table::from_rows([["text"], ["a"]])
+  table.set_alignment(@tabular.Alignment::left()) |> ignore
+  table.set_height(@tabular.Height::increase(2)) |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|+------+
+      #|| text |
+      #||      |
+      #|+------+
+      #|| a    |
+      #||      |
+      #|+------+
+    ),
+  )
+}
+
+///|
+test "table height limit" {
+  let table = @tabular.Table::from_rows([["text"], ["a\nb\nc"]])
+  table.set_alignment(@tabular.Alignment::left()) |> ignore
+  table.set_height(@tabular.Height::limit(2)) |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|+------+
+      #|| text |
+      #|+------+
+      #|| a    |
+      #|| b    |
+      #|+------+
+    ),
+  )
+}

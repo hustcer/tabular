@@ -50,12 +50,11 @@ fn render_cell(
 fn render_row_line(
   borders : Borders,
   widths : Array[Int],
-  row : Array[String],
+  values : Array[String],
   count_columns : Int,
   padding_left : Int,
   padding_right : Int,
   alignment : AlignmentHorizontal,
-  blank : Bool,
 ) -> String {
   let mut out = match borders.left {
     Some(value) => value.to_string()
@@ -63,13 +62,7 @@ fn render_row_line(
   }
 
   for column = 0; column < count_columns; column = column + 1 {
-    let content = if blank {
-      ""
-    } else if column < row.length() {
-      row[column]
-    } else {
-      ""
-    }
+    let content = if column < values.length() { values[column] } else { "" }
     out = out +
       render_cell(
         content,
@@ -105,29 +98,56 @@ fn render_row(
   padding_top : Int,
   padding_bottom : Int,
   alignment : AlignmentHorizontal,
+  width_mode : WidthMode,
+  height_mode : HeightMode,
 ) -> Array[String] {
+  let cell_lines = []
+  let mut row_height = 0
+  for column = 0; column < count_columns; column = column + 1 {
+    let content = if column < row.length() { row[column] } else { "" }
+    let lines = processed_lines(content, width_mode, height_mode)
+    if lines.length() > row_height {
+      row_height = lines.length()
+    }
+    cell_lines.push(lines)
+  }
+
   let lines = []
   for i = 0; i < padding_top; i = i + 1 {
     ignore(i)
+    let blank_values = Array::make(count_columns, "")
     lines.push(
       render_row_line(
-        borders, widths, row, count_columns, padding_left, padding_right, alignment,
-        true,
+        borders, widths, blank_values, count_columns, padding_left, padding_right,
+        alignment,
       ),
     )
   }
-  lines.push(
-    render_row_line(
-      borders, widths, row, count_columns, padding_left, padding_right, alignment,
-      false,
-    ),
-  )
-  for i = 0; i < padding_bottom; i = i + 1 {
-    ignore(i)
+  for line_index = 0; line_index < row_height; line_index = line_index + 1 {
+    let values = []
+    for column = 0; column < count_columns; column = column + 1 {
+      let lines_for_cell = cell_lines[column]
+      values.push(
+        if line_index < lines_for_cell.length() {
+          lines_for_cell[line_index]
+        } else {
+          ""
+        },
+      )
+    }
     lines.push(
       render_row_line(
-        borders, widths, row, count_columns, padding_left, padding_right, alignment,
-        true,
+        borders, widths, values, count_columns, padding_left, padding_right, alignment,
+      ),
+    )
+  }
+  for i = 0; i < padding_bottom; i = i + 1 {
+    ignore(i)
+    let blank_values = Array::make(count_columns, "")
+    lines.push(
+      render_row_line(
+        borders, widths, blank_values, count_columns, padding_left, padding_right,
+        alignment,
       ),
     )
   }
@@ -160,6 +180,8 @@ pub fn IterGrid::to_string(self : IterGrid) -> String {
   let padding_top = self.config.padding_top()
   let padding_bottom = self.config.padding_bottom()
   let alignment = self.config.alignment()
+  let width_mode = self.config.width_mode()
+  let height_mode = self.config.height_mode()
   for row_index = 0; row_index < rows.length(); row_index = row_index + 1 {
     render_row(
       borders,
@@ -171,6 +193,8 @@ pub fn IterGrid::to_string(self : IterGrid) -> String {
       padding_top,
       padding_bottom,
       alignment,
+      width_mode,
+      height_mode,
     ).each(line => lines.push(line))
     if row_index + 1 < rows.length() {
       let middle = borders.build_line(

@@ -11,6 +11,18 @@ pub enum Alignment {
 }
 
 ///|
+pub enum Width {
+  Wrap(Int)
+  Truncate(Int, String)
+}
+
+///|
+pub enum Height {
+  Increase(Int)
+  Limit(Int)
+}
+
+///|
 pub struct Padding {
   left : Int
   right : Int
@@ -54,6 +66,26 @@ pub fn Alignment::center() -> Alignment {
 }
 
 ///|
+pub fn Width::wrap(width : Int) -> Width {
+  Wrap(width)
+}
+
+///|
+pub fn Width::truncate(width : Int, suffix? : String = "") -> Width {
+  Truncate(width, suffix)
+}
+
+///|
+pub fn Height::increase(size : Int) -> Height {
+  Increase(size)
+}
+
+///|
+pub fn Height::limit(size : Int) -> Height {
+  Limit(size)
+}
+
+///|
 pub fn Padding::new(
   left : Int,
   right : Int,
@@ -69,6 +101,22 @@ fn convert_alignment(alignment : Alignment) -> @papergrid.AlignmentHorizontal {
     Left => @papergrid.AlignmentHorizontal::left()
     Right => @papergrid.AlignmentHorizontal::right()
     Center => @papergrid.AlignmentHorizontal::center()
+  }
+}
+
+///|
+fn convert_width(width : Width) -> @papergrid.WidthMode {
+  match width {
+    Wrap(size) => @papergrid.WidthMode::wrap(size)
+    Truncate(size, suffix) => @papergrid.WidthMode::truncate(size, suffix)
+  }
+}
+
+///|
+fn convert_height(height : Height) -> @papergrid.HeightMode {
+  match height {
+    Increase(size) => @papergrid.HeightMode::increase(size)
+    Limit(size) => @papergrid.HeightMode::limit(size)
   }
 }
 
@@ -258,6 +306,18 @@ pub fn Table::set_padding(self : Table, padding : Padding) -> Table {
     padding.top,
     padding.bottom,
   )
+  self
+}
+
+///|
+pub fn Table::set_width(self : Table, width : Width) -> Table {
+  self.config.set_width_mode(convert_width(width))
+  self
+}
+
+///|
+pub fn Table::set_height(self : Table, height : Height) -> Table {
+  self.config.set_height_mode(convert_height(height))
   self
 }
 

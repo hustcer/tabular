@@ -37,6 +37,13 @@ pub fn Builder::remove_column(Self, Int) -> Unit
 pub fn Builder::remove_record(Self, Int) -> Unit
 pub fn Builder::set_empty(Self, String) -> Unit
 
+pub enum Height {
+  Increase(Int)
+  Limit(Int)
+}
+pub fn Height::increase(Int) -> Self
+pub fn Height::limit(Int) -> Self
+
 pub struct Padding {
   left : Int
   right : Int
@@ -60,8 +67,17 @@ pub struct Table {
 pub fn Table::apply(Self, Style) -> Self
 pub fn Table::from_rows(Array[Array[String]]) -> Self
 pub fn Table::set_alignment(Self, Alignment) -> Self
+pub fn Table::set_height(Self, Height) -> Self
 pub fn Table::set_padding(Self, Padding) -> Self
+pub fn Table::set_width(Self, Width) -> Self
 pub fn Table::to_string(Self) -> String
+
+pub enum Width {
+  Wrap(Int)
+  Truncate(Int, String)
+}
+pub fn Width::truncate(Int, suffix? : String) -> Self
+pub fn Width::wrap(Int) -> Self
 
 // Type aliases
 

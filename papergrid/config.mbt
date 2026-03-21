@@ -28,6 +28,8 @@ pub struct SpannedConfig {
   mut padding_top : Int
   mut padding_bottom : Int
   mut alignment : AlignmentHorizontal
+  mut width_mode : WidthMode
+  mut height_mode : HeightMode
 }
 
 ///|
@@ -39,6 +41,8 @@ pub fn SpannedConfig::default() -> SpannedConfig {
     padding_top: 0,
     padding_bottom: 0,
     alignment: AlignmentHorizontal::center(),
+    width_mode: WidthMode::none(),
+    height_mode: HeightMode::none(),
   }
 }
 
@@ -100,4 +104,30 @@ pub fn SpannedConfig::set_alignment(
 ///|
 pub fn SpannedConfig::alignment(self : SpannedConfig) -> AlignmentHorizontal {
   self.alignment
+}
+
+///|
+pub fn SpannedConfig::set_width_mode(
+  self : SpannedConfig,
+  mode : WidthMode,
+) -> Unit {
+  self.width_mode = mode
+}
+
+///|
+pub fn SpannedConfig::width_mode(self : SpannedConfig) -> WidthMode {
+  self.width_mode
+}
+
+///|
+pub fn SpannedConfig::set_height_mode(
+  self : SpannedConfig,
+  mode : HeightMode,
+) -> Unit {
+  self.height_mode = mode
+}
+
+///|
+pub fn SpannedConfig::height_mode(self : SpannedConfig) -> HeightMode {
+  self.height_mode
 }

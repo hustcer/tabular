@@ -18,10 +18,16 @@ pub fn IterGridDimension::estimate(
   let widths = Array::make(count, 0)
   for row = 0; row < records.count_rows(); row = row + 1 {
     for column = 0; column < count; column = column + 1 {
-      let width = records.get_cell(row, column).length()
-      if width > widths[column] {
-        widths[column] = width
-      }
+      processed_lines(
+        records.get_cell(row, column),
+        _cfg.width_mode(),
+        _cfg.height_mode(),
+      ).each(line => {
+        let width = line.length()
+        if width > widths[column] {
+          widths[column] = width
+        }
+      })
     }
   }
   let padding = _cfg.padding_left() + _cfg.padding_right()
