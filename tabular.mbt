@@ -51,6 +51,12 @@ pub struct Columns {
 }
 
 ///|
+pub struct Cell {
+  row : Int
+  column : Int
+}
+
+///|
 pub enum Segment {
   All(Int, Int)
   Range(Int, Int, Int, Int, Int, Int)
@@ -182,6 +188,11 @@ pub fn Rows::first() -> Rows {
 }
 
 ///|
+pub fn Rows::one(index : Int) -> Rows {
+  Rows::new(index, index + 1)
+}
+
+///|
 pub fn Rows::all() -> Rows {
   Rows::new(0, -1)
 }
@@ -237,6 +248,11 @@ pub fn Columns::first() -> Columns {
 }
 
 ///|
+pub fn Columns::one(index : Int) -> Columns {
+  Columns::new(index, index + 1)
+}
+
+///|
 pub fn Columns::all() -> Columns {
   Columns::new(0, -1)
 }
@@ -284,6 +300,11 @@ pub fn Columns::step_by(self : Columns, step : Int) -> Columns {
 ///|
 pub fn Segment::all() -> Segment {
   All(0, 1)
+}
+
+///|
+pub fn Cell::new(row : Int, column : Int) -> Cell {
+  { row, column }
 }
 
 ///|
@@ -847,5 +868,15 @@ pub fn Table::modify_segment(
       })
     }
   }
+  self
+}
+
+///|
+pub fn Table::modify_cell(
+  self : Table,
+  cell : Cell,
+  setting : Setting,
+) -> Table {
+  apply_setting_to_cell(self.config, cell.row, cell.column, setting)
   self
 }

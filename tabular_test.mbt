@@ -567,3 +567,78 @@ test "modify segment range" {
     ),
   )
 }
+
+///|
+test "modify single row with one" {
+  let table = @tabular.Table::from_rows([
+    ["N", "column 0", "column 1"],
+    ["0", "0-0", "0-1"],
+    ["1", "1-0", "1-1"],
+  ])
+  table.set_alignment(@tabular.Alignment::left()) |> ignore
+  table.modify_rows(
+    @tabular.Rows::one(2),
+    @tabular.Setting::alignment(@tabular.Alignment::right()),
+  )
+  |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|+---+----------+----------+
+      #|| N | column 0 | column 1 |
+      #|+---+----------+----------+
+      #|| 0 | 0-0      | 0-1      |
+      #|+---+----------+----------+
+      #|| 1 |      1-0 |      1-1 |
+      #|+---+----------+----------+
+    ),
+  )
+}
+
+///|
+test "modify single column with one" {
+  let table = @tabular.Table::from_rows([
+    ["N", "column 0", "column 1"],
+    ["0", "0-0", "0-1"],
+    ["1", "1-0", "1-1"],
+  ])
+  table.apply(@tabular.Style::psql()) |> ignore
+  table.modify_columns(
+    @tabular.Columns::one(0),
+    @tabular.Setting::alignment(@tabular.Alignment::right()),
+  )
+  |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #| N | column 0 | column 1 
+      #|----+----------+-----------
+      #| 0 |   0-0    |   0-1    
+      #| 1 |   1-0    |   1-1    
+    ),
+  )
+}
+
+///|
+test "modify cell alignment" {
+  let table = @tabular.Table::from_rows([
+    ["N", "column 0", "column 1"],
+    ["0", "0-0", "0-1"],
+    ["1", "1-0", "1-1"],
+  ])
+  table.apply(@tabular.Style::psql()) |> ignore
+  table.modify_cell(
+    @tabular.Cell::new(1, 1),
+    @tabular.Setting::alignment(@tabular.Alignment::right()),
+  )
+  |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #| N | column 0 | column 1 
+      #|----+----------+-----------
+      #| 0 |      0-0 |   0-1    
+      #| 1 |   1-0    |   1-1    
+    ),
+  )
+}
