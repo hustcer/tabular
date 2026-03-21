@@ -92,6 +92,32 @@ pub fn Borders::rounded() -> Borders {
 }
 
 ///|
+pub fn Borders::markdown() -> Borders {
+  {
+    ..Borders::empty(),
+    horizontal: Some('-'),
+    vertical: Some('|'),
+    left: Some('|'),
+    right: Some('|'),
+    intersection: Some('|'),
+    left_intersection: Some('|'),
+    right_intersection: Some('|'),
+  }
+}
+
+///|
+pub fn Borders::psql() -> Borders {
+  {
+    ..Borders::empty(),
+    horizontal: Some('-'),
+    vertical: Some('|'),
+    intersection: Some('+'),
+    left_intersection: Some('-'),
+    right_intersection: Some('-'),
+  }
+}
+
+///|
 fn char_to_string(ch : Char?) -> String {
   match ch {
     Some(value) => value.to_string()

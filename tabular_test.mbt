@@ -253,3 +253,65 @@ test "table height limit" {
     ),
   )
 }
+
+///|
+test "table vertical alignment center" {
+  let table = @tabular.Table::from_rows([
+    ["left\ncell", "right one"],
+    ["the second column", "and\nhere\nsee\na"],
+  ])
+  table.set_alignment(@tabular.Alignment::left()) |> ignore
+  table.set_vertical_alignment(@tabular.VerticalAlignment::center()) |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|+-------------------+-----------+
+      #|| left              | right one |
+      #|| cell              |           |
+      #|+-------------------+-----------+
+      #||                   | and       |
+      #|| the second column | here      |
+      #||                   | see       |
+      #||                   | a         |
+      #|+-------------------+-----------+
+    ),
+  )
+}
+
+///|
+test "table markdown style" {
+  let table = @tabular.Table::from_rows([
+    ["N", "column 0", "column 1"],
+    ["0", "0-0", "0-1"],
+    ["1", "1-0", "1-1"],
+  ])
+  table.apply(@tabular.Style::markdown()) |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|| N | column 0 | column 1 |
+      #||---|----------|----------|
+      #|| 0 |   0-0    |   0-1    |
+      #|| 1 |   1-0    |   1-1    |
+    ),
+  )
+}
+
+///|
+test "table psql style" {
+  let table = @tabular.Table::from_rows([
+    ["N", "column 0", "column 1"],
+    ["0", "0-0", "0-1"],
+    ["1", "1-0", "1-1"],
+  ])
+  table.apply(@tabular.Style::psql()) |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #| N | column 0 | column 1 
+      #|----+----------+-----------
+      #| 0 |   0-0    |   0-1    
+      #| 1 |   1-0    |   1-1    
+    ),
+  )
+}

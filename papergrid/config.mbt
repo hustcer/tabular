@@ -6,6 +6,20 @@ pub enum AlignmentHorizontal {
 }
 
 ///|
+pub enum AlignmentVertical {
+  Top
+  Bottom
+  Center
+}
+
+///|
+pub enum HorizontalLines {
+  All
+  HeaderOnly
+  None
+}
+
+///|
 pub fn AlignmentHorizontal::left() -> AlignmentHorizontal {
   Left
 }
@@ -21,6 +35,36 @@ pub fn AlignmentHorizontal::center() -> AlignmentHorizontal {
 }
 
 ///|
+pub fn AlignmentVertical::top() -> AlignmentVertical {
+  Top
+}
+
+///|
+pub fn AlignmentVertical::bottom() -> AlignmentVertical {
+  Bottom
+}
+
+///|
+pub fn AlignmentVertical::center() -> AlignmentVertical {
+  Center
+}
+
+///|
+pub fn HorizontalLines::all() -> HorizontalLines {
+  All
+}
+
+///|
+pub fn HorizontalLines::header_only() -> HorizontalLines {
+  HeaderOnly
+}
+
+///|
+pub fn HorizontalLines::none() -> HorizontalLines {
+  None
+}
+
+///|
 pub struct SpannedConfig {
   mut borders : Borders
   mut padding_left : Int
@@ -28,8 +72,10 @@ pub struct SpannedConfig {
   mut padding_top : Int
   mut padding_bottom : Int
   mut alignment : AlignmentHorizontal
+  mut vertical_alignment : AlignmentVertical
   mut width_mode : WidthMode
   mut height_mode : HeightMode
+  mut horizontal_lines : HorizontalLines
 }
 
 ///|
@@ -41,8 +87,10 @@ pub fn SpannedConfig::default() -> SpannedConfig {
     padding_top: 0,
     padding_bottom: 0,
     alignment: AlignmentHorizontal::center(),
+    vertical_alignment: AlignmentVertical::top(),
     width_mode: WidthMode::none(),
     height_mode: HeightMode::none(),
+    horizontal_lines: HorizontalLines::all(),
   }
 }
 
@@ -107,6 +155,21 @@ pub fn SpannedConfig::alignment(self : SpannedConfig) -> AlignmentHorizontal {
 }
 
 ///|
+pub fn SpannedConfig::set_vertical_alignment(
+  self : SpannedConfig,
+  alignment : AlignmentVertical,
+) -> Unit {
+  self.vertical_alignment = alignment
+}
+
+///|
+pub fn SpannedConfig::vertical_alignment(
+  self : SpannedConfig,
+) -> AlignmentVertical {
+  self.vertical_alignment
+}
+
+///|
 pub fn SpannedConfig::set_width_mode(
   self : SpannedConfig,
   mode : WidthMode,
@@ -130,4 +193,17 @@ pub fn SpannedConfig::set_height_mode(
 ///|
 pub fn SpannedConfig::height_mode(self : SpannedConfig) -> HeightMode {
   self.height_mode
+}
+
+///|
+pub fn SpannedConfig::set_horizontal_lines(
+  self : SpannedConfig,
+  mode : HorizontalLines,
+) -> Unit {
+  self.horizontal_lines = mode
+}
+
+///|
+pub fn SpannedConfig::horizontal_lines(self : SpannedConfig) -> HorizontalLines {
+  self.horizontal_lines
 }

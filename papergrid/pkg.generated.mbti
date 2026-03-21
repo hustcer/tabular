@@ -22,6 +22,15 @@ pub fn AlignmentHorizontal::center() -> Self
 pub fn AlignmentHorizontal::left() -> Self
 pub fn AlignmentHorizontal::right() -> Self
 
+pub enum AlignmentVertical {
+  Top
+  Bottom
+  Center
+}
+pub fn AlignmentVertical::bottom() -> Self
+pub fn AlignmentVertical::center() -> Self
+pub fn AlignmentVertical::top() -> Self
+
 pub struct Borders {
   top : Char?
   top_left : Char?
@@ -42,7 +51,9 @@ pub struct Borders {
 pub fn Borders::ascii() -> Self
 pub fn Borders::build_line(Self, Char?, Char?, Char?, Char?, Array[Int]) -> String
 pub fn Borders::empty() -> Self
+pub fn Borders::markdown() -> Self
 pub fn Borders::modern() -> Self
+pub fn Borders::psql() -> Self
 pub fn Borders::rounded() -> Self
 
 pub enum HeightMode {
@@ -53,6 +64,15 @@ pub enum HeightMode {
 pub fn HeightMode::increase(Int) -> Self
 pub fn HeightMode::limit(Int) -> Self
 pub fn HeightMode::none() -> Self
+
+pub enum HorizontalLines {
+  All
+  HeaderOnly
+  None
+}
+pub fn HorizontalLines::all() -> Self
+pub fn HorizontalLines::header_only() -> Self
+pub fn HorizontalLines::none() -> Self
 
 pub struct IterGrid {
   records : IterRecords
@@ -86,13 +106,16 @@ pub struct SpannedConfig {
   mut padding_top : Int
   mut padding_bottom : Int
   mut alignment : AlignmentHorizontal
+  mut vertical_alignment : AlignmentVertical
   mut width_mode : WidthMode
   mut height_mode : HeightMode
+  mut horizontal_lines : HorizontalLines
 }
 pub fn SpannedConfig::alignment(Self) -> AlignmentHorizontal
 pub fn SpannedConfig::borders(Self) -> Borders
 pub fn SpannedConfig::default() -> Self
 pub fn SpannedConfig::height_mode(Self) -> HeightMode
+pub fn SpannedConfig::horizontal_lines(Self) -> HorizontalLines
 pub fn SpannedConfig::padding_bottom(Self) -> Int
 pub fn SpannedConfig::padding_left(Self) -> Int
 pub fn SpannedConfig::padding_right(Self) -> Int
@@ -100,8 +123,11 @@ pub fn SpannedConfig::padding_top(Self) -> Int
 pub fn SpannedConfig::set_alignment(Self, AlignmentHorizontal) -> Unit
 pub fn SpannedConfig::set_borders(Self, Borders) -> Unit
 pub fn SpannedConfig::set_height_mode(Self, HeightMode) -> Unit
+pub fn SpannedConfig::set_horizontal_lines(Self, HorizontalLines) -> Unit
 pub fn SpannedConfig::set_padding(Self, Int, Int, Int, Int) -> Unit
+pub fn SpannedConfig::set_vertical_alignment(Self, AlignmentVertical) -> Unit
 pub fn SpannedConfig::set_width_mode(Self, WidthMode) -> Unit
+pub fn SpannedConfig::vertical_alignment(Self) -> AlignmentVertical
 pub fn SpannedConfig::width_mode(Self) -> WidthMode
 
 pub enum WidthMode {

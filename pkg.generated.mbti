@@ -54,10 +54,14 @@ pub fn Padding::new(Int, Int, Int, Int) -> Self
 
 pub struct Style {
   borders : @papergrid.Borders
+  horizontal_lines : @papergrid.HorizontalLines
 }
 pub fn Style::ascii() -> Self
 pub fn Style::borders(Self) -> @papergrid.Borders
+pub fn Style::horizontal_lines(Self) -> @papergrid.HorizontalLines
+pub fn Style::markdown() -> Self
 pub fn Style::modern() -> Self
+pub fn Style::psql() -> Self
 pub fn Style::rounded() -> Self
 
 pub struct Table {
@@ -69,8 +73,18 @@ pub fn Table::from_rows(Array[Array[String]]) -> Self
 pub fn Table::set_alignment(Self, Alignment) -> Self
 pub fn Table::set_height(Self, Height) -> Self
 pub fn Table::set_padding(Self, Padding) -> Self
+pub fn Table::set_vertical_alignment(Self, VerticalAlignment) -> Self
 pub fn Table::set_width(Self, Width) -> Self
 pub fn Table::to_string(Self) -> String
+
+pub enum VerticalAlignment {
+  Top
+  Bottom
+  Center
+}
+pub fn VerticalAlignment::bottom() -> Self
+pub fn VerticalAlignment::center() -> Self
+pub fn VerticalAlignment::top() -> Self
 
 pub enum Width {
   Wrap(Int)

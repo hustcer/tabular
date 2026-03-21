@@ -1,12 +1,20 @@
 ///|
 pub struct Style {
   borders : @papergrid.Borders
+  horizontal_lines : @papergrid.HorizontalLines
 }
 
 ///|
 pub enum Alignment {
   Left
   Right
+  Center
+}
+
+///|
+pub enum VerticalAlignment {
+  Top
+  Bottom
   Center
 }
 
@@ -32,22 +40,52 @@ pub struct Padding {
 
 ///|
 pub fn Style::ascii() -> Style {
-  { borders: @papergrid.Borders::ascii() }
+  {
+    borders: @papergrid.Borders::ascii(),
+    horizontal_lines: @papergrid.HorizontalLines::all(),
+  }
 }
 
 ///|
 pub fn Style::modern() -> Style {
-  { borders: @papergrid.Borders::modern() }
+  {
+    borders: @papergrid.Borders::modern(),
+    horizontal_lines: @papergrid.HorizontalLines::all(),
+  }
 }
 
 ///|
 pub fn Style::rounded() -> Style {
-  { borders: @papergrid.Borders::rounded() }
+  {
+    borders: @papergrid.Borders::rounded(),
+    horizontal_lines: @papergrid.HorizontalLines::all(),
+  }
+}
+
+///|
+pub fn Style::markdown() -> Style {
+  {
+    borders: @papergrid.Borders::markdown(),
+    horizontal_lines: @papergrid.HorizontalLines::header_only(),
+  }
+}
+
+///|
+pub fn Style::psql() -> Style {
+  {
+    borders: @papergrid.Borders::psql(),
+    horizontal_lines: @papergrid.HorizontalLines::header_only(),
+  }
 }
 
 ///|
 pub fn Style::borders(self : Style) -> @papergrid.Borders {
   self.borders
+}
+
+///|
+pub fn Style::horizontal_lines(self : Style) -> @papergrid.HorizontalLines {
+  self.horizontal_lines
 }
 
 ///|
@@ -62,6 +100,21 @@ pub fn Alignment::right() -> Alignment {
 
 ///|
 pub fn Alignment::center() -> Alignment {
+  Center
+}
+
+///|
+pub fn VerticalAlignment::top() -> VerticalAlignment {
+  Top
+}
+
+///|
+pub fn VerticalAlignment::bottom() -> VerticalAlignment {
+  Bottom
+}
+
+///|
+pub fn VerticalAlignment::center() -> VerticalAlignment {
   Center
 }
 
@@ -101,6 +154,17 @@ fn convert_alignment(alignment : Alignment) -> @papergrid.AlignmentHorizontal {
     Left => @papergrid.AlignmentHorizontal::left()
     Right => @papergrid.AlignmentHorizontal::right()
     Center => @papergrid.AlignmentHorizontal::center()
+  }
+}
+
+///|
+fn convert_vertical_alignment(
+  alignment : VerticalAlignment,
+) -> @papergrid.AlignmentVertical {
+  match alignment {
+    Top => @papergrid.AlignmentVertical::top()
+    Bottom => @papergrid.AlignmentVertical::bottom()
+    Center => @papergrid.AlignmentVertical::center()
   }
 }
 
@@ -289,12 +353,22 @@ pub fn Table::from_rows(rows : Array[Array[String]]) -> Table {
 ///|
 pub fn Table::apply(self : Table, style : Style) -> Table {
   self.config.set_borders(style.borders())
+  self.config.set_horizontal_lines(style.horizontal_lines())
   self
 }
 
 ///|
 pub fn Table::set_alignment(self : Table, alignment : Alignment) -> Table {
   self.config.set_alignment(convert_alignment(alignment))
+  self
+}
+
+///|
+pub fn Table::set_vertical_alignment(
+  self : Table,
+  alignment : VerticalAlignment,
+) -> Table {
+  self.config.set_vertical_alignment(convert_vertical_alignment(alignment))
   self
 }
 

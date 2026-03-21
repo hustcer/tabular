@@ -98,6 +98,7 @@ fn render_row(
   padding_top : Int,
   padding_bottom : Int,
   alignment : AlignmentHorizontal,
+  vertical_alignment : AlignmentVertical,
   width_mode : WidthMode,
   height_mode : HeightMode,
 ) -> Array[String] {
@@ -110,6 +111,29 @@ fn render_row(
       row_height = lines.length()
     }
     cell_lines.push(lines)
+  }
+
+  let aligned_cells = []
+  for column = 0; column < count_columns; column = column + 1 {
+    let lines_for_cell = cell_lines[column]
+    let missing = row_height - lines_for_cell.length()
+    let top_fill = match vertical_alignment {
+      Top => 0
+      Bottom => missing
+      Center => missing / 2
+    }
+    let bottom_fill = missing - top_fill
+    let aligned = []
+    for i = 0; i < top_fill; i = i + 1 {
+      ignore(i)
+      aligned.push("")
+    }
+    lines_for_cell.each(line => aligned.push(line))
+    for i = 0; i < bottom_fill; i = i + 1 {
+      ignore(i)
+      aligned.push("")
+    }
+    aligned_cells.push(aligned)
   }
 
   let lines = []
@@ -126,7 +150,7 @@ fn render_row(
   for line_index = 0; line_index < row_height; line_index = line_index + 1 {
     let values = []
     for column = 0; column < count_columns; column = column + 1 {
-      let lines_for_cell = cell_lines[column]
+      let lines_for_cell = aligned_cells[column]
       values.push(
         if line_index < lines_for_cell.length() {
           lines_for_cell[line_index]
@@ -180,8 +204,10 @@ pub fn IterGrid::to_string(self : IterGrid) -> String {
   let padding_top = self.config.padding_top()
   let padding_bottom = self.config.padding_bottom()
   let alignment = self.config.alignment()
+  let vertical_alignment = self.config.vertical_alignment()
   let width_mode = self.config.width_mode()
   let height_mode = self.config.height_mode()
+  let horizontal_lines = self.config.horizontal_lines()
   for row_index = 0; row_index < rows.length(); row_index = row_index + 1 {
     render_row(
       borders,
@@ -193,10 +219,16 @@ pub fn IterGrid::to_string(self : IterGrid) -> String {
       padding_top,
       padding_bottom,
       alignment,
+      vertical_alignment,
       width_mode,
       height_mode,
     ).each(line => lines.push(line))
-    if row_index + 1 < rows.length() {
+    let show_middle = match horizontal_lines {
+      All => row_index + 1 < rows.length()
+      HeaderOnly => row_index == 0 && row_index + 1 < rows.length()
+      None => false
+    }
+    if show_middle {
       let middle = borders.build_line(
         borders.left_intersection,
         borders.horizontal,
