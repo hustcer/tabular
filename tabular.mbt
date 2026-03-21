@@ -44,6 +44,7 @@ pub struct Rows {
   step_n : Int
   exclude_start : Int
   exclude_end : Int
+  predicate : ((Entity) -> Bool)?
 }
 
 ///|
@@ -54,6 +55,7 @@ pub struct Columns {
   step_n : Int
   exclude_start : Int
   exclude_end : Int
+  predicate : ((Entity) -> Bool)?
 }
 
 ///|
@@ -65,6 +67,12 @@ pub struct Cell {
 ///|
 pub struct ByColumnName {
   name : String
+}
+
+///|
+pub enum Entity {
+  Row(Int)
+  Column(Int)
 }
 
 ///|
@@ -210,7 +218,15 @@ pub fn Format::value(text : String) -> Format {
 
 ///|
 pub fn Rows::new(start : Int, end_ : Int) -> Rows {
-  { start, end_, skip_n: 0, step_n: 1, exclude_start: 0, exclude_end: 0 }
+  {
+    start,
+    end_,
+    skip_n: 0,
+    step_n: 1,
+    exclude_start: 0,
+    exclude_end: 0,
+    predicate: None,
+  }
 }
 
 ///|
@@ -221,6 +237,11 @@ pub fn Rows::first() -> Rows {
 ///|
 pub fn Rows::one(index : Int) -> Rows {
   Rows::new(index, index + 1)
+}
+
+///|
+pub fn Rows::first_offset(offset : Int) -> Rows {
+  Rows::one(offset)
 }
 
 ///|
@@ -244,6 +265,21 @@ pub fn Rows::intersect(self : Rows, columns : Columns) -> Segment {
 }
 
 ///|
+pub fn Rows::and_(self : Rows, other : Rows) -> Segment {
+  self.as_segment().and_(other.as_segment())
+}
+
+///|
+pub fn Rows::and_columns(self : Rows, columns : Columns) -> Segment {
+  self.as_segment().and_(columns.as_segment())
+}
+
+///|
+pub fn Rows::and_cell(self : Rows, cell : Cell) -> Segment {
+  self.as_segment().and_(cell.as_segment())
+}
+
+///|
 pub fn Rows::as_segment(self : Rows) -> Segment {
   RowsOnly(self, 0, 1)
 }
@@ -262,7 +298,18 @@ pub fn Rows::not(self : Rows, other : Rows) -> Rows {
     step_n: self.step_n,
     exclude_start: other.start,
     exclude_end: other.end_,
+    predicate: self.predicate,
   }
+}
+
+///|
+pub fn Rows::not_columns(self : Rows, columns : Columns) -> Segment {
+  self.as_segment().not(columns.as_segment())
+}
+
+///|
+pub fn Rows::not_cell(self : Rows, cell : Cell) -> Segment {
+  self.as_segment().not(cell.as_segment())
 }
 
 ///|
@@ -274,6 +321,7 @@ pub fn Rows::skip(self : Rows, count : Int) -> Rows {
     step_n: self.step_n,
     exclude_start: self.exclude_start,
     exclude_end: self.exclude_end,
+    predicate: self.predicate,
   }
 }
 
@@ -290,12 +338,34 @@ pub fn Rows::step_by(self : Rows, step : Int) -> Rows {
     },
     exclude_start: self.exclude_start,
     exclude_end: self.exclude_end,
+    predicate: self.predicate,
+  }
+}
+
+///|
+pub fn Rows::filter(self : Rows, predicate : (Entity) -> Bool) -> Rows {
+  {
+    start: self.start,
+    end_: self.end_,
+    skip_n: self.skip_n,
+    step_n: self.step_n,
+    exclude_start: self.exclude_start,
+    exclude_end: self.exclude_end,
+    predicate: Some(predicate),
   }
 }
 
 ///|
 pub fn Columns::new(start : Int, end_ : Int) -> Columns {
-  { start, end_, skip_n: 0, step_n: 1, exclude_start: 0, exclude_end: 0 }
+  {
+    start,
+    end_,
+    skip_n: 0,
+    step_n: 1,
+    exclude_start: 0,
+    exclude_end: 0,
+    predicate: None,
+  }
 }
 
 ///|
@@ -306,6 +376,11 @@ pub fn Columns::first() -> Columns {
 ///|
 pub fn Columns::one(index : Int) -> Columns {
   Columns::new(index, index + 1)
+}
+
+///|
+pub fn Columns::first_offset(offset : Int) -> Columns {
+  Columns::one(offset)
 }
 
 ///|
@@ -329,6 +404,21 @@ pub fn Columns::intersect(self : Columns, rows : Rows) -> Segment {
 }
 
 ///|
+pub fn Columns::and_(self : Columns, other : Columns) -> Segment {
+  self.as_segment().and_(other.as_segment())
+}
+
+///|
+pub fn Columns::and_rows(self : Columns, rows : Rows) -> Segment {
+  self.as_segment().and_(rows.as_segment())
+}
+
+///|
+pub fn Columns::and_cell(self : Columns, cell : Cell) -> Segment {
+  self.as_segment().and_(cell.as_segment())
+}
+
+///|
 pub fn Columns::as_segment(self : Columns) -> Segment {
   ColumnsOnly(self, 0, 1)
 }
@@ -347,7 +437,18 @@ pub fn Columns::not(self : Columns, other : Columns) -> Columns {
     step_n: self.step_n,
     exclude_start: other.start,
     exclude_end: other.end_,
+    predicate: self.predicate,
   }
+}
+
+///|
+pub fn Columns::not_rows(self : Columns, rows : Rows) -> Segment {
+  self.as_segment().not(rows.as_segment())
+}
+
+///|
+pub fn Columns::not_cell(self : Columns, cell : Cell) -> Segment {
+  self.as_segment().not(cell.as_segment())
 }
 
 ///|
@@ -359,6 +460,7 @@ pub fn Columns::skip(self : Columns, count : Int) -> Columns {
     step_n: self.step_n,
     exclude_start: self.exclude_start,
     exclude_end: self.exclude_end,
+    predicate: self.predicate,
   }
 }
 
@@ -375,6 +477,20 @@ pub fn Columns::step_by(self : Columns, step : Int) -> Columns {
     },
     exclude_start: self.exclude_start,
     exclude_end: self.exclude_end,
+    predicate: self.predicate,
+  }
+}
+
+///|
+pub fn Columns::filter(self : Columns, predicate : (Entity) -> Bool) -> Columns {
+  {
+    start: self.start,
+    end_: self.end_,
+    skip_n: self.skip_n,
+    step_n: self.step_n,
+    exclude_start: self.exclude_start,
+    exclude_end: self.exclude_end,
+    predicate: Some(predicate),
   }
 }
 
@@ -399,6 +515,16 @@ pub fn Cell::as_segment(self : Cell) -> Segment {
 }
 
 ///|
+pub fn Cell::and_(self : Cell, other : Cell) -> Segment {
+  self.as_segment().and_(other.as_segment())
+}
+
+///|
+pub fn Cell::not(self : Cell, other : Cell) -> Segment {
+  self.as_segment().not(other.as_segment())
+}
+
+///|
 pub fn Cell::inverse(self : Cell) -> Segment {
   InverseCell(self, 0, 1)
 }
@@ -419,8 +545,33 @@ pub fn Segment::and_(self : Segment, other : Segment) -> Segment {
 }
 
 ///|
+pub fn Segment::and_rows(self : Segment, rows : Rows) -> Segment {
+  self.and_(rows.as_segment())
+}
+
+///|
+pub fn Segment::and_columns(self : Segment, columns : Columns) -> Segment {
+  self.and_(columns.as_segment())
+}
+
+///|
+pub fn Segment::and_cell(self : Segment, cell : Cell) -> Segment {
+  self.and_(cell.as_segment())
+}
+
+///|
 pub fn Segment::not_(self : Segment, other : Segment) -> Segment {
   Diff2(self, other, 0, 1)
+}
+
+///|
+pub fn Segment::not(self : Segment, other : Segment) -> Segment {
+  self.not_(other)
+}
+
+///|
+pub fn Segment::not_cell(self : Segment, cell : Cell) -> Segment {
+  self.not(cell.as_segment())
 }
 
 ///|
@@ -593,7 +744,7 @@ fn resolve_indexes(
 
 ///|
 fn resolve_rows(rows : Rows, count : Int) -> Array[Int] {
-  resolve_indexes(
+  let indexes = resolve_indexes(
     rows.start,
     rows.end_,
     count,
@@ -602,11 +753,19 @@ fn resolve_rows(rows : Rows, count : Int) -> Array[Int] {
     rows.skip_n,
     rows.step_n,
   )
+  match rows.predicate {
+    Some(predicate) => {
+      let filtered = []
+      indexes.each(index => if predicate(Row(index)) { filtered.push(index) })
+      filtered
+    }
+    None => indexes
+  }
 }
 
 ///|
 fn resolve_columns(columns : Columns, count : Int) -> Array[Int] {
-  resolve_indexes(
+  let indexes = resolve_indexes(
     columns.start,
     columns.end_,
     count,
@@ -615,6 +774,14 @@ fn resolve_columns(columns : Columns, count : Int) -> Array[Int] {
     columns.skip_n,
     columns.step_n,
   )
+  match columns.predicate {
+    Some(predicate) => {
+      let filtered = []
+      indexes.each(index => if predicate(Column(index)) { filtered.push(index) })
+      filtered
+    }
+    None => indexes
+  }
 }
 
 ///|

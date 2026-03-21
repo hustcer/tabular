@@ -489,6 +489,37 @@ test "modify columns step by" {
 }
 
 ///|
+test "modify columns filter" {
+  let table = @tabular.Table::from_rows([
+    ["N", "column 0", "column 1", "column 2"],
+    ["0", "0-0", "0-1", "0-2"],
+    ["1", "1-0", "1-1", "1-2"],
+    ["2", "2-0", "2-1", "2-2"],
+  ])
+  table.apply(@tabular.Style::psql()) |> ignore
+  table.modify_columns(
+    @tabular.Columns::all().filter(entity => {
+      match entity {
+        Column(index) => index == 1 || index == 3
+        _ => false
+      }
+    }),
+    @tabular.Setting::alignment(@tabular.Alignment::right()),
+  )
+  |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #| N | column 0 | column 1 | column 2 
+      #|----+----------+----------+-----------
+      #| 0 |      0-0 |   0-1    |      0-2 
+      #| 1 |      1-0 |   1-1    |      1-2 
+      #| 2 |      2-0 |   2-1    |      2-2 
+    ),
+  )
+}
+
+///|
 test "modify segment skip one cell" {
   let table = @tabular.Table::from_rows([
     ["N", "column 0", "column 1", "column 2"],
@@ -865,9 +896,7 @@ test "modify union of row and column segments" {
   )
   |> ignore
   table.modify_segment(
-    @tabular.Rows::one(1)
-    .as_segment()
-    .and_(@tabular.Columns::one(2).as_segment()),
+    @tabular.Rows::one(1).and_columns(@tabular.Columns::one(2)),
     @tabular.Setting::alignment(@tabular.Alignment::right()),
   )
   |> ignore
@@ -877,6 +906,95 @@ test "modify union of row and column segments" {
       #| N | column 0 | column 1 
       #|----+----------+-----------
       #| 0 |      0-0 |      0-1 
+      #| 1 | 1-0      |      1-1 
+    ),
+  )
+}
+
+///|
+test "modify union of row selectors" {
+  let table = @tabular.Table::from_rows([
+    ["N", "column 0", "column 1"],
+    ["0", "0-0", "0-1"],
+    ["1", "1-0", "1-1"],
+    ["2", "2-0", "2-1"],
+  ])
+  table.apply(@tabular.Style::psql()) |> ignore
+  table.modify_segment(
+    @tabular.Segment::all(),
+    @tabular.Setting::alignment(@tabular.Alignment::left()),
+  )
+  |> ignore
+  table.modify_segment(
+    @tabular.Rows::one(1).and_(@tabular.Rows::one(3)),
+    @tabular.Setting::alignment(@tabular.Alignment::right()),
+  )
+  |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #| N | column 0 | column 1 
+      #|----+----------+-----------
+      #| 0 |      0-0 |      0-1 
+      #| 1 | 1-0      | 1-1      
+      #| 2 |      2-0 |      2-1 
+    ),
+  )
+}
+
+///|
+test "modify row not column with ergonomic helper" {
+  let table = @tabular.Table::from_rows([
+    ["N", "column 0", "column 1"],
+    ["0", "0-0", "0-1"],
+    ["1", "1-0", "1-1"],
+  ])
+  table.apply(@tabular.Style::psql()) |> ignore
+  table.modify_segment(
+    @tabular.Segment::all(),
+    @tabular.Setting::alignment(@tabular.Alignment::left()),
+  )
+  |> ignore
+  table.modify_segment(
+    @tabular.Rows::one(1).not_columns(@tabular.Columns::one(1)),
+    @tabular.Setting::alignment(@tabular.Alignment::right()),
+  )
+  |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #| N | column 0 | column 1 
+      #|----+----------+-----------
+      #| 0 | 0-0      |      0-1 
+      #| 1 | 1-0      | 1-1      
+    ),
+  )
+}
+
+///|
+test "modify column not row with ergonomic helper" {
+  let table = @tabular.Table::from_rows([
+    ["N", "column 0", "column 1"],
+    ["0", "0-0", "0-1"],
+    ["1", "1-0", "1-1"],
+  ])
+  table.apply(@tabular.Style::psql()) |> ignore
+  table.modify_segment(
+    @tabular.Segment::all(),
+    @tabular.Setting::alignment(@tabular.Alignment::left()),
+  )
+  |> ignore
+  table.modify_segment(
+    @tabular.Columns::one(2).not_rows(@tabular.Rows::first()),
+    @tabular.Setting::alignment(@tabular.Alignment::right()),
+  )
+  |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #| N | column 0 | column 1 
+      #|----+----------+-----------
+      #| 0 | 0-0      |      0-1 
       #| 1 | 1-0      |      1-1 
     ),
   )

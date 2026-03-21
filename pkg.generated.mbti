@@ -46,9 +46,11 @@ pub struct Cell {
   row : Int
   column : Int
 }
+pub fn Cell::and_(Self, Self) -> Segment
 pub fn Cell::as_segment(Self) -> Segment
 pub fn Cell::inverse(Self) -> Segment
 pub fn Cell::new(Int, Int) -> Self
+pub fn Cell::not(Self, Self) -> Segment
 
 pub struct Columns {
   start : Int
@@ -57,19 +59,32 @@ pub struct Columns {
   step_n : Int
   exclude_start : Int
   exclude_end : Int
+  predicate : ((Entity) -> Bool)?
 }
 pub fn Columns::all() -> Self
+pub fn Columns::and_(Self, Self) -> Segment
+pub fn Columns::and_cell(Self, Cell) -> Segment
+pub fn Columns::and_rows(Self, Rows) -> Segment
 pub fn Columns::as_segment(Self) -> Segment
+pub fn Columns::filter(Self, (Entity) -> Bool) -> Self
 pub fn Columns::first() -> Self
+pub fn Columns::first_offset(Int) -> Self
 pub fn Columns::intersect(Self, Rows) -> Segment
 pub fn Columns::inverse(Self) -> Segment
 pub fn Columns::last() -> Self
 pub fn Columns::last_offset(Int) -> Self
 pub fn Columns::new(Int, Int) -> Self
 pub fn Columns::not(Self, Self) -> Self
+pub fn Columns::not_cell(Self, Cell) -> Segment
+pub fn Columns::not_rows(Self, Rows) -> Segment
 pub fn Columns::one(Int) -> Self
 pub fn Columns::skip(Self, Int) -> Self
 pub fn Columns::step_by(Self, Int) -> Self
+
+pub enum Entity {
+  Row(Int)
+  Column(Int)
+}
 
 pub enum Format {
   Surround(String, String)
@@ -100,16 +115,24 @@ pub struct Rows {
   step_n : Int
   exclude_start : Int
   exclude_end : Int
+  predicate : ((Entity) -> Bool)?
 }
 pub fn Rows::all() -> Self
+pub fn Rows::and_(Self, Self) -> Segment
+pub fn Rows::and_cell(Self, Cell) -> Segment
+pub fn Rows::and_columns(Self, Columns) -> Segment
 pub fn Rows::as_segment(Self) -> Segment
+pub fn Rows::filter(Self, (Entity) -> Bool) -> Self
 pub fn Rows::first() -> Self
+pub fn Rows::first_offset(Int) -> Self
 pub fn Rows::intersect(Self, Columns) -> Segment
 pub fn Rows::inverse(Self) -> Segment
 pub fn Rows::last() -> Self
 pub fn Rows::last_offset(Int) -> Self
 pub fn Rows::new(Int, Int) -> Self
 pub fn Rows::not(Self, Self) -> Self
+pub fn Rows::not_cell(Self, Cell) -> Segment
+pub fn Rows::not_columns(Self, Columns) -> Segment
 pub fn Rows::one(Int) -> Self
 pub fn Rows::skip(Self, Int) -> Self
 pub fn Rows::step_by(Self, Int) -> Self
@@ -129,8 +152,13 @@ pub enum Segment {
 }
 pub fn Segment::all() -> Self
 pub fn Segment::and_(Self, Self) -> Self
+pub fn Segment::and_cell(Self, Cell) -> Self
+pub fn Segment::and_columns(Self, Columns) -> Self
+pub fn Segment::and_rows(Self, Rows) -> Self
 pub fn Segment::new(Int, Int, Int, Int) -> Self
+pub fn Segment::not(Self, Self) -> Self
 pub fn Segment::not_(Self, Self) -> Self
+pub fn Segment::not_cell(Self, Cell) -> Self
 pub fn Segment::skip(Self, Int) -> Self
 pub fn Segment::step_by(Self, Int) -> Self
 

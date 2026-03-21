@@ -30,10 +30,10 @@ Already implemented and passing:
   - `set_empty`, `clear`, `clean`, `from_rows`
 - Selector/object foundation:
   - `Rows`, `Columns`, `Cell`, `Segment`
-  - `one`, `all`, `last`, `last_offset`
-  - `skip`, `step_by`, same-type `not`
+  - `one`, `all`, `first_offset`, `last`, `last_offset`
+  - `skip`, `step_by`, same-type `not`, `filter`
   - `intersect`, `inverse`
-  - `as_segment`, `and_`, `not_`
+  - `as_segment`, `and_`, `not_`, mixed `and_*` / `not_*`
   - `ByColumnName`
 - Table mutation APIs:
   - `modify_rows`, `modify_columns`, `modify_segment`, `modify_cell`
@@ -43,7 +43,7 @@ Already implemented and passing:
 - First-pass `Format`:
   - `Format::surround`
   - `Format::value`
-- Test count: `58`
+- Test count: `62`
 
 ## Constraints
 
@@ -57,24 +57,33 @@ Already implemented and passing:
 
 ### Phase 1: Finish Selector/Object Parity
 
-Status: partially done
+Status: complete
 
-Remaining work:
+Completed in this phase:
 
-- Add friendlier object composition helpers so callers do not need explicit `as_segment()`
-- Add cross-type `not` variants
-  - `Columns.not(Rows)`
-  - `Rows.not(Columns)`
-  - `Segment.not(Cell)`
-  - `Segment.not(Segment)` with direct ergonomic entrypoints
-- Add union helpers mirroring upstream object composition for:
-  - `Rows.and(Rows)`
-  - `Columns.and(Columns)`
-  - `Cell.and(Cell)`
-  - mixed row/column combinations where practical
-- Add `filter`-style selection support if MoonBit can express it ergonomically
-- Add any missing selector constructors still used by upstream tests
-  - check `first/last/+offset` equivalents beyond the currently implemented subset
+- Added friendlier object composition helpers so callers do not need explicit `as_segment()`
+  - `Rows.and_`, `Rows.and_columns`, `Rows.and_cell`
+  - `Columns.and_`, `Columns.and_rows`, `Columns.and_cell`
+  - `Cell.and_`
+  - `Segment.and_rows`, `Segment.and_columns`, `Segment.and_cell`
+- Added cross-type `not` variants
+  - `Columns.not_rows`
+  - `Rows.not_columns`
+  - `Rows.not_cell`
+  - `Columns.not_cell`
+  - `Segment.not`
+  - `Segment.not_cell`
+  - `Cell.not`
+- Added `filter`-style selection support
+  - `Rows.filter`
+  - `Columns.filter`
+- Added missing selector constructors still useful for parity
+  - `Rows.first_offset`
+  - `Columns.first_offset`
+- Ported the remaining meaningful behavior from upstream `object_test.rs`
+  - `skip`
+  - `step_by`
+  - `filter`
 
 Acceptance:
 
