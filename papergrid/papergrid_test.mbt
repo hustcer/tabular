@@ -10,11 +10,11 @@ test "iter grid ascii output" {
   inspect(
     grid.to_string(),
     content=(
-      #|+-----+-------+
-      #||Hello|World  |
-      #|+-----+-------+
-      #||Hi   |MoonBit|
-      #|+-----+-------+
+      #|+-------+---------+
+      #|| Hello |  World  |
+      #|+-------+---------+
+      #||  Hi   | MoonBit |
+      #|+-------+---------+
     ),
   )
 }

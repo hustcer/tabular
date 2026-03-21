@@ -4,6 +4,21 @@ pub struct Style {
 }
 
 ///|
+pub enum Alignment {
+  Left
+  Right
+  Center
+}
+
+///|
+pub struct Padding {
+  left : Int
+  right : Int
+  top : Int
+  bottom : Int
+}
+
+///|
 pub fn Style::ascii() -> Style {
   { borders: @papergrid.Borders::ascii() }
 }
@@ -24,18 +39,63 @@ pub fn Style::borders(self : Style) -> @papergrid.Borders {
 }
 
 ///|
+pub fn Alignment::left() -> Alignment {
+  Left
+}
+
+///|
+pub fn Alignment::right() -> Alignment {
+  Right
+}
+
+///|
+pub fn Alignment::center() -> Alignment {
+  Center
+}
+
+///|
+pub fn Padding::new(
+  left : Int,
+  right : Int,
+  top : Int,
+  bottom : Int,
+) -> Padding {
+  { left, right, top, bottom }
+}
+
+///|
+fn convert_alignment(alignment : Alignment) -> @papergrid.AlignmentHorizontal {
+  match alignment {
+    Left => @papergrid.AlignmentHorizontal::left()
+    Right => @papergrid.AlignmentHorizontal::right()
+    Center => @papergrid.AlignmentHorizontal::center()
+  }
+}
+
+///|
 pub struct Builder {
   rows : Array[Array[String]]
+  mut empty_cell : String
 }
 
 ///|
 pub fn Builder::default() -> Builder {
-  { rows: [] }
+  { rows: [], empty_cell: "" }
+}
+
+///|
+pub fn Builder::from_rows(rows : Array[Array[String]]) -> Builder {
+  { rows, empty_cell: "" }
 }
 
 ///|
 pub fn Builder::push_record(self : Builder, row : Array[String]) -> Unit {
   self.rows.push(row)
+}
+
+///|
+pub fn Builder::extend(self : Builder, row : Array[String]) -> Unit {
+  self.push_record(row)
 }
 
 ///|
@@ -45,6 +105,13 @@ pub fn Builder::insert_record(
   row : Array[String],
 ) -> Unit {
   self.rows.insert(index, row)
+}
+
+///|
+pub fn Builder::remove_record(self : Builder, index : Int) -> Unit {
+  if index < self.rows.length() {
+    self.rows.remove(index) |> ignore
+  }
 }
 
 ///|
@@ -80,8 +147,84 @@ pub fn Builder::insert_column(
 }
 
 ///|
+pub fn Builder::push_column(self : Builder, column : Array[String]) -> Unit {
+  let mut index = 0
+  self.rows.each(row => if row.length() > index { index = row.length() })
+  self.insert_column(index, column)
+}
+
+///|
+pub fn Builder::remove_column(self : Builder, index : Int) -> Unit {
+  self.rows.each(row => if index < row.length() { row.remove(index) |> ignore })
+}
+
+///|
+pub fn Builder::set_empty(self : Builder, value : String) -> Unit {
+  self.empty_cell = value
+}
+
+///|
+pub fn Builder::clear(self : Builder) -> Unit {
+  self.rows.clear()
+}
+
+///|
+pub fn Builder::clean(self : Builder) -> Unit {
+  let mut max_columns = 0
+  self.rows.each(row => {
+    if row.length() > max_columns {
+      max_columns = row.length()
+    }
+  })
+  if max_columns == 0 {
+    return
+  }
+
+  let keep = Array::make(max_columns, false)
+  self.rows.each(row => {
+    for column = 0; column < max_columns; column = column + 1 {
+      if column < row.length() && row[column] != "" {
+        keep[column] = true
+      }
+    }
+  })
+
+  self.rows.each(row => {
+    let next = []
+    for column = 0; column < max_columns; column = column + 1 {
+      if keep[column] {
+        next.push(if column < row.length() { row[column] } else { "" })
+      }
+    }
+    row.clear()
+    next.each(value => row.push(value))
+  })
+}
+
+///|
+fn normalize_rows(
+  rows : Array[Array[String]],
+  empty_cell : String,
+) -> Array[Array[String]] {
+  let mut max_columns = 0
+  rows.each(row => if row.length() > max_columns { max_columns = row.length() })
+
+  rows.map(row => {
+    let normalized = []
+    for column = 0; column < max_columns; column = column + 1 {
+      if column < row.length() {
+        normalized.push(row[column])
+      } else {
+        normalized.push(empty_cell)
+      }
+    }
+    normalized
+  })
+}
+
+///|
 pub fn Builder::build(self : Builder) -> Table {
-  Table::from_rows(self.rows)
+  Table::from_rows(normalize_rows(self.rows, self.empty_cell))
 }
 
 ///|
@@ -98,6 +241,23 @@ pub fn Table::from_rows(rows : Array[Array[String]]) -> Table {
 ///|
 pub fn Table::apply(self : Table, style : Style) -> Table {
   self.config.set_borders(style.borders())
+  self
+}
+
+///|
+pub fn Table::set_alignment(self : Table, alignment : Alignment) -> Table {
+  self.config.set_alignment(convert_alignment(alignment))
+  self
+}
+
+///|
+pub fn Table::set_padding(self : Table, padding : Padding) -> Table {
+  self.config.set_padding(
+    padding.left,
+    padding.right,
+    padding.top,
+    padding.bottom,
+  )
   self
 }
 

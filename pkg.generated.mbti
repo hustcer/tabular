@@ -1,0 +1,69 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "hustcer/tabular"
+
+import {
+  "hustcer/tabular/papergrid",
+}
+
+// Values
+
+// Errors
+
+// Types and methods
+pub enum Alignment {
+  Left
+  Right
+  Center
+}
+pub fn Alignment::center() -> Self
+pub fn Alignment::left() -> Self
+pub fn Alignment::right() -> Self
+
+pub struct Builder {
+  rows : Array[Array[String]]
+  mut empty_cell : String
+}
+pub fn Builder::build(Self) -> Table
+pub fn Builder::clean(Self) -> Unit
+pub fn Builder::clear(Self) -> Unit
+pub fn Builder::default() -> Self
+pub fn Builder::extend(Self, Array[String]) -> Unit
+pub fn Builder::from_rows(Array[Array[String]]) -> Self
+pub fn Builder::insert_column(Self, Int, Array[String]) -> Unit
+pub fn Builder::insert_record(Self, Int, Array[String]) -> Unit
+pub fn Builder::push_column(Self, Array[String]) -> Unit
+pub fn Builder::push_record(Self, Array[String]) -> Unit
+pub fn Builder::remove_column(Self, Int) -> Unit
+pub fn Builder::remove_record(Self, Int) -> Unit
+pub fn Builder::set_empty(Self, String) -> Unit
+
+pub struct Padding {
+  left : Int
+  right : Int
+  top : Int
+  bottom : Int
+}
+pub fn Padding::new(Int, Int, Int, Int) -> Self
+
+pub struct Style {
+  borders : @papergrid.Borders
+}
+pub fn Style::ascii() -> Self
+pub fn Style::borders(Self) -> @papergrid.Borders
+pub fn Style::modern() -> Self
+pub fn Style::rounded() -> Self
+
+pub struct Table {
+  rows : Array[Array[String]]
+  config : @papergrid.SpannedConfig
+}
+pub fn Table::apply(Self, Style) -> Self
+pub fn Table::from_rows(Array[Array[String]]) -> Self
+pub fn Table::set_alignment(Self, Alignment) -> Self
+pub fn Table::set_padding(Self, Padding) -> Self
+pub fn Table::to_string(Self) -> String
+
+// Type aliases
+
+// Traits
+

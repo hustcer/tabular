@@ -1,0 +1,88 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "hustcer/tabular/papergrid"
+
+// Values
+
+// Errors
+
+// Types and methods
+pub enum AlignmentHorizontal {
+  Left
+  Right
+  Center
+}
+pub fn AlignmentHorizontal::center() -> Self
+pub fn AlignmentHorizontal::left() -> Self
+pub fn AlignmentHorizontal::right() -> Self
+
+pub struct Borders {
+  top : Char?
+  top_left : Char?
+  top_right : Char?
+  top_intersection : Char?
+  bottom : Char?
+  bottom_left : Char?
+  bottom_right : Char?
+  bottom_intersection : Char?
+  horizontal : Char?
+  vertical : Char?
+  left : Char?
+  right : Char?
+  intersection : Char?
+  left_intersection : Char?
+  right_intersection : Char?
+}
+pub fn Borders::ascii() -> Self
+pub fn Borders::build_line(Self, Char?, Char?, Char?, Char?, Array[Int]) -> String
+pub fn Borders::empty() -> Self
+pub fn Borders::modern() -> Self
+pub fn Borders::rounded() -> Self
+
+pub struct IterGrid {
+  records : IterRecords
+  config : SpannedConfig
+  dimension : IterGridDimension
+}
+pub fn IterGrid::new(IterRecords, SpannedConfig, IterGridDimension) -> Self
+pub fn IterGrid::to_string(Self) -> String
+
+pub struct IterGridDimension {
+  mut widths : Array[Int]
+}
+pub fn IterGridDimension::default() -> Self
+pub fn IterGridDimension::estimate(Self, IterRecords, SpannedConfig) -> Unit
+pub fn IterGridDimension::widths(Self) -> Array[Int]
+
+pub struct IterRecords {
+  rows : Array[Array[String]]
+  count_columns : Int
+}
+pub fn IterRecords::count_columns(Self) -> Int
+pub fn IterRecords::count_rows(Self) -> Int
+pub fn IterRecords::get_cell(Self, Int, Int) -> String
+pub fn IterRecords::new(Array[Array[String]]) -> Self
+pub fn IterRecords::rows(Self) -> Array[Array[String]]
+
+pub struct SpannedConfig {
+  mut borders : Borders
+  mut padding_left : Int
+  mut padding_right : Int
+  mut padding_top : Int
+  mut padding_bottom : Int
+  mut alignment : AlignmentHorizontal
+}
+pub fn SpannedConfig::alignment(Self) -> AlignmentHorizontal
+pub fn SpannedConfig::borders(Self) -> Borders
+pub fn SpannedConfig::default() -> Self
+pub fn SpannedConfig::padding_bottom(Self) -> Int
+pub fn SpannedConfig::padding_left(Self) -> Int
+pub fn SpannedConfig::padding_right(Self) -> Int
+pub fn SpannedConfig::padding_top(Self) -> Int
+pub fn SpannedConfig::set_alignment(Self, AlignmentHorizontal) -> Unit
+pub fn SpannedConfig::set_borders(Self, Borders) -> Unit
+pub fn SpannedConfig::set_padding(Self, Int, Int, Int, Int) -> Unit
+
+// Type aliases
+
+// Traits
+

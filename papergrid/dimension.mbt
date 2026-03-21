@@ -24,7 +24,8 @@ pub fn IterGridDimension::estimate(
       }
     }
   }
-  widths.eachi((index, width) => if width == 0 { widths[index] = 1 })
+  let padding = _cfg.padding_left() + _cfg.padding_right()
+  widths.eachi((index, width) => widths[index] = width + padding)
   self.widths = widths
 }
 
