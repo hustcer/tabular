@@ -228,12 +228,24 @@ Completed in this phase:
   - low-level `papergrid` row span rendering
   - table-level cell/segment column and row spans
   - span remapping after column extraction and row extraction
-- Expanded the test suite to `105`
+- Added a first border-junction refinement for row-span split lines
+  - fully covered split lines are suppressed
+  - internal junctions inside the same combined row+column span are suppressed
+- Extended rowspan rendering so content can continue across visible split lines
+  - rowspan height accounting now treats visible crossed boundaries as usable vertical slots
+  - extra rowspan height is distributed across the full span range instead of being pushed only into the last row
+  - split-line rendering can now paint spanned-cell content in partially covered boundaries
+- Ported a second focused span batch from upstream-inspired cases
+  - low-level multiline rowspan collision behavior
+  - low-level multiline combined row+column span behavior
+  - invalid-position no-op coverage at the table layer
+- Expanded the test suite to `111`
 - Re-verified `moon info`, `moon fmt`, `moon check -d`, `moon build -d`, and `moon test -d`
 
 Remaining work:
 
 - Refine border junction behavior for span-heavy `psql` / markdown edge cases
+- Decide whether to support fully covered boundary content for broader upstream rowspan parity
 - Extend safe span semantics beyond the current non-destructive subset
   - `0`
   - negative values

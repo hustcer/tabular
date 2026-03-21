@@ -87,6 +87,79 @@ fn sum_range(values : Array[Int], start : Int, end_ : Int) -> Int {
 }
 
 ///|
+fn boundary_has_line(
+  config : SpannedConfig,
+  boundary_row : Int,
+  count_rows : Int,
+) -> Bool {
+  if boundary_row <= 0 || boundary_row >= count_rows {
+    return false
+  }
+  let standard = match config.horizontal_lines() {
+    All => true
+    HeaderOnly => boundary_row == 1
+    None => false
+  }
+  standard || config.custom_horizontal_line(boundary_row) is Some(_)
+}
+
+///|
+fn boundary_has_visible_line(
+  config : SpannedConfig,
+  boundary_row : Int,
+  count_rows : Int,
+  count_columns : Int,
+) -> Bool {
+  if !boundary_has_line(config, boundary_row, count_rows) {
+    return false
+  }
+  for column = 0; column < count_columns; column = column + 1 {
+    if !row_span_crosses_boundary(config, boundary_row, column) {
+      return true
+    }
+  }
+  false
+}
+
+///|
+fn count_range_boundaries(
+  config : SpannedConfig,
+  count_rows : Int,
+  count_columns : Int,
+  start : Int,
+  end_ : Int,
+) -> Int {
+  let mut total = 0
+  for boundary_row = start + 1
+      boundary_row < end_
+      boundary_row = boundary_row + 1 {
+    if boundary_has_visible_line(
+        config, boundary_row, count_rows, count_columns,
+      ) {
+      total += 1
+    }
+  }
+  total
+}
+
+///|
+fn inc_range(values : Array[Int], size : Int, start : Int, end_ : Int) -> Unit {
+  let span = end_ - start
+  if span <= 0 || size <= 0 {
+    return
+  }
+  let one = size / span
+  let rest = size - span * one
+  for index = start; index < end_; index = index + 1 {
+    if index == start {
+      values[index] = values[index] + one + rest
+    } else {
+      values[index] = values[index] + one
+    }
+  }
+}
+
+///|
 fn row_span_anchor(
   config : SpannedConfig,
   row : Int,
@@ -124,6 +197,24 @@ fn row_span_crosses_boundary(
     }
   }
   false
+}
+
+///|
+fn row_span_boundary_anchor(
+  config : SpannedConfig,
+  boundary_row : Int,
+  column : Int,
+) -> (Int, Int)? {
+  match row_span_anchor(config, boundary_row, column) {
+    Some(anchor) =>
+      if boundary_row > anchor.0 &&
+        boundary_row < anchor.0 + config.row_span_at(anchor.0, anchor.1) {
+        Some(anchor)
+      } else {
+        None
+      }
+    None => None
+  }
 }
 
 ///|
@@ -210,10 +301,10 @@ fn row_metrics(
           config.width_mode_at(row, column),
           config.height_mode_at(row, column),
         ).length()
-        let current = sum_range(content_heights, row, end_)
+        let current = sum_range(content_heights, row, end_) +
+          count_range_boundaries(config, count_rows, count_columns, row, end_)
         if needed > current {
-          content_heights[end_ - 1] = content_heights[end_ - 1] +
-            (needed - current)
+          inc_range(content_heights, needed - current, row, end_)
           changed = true
         }
       }
@@ -260,7 +351,14 @@ fn cell_content_for_row(
   } else {
     row_heights.length()
   }
-  let total_height = sum_range(row_heights, anchor.0, end_)
+  let total_height = sum_range(row_heights, anchor.0, end_) +
+    count_range_boundaries(
+      config,
+      row_heights.length(),
+      records.count_columns(),
+      anchor.0,
+      end_,
+    )
   let lines = processed_lines(
     records.get_cell(anchor.0, anchor.1),
     config.width_mode_at(anchor.0, anchor.1),
@@ -276,6 +374,14 @@ fn cell_content_for_row(
   let mut offset = 0
   for index = anchor.0; index < row; index = index + 1 {
     offset = offset + row_heights[index]
+    if boundary_has_visible_line(
+        config,
+        index + 1,
+        row_heights.length(),
+        records.count_columns(),
+      ) {
+      offset += 1
+    }
   }
   let absolute = offset + line_index
   if absolute < top_fill || absolute >= top_fill + lines.length() {
@@ -286,40 +392,166 @@ fn cell_content_for_row(
 }
 
 ///|
+fn cell_content_for_boundary(
+  records : IterRecords,
+  config : SpannedConfig,
+  row_heights : Array[Int],
+  boundary_row : Int,
+  column : Int,
+) -> String {
+  let anchor = match row_span_boundary_anchor(config, boundary_row, column) {
+    Some(anchor) => anchor
+    None => return ""
+  }
+  let rowspan = config.row_span_at(anchor.0, anchor.1)
+  let end_ = if anchor.0 + rowspan < row_heights.length() {
+    anchor.0 + rowspan
+  } else {
+    row_heights.length()
+  }
+  let total_height = sum_range(row_heights, anchor.0, end_) +
+    count_range_boundaries(
+      config,
+      row_heights.length(),
+      records.count_columns(),
+      anchor.0,
+      end_,
+    )
+  let lines = processed_lines(
+    records.get_cell(anchor.0, anchor.1),
+    config.width_mode_at(anchor.0, anchor.1),
+    config.height_mode_at(anchor.0, anchor.1),
+  )
+  let missing = total_height - lines.length()
+  let vertical_alignment = config.vertical_alignment_at(anchor.0, anchor.1)
+  let top_fill = match vertical_alignment {
+    Top => 0
+    Bottom => missing
+    Center => missing / 2
+  }
+  let mut absolute = 0
+  for row = anchor.0; row < boundary_row; row = row + 1 {
+    absolute = absolute + row_heights[row]
+    if row + 1 < boundary_row &&
+      boundary_has_visible_line(
+        config,
+        row + 1,
+        row_heights.length(),
+        records.count_columns(),
+      ) {
+      absolute += 1
+    }
+  }
+  if absolute < top_fill || absolute >= top_fill + lines.length() {
+    ""
+  } else {
+    lines[absolute - top_fill]
+  }
+}
+
+///|
 fn render_split_line(
+  records : IterRecords,
   borders : Borders,
   widths : Array[Int],
   boundary_row : Int,
   count_columns : Int,
   config : SpannedConfig,
+  row_heights : Array[Int],
 ) -> String {
+  let mut has_uncovered = false
+  for column = 0; column < count_columns; column = column + 1 {
+    if !row_span_crosses_boundary(config, boundary_row, column) {
+      has_uncovered = true
+      break
+    }
+  }
+  if !has_uncovered {
+    return ""
+  }
+
   let mut out = match
     first_char([borders.left_intersection, borders.left, borders.horizontal]) {
     Some(value) => value.to_string()
     None => ""
   }
-  for column = 0; column < count_columns; column = column + 1 {
+  let mut column = 0
+  while column < count_columns {
     let covered = row_span_crosses_boundary(config, boundary_row, column)
-    let fill = if covered {
-      " ".repeat(widths[column])
-    } else {
-      match borders.horizontal {
-        Some(value) => value.to_string().repeat(widths[column])
-        None => " ".repeat(widths[column])
+    let fill = match row_span_boundary_anchor(config, boundary_row, column) {
+      Some(anchor) =>
+        if anchor.1 == column {
+          let (padding_left, padding_right, _, _) = config.padding_at(
+            anchor.0,
+            anchor.1,
+          )
+          let alignment = config.alignment_at(anchor.0, anchor.1)
+          let colspan = config.column_span_at(anchor.0, anchor.1)
+          column = column + colspan
+          render_cell(
+            cell_content_for_boundary(
+              records,
+              config,
+              row_heights,
+              boundary_row,
+              column - colspan,
+            ),
+            span_width(widths, borders, anchor.1, colspan),
+            padding_left,
+            padding_right,
+            alignment,
+          )
+        } else {
+          column = column + 1
+          continue
+        }
+      None => {
+        column = column + 1
+        if covered {
+          " ".repeat(widths[column - 1])
+        } else {
+          match borders.horizontal {
+            Some(value) => value.to_string().repeat(widths[column - 1])
+            None => " ".repeat(widths[column - 1])
+          }
+        }
       }
     }
     out = out + fill
-    if column + 1 < count_columns {
-      out = out +
-        (match
-          first_char([
-            borders.intersection,
-            borders.vertical,
-            borders.horizontal,
-          ]) {
-          Some(value) => value.to_string()
-          None => ""
-        })
+    if column < count_columns {
+      let current_anchor = row_span_boundary_anchor(
+        config,
+        boundary_row,
+        column - 1,
+      )
+      let next_anchor = row_span_boundary_anchor(config, boundary_row, column)
+      let join = match current_anchor {
+        Some(_) =>
+          if current_anchor == next_anchor {
+            ""
+          } else {
+            match
+              first_char([
+                borders.intersection,
+                borders.vertical,
+                borders.horizontal,
+              ]) {
+              Some(value) => value.to_string()
+              None => ""
+            }
+          }
+        None =>
+          match
+            first_char([
+              borders.intersection,
+              borders.vertical,
+              borders.horizontal,
+            ]) {
+            Some(value) => value.to_string()
+            None => ""
+          }
+      }
+      out = out + join
     }
   }
   out +
@@ -508,6 +740,7 @@ pub fn IterGrid::to_string(self : IterGrid) -> String {
         Some(line) =>
           if self.config.has_row_spans() {
             render_split_line(
+              self.records,
               {
                 ..borders,
                 horizontal: line.main,
@@ -534,6 +767,7 @@ pub fn IterGrid::to_string(self : IterGrid) -> String {
               row_index + 1,
               self.records.count_columns(),
               self.config,
+              row_heights,
             )
           } else {
             borders.build_line(
@@ -562,11 +796,13 @@ pub fn IterGrid::to_string(self : IterGrid) -> String {
         None =>
           if self.config.has_row_spans() {
             render_split_line(
+              self.records,
               borders,
               widths,
               row_index + 1,
               self.records.count_columns(),
               self.config,
+              row_heights,
             )
           } else {
             borders.build_line(

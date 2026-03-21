@@ -554,6 +554,109 @@ test "row span survives extract rows remap" {
 }
 
 ///|
+test "row span bigger than max clamps to table height" {
+  let table = @tabular.Table::from_rows([
+    ["N", "column 0", "column 1"],
+    ["0", "0-0", "0-1"],
+    ["1", "1-0", "1-1"],
+  ])
+  table.apply(@tabular.Style::ascii()) |> ignore
+  table.modify_cell(@tabular.Cell::new(0, 0), @tabular.Span::row(100)) |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|+---+----------+----------+
+      #|| N | column 0 | column 1 |
+      #|+   +----------+----------+
+      #||   |   0-0    |   0-1    |
+      #|+   +----------+----------+
+      #||   |   1-0    |   1-1    |
+      #|+---+----------+----------+
+    ),
+  )
+}
+
+///|
+test "row span on header row under psql" {
+  let table = @tabular.Table::from_rows([
+    ["N", "column 0", "column 1"],
+    ["0", "0-0", "0-1"],
+    ["1", "1-0", "1-1"],
+  ])
+  table.apply(@tabular.Style::psql()) |> ignore
+  table.modify_segment(
+    @tabular.Segment::all(),
+    @tabular.Setting::alignment(@tabular.Alignment::left()),
+  )
+  |> ignore
+  table.modify_rows(@tabular.Rows::one(0), @tabular.Span::row(2)) |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #| N | column 0 | column 1 
+      #| 1 | 1-0      | 1-1      
+    ),
+  )
+}
+
+///|
+test "combined row and column span on one cell" {
+  let table = @tabular.Table::from_rows([
+    ["N", "column 0", "column 1", "column 2"],
+    ["0", "0-0", "0-1", "0-2"],
+    ["1", "1-0", "1-1", "1-2"],
+    ["2", "2-0", "2-1", "2-2"],
+  ])
+  table.apply(@tabular.Style::ascii()) |> ignore
+  table.modify_segment(
+    @tabular.Segment::all(),
+    @tabular.Setting::alignment(@tabular.Alignment::left()),
+  )
+  |> ignore
+  table.modify_cell(@tabular.Cell::new(1, 1), @tabular.Span::column(2))
+  |> ignore
+  table.modify_cell(@tabular.Cell::new(1, 1), @tabular.Span::row(2)) |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|+---+----------+----------+----------+
+      #|| N | column 0 | column 1 | column 2 |
+      #|+---+----------+----------+----------+
+      #|| 0 | 0-0                 | 0-2      |
+      #|+---+                     +----------+
+      #|| 1 |                     | 1-2      |
+      #|+---+----------+----------+----------+
+      #|| 2 | 2-0      | 2-1      | 2-2      |
+      #|+---+----------+----------+----------+
+    ),
+  )
+}
+
+///|
+test "row span invalid position is a no-op" {
+  let table = @tabular.Table::from_rows([
+    ["N", "column 0", "column 1"],
+    ["0", "0-0", "0-1"],
+    ["1", "1-0", "1-1"],
+  ])
+  table.apply(@tabular.Style::ascii()) |> ignore
+  table.modify_cell(@tabular.Cell::new(1000, 1000), @tabular.Span::row(2))
+  |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|+---+----------+----------+
+      #|| N | column 0 | column 1 |
+      #|+---+----------+----------+
+      #|| 0 |   0-0    |   0-1    |
+      #|+---+----------+----------+
+      #|| 1 |   1-0    |   1-1    |
+      #|+---+----------+----------+
+    ),
+  )
+}
+
+///|
 test "modify cell height limit" {
   let table = @tabular.Table::from_rows([
     ["N", "text"],
