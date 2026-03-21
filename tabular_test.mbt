@@ -167,7 +167,11 @@ test "table right alignment" {
 ///|
 test "table custom padding" {
   let table = @tabular.Table::from_rows([["N", "column 0"], ["0", "0-0"]])
-  table.set_alignment(@tabular.Alignment::left()) |> ignore
+  table.modify_segment(
+    @tabular.Segment::all(),
+    @tabular.Setting::alignment(@tabular.Alignment::left()),
+  )
+  |> ignore
   table.set_padding(@tabular.Padding::new(1, 1, 1, 1)) |> ignore
   inspect(
     table.to_string(),
@@ -188,7 +192,11 @@ test "table custom padding" {
 ///|
 test "table width wrap" {
   let table = @tabular.Table::from_rows([["text"], ["abcdef"]])
-  table.set_alignment(@tabular.Alignment::left()) |> ignore
+  table.modify_segment(
+    @tabular.Segment::all(),
+    @tabular.Setting::alignment(@tabular.Alignment::left()),
+  )
+  |> ignore
   table.set_width(@tabular.Width::wrap(2)) |> ignore
   inspect(
     table.to_string(),
@@ -208,7 +216,11 @@ test "table width wrap" {
 ///|
 test "table width truncate" {
   let table = @tabular.Table::from_rows([["text"], ["abcdef"]])
-  table.set_alignment(@tabular.Alignment::left()) |> ignore
+  table.modify_segment(
+    @tabular.Segment::all(),
+    @tabular.Setting::alignment(@tabular.Alignment::left()),
+  )
+  |> ignore
   table.set_width(@tabular.Width::truncate(4, suffix="..")) |> ignore
   inspect(
     table.to_string(),
@@ -225,7 +237,11 @@ test "table width truncate" {
 ///|
 test "table height increase" {
   let table = @tabular.Table::from_rows([["text"], ["a"]])
-  table.set_alignment(@tabular.Alignment::left()) |> ignore
+  table.modify_segment(
+    @tabular.Segment::all(),
+    @tabular.Setting::alignment(@tabular.Alignment::left()),
+  )
+  |> ignore
   table.set_height(@tabular.Height::increase(2)) |> ignore
   inspect(
     table.to_string(),
@@ -244,7 +260,11 @@ test "table height increase" {
 ///|
 test "table height limit" {
   let table = @tabular.Table::from_rows([["text"], ["a\nb\nc"]])
-  table.set_alignment(@tabular.Alignment::left()) |> ignore
+  table.modify_segment(
+    @tabular.Segment::all(),
+    @tabular.Setting::alignment(@tabular.Alignment::left()),
+  )
+  |> ignore
   table.set_height(@tabular.Height::limit(2)) |> ignore
   inspect(
     table.to_string(),
@@ -276,7 +296,7 @@ test "modify columns width truncate with row exclusion" {
     table.to_string(),
     content=(
       #| N | column 0 | column 1 
-      #|----+----------+-----------
+      #|---+----------+----------
       #| 0 |    a.    |    g.    
       #| 1 |    m.    |    s.    
     ),
@@ -290,7 +310,11 @@ test "modify segment width wrap" {
     ["0", "abcdef"],
     ["1", "ghijkl"],
   ])
-  table.set_alignment(@tabular.Alignment::left()) |> ignore
+  table.modify_segment(
+    @tabular.Segment::all(),
+    @tabular.Setting::alignment(@tabular.Alignment::left()),
+  )
+  |> ignore
   table.modify_columns(
     @tabular.Columns::one(1),
     @tabular.Setting::width(@tabular.Width::wrap(2)),
@@ -318,7 +342,11 @@ test "modify segment width wrap" {
 ///|
 test "modify rows height increase" {
   let table = @tabular.Table::from_rows([["N", "text"], ["0", "a"], ["1", "b"]])
-  table.set_alignment(@tabular.Alignment::left()) |> ignore
+  table.modify_segment(
+    @tabular.Segment::all(),
+    @tabular.Setting::alignment(@tabular.Alignment::left()),
+  )
+  |> ignore
   table.modify_rows(
     @tabular.Rows::one(1),
     @tabular.Setting::height(@tabular.Height::increase(3)),
@@ -359,7 +387,7 @@ test "modify cell column span" {
     table.to_string(),
     content=(
       #| N | column 0 | column 1 | column 2 
-      #|----+----------+----------+-----------
+      #|---+----------+----------+----------
       #| 0 | 0-0                 | 0-2      
       #| 1 | 1-0      | 1-1      | 1-2      
     ),
@@ -388,7 +416,7 @@ test "modify column span for a whole column selection" {
     table.to_string(),
     content=(
       #| N | column 0 | column 1 | column 2 
-      #|----+----------+----------+-----------
+      #|---+----------+----------+----------
       #| 0 | 0-0                 | 0-2      
       #| 1 | 1-0                 | 1-2      
     ),
@@ -415,7 +443,7 @@ test "column span survives extract columns remap" {
     table.to_string(),
     content=(
       #| column 0 | column 1 
-      #|-----------+-----------
+      #|----------+----------
       #| 0-0                 
       #| 1-0      | 1-1      
     ),
@@ -443,7 +471,7 @@ test "column span can be removed without losing hidden cell values" {
     table.to_string(),
     content=(
       #| N | column 0 | column 1 | column 2 
-      #|----+----------+----------+-----------
+      #|---+----------+----------+----------
       #| 0 | 0-0      | 0-1      | 0-2      
       #| 1 | 1-0      | 1-1      | 1-2      
     ),
@@ -468,7 +496,7 @@ test "modify cell row span" {
     table.to_string(),
     content=(
       #| N | column 0 | column 1 
-      #|----+----------+-----------
+      #|---+----------+----------
       #| 0 | 0-0      | 0-1      
       #| 1 |          | 1-1      
     ),
@@ -493,7 +521,7 @@ test "modify first-column row span" {
     table.to_string(),
     content=(
       #| N | column 0 | column 1 
-      #|----+----------+-----------
+      #|---+----------+----------
       #| 0 | 0-0      | 0-1      
       #|   | 1-0      | 1-1      
     ),
@@ -519,7 +547,7 @@ test "row span can be removed without losing hidden cell values" {
     table.to_string(),
     content=(
       #| N | column 0 | column 1 
-      #|----+----------+-----------
+      #|---+----------+----------
       #| 0 | 0-0      | 0-1      
       #| 1 | 1-0      | 1-1      
     ),
@@ -546,7 +574,7 @@ test "row span survives extract rows remap" {
     table.to_string(),
     content=(
       #| 0 | 0-0 | 0-1 
-      #|----+     +------
+      #|---+     +-----
       #| 1 |     | 1-1 
       #| 2 | 2-0 | 2-1 
     ),
@@ -593,7 +621,7 @@ test "row span on header row under psql" {
   inspect(
     table.to_string(),
     content=(
-      #|- N + column 0 + column 1 -
+      #| N + column 0 + column 1 
       #| 1 | 1-0      | 1-1      
     ),
   )
@@ -896,7 +924,11 @@ test "modify cell height limit" {
     ["0", "a\nb\nc"],
     ["1", "x"],
   ])
-  table.set_alignment(@tabular.Alignment::left()) |> ignore
+  table.modify_segment(
+    @tabular.Segment::all(),
+    @tabular.Setting::alignment(@tabular.Alignment::left()),
+  )
+  |> ignore
   table.modify_cell(
     @tabular.Cell::new(1, 1),
     @tabular.Setting::height(@tabular.Height::limit(2)),
@@ -923,7 +955,11 @@ test "table vertical alignment center" {
     ["left\ncell", "right one"],
     ["the second column", "and\nhere\nsee\na"],
   ])
-  table.set_alignment(@tabular.Alignment::left()) |> ignore
+  table.modify_segment(
+    @tabular.Segment::all(),
+    @tabular.Setting::alignment(@tabular.Alignment::left()),
+  )
+  |> ignore
   table.set_vertical_alignment(@tabular.VerticalAlignment::center()) |> ignore
   inspect(
     table.to_string(),
@@ -972,7 +1008,7 @@ test "table psql style" {
     table.to_string(),
     content=(
       #| N | column 0 | column 1 
-      #|----+----------+-----------
+      #|---+----------+----------
       #| 0 |   0-0    |   0-1    
       #| 1 |   1-0    |   1-1    
     ),
@@ -1038,7 +1074,7 @@ test "style re structured text" {
     content=(
       #|==== ===========
       #| N   column 0 
-      #|==== ===========
+      #|=== ==========
       #| 0     0-0    
       #|==== ===========
     ),
@@ -1244,7 +1280,7 @@ test "style empty custom horizontal only" {
     table.to_string(),
     content=(
       #| N  column 0  column 1 
-      #|---------------------------
+      #|-------------------------
       #| 0    0-0       0-1    
       #| 1    1-0       1-1    
     ),
@@ -1303,7 +1339,7 @@ test "modify segment alignment left" {
     table.to_string(),
     content=(
       #| N | column 0 | column 1 
-      #|----+----------+-----------
+      #|---+----------+----------
       #| 0 | 0-0      | 0-1      
       #| 1 | 1-0      | 1-1      
     ),
@@ -1358,7 +1394,7 @@ test "modify columns vertical alignment" {
     table.to_string(),
     content=(
       #| N | column 0 | column 1 
-      #|----+----------+-----------
+      #|---+----------+----------
       #| 0 |    E     |          
       #|   |   nde    |          
       #|   |   avou   |          
@@ -1395,7 +1431,7 @@ test "modify rows padding" {
     table.to_string(),
     content=(
       #| N | column 0 
-      #|----+-----------
+      #|---+----------
       #| 0 | 0-0      
       #|   |          
       #|   |          
@@ -1424,7 +1460,7 @@ test "modify columns skip and not first" {
     table.to_string(),
     content=(
       #| N | column 0 | column 1 | column 2 
-      #|----+----------+----------+-----------
+      #|---+----------+----------+----------
       #| 0 |   0-0    |   0-1    |      0-2 
       #| 1 |   1-0    |   1-1    |      1-2 
       #| 2 |   2-0    |   2-1    |      2-2 
@@ -1450,7 +1486,7 @@ test "modify columns step by" {
     table.to_string(),
     content=(
       #| N | column 0 | column 1 | column 2 
-      #|----+----------+----------+-----------
+      #|---+----------+----------+----------
       #| 0 |   0-0    |   0-1    |      0-2 
       #| 1 |   1-0    |   1-1    |      1-2 
       #| 2 |   2-0    |   2-1    |      2-2 
@@ -1481,7 +1517,7 @@ test "modify columns filter" {
     table.to_string(),
     content=(
       #| N | column 0 | column 1 | column 2 
-      #|----+----------+----------+-----------
+      #|---+----------+----------+----------
       #| 0 |      0-0 |   0-1    |      0-2 
       #| 1 |      1-0 |   1-1    |      1-2 
       #| 2 |      2-0 |   2-1    |      2-2 
@@ -1507,7 +1543,7 @@ test "modify segment skip one cell" {
     table.to_string(),
     content=(
       #| N | column 0 | column 1 | column 2 
-      #|----+----------+----------+-----------
+      #|---+----------+----------+----------
       #| 0 |      0-0 |      0-1 |      0-2 
       #| 1 |      1-0 |      1-1 |      1-2 
       #| 2 |      2-0 |      2-1 |      2-2 
@@ -1523,7 +1559,11 @@ test "modify rows step by" {
     ["1", "1-0", "1-1"],
     ["2", "2-0", "2-1"],
   ])
-  table.set_alignment(@tabular.Alignment::left()) |> ignore
+  table.modify_segment(
+    @tabular.Segment::all(),
+    @tabular.Setting::alignment(@tabular.Alignment::left()),
+  )
+  |> ignore
   table.modify_rows(
     @tabular.Rows::all().skip(1).step_by(2),
     @tabular.Setting::alignment(@tabular.Alignment::right()),
@@ -1562,7 +1602,7 @@ test "modify segment range" {
     table.to_string(),
     content=(
       #| N | column 0 | column 1 
-      #|----+----------+-----------
+      #|---+----------+----------
       #| 0 |      0-0 |      0-1 
       #| 1 |      1-0 |      1-1 
     ),
@@ -1576,7 +1616,11 @@ test "modify single row with one" {
     ["0", "0-0", "0-1"],
     ["1", "1-0", "1-1"],
   ])
-  table.set_alignment(@tabular.Alignment::left()) |> ignore
+  table.modify_segment(
+    @tabular.Segment::all(),
+    @tabular.Setting::alignment(@tabular.Alignment::left()),
+  )
+  |> ignore
   table.modify_rows(
     @tabular.Rows::one(2),
     @tabular.Setting::alignment(@tabular.Alignment::right()),
@@ -1613,7 +1657,7 @@ test "modify single column with one" {
     table.to_string(),
     content=(
       #| N | column 0 | column 1 
-      #|----+----------+-----------
+      #|---+----------+----------
       #| 0 |   0-0    |   0-1    
       #| 1 |   1-0    |   1-1    
     ),
@@ -1637,7 +1681,7 @@ test "modify cell alignment" {
     table.to_string(),
     content=(
       #| N | column 0 | column 1 
-      #|----+----------+-----------
+      #|---+----------+----------
       #| 0 |      0-0 |   0-1    
       #| 1 |   1-0    |   1-1    
     ),
@@ -1652,7 +1696,11 @@ test "modify last row alignment" {
     ["1", "1-0", "1-1"],
     ["2", "2-0", "2-1"],
   ])
-  table.set_alignment(@tabular.Alignment::left()) |> ignore
+  table.modify_segment(
+    @tabular.Segment::all(),
+    @tabular.Setting::alignment(@tabular.Alignment::left()),
+  )
+  |> ignore
   table.modify_rows(
     @tabular.Rows::last(),
     @tabular.Setting::alignment(@tabular.Alignment::right()),
@@ -1691,7 +1739,7 @@ test "modify last column alignment" {
     table.to_string(),
     content=(
       #| N | column 0 | column 1 
-      #|----+----------+-----------
+      #|---+----------+----------
       #| 0 |   0-0    |      0-1 
       #| 1 |   1-0    |      1-1 
     ),
@@ -1706,7 +1754,11 @@ test "modify row by last offset" {
     ["1", "1-0"],
     ["2", "2-0"],
   ])
-  table.set_alignment(@tabular.Alignment::left()) |> ignore
+  table.modify_segment(
+    @tabular.Segment::all(),
+    @tabular.Setting::alignment(@tabular.Alignment::left()),
+  )
+  |> ignore
   table.modify_rows(
     @tabular.Rows::last_offset(1),
     @tabular.Setting::alignment(@tabular.Alignment::right()),
@@ -1745,7 +1797,7 @@ test "modify column by last offset" {
     table.to_string(),
     content=(
       #| N | column 0 | column 1 | column 2 
-      #|----+----------+----------+-----------
+      #|---+----------+----------+----------
       #| 0 |   0-0    |      0-1 |   0-2    
       #| 1 |   1-0    |      1-1 |   1-2    
     ),
@@ -1770,7 +1822,7 @@ test "modify intersect rows and columns" {
     table.to_string(),
     content=(
       #| N | column 0 | column 1 | column 2 
-      #|----+----------+----------+-----------
+      #|---+----------+----------+----------
       #| 0 |      0-0 |      0-1 |   0-2    
       #| 1 |      1-0 |      1-1 |   1-2    
       #| 2 |   2-0    |   2-1    |   2-2    
@@ -1796,7 +1848,7 @@ test "modify intersect rows and columns with skip" {
     table.to_string(),
     content=(
       #| N | column 0 | column 1 | column 2 
-      #|----+----------+----------+-----------
+      #|---+----------+----------+----------
       #| 0 |   0-0    |   0-1    |      0-2 
       #| 1 |      1-0 |      1-1 |      1-2 
       #| 2 |   2-0    |   2-1    |   2-2    
@@ -1821,7 +1873,7 @@ test "modify inverse columns" {
     table.to_string(),
     content=(
       #| N | column 0 | column 1 | column 2 
-      #|----+----------+----------+-----------
+      #|---+----------+----------+----------
       #| 0 |      0-0 |      0-1 |      0-2 
       #| 1 |      1-0 |      1-1 |      1-2 
     ),
@@ -1845,7 +1897,7 @@ test "modify inverse cell" {
     table.to_string(),
     content=(
       #| N | column 0 | column 1 
-      #|----+----------+-----------
+      #|---+----------+----------
       #| 0 |      0-0 |      0-1 
       #| 1 |      1-0 |      1-1 
     ),
@@ -1874,7 +1926,7 @@ test "modify union of row and column segments" {
     table.to_string(),
     content=(
       #| N | column 0 | column 1 
-      #|----+----------+-----------
+      #|---+----------+----------
       #| 0 |      0-0 |      0-1 
       #| 1 | 1-0      |      1-1 
     ),
@@ -1904,7 +1956,7 @@ test "modify union of row selectors" {
     table.to_string(),
     content=(
       #| N | column 0 | column 1 
-      #|----+----------+-----------
+      #|---+----------+----------
       #| 0 |      0-0 |      0-1 
       #| 1 | 1-0      | 1-1      
       #| 2 |      2-0 |      2-1 
@@ -1934,7 +1986,7 @@ test "modify row not column with ergonomic helper" {
     table.to_string(),
     content=(
       #| N | column 0 | column 1 
-      #|----+----------+-----------
+      #|---+----------+----------
       #| 0 | 0-0      |      0-1 
       #| 1 | 1-0      | 1-1      
     ),
@@ -1963,7 +2015,7 @@ test "modify column not row with ergonomic helper" {
     table.to_string(),
     content=(
       #| N | column 0 | column 1 
-      #|----+----------+-----------
+      #|---+----------+----------
       #| 0 | 0-0      |      0-1 
       #| 1 | 1-0      |      1-1 
     ),
@@ -1995,7 +2047,7 @@ test "modify segment difference by cell" {
     table.to_string(),
     content=(
       #| N | column 0 | column 1 
-      #|----+----------+-----------
+      #|---+----------+----------
       #| 0 |      0-0 | 0-1      
       #| 1 | 1-0      |      1-1 
     ),
@@ -2058,7 +2110,7 @@ test "format first column surround" {
     table.to_string(),
     content=(
       #| (x) N | name  
-      #|--------+--------
+      #|-------+-------
       #| (x) 0 | alice 
       #| (x) 1 |  bob  
     ),
@@ -2082,7 +2134,7 @@ test "format cell value" {
     table.to_string(),
     content=(
       #| N | name  
-      #|----+--------
+      #|---+-------
       #| 0 | alice 
       #| 1 |   X   
     ),
@@ -2195,7 +2247,7 @@ test "format multiline content" {
     table.to_string(),
     content=(
       #| (x) N | (x) column 0 | (x) column 1 
-      #|--------+--------------+---------------
+      #|-------+--------------+--------------
       #| (x) 0 |   (x) 0-0    |    (x) E     
       #|       |              |   (x) nde    
       #|       |              |   (x) avou   
@@ -2228,7 +2280,7 @@ test "format intersection content" {
     table.to_string(),
     content=(
       #| N | column 0 | column 1 | column 2 
-      #|----+----------+----------+-----------
+      #|---+----------+----------+----------
       #| 0 | (x) 0-0  | (x) 0-1  |   0-2    
       #| 1 | (x) 1-0  | (x) 1-1  |   1-2    
       #| 2 |   2-0    |   2-1    |   2-2    
@@ -2253,7 +2305,7 @@ test "format inverse columns content" {
     table.to_string(),
     content=(
       #| N | (x) column 0 | (x) column 1 | (x) column 2 
-      #|----+--------------+--------------+---------------
+      #|---+--------------+--------------+--------------
       #| 0 |   (x) 0-0    |   (x) 0-1    |   (x) 0-2    
       #| 1 |   (x) 1-0    |   (x) 1-1    |   (x) 1-2    
     ),
@@ -2280,7 +2332,7 @@ test "format union and difference content" {
     table.to_string(),
     content=(
       #|   N   | (x) column 0 | (x) column 1 | (x) column 2 
-      #|--------+--------------+--------------+---------------
+      #|-------+--------------+--------------+--------------
       #| (x) 0 |     0-0      |     0-1      |     0-2      
       #| (x) 1 |     1-0      |     1-1      |     1-2      
       #| (x) 2 |     2-0      |     2-1      |     2-2      
@@ -2329,7 +2381,11 @@ test "format content keeps padding and alignment" {
 ///|
 test "format content then width truncate" {
   let table = @tabular.Table::from_rows([["name"], ["alphabet"]])
-  table.set_alignment(@tabular.Alignment::left()) |> ignore
+  table.modify_segment(
+    @tabular.Segment::all(),
+    @tabular.Setting::alignment(@tabular.Alignment::left()),
+  )
+  |> ignore
   table.modify_segment(
     @tabular.Segment::all(),
     @tabular.Setting::format(
@@ -2353,7 +2409,11 @@ test "format content then width truncate" {
 ///|
 test "format content then width wrap" {
   let table = @tabular.Table::from_rows([["name"], ["alphabet"]])
-  table.set_alignment(@tabular.Alignment::left()) |> ignore
+  table.modify_segment(
+    @tabular.Segment::all(),
+    @tabular.Setting::alignment(@tabular.Alignment::left()),
+  )
+  |> ignore
   table.modify_segment(
     @tabular.Segment::all(),
     @tabular.Setting::format(
@@ -2380,7 +2440,11 @@ test "format content then width wrap" {
 ///|
 test "format multiline then height limit" {
   let table = @tabular.Table::from_rows([["text"], ["a\nb\nc"]])
-  table.set_alignment(@tabular.Alignment::left()) |> ignore
+  table.modify_segment(
+    @tabular.Segment::all(),
+    @tabular.Setting::alignment(@tabular.Alignment::left()),
+  )
+  |> ignore
   table.modify_segment(
     @tabular.Segment::all(),
     @tabular.Setting::format(
@@ -2409,7 +2473,11 @@ test "extract segment keeps scoped width" {
     ["0", "abcdef", "ghijkl"],
     ["1", "mnopqr", "stuvwx"],
   ])
-  table.set_alignment(@tabular.Alignment::left()) |> ignore
+  table.modify_segment(
+    @tabular.Segment::all(),
+    @tabular.Setting::alignment(@tabular.Alignment::left()),
+  )
+  |> ignore
   table.modify_columns(
     @tabular.Columns::one(1),
     @tabular.Setting::width(@tabular.Width::wrap(2)),
@@ -2443,7 +2511,11 @@ test "remove columns with scoped width on remaining column" {
     ["0", "abcdef", "X"],
     ["1", "ghijkl", "Y"],
   ])
-  table.set_alignment(@tabular.Alignment::left()) |> ignore
+  table.modify_segment(
+    @tabular.Segment::all(),
+    @tabular.Setting::alignment(@tabular.Alignment::left()),
+  )
+  |> ignore
   table.modify_columns(
     @tabular.Columns::one(1),
     @tabular.Setting::width(@tabular.Width::truncate(3)),
@@ -2467,7 +2539,11 @@ test "remove columns with scoped width on remaining column" {
 ///|
 test "one column mixed height layout" {
   let table = @tabular.Table::from_rows([["head"], ["a\nb"], ["c"]])
-  table.set_alignment(@tabular.Alignment::left()) |> ignore
+  table.modify_segment(
+    @tabular.Segment::all(),
+    @tabular.Setting::alignment(@tabular.Alignment::left()),
+  )
+  |> ignore
   inspect(
     table.to_string(),
     content=(
@@ -2486,7 +2562,11 @@ test "one column mixed height layout" {
 ///|
 test "one row width wrap layout" {
   let table = @tabular.Table::from_rows([["abcdef", "ghijkl"]])
-  table.set_alignment(@tabular.Alignment::left()) |> ignore
+  table.modify_segment(
+    @tabular.Segment::all(),
+    @tabular.Setting::alignment(@tabular.Alignment::left()),
+  )
+  |> ignore
   table.modify_segment(
     @tabular.Segment::all(),
     @tabular.Setting::width(@tabular.Width::wrap(3)),
@@ -2525,7 +2605,7 @@ test "padding by column name" {
     table.to_string(),
     content=(
       #| N |   column 0   | column 1 
-      #|----+--------------+-----------
+      #|---+--------------+----------
       #| 0 |     0-0      |   0-1    
       #| 1 |     1-0      |   1-1    
     ),
@@ -2554,7 +2634,7 @@ test "padding by column name not first row" {
     table.to_string(),
     content=(
       #| N | column 0 | column 1 
-      #|----+----------+-----------
+      #|---+----------+----------
       #| 0 |   0-0    |   0-1    
       #| 1 |   1-0    |   1-1    
     ),
@@ -2583,7 +2663,7 @@ test "padding by column name not existing" {
     table.to_string(),
     content=(
       #| N | column 0 | column 1 
-      #|----+----------+-----------
+      #|---+----------+----------
       #| 0 |   0-0    |   0-1    
       #| 1 |   1-0    |   1-1    
     ),
@@ -2624,7 +2704,7 @@ test "remove header psql" {
     table.to_string(),
     content=(
       #| 0 | 0-0 | 0-1 
-      #|----+-----+------
+      #|---+-----+-----
       #| 1 | 1-0 | 1-1 
     ),
   )
@@ -2643,7 +2723,7 @@ test "remove first column psql" {
     table.to_string(),
     content=(
       #| column 0 | column 1 
-      #|-----------+-----------
+      #|----------+----------
       #|   0-0    |   0-1    
       #|   1-0    |   1-1    
     ),
@@ -2664,7 +2744,7 @@ test "remove column by name" {
     table.to_string(),
     content=(
       #| N | column 0 | column 2 
-      #|----+----------+-----------
+      #|---+----------+----------
       #| 0 |   0-0    |   0-2    
       #| 1 |   1-0    |   1-2    
     ),
@@ -2810,6 +2890,1128 @@ test "extract after remove header" {
       #|+-----+
       #|| 1-0 |
       #|+-----+
+    ),
+  )
+}
+
+///|
+test "cell column span at header row col 0" {
+  let table = @tabular.Table::from_rows([
+    ["N", "column 0", "column 1", "column 2"],
+    ["0", "0-0", "0-1", "0-2"],
+    ["1", "1-0", "1-1", "1-2"],
+    ["2", "2-0", "2-1", "2-2"],
+  ])
+  table.apply(@tabular.Style::psql()) |> ignore
+  table.modify_segment(
+    @tabular.Segment::all(),
+    @tabular.Setting::alignment(@tabular.Alignment::left()),
+  )
+  |> ignore
+  table.modify_cell(@tabular.Cell::new(0, 0), @tabular.Span::column(2))
+  |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #| N       | column 1 | column 2 
+      #|---+-----+----------+----------
+      #| 0 | 0-0 | 0-1      | 0-2      
+      #| 1 | 1-0 | 1-1      | 1-2      
+      #| 2 | 2-0 | 2-1      | 2-2      
+    ),
+  )
+}
+
+///|
+test "cell column span at data row 0 col 0" {
+  let table = @tabular.Table::from_rows([
+    ["N", "column 0", "column 1", "column 2"],
+    ["0", "0-0", "0-1", "0-2"],
+    ["1", "1-0", "1-1", "1-2"],
+    ["2", "2-0", "2-1", "2-2"],
+  ])
+  table.apply(@tabular.Style::psql()) |> ignore
+  table.modify_segment(
+    @tabular.Segment::all(),
+    @tabular.Setting::alignment(@tabular.Alignment::left()),
+  )
+  |> ignore
+  table.modify_cell(@tabular.Cell::new(1, 0), @tabular.Span::column(2))
+  |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #| N | column 0 | column 1 | column 2 
+      #|---+----------+----------+----------
+      #| 0            | 0-1      | 0-2      
+      #| 1 | 1-0      | 1-1      | 1-2      
+      #| 2 | 2-0      | 2-1      | 2-2      
+    ),
+  )
+}
+
+///|
+test "cell column span at data row 1 col 0 center" {
+  let table = @tabular.Table::from_rows([
+    ["N", "column 0", "column 1", "column 2"],
+    ["0", "0-0", "0-1", "0-2"],
+    ["1", "1-0", "1-1", "1-2"],
+    ["2", "2-0", "2-1", "2-2"],
+  ])
+  table.apply(@tabular.Style::psql()) |> ignore
+  table.modify_cell(@tabular.Cell::new(2, 0), @tabular.Span::column(2))
+  |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #| N | column 0 | column 1 | column 2 
+      #|---+----------+----------+----------
+      #| 0 |   0-0    |   0-1    |   0-2    
+      #|      1       |   1-1    |   1-2    
+      #| 2 |   2-0    |   2-1    |   2-2    
+    ),
+  )
+}
+
+///|
+test "cell column span at data row 2 col 0" {
+  let table = @tabular.Table::from_rows([
+    ["N", "column 0", "column 1", "column 2"],
+    ["0", "0-0", "0-1", "0-2"],
+    ["1", "1-0", "1-1", "1-2"],
+    ["2", "2-0", "2-1", "2-2"],
+  ])
+  table.apply(@tabular.Style::psql()) |> ignore
+  table.modify_segment(
+    @tabular.Segment::all(),
+    @tabular.Setting::alignment(@tabular.Alignment::left()),
+  )
+  |> ignore
+  table.modify_cell(@tabular.Cell::new(3, 0), @tabular.Span::column(2))
+  |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #| N | column 0 | column 1 | column 2 
+      #|---+----------+----------+----------
+      #| 0 | 0-0      | 0-1      | 0-2      
+      #| 1 | 1-0      | 1-1      | 1-2      
+      #| 2            | 2-1      | 2-2      
+    ),
+  )
+}
+
+///|
+test "cell column span at header row col 1" {
+  let table = @tabular.Table::from_rows([
+    ["N", "column 0", "column 1", "column 2"],
+    ["0", "0-0", "0-1", "0-2"],
+    ["1", "1-0", "1-1", "1-2"],
+    ["2", "2-0", "2-1", "2-2"],
+  ])
+  table.apply(@tabular.Style::psql()) |> ignore
+  table.modify_segment(
+    @tabular.Segment::all(),
+    @tabular.Setting::alignment(@tabular.Alignment::left()),
+  )
+  |> ignore
+  table.modify_cell(@tabular.Cell::new(0, 1), @tabular.Span::column(2))
+  |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #| N | column 0  | column 2 
+      #|---+-----+-----+----------
+      #| 0 | 0-0 | 0-1 | 0-2      
+      #| 1 | 1-0 | 1-1 | 1-2      
+      #| 2 | 2-0 | 2-1 | 2-2      
+    ),
+  )
+}
+
+///|
+test "cell column span at data row 1 col 1" {
+  let table = @tabular.Table::from_rows([
+    ["N", "column 0", "column 1", "column 2"],
+    ["0", "0-0", "0-1", "0-2"],
+    ["1", "1-0", "1-1", "1-2"],
+    ["2", "2-0", "2-1", "2-2"],
+  ])
+  table.apply(@tabular.Style::psql()) |> ignore
+  table.modify_segment(
+    @tabular.Segment::all(),
+    @tabular.Setting::alignment(@tabular.Alignment::left()),
+  )
+  |> ignore
+  table.modify_cell(@tabular.Cell::new(2, 1), @tabular.Span::column(2))
+  |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #| N | column 0 | column 1 | column 2 
+      #|---+----------+----------+----------
+      #| 0 | 0-0      | 0-1      | 0-2      
+      #| 1 | 1-0                 | 1-2      
+      #| 2 | 2-0      | 2-1      | 2-2      
+    ),
+  )
+}
+
+///|
+test "cell column span at data row 2 col 1" {
+  let table = @tabular.Table::from_rows([
+    ["N", "column 0", "column 1", "column 2"],
+    ["0", "0-0", "0-1", "0-2"],
+    ["1", "1-0", "1-1", "1-2"],
+    ["2", "2-0", "2-1", "2-2"],
+  ])
+  table.apply(@tabular.Style::psql()) |> ignore
+  table.modify_segment(
+    @tabular.Segment::all(),
+    @tabular.Setting::alignment(@tabular.Alignment::left()),
+  )
+  |> ignore
+  table.modify_cell(@tabular.Cell::new(3, 1), @tabular.Span::column(2))
+  |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #| N | column 0 | column 1 | column 2 
+      #|---+----------+----------+----------
+      #| 0 | 0-0      | 0-1      | 0-2      
+      #| 1 | 1-0      | 1-1      | 1-2      
+      #| 2 | 2-0                 | 2-2      
+    ),
+  )
+}
+
+///|
+test "cell column span at header row col 2 center" {
+  let table = @tabular.Table::from_rows([
+    ["N", "column 0", "column 1", "column 2"],
+    ["0", "0-0", "0-1", "0-2"],
+    ["1", "1-0", "1-1", "1-2"],
+    ["2", "2-0", "2-1", "2-2"],
+  ])
+  table.apply(@tabular.Style::psql()) |> ignore
+  table.modify_cell(@tabular.Cell::new(0, 2), @tabular.Span::column(2))
+  |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #| N | column 0 | column 1  
+      #|---+----------+-----+-----
+      #| 0 |   0-0    | 0-1 | 0-2 
+      #| 1 |   1-0    | 1-1 | 1-2 
+      #| 2 |   2-0    | 2-1 | 2-2 
+    ),
+  )
+}
+
+///|
+test "cell column span at data row 0 col 2 center" {
+  let table = @tabular.Table::from_rows([
+    ["N", "column 0", "column 1", "column 2"],
+    ["0", "0-0", "0-1", "0-2"],
+    ["1", "1-0", "1-1", "1-2"],
+    ["2", "2-0", "2-1", "2-2"],
+  ])
+  table.apply(@tabular.Style::psql()) |> ignore
+  table.modify_cell(@tabular.Cell::new(1, 2), @tabular.Span::column(2))
+  |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #| N | column 0 | column 1 | column 2 
+      #|---+----------+----------+----------
+      #| 0 |   0-0    |         0-1         
+      #| 1 |   1-0    |   1-1    |   1-2    
+      #| 2 |   2-0    |   2-1    |   2-2    
+    ),
+  )
+}
+
+///|
+test "cell column span at data row 1 col 2 center" {
+  let table = @tabular.Table::from_rows([
+    ["N", "column 0", "column 1", "column 2"],
+    ["0", "0-0", "0-1", "0-2"],
+    ["1", "1-0", "1-1", "1-2"],
+    ["2", "2-0", "2-1", "2-2"],
+  ])
+  table.apply(@tabular.Style::psql()) |> ignore
+  table.modify_cell(@tabular.Cell::new(2, 2), @tabular.Span::column(2))
+  |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #| N | column 0 | column 1 | column 2 
+      #|---+----------+----------+----------
+      #| 0 |   0-0    |   0-1    |   0-2    
+      #| 1 |   1-0    |         1-1         
+      #| 2 |   2-0    |   2-1    |   2-2    
+    ),
+  )
+}
+
+///|
+test "cell column span at data row 2 col 2 center" {
+  let table = @tabular.Table::from_rows([
+    ["N", "column 0", "column 1", "column 2"],
+    ["0", "0-0", "0-1", "0-2"],
+    ["1", "1-0", "1-1", "1-2"],
+    ["2", "2-0", "2-1", "2-2"],
+  ])
+  table.apply(@tabular.Style::psql()) |> ignore
+  table.modify_cell(@tabular.Cell::new(3, 2), @tabular.Span::column(2))
+  |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #| N | column 0 | column 1 | column 2 
+      #|---+----------+----------+----------
+      #| 0 |   0-0    |   0-1    |   0-2    
+      #| 1 |   1-0    |   1-1    |   1-2    
+      #| 2 |   2-0    |         2-1         
+    ),
+  )
+}
+
+///|
+test "column span on whole column col 0" {
+  let table = @tabular.Table::from_rows([
+    ["N", "column 0", "column 1", "column 2"],
+    ["0", "0-0", "0-1", "0-2"],
+    ["1", "1-0", "1-1", "1-2"],
+    ["2", "2-0", "2-1", "2-2"],
+  ])
+  table.apply(@tabular.Style::psql()) |> ignore
+  table.modify_segment(
+    @tabular.Segment::all(),
+    @tabular.Setting::alignment(@tabular.Alignment::left()),
+  )
+  |> ignore
+  table.modify_columns(@tabular.Columns::one(0), @tabular.Span::column(2))
+  |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #| N | column 1 | column 2 
+      #|+--+----------+----------
+      #| 0 | 0-1      | 0-2      
+      #| 1 | 1-1      | 1-2      
+      #| 2 | 2-1      | 2-2      
+    ),
+  )
+}
+
+///|
+test "column span on column range 1" {
+  let table = @tabular.Table::from_rows([
+    ["N", "column 0", "column 1", "column 2"],
+    ["0", "0-0", "0-1", "0-2"],
+    ["1", "1-0", "1-1", "1-2"],
+    ["2", "2-0", "2-1", "2-2"],
+  ])
+  table.apply(@tabular.Style::psql()) |> ignore
+  table.modify_segment(
+    @tabular.Segment::all(),
+    @tabular.Setting::alignment(@tabular.Alignment::left()),
+  )
+  |> ignore
+  table.modify_columns(@tabular.Columns::new(1, 2), @tabular.Span::column(2))
+  |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #| N | column 0 | column 2 
+      #|---++---------+----------
+      #| 0 | 0-0      | 0-2      
+      #| 1 | 1-0      | 1-2      
+      #| 2 | 2-0      | 2-2      
+    ),
+  )
+}
+
+///|
+test "column span covers full row" {
+  let table = @tabular.Table::from_rows([
+    ["N", "column 0", "column 1", "column 2"],
+    ["0", "0-0", "0-1", "0-2"],
+    ["1", "1-0", "1-1", "1-2"],
+    ["2", "2-0", "2-1", "2-2"],
+  ])
+  table.apply(@tabular.Style::psql()) |> ignore
+  table.modify_segment(
+    @tabular.Segment::all(),
+    @tabular.Setting::alignment(@tabular.Alignment::left()),
+  )
+  |> ignore
+  table.modify_columns(@tabular.Columns::one(0), @tabular.Span::column(4))
+  |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #| N 
+      #|+++
+      #| 0 
+      #| 1 
+      #| 2 
+    ),
+  )
+}
+
+///|
+test "column span bigger than max" {
+  let table = @tabular.Table::from_rows([
+    ["N", "column 0", "column 1", "column 2"],
+    ["0", "0-0", "0-1", "0-2"],
+    ["1", "1-0", "1-1", "1-2"],
+    ["2", "2-0", "2-1", "2-2"],
+  ])
+  table.modify_cell(@tabular.Cell::new(0, 0), @tabular.Span::column(100))
+  |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|+---+-----+-----+-----+
+      #||          N          |
+      #|+---+-----+-----+-----+
+      #|| 0 | 0-0 | 0-1 | 0-2 |
+      #|+---+-----+-----+-----+
+      #|| 1 | 1-0 | 1-1 | 1-2 |
+      #|+---+-----+-----+-----+
+      #|| 2 | 2-0 | 2-1 | 2-2 |
+      #|+---+-----+-----+-----+
+    ),
+  )
+}
+
+///|
+test "column span multiline content" {
+  let table = @tabular.Table::from_rows([
+    ["N", "column 0", "column 1", "column 2"],
+    ["0", "0-0", "0-1", "0-2"],
+    ["1", "1-0", "1-1", "1-2"],
+    ["2", "2-0", "https://\nwww\n.\nredhat\n.com\n/en", "2-2"],
+  ])
+  table.apply(@tabular.Style::psql()) |> ignore
+  table.modify_cell(@tabular.Cell::new(3, 2), @tabular.Span::column(2))
+  |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #| N | column 0 | column 1 | column 2 
+      #|---+----------+----------+----------
+      #| 0 |   0-0    |   0-1    |   0-2    
+      #| 1 |   1-0    |   1-1    |   1-2    
+      #| 2 |   2-0    |      https://       
+      #|   |          |         www         
+      #|   |          |          .          
+      #|   |          |       redhat        
+      #|   |          |        .com         
+      #|   |          |         /en         
+    ),
+  )
+}
+
+///|
+test "padding works in spanned columns" {
+  let table = @tabular.Table::from_rows([
+    ["N", "column 0", "column 1", "column 2"],
+    ["0", "0-0", "0-1", "0-2"],
+    ["1", "1-0", "1-1", "1-2"],
+    ["2", "2-0", "2-1", "2-2"],
+  ])
+  table.apply(@tabular.Style::psql()) |> ignore
+  table.modify_segment(
+    @tabular.Segment::all(),
+    @tabular.Setting::padding(@tabular.Padding::new(3, 0, 0, 0)),
+  )
+  |> ignore
+  table.modify_segment(
+    @tabular.Segment::all(),
+    @tabular.Setting::alignment(@tabular.Alignment::left()),
+  )
+  |> ignore
+  table.modify_cell(@tabular.Cell::new(1, 1), @tabular.Span::column(3))
+  |> ignore
+  table.modify_cell(@tabular.Cell::new(3, 1), @tabular.Span::column(3))
+  |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|   N|   column 0|   column 1|   column 2
+      #|----+-----------+-----------+-----------
+      #|   0|   0-0                             
+      #|   1|   1-0     |   1-1     |   1-2     
+      #|   2|   2-0                             
+    ),
+  )
+}
+
+///|
+test "column span multiple negatives" {
+  let table = @tabular.Table::from_rows([
+    ["N", "column 0", "column 1", "column 2"],
+    ["0", "0-0", "0-1", "0-2"],
+    ["1", "1-0", "1-1", "1-2"],
+    ["2", "2-0", "2-1", "2-2"],
+  ])
+  table.modify_cell(@tabular.Cell::new(1, 2), @tabular.Span::column(-1))
+  |> ignore
+  table.modify_cell(@tabular.Cell::new(2, 3), @tabular.Span::column(-2))
+  |> ignore
+  table.modify_cell(@tabular.Cell::new(3, 3), @tabular.Span::column(-100))
+  |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|+---+----------+----------+----------+
+      #|| N | column 0 | column 1 | column 2 |
+      #|+---+----------+----------+----------+
+      #|| 0 |         0-1         |   0-2    |
+      #|+---+----------+----------+----------+
+      #|| 1 |              1-2               |
+      #|+---+----------+----------+----------+
+      #||                2-2                 |
+      #|+---+----------+----------+----------+
+    ),
+  )
+}
+
+///|
+test "column span multiple zeros" {
+  let table = @tabular.Table::from_rows([
+    ["N", "column 0", "column 1", "column 2"],
+    ["0", "0-0", "0-1", "0-2"],
+    ["1", "1-0", "1-1", "1-2"],
+    ["2", "2-0", "2-1", "2-2"],
+  ])
+  table.modify_cell(@tabular.Cell::new(1, 2), @tabular.Span::column(0))
+  |> ignore
+  table.modify_cell(@tabular.Cell::new(2, 3), @tabular.Span::column(0))
+  |> ignore
+  table.modify_cell(@tabular.Cell::new(3, 3), @tabular.Span::column(0))
+  |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|+---+----------+----------+----------+
+      #|| N | column 0 | column 1 | column 2 |
+      #|+---+----------+----------+----------+
+      #||                0-1                 |
+      #|+---+----------+----------+----------+
+      #||                1-2                 |
+      #|+---+----------+----------+----------+
+      #||                2-2                 |
+      #|+---+----------+----------+----------+
+    ),
+  )
+}
+
+// ──────────────────────────────────────────────────
+// Row-span cell position tests ported from upstream cell_span_test
+// ──────────────────────────────────────────────────
+
+///|
+test "cell row span (0,0) psql" {
+  let table = @tabular.Table::from_rows([
+    ["N", "column 0", "column 1", "column 2"],
+    ["0", "0-0", "0-1", "0-2"],
+    ["1", "1-0", "1-1", "1-2"],
+    ["2", "2-0", "2-1", "2-2"],
+  ])
+  table.apply(@tabular.Style::psql()) |> ignore
+  table.modify_segment(
+    @tabular.Segment::all(),
+    @tabular.Setting::alignment(@tabular.Alignment::left()),
+  )
+  |> ignore
+  table.modify_cell(@tabular.Cell::new(0, 0), @tabular.Span::row(2)) |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #| N | column 0 | column 1 | column 2 
+      #|   +----------+----------+----------
+      #|   | 0-0      | 0-1      | 0-2      
+      #| 1 | 1-0      | 1-1      | 1-2      
+      #| 2 | 2-0      | 2-1      | 2-2      
+    ),
+  )
+}
+
+///|
+test "cell row span (1,0) psql" {
+  let table = @tabular.Table::from_rows([
+    ["N", "column 0", "column 1", "column 2"],
+    ["0", "0-0", "0-1", "0-2"],
+    ["1", "1-0", "1-1", "1-2"],
+    ["2", "2-0", "2-1", "2-2"],
+  ])
+  table.apply(@tabular.Style::psql()) |> ignore
+  table.modify_segment(
+    @tabular.Segment::all(),
+    @tabular.Setting::alignment(@tabular.Alignment::left()),
+  )
+  |> ignore
+  table.modify_cell(@tabular.Cell::new(1, 0), @tabular.Span::row(2)) |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #| N | column 0 | column 1 | column 2 
+      #|---+----------+----------+----------
+      #| 0 | 0-0      | 0-1      | 0-2      
+      #|   | 1-0      | 1-1      | 1-2      
+      #| 2 | 2-0      | 2-1      | 2-2      
+    ),
+  )
+}
+
+///|
+test "cell row span (2,0) psql" {
+  let table = @tabular.Table::from_rows([
+    ["N", "column 0", "column 1", "column 2"],
+    ["0", "0-0", "0-1", "0-2"],
+    ["1", "1-0", "1-1", "1-2"],
+    ["2", "2-0", "2-1", "2-2"],
+  ])
+  table.apply(@tabular.Style::psql()) |> ignore
+  table.modify_cell(@tabular.Cell::new(2, 0), @tabular.Span::row(2)) |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #| N | column 0 | column 1 | column 2 
+      #|---+----------+----------+----------
+      #| 0 |   0-0    |   0-1    |   0-2    
+      #| 1 |   1-0    |   1-1    |   1-2    
+      #|   |   2-0    |   2-1    |   2-2    
+    ),
+  )
+}
+
+///|
+test "cell row span (0,1) psql" {
+  let table = @tabular.Table::from_rows([
+    ["N", "column 0", "column 1", "column 2"],
+    ["0", "0-0", "0-1", "0-2"],
+    ["1", "1-0", "1-1", "1-2"],
+    ["2", "2-0", "2-1", "2-2"],
+  ])
+  table.apply(@tabular.Style::psql()) |> ignore
+  table.modify_segment(
+    @tabular.Segment::all(),
+    @tabular.Setting::alignment(@tabular.Alignment::left()),
+  )
+  |> ignore
+  table.modify_cell(@tabular.Cell::new(0, 1), @tabular.Span::row(2)) |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #| N | column 0 | column 1 | column 2 
+      #|---+          +----------+----------
+      #| 0 |          | 0-1      | 0-2      
+      #| 1 | 1-0      | 1-1      | 1-2      
+      #| 2 | 2-0      | 2-1      | 2-2      
+    ),
+  )
+}
+
+///|
+test "cell row span (0,2) psql" {
+  let table = @tabular.Table::from_rows([
+    ["N", "column 0", "column 1", "column 2"],
+    ["0", "0-0", "0-1", "0-2"],
+    ["1", "1-0", "1-1", "1-2"],
+    ["2", "2-0", "2-1", "2-2"],
+  ])
+  table.apply(@tabular.Style::psql()) |> ignore
+  table.modify_segment(
+    @tabular.Segment::all(),
+    @tabular.Setting::alignment(@tabular.Alignment::left()),
+  )
+  |> ignore
+  table.modify_cell(@tabular.Cell::new(0, 2), @tabular.Span::row(2)) |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #| N | column 0 | column 1 | column 2 
+      #|---+----------+          +----------
+      #| 0 | 0-0      |          | 0-2      
+      #| 1 | 1-0      | 1-1      | 1-2      
+      #| 2 | 2-0      | 2-1      | 2-2      
+    ),
+  )
+}
+
+///|
+test "cell row span (0,3) psql" {
+  let table = @tabular.Table::from_rows([
+    ["N", "column 0", "column 1", "column 2"],
+    ["0", "0-0", "0-1", "0-2"],
+    ["1", "1-0", "1-1", "1-2"],
+    ["2", "2-0", "2-1", "2-2"],
+  ])
+  table.apply(@tabular.Style::psql()) |> ignore
+  table.modify_cell(@tabular.Cell::new(0, 3), @tabular.Span::row(2)) |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #| N | column 0 | column 1 | column 2 
+      #|---+----------+----------+          
+      #| 0 |   0-0    |   0-1    |          
+      #| 1 |   1-0    |   1-1    |   1-2    
+      #| 2 |   2-0    |   2-1    |   2-2    
+    ),
+  )
+}
+
+///|
+test "cell row span (1,1) psql" {
+  let table = @tabular.Table::from_rows([
+    ["N", "column 0", "column 1", "column 2"],
+    ["0", "0-0", "0-1", "0-2"],
+    ["1", "1-0", "1-1", "1-2"],
+    ["2", "2-0", "2-1", "2-2"],
+  ])
+  table.apply(@tabular.Style::psql()) |> ignore
+  table.modify_segment(
+    @tabular.Segment::all(),
+    @tabular.Setting::alignment(@tabular.Alignment::left()),
+  )
+  |> ignore
+  table.modify_cell(@tabular.Cell::new(1, 1), @tabular.Span::row(2)) |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #| N | column 0 | column 1 | column 2 
+      #|---+----------+----------+----------
+      #| 0 | 0-0      | 0-1      | 0-2      
+      #| 1 |          | 1-1      | 1-2      
+      #| 2 | 2-0      | 2-1      | 2-2      
+    ),
+  )
+}
+
+///|
+test "cell row span (2,1) psql" {
+  let table = @tabular.Table::from_rows([
+    ["N", "column 0", "column 1", "column 2"],
+    ["0", "0-0", "0-1", "0-2"],
+    ["1", "1-0", "1-1", "1-2"],
+    ["2", "2-0", "2-1", "2-2"],
+  ])
+  table.apply(@tabular.Style::psql()) |> ignore
+  table.modify_segment(
+    @tabular.Segment::all(),
+    @tabular.Setting::alignment(@tabular.Alignment::left()),
+  )
+  |> ignore
+  table.modify_cell(@tabular.Cell::new(2, 1), @tabular.Span::row(2)) |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #| N | column 0 | column 1 | column 2 
+      #|---+----------+----------+----------
+      #| 0 | 0-0      | 0-1      | 0-2      
+      #| 1 | 1-0      | 1-1      | 1-2      
+      #| 2 |          | 2-1      | 2-2      
+    ),
+  )
+}
+
+///|
+test "cell row span (1,2) psql" {
+  let table = @tabular.Table::from_rows([
+    ["N", "column 0", "column 1", "column 2"],
+    ["0", "0-0", "0-1", "0-2"],
+    ["1", "1-0", "1-1", "1-2"],
+    ["2", "2-0", "2-1", "2-2"],
+  ])
+  table.apply(@tabular.Style::psql()) |> ignore
+  table.modify_segment(
+    @tabular.Segment::all(),
+    @tabular.Setting::alignment(@tabular.Alignment::left()),
+  )
+  |> ignore
+  table.modify_cell(@tabular.Cell::new(1, 2), @tabular.Span::row(2)) |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #| N | column 0 | column 1 | column 2 
+      #|---+----------+----------+----------
+      #| 0 | 0-0      | 0-1      | 0-2      
+      #| 1 | 1-0      |          | 1-2      
+      #| 2 | 2-0      | 2-1      | 2-2      
+    ),
+  )
+}
+
+///|
+test "cell row span (2,2) psql" {
+  let table = @tabular.Table::from_rows([
+    ["N", "column 0", "column 1", "column 2"],
+    ["0", "0-0", "0-1", "0-2"],
+    ["1", "1-0", "1-1", "1-2"],
+    ["2", "2-0", "2-1", "2-2"],
+  ])
+  table.apply(@tabular.Style::psql()) |> ignore
+  table.modify_segment(
+    @tabular.Segment::all(),
+    @tabular.Setting::alignment(@tabular.Alignment::left()),
+  )
+  |> ignore
+  table.modify_cell(@tabular.Cell::new(2, 2), @tabular.Span::row(2)) |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #| N | column 0 | column 1 | column 2 
+      #|---+----------+----------+----------
+      #| 0 | 0-0      | 0-1      | 0-2      
+      #| 1 | 1-0      | 1-1      | 1-2      
+      #| 2 | 2-0      |          | 2-2      
+    ),
+  )
+}
+
+///|
+test "cell row span (1,3) psql" {
+  let table = @tabular.Table::from_rows([
+    ["N", "column 0", "column 1", "column 2"],
+    ["0", "0-0", "0-1", "0-2"],
+    ["1", "1-0", "1-1", "1-2"],
+    ["2", "2-0", "2-1", "2-2"],
+  ])
+  table.apply(@tabular.Style::psql()) |> ignore
+  table.modify_segment(
+    @tabular.Segment::all(),
+    @tabular.Setting::alignment(@tabular.Alignment::left()),
+  )
+  |> ignore
+  table.modify_cell(@tabular.Cell::new(1, 3), @tabular.Span::row(2)) |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #| N | column 0 | column 1 | column 2 
+      #|---+----------+----------+----------
+      #| 0 | 0-0      | 0-1      | 0-2      
+      #| 1 | 1-0      | 1-1      |          
+      #| 2 | 2-0      | 2-1      | 2-2      
+    ),
+  )
+}
+
+///|
+test "cell row span (2,3) psql" {
+  let table = @tabular.Table::from_rows([
+    ["N", "column 0", "column 1", "column 2"],
+    ["0", "0-0", "0-1", "0-2"],
+    ["1", "1-0", "1-1", "1-2"],
+    ["2", "2-0", "2-1", "2-2"],
+  ])
+  table.apply(@tabular.Style::psql()) |> ignore
+  table.modify_segment(
+    @tabular.Segment::all(),
+    @tabular.Setting::alignment(@tabular.Alignment::left()),
+  )
+  |> ignore
+  table.modify_cell(@tabular.Cell::new(2, 3), @tabular.Span::row(2)) |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #| N | column 0 | column 1 | column 2 
+      #|---+----------+----------+----------
+      #| 0 | 0-0      | 0-1      | 0-2      
+      #| 1 | 1-0      | 1-1      | 1-2      
+      #| 2 | 2-0      | 2-1      |          
+    ),
+  )
+}
+
+// ──────────────────────────────────────────────────
+// Whole-row row span tests ported from upstream span_row_test
+// ──────────────────────────────────────────────────
+
+///|
+test "whole row span header row ascii" {
+  let table = @tabular.Table::from_rows([
+    ["N", "column 0", "column 1", "column 2"],
+    ["0", "0-0", "0-1", "0-2"],
+    ["1", "1-0", "1-1", "1-2"],
+    ["2", "2-0", "2-1", "2-2"],
+  ])
+  table.apply(@tabular.Style::ascii()) |> ignore
+  table.modify_segment(
+    @tabular.Segment::all(),
+    @tabular.Setting::alignment(@tabular.Alignment::left()),
+  )
+  |> ignore
+  table.modify_rows(@tabular.Rows::one(0), @tabular.Span::row(2)) |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|+---+----------+----------+----------+
+      #|+ N + column 0 + column 1 + column 2 +
+      #|+---+----------+----------+----------+
+      #|| 1 | 1-0      | 1-1      | 1-2      |
+      #|+---+----------+----------+----------+
+      #|| 2 | 2-0      | 2-1      | 2-2      |
+      #|+---+----------+----------+----------+
+    ),
+  )
+}
+
+///|
+test "whole row span header row psql" {
+  let table = @tabular.Table::from_rows([
+    ["N", "column 0", "column 1", "column 2"],
+    ["0", "0-0", "0-1", "0-2"],
+    ["1", "1-0", "1-1", "1-2"],
+    ["2", "2-0", "2-1", "2-2"],
+  ])
+  table.apply(@tabular.Style::psql()) |> ignore
+  table.modify_segment(
+    @tabular.Segment::all(),
+    @tabular.Setting::alignment(@tabular.Alignment::left()),
+  )
+  |> ignore
+  table.modify_rows(@tabular.Rows::one(0), @tabular.Span::row(2)) |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #| N + column 0 + column 1 + column 2 
+      #| 1 | 1-0      | 1-1      | 1-2      
+      #| 2 | 2-0      | 2-1      | 2-2      
+    ),
+  )
+}
+
+///|
+test "whole row span data row 1 psql" {
+  let table = @tabular.Table::from_rows([
+    ["N", "column 0", "column 1", "column 2"],
+    ["0", "0-0", "0-1", "0-2"],
+    ["1", "1-0", "1-1", "1-2"],
+    ["2", "2-0", "2-1", "2-2"],
+  ])
+  table.apply(@tabular.Style::psql()) |> ignore
+  table.modify_segment(
+    @tabular.Segment::all(),
+    @tabular.Setting::alignment(@tabular.Alignment::left()),
+  )
+  |> ignore
+  table.modify_rows(@tabular.Rows::new(1, 2), @tabular.Span::row(2)) |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #| N | column 0 | column 1 | column 2 
+      #|---+----------+----------+----------
+      #| 0 | 0-0      | 0-1      | 0-2      
+      #| 2 | 2-0      | 2-1      | 2-2      
+    ),
+  )
+}
+
+///|
+test "whole row span full table psql" {
+  let table = @tabular.Table::from_rows([
+    ["N", "column 0", "column 1", "column 2"],
+    ["0", "0-0", "0-1", "0-2"],
+    ["1", "1-0", "1-1", "1-2"],
+    ["2", "2-0", "2-1", "2-2"],
+  ])
+  table.apply(@tabular.Style::psql()) |> ignore
+  table.modify_segment(
+    @tabular.Segment::all(),
+    @tabular.Setting::alignment(@tabular.Alignment::left()),
+  )
+  |> ignore
+  table.modify_rows(@tabular.Rows::one(0), @tabular.Span::row(4)) |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #| N + column 0 + column 1 + column 2 
+    ),
+  )
+}
+
+// ──────────────────────────────────────────────────
+// Multiline + padding + collision span tests
+// ──────────────────────────────────────────────────
+
+///|
+test "span multiline content in column span" {
+  // Upstream span_multiline: multiline content in spanned column
+  let table = @tabular.Table::from_rows([
+    ["N", "column 0", "column 1", "column 2"],
+    ["0", "0-0", "0-1", "0-2"],
+    ["1", "1-0", "1-1", "1-2"],
+    ["2", "2-0", "https://\nwww\n.\nredhat\n.com\n/en", "2-2"],
+  ])
+  table.apply(@tabular.Style::psql()) |> ignore
+  table.modify_cell(@tabular.Cell::new(3, 2), @tabular.Span::column(2))
+  |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #| N | column 0 | column 1 | column 2 
+      #|---+----------+----------+----------
+      #| 0 |   0-0    |   0-1    |   0-2    
+      #| 1 |   1-0    |   1-1    |   1-2    
+      #| 2 |   2-0    |      https://       
+      #|   |          |         www         
+      #|   |          |          .          
+      #|   |          |       redhat        
+      #|   |          |        .com         
+      #|   |          |         /en         
+    ),
+  )
+}
+
+///|
+test "padding works in spanned columns psql" {
+  let table = @tabular.Table::from_rows([
+    ["N", "column 0", "column 1", "column 2"],
+    ["0", "0-0", "0-1", "0-2"],
+    ["1", "1-0", "1-1", "1-2"],
+    ["2", "2-0", "2-1", "2-2"],
+  ])
+  table.apply(@tabular.Style::psql()) |> ignore
+  table.modify_segment(
+    @tabular.Segment::all(),
+    @tabular.Setting::padding(@tabular.Padding::new(3, 0, 0, 0)),
+  )
+  |> ignore
+  table.modify_segment(
+    @tabular.Segment::all(),
+    @tabular.Setting::alignment(@tabular.Alignment::left()),
+  )
+  |> ignore
+  table.modify_cell(@tabular.Cell::new(1, 1), @tabular.Span::column(3))
+  |> ignore
+  table.modify_cell(@tabular.Cell::new(3, 1), @tabular.Span::column(3))
+  |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|   N|   column 0|   column 1|   column 2
+      #|----+-----------+-----------+-----------
+      #|   0|   0-0                             
+      #|   1|   1-0     |   1-1     |   1-2     
+      #|   2|   2-0                             
+    ),
+  )
+}
+
+///|
+test "spanned columns with collision modern" {
+  // Upstream spaned_columns_with_collision: all cells are "just 1 column"
+  let data = [
+    ["0", "1", "2", "3", "4"],
+    [
+      "just 1 column", "just 1 column", "just 1 column", "just 1 column", "just 1 column",
+    ],
+    [
+      "just 1 column", "just 1 column", "just 1 column", "just 1 column", "just 1 column",
+    ],
+    [
+      "just 1 column", "just 1 column", "just 1 column", "just 1 column", "just 1 column",
+    ],
+    [
+      "just 1 column", "just 1 column", "just 1 column", "just 1 column", "just 1 column",
+    ],
+    [
+      "just 1 column", "just 1 column", "just 1 column", "just 1 column", "just 1 column",
+    ],
+  ]
+  let table = @tabular.Table::from_rows(data)
+  table.apply(@tabular.Style::modern()) |> ignore
+  // (0,0) span 5 columns with content override
+  table.modify_cell(
+    @tabular.Cell::new(0, 0),
+    @tabular.Setting::format(
+      @tabular.Format::content(fn(_s) { "span all 5 columns" }),
+    ),
+  )
+  |> ignore
+  table.modify_cell(@tabular.Cell::new(0, 0), @tabular.Span::column(5))
+  |> ignore
+  // (1,0) span 4 columns with content override
+  table.modify_cell(
+    @tabular.Cell::new(1, 0),
+    @tabular.Setting::format(
+      @tabular.Format::content(fn(_s) { "span 4 columns" }),
+    ),
+  )
+  |> ignore
+  table.modify_cell(@tabular.Cell::new(1, 0), @tabular.Span::column(4))
+  |> ignore
+  // (2,0) span 3 columns
+  table.modify_cell(
+    @tabular.Cell::new(2, 0),
+    @tabular.Setting::format(
+      @tabular.Format::content(fn(_s) { "span 3 columns" }),
+    ),
+  )
+  |> ignore
+  table.modify_cell(@tabular.Cell::new(2, 0), @tabular.Span::column(3))
+  |> ignore
+  // (2,3) span 2 columns
+  table.modify_cell(
+    @tabular.Cell::new(2, 3),
+    @tabular.Setting::format(
+      @tabular.Format::content(fn(_s) { "span 2 columns" }),
+    ),
+  )
+  |> ignore
+  table.modify_cell(@tabular.Cell::new(2, 3), @tabular.Span::column(2))
+  |> ignore
+  // (3,0) span 2 columns
+  table.modify_cell(
+    @tabular.Cell::new(3, 0),
+    @tabular.Setting::format(
+      @tabular.Format::content(fn(_s) { "span 3 columns" }),
+    ),
+  )
+  |> ignore
+  table.modify_cell(@tabular.Cell::new(3, 0), @tabular.Span::column(2))
+  |> ignore
+  // (3,2) span 3 columns
+  table.modify_cell(
+    @tabular.Cell::new(3, 2),
+    @tabular.Setting::format(
+      @tabular.Format::content(fn(_s) { "span 3 columns" }),
+    ),
+  )
+  |> ignore
+  table.modify_cell(@tabular.Cell::new(3, 2), @tabular.Span::column(3))
+  |> ignore
+  // (4,1) span 4 columns
+  table.modify_cell(
+    @tabular.Cell::new(4, 1),
+    @tabular.Setting::format(
+      @tabular.Format::content(fn(_s) { "span 4 columns" }),
+    ),
+  )
+  |> ignore
+  table.modify_cell(@tabular.Cell::new(4, 1), @tabular.Span::column(4))
+  |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|┌───────────────┬───────────────┬───────────────┬───────────────┬───────────────┐
+      #|│                              span all 5 columns                               │
+      #|├───────────────┼───────────────┼───────────────┼───────────────┼───────────────┤
+      #|│                        span 4 columns                         │ just 1 column │
+      #|├───────────────┼───────────────┼───────────────┼───────────────┼───────────────┤
+      #|│                span 3 columns                 │        span 2 columns         │
+      #|├───────────────┼───────────────┼───────────────┼───────────────┼───────────────┤
+      #|│        span 3 columns         │                span 3 columns                 │
+      #|├───────────────┼───────────────┼───────────────┼───────────────┼───────────────┤
+      #|│ just 1 column │                        span 4 columns                         │
+      #|├───────────────┼───────────────┼───────────────┼───────────────┼───────────────┤
+      #|│ just 1 column │ just 1 column │ just 1 column │ just 1 column │ just 1 column │
+      #|└───────────────┴───────────────┴───────────────┴───────────────┴───────────────┘
     ),
   )
 }

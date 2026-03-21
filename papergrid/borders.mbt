@@ -191,8 +191,6 @@ pub fn Borders::psql() -> Borders {
     horizontal: Some('-'),
     vertical: Some('|'),
     intersection: Some('+'),
-    left_intersection: Some('-'),
-    right_intersection: Some('-'),
   }
 }
 

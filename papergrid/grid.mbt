@@ -447,8 +447,7 @@ fn render_split_line(
     return ""
   }
 
-  let mut out = match
-    first_char([borders.left_intersection, borders.left, borders.horizontal]) {
+  let mut out = match first_char([borders.left_intersection, borders.left]) {
     Some(value) => value.to_string()
     None => ""
   }
@@ -533,8 +532,7 @@ fn render_split_line(
     }
   }
   out +
-  (match
-    first_char([borders.right_intersection, borders.right, borders.horizontal]) {
+  (match first_char([borders.right_intersection, borders.right]) {
     Some(value) => value.to_string()
     None => ""
   })
@@ -726,7 +724,6 @@ pub fn IterGrid::to_string(self : IterGrid) -> String {
                   line.left,
                   borders.left_intersection,
                   borders.left,
-                  line.main,
                 ]),
                 intersection: first_char([
                   line.intersection,
@@ -738,7 +735,6 @@ pub fn IterGrid::to_string(self : IterGrid) -> String {
                   line.right,
                   borders.right_intersection,
                   borders.right,
-                  line.main,
                 ]),
               },
               widths,
@@ -749,12 +745,7 @@ pub fn IterGrid::to_string(self : IterGrid) -> String {
             )
           } else {
             borders.build_line(
-              first_char([
-                line.left,
-                borders.left_intersection,
-                borders.left,
-                line.main,
-              ]),
+              first_char([line.left, borders.left_intersection, borders.left]),
               line.main,
               first_char([
                 line.intersection,
@@ -762,12 +753,7 @@ pub fn IterGrid::to_string(self : IterGrid) -> String {
                 borders.vertical,
                 line.main,
               ]),
-              first_char([
-                line.right,
-                borders.right_intersection,
-                borders.right,
-                line.main,
-              ]),
+              first_char([line.right, borders.right_intersection, borders.right]),
               widths,
             )
           }
@@ -784,22 +770,14 @@ pub fn IterGrid::to_string(self : IterGrid) -> String {
             )
           } else {
             borders.build_line(
-              first_char([
-                borders.left_intersection,
-                borders.left,
-                borders.horizontal,
-              ]),
+              first_char([borders.left_intersection, borders.left]),
               borders.horizontal,
               first_char([
                 borders.intersection,
                 borders.vertical,
                 borders.horizontal,
               ]),
-              first_char([
-                borders.right_intersection,
-                borders.right,
-                borders.horizontal,
-              ]),
+              first_char([borders.right_intersection, borders.right]),
               widths,
             )
           }

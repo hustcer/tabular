@@ -1619,6 +1619,8 @@ fn apply_column_span(
     } else {
       size
     }
+  } else if size == 0 {
+    column_count - start
   } else {
     column - start + 1
   }
@@ -1675,6 +1677,8 @@ fn apply_row_span(
     } else {
       size
     }
+  } else if size == 0 {
+    rows.length() - start
   } else {
     row - start + 1
   }

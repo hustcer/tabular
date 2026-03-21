@@ -58,7 +58,7 @@ Already implemented and passing:
   - `Format::content`
   - `Format::positioned`
   - `Format::multiline`
-- Test count: `95`
+- Test count: `159`
 
 ## Constraints
 
@@ -254,20 +254,32 @@ Completed in this phase:
   - `Span::row(-1)`
   - `Span::row(0)` plus removal
   - negative/zero span remapping through extraction and removal
-- Expanded the test suite to `121`
-- Re-verified `moon info`, `moon fmt`, `moon check -d`, `moon build -d`, and `moon test -d`
+- Fixed zero-span logic bug in `apply_column_span` / `apply_row_span`
+  - `Span::column(0)` at non-last column now correctly covers the full row width
+  - `Span::row(0)` at non-last row now correctly covers the full column height
+- Fixed psql border junction rendering
+  - removed erroneous `left_intersection` / `right_intersection` from psql borders
+  - fixed `render_split_line` and `build_line` fallback chains to not fall back to `borders.horizontal` for left/right positions
+  - psql separator lines now match upstream output exactly (no extra `-` at edges)
+- Ported upstream cell_span_test (row span positions)
+  - 12 cell-level row span position tests covering all column/row combinations under psql
+  - tests match upstream output exactly
+- Ported upstream span_row_test (whole-row row spans)
+  - whole-row row span under ascii and psql styles
+  - data-row range row span under psql
+  - full-table row span under psql
+  - all match upstream output exactly
+- Ported upstream multiline / padding / collision span tests
+  - `span_multiline`: multiline content in spanned columns matches upstream
+  - `indent_works_in_spaned_columns`: custom padding interaction with column spans matches upstream
+  - `spaned_columns_with_collision`: complex multi-span collision with modern style matches upstream
+- Expanded the test suite to `159`
+- Re-verified `moon fmt`, `moon check -d`, `moon build -d`, and `moon test -d`
 
 Remaining work:
 
-- Refine border junction behavior for span-heavy `psql` / markdown edge cases
-- Port more upstream `span_test.rs` coverage
-- Validate interaction with:
-  - padding
-  - alignment
-  - multiline content
-  - extraction
-  - removal
-  - markdown / psql style edge cases
+- Port remaining upstream `span_test.rs` tests that need Panel/Highlight/BorderCorrection (Phase 6 dependencies)
+- Port additional edge case tests from upstream `column_span.rs` / `row_span.rs` if any remain
 
 Acceptance:
 
