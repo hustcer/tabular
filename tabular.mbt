@@ -709,6 +709,38 @@ fn remove_columns_at(rows : Array[Array[String]], indexes : Array[Int]) -> Unit 
 }
 
 ///|
+fn extract_rows_at(
+  rows : Array[Array[String]],
+  indexes : Array[Int],
+) -> Array[Array[String]] {
+  let result = []
+  indexes.each(index => {
+    if index >= 0 && index < rows.length() {
+      result.push(rows[index].copy())
+    }
+  })
+  result
+}
+
+///|
+fn extract_columns_at(
+  rows : Array[Array[String]],
+  indexes : Array[Int],
+) -> Array[Array[String]] {
+  let result = []
+  rows.each(row => {
+    let next = []
+    indexes.each(index => {
+      if index >= 0 && index < row.length() {
+        next.push(row[index])
+      }
+    })
+    result.push(next)
+  })
+  result
+}
+
+///|
 fn resolve_segment_cells(
   segment : Segment,
   row_count : Int,
@@ -1145,7 +1177,7 @@ pub fn Builder::build(self : Builder) -> Table {
 
 ///|
 pub struct Table {
-  rows : Array[Array[String]]
+  mut rows : Array[Array[String]]
   config : @papergrid.SpannedConfig
 }
 
@@ -1318,5 +1350,39 @@ pub fn Table::remove_by_column_name(
   by_name : ByColumnName,
 ) -> Table {
   remove_columns_at(self.rows, resolve_columns_by_name(self.rows, by_name))
+  self
+}
+
+///|
+pub fn Table::extract_rows(self : Table, rows : Rows) -> Table {
+  self.rows = extract_rows_at(self.rows, resolve_rows(rows, self.rows.length()))
+  self
+}
+
+///|
+pub fn Table::extract_columns(self : Table, columns : Columns) -> Table {
+  let column_count = @papergrid.IterRecords::new(self.rows).count_columns()
+  self.rows = extract_columns_at(
+    self.rows,
+    resolve_columns(columns, column_count),
+  )
+  self
+}
+
+///|
+pub fn Table::extract_segment(
+  self : Table,
+  rows : Rows,
+  columns : Columns,
+) -> Table {
+  let extracted_rows = extract_rows_at(
+    self.rows,
+    resolve_rows(rows, self.rows.length()),
+  )
+  let column_count = @papergrid.IterRecords::new(extracted_rows).count_columns()
+  self.rows = extract_columns_at(
+    extracted_rows,
+    resolve_columns(columns, column_count),
+  )
   self
 }

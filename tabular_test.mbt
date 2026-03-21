@@ -1176,3 +1176,138 @@ test "remove all columns yields empty" {
   table.remove_columns(@tabular.Columns::all()) |> ignore
   inspect(table.to_string(), content="")
 }
+
+///|
+test "extract segment full" {
+  let table = @tabular.Table::from_rows([
+    ["N", "column 0", "column 1"],
+    ["0", "0-0", "0-1"],
+    ["1", "1-0", "1-1"],
+  ])
+  table.modify_segment(
+    @tabular.Segment::all(),
+    @tabular.Setting::alignment(@tabular.Alignment::left()),
+  )
+  |> ignore
+  table.modify_segment(
+    @tabular.Segment::all(),
+    @tabular.Setting::padding(@tabular.Padding::new(3, 1, 0, 0)),
+  )
+  |> ignore
+  table.modify_segment(
+    @tabular.Segment::all(),
+    @tabular.Setting::format(@tabular.Format::surround("[", "]")),
+  )
+  |> ignore
+  table.extract_segment(@tabular.Rows::all(), @tabular.Columns::all()) |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|+-------+--------------+--------------+
+      #||   [N] |   [column 0] |   [column 1] |
+      #|+-------+--------------+--------------+
+      #||   [0] |   [0-0]      |   [0-1]      |
+      #|+-------+--------------+--------------+
+      #||   [1] |   [1-0]      |   [1-1]      |
+      #|+-------+--------------+--------------+
+    ),
+  )
+}
+
+///|
+test "extract segment skip top row" {
+  let table = @tabular.Table::from_rows([
+    ["N", "column 0", "column 1"],
+    ["0", "0-0", "0-1"],
+    ["1", "1-0", "1-1"],
+    ["2", "2-0", "2-1"],
+  ])
+  table.extract_segment(@tabular.Rows::new(1, 4), @tabular.Columns::all())
+  |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|+---+-----+-----+
+      #|| 0 | 0-0 | 0-1 |
+      #|+---+-----+-----+
+      #|| 1 | 1-0 | 1-1 |
+      #|+---+-----+-----+
+      #|| 2 | 2-0 | 2-1 |
+      #|+---+-----+-----+
+    ),
+  )
+}
+
+///|
+test "extract segment skip first column" {
+  let table = @tabular.Table::from_rows([
+    ["N", "column 0", "column 1"],
+    ["0", "0-0", "0-1"],
+    ["1", "1-0", "1-1"],
+  ])
+  table.extract_segment(@tabular.Rows::all(), @tabular.Columns::new(1, 3))
+  |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|+----------+----------+
+      #|| column 0 | column 1 |
+      #|+----------+----------+
+      #||   0-0    |   0-1    |
+      #|+----------+----------+
+      #||   1-0    |   1-1    |
+      #|+----------+----------+
+    ),
+  )
+}
+
+///|
+test "extract bottom right square" {
+  let table = @tabular.Table::from_rows([
+    ["N", "column 0", "column 1", "column 2"],
+    ["0", "0-0", "0-1", "0-2"],
+    ["1", "1-0", "1-1", "1-2"],
+    ["2", "2-0", "2-1", "2-2"],
+  ])
+  table.extract_segment(@tabular.Rows::new(2, 4), @tabular.Columns::new(2, 4))
+  |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|+-----+-----+
+      #|| 1-1 | 1-2 |
+      #|+-----+-----+
+      #|| 2-1 | 2-2 |
+      #|+-----+-----+
+    ),
+  )
+}
+
+///|
+test "extract empty segment" {
+  let table = @tabular.Table::from_rows([["N", "column 0"], ["0", "0-0"]])
+  table.extract_segment(@tabular.Rows::new(1, 1), @tabular.Columns::new(1, 1))
+  |> ignore
+  inspect(table.to_string(), content="")
+}
+
+///|
+test "extract after remove header" {
+  let table = @tabular.Table::from_rows([
+    ["N", "column 0", "column 1", "column 2"],
+    ["0", "0-0", "0-1", "0-2"],
+    ["1", "1-0", "1-1", "1-2"],
+    ["2", "2-0", "2-1", "2-2"],
+  ])
+  table.remove_rows(@tabular.Rows::first()) |> ignore
+  table.extract_segment(@tabular.Rows::new(1, 2), @tabular.Columns::new(1, 2))
+  |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|+-----+
+      #|| 1-0 |
+      #|+-----+
+    ),
+  )
+}

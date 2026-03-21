@@ -158,10 +158,13 @@ pub fn Style::psql() -> Self
 pub fn Style::rounded() -> Self
 
 pub struct Table {
-  rows : Array[Array[String]]
+  mut rows : Array[Array[String]]
   config : @papergrid.SpannedConfig
 }
 pub fn Table::apply(Self, Style) -> Self
+pub fn Table::extract_columns(Self, Columns) -> Self
+pub fn Table::extract_rows(Self, Rows) -> Self
+pub fn Table::extract_segment(Self, Rows, Columns) -> Self
 pub fn Table::from_rows(Array[Array[String]]) -> Self
 pub fn Table::modify_by_column_name(Self, ByColumnName, Setting) -> Self
 pub fn Table::modify_cell(Self, Cell, Setting) -> Self
