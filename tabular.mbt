@@ -193,6 +193,16 @@ pub fn Rows::one(index : Int) -> Rows {
 }
 
 ///|
+pub fn Rows::last() -> Rows {
+  Rows::new(-2, 0)
+}
+
+///|
+pub fn Rows::last_offset(offset : Int) -> Rows {
+  Rows::new(-2 - offset, 0)
+}
+
+///|
 pub fn Rows::all() -> Rows {
   Rows::new(0, -1)
 }
@@ -250,6 +260,16 @@ pub fn Columns::first() -> Columns {
 ///|
 pub fn Columns::one(index : Int) -> Columns {
   Columns::new(index, index + 1)
+}
+
+///|
+pub fn Columns::last() -> Columns {
+  Columns::new(-2, 0)
+}
+
+///|
+pub fn Columns::last_offset(offset : Int) -> Columns {
+  Columns::new(-2 - offset, 0)
 }
 
 ///|
@@ -426,6 +446,14 @@ fn resolve_indexes(
   step_n : Int,
 ) -> Array[Int] {
   let result = []
+  if start <= -2 && end_ == 0 {
+    let offset = -start - 2
+    let index = count - offset - 1
+    if index >= 0 && index < count {
+      result.push(index)
+    }
+    return result
+  }
   let start_index = clamp_start(start)
   let end_index = clamp_end(end_, count)
   let mut seen = 0

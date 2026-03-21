@@ -642,3 +642,111 @@ test "modify cell alignment" {
     ),
   )
 }
+
+///|
+test "modify last row alignment" {
+  let table = @tabular.Table::from_rows([
+    ["N", "column 0", "column 1"],
+    ["0", "0-0", "0-1"],
+    ["1", "1-0", "1-1"],
+    ["2", "2-0", "2-1"],
+  ])
+  table.set_alignment(@tabular.Alignment::left()) |> ignore
+  table.modify_rows(
+    @tabular.Rows::last(),
+    @tabular.Setting::alignment(@tabular.Alignment::right()),
+  )
+  |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|+---+----------+----------+
+      #|| N | column 0 | column 1 |
+      #|+---+----------+----------+
+      #|| 0 | 0-0      | 0-1      |
+      #|+---+----------+----------+
+      #|| 1 | 1-0      | 1-1      |
+      #|+---+----------+----------+
+      #|| 2 |      2-0 |      2-1 |
+      #|+---+----------+----------+
+    ),
+  )
+}
+
+///|
+test "modify last column alignment" {
+  let table = @tabular.Table::from_rows([
+    ["N", "column 0", "column 1"],
+    ["0", "0-0", "0-1"],
+    ["1", "1-0", "1-1"],
+  ])
+  table.apply(@tabular.Style::psql()) |> ignore
+  table.modify_columns(
+    @tabular.Columns::last(),
+    @tabular.Setting::alignment(@tabular.Alignment::right()),
+  )
+  |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #| N | column 0 | column 1 
+      #|----+----------+-----------
+      #| 0 |   0-0    |      0-1 
+      #| 1 |   1-0    |      1-1 
+    ),
+  )
+}
+
+///|
+test "modify row by last offset" {
+  let table = @tabular.Table::from_rows([
+    ["N", "column 0"],
+    ["0", "0-0"],
+    ["1", "1-0"],
+    ["2", "2-0"],
+  ])
+  table.set_alignment(@tabular.Alignment::left()) |> ignore
+  table.modify_rows(
+    @tabular.Rows::last_offset(1),
+    @tabular.Setting::alignment(@tabular.Alignment::right()),
+  )
+  |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|+---+----------+
+      #|| N | column 0 |
+      #|+---+----------+
+      #|| 0 | 0-0      |
+      #|+---+----------+
+      #|| 1 |      1-0 |
+      #|+---+----------+
+      #|| 2 | 2-0      |
+      #|+---+----------+
+    ),
+  )
+}
+
+///|
+test "modify column by last offset" {
+  let table = @tabular.Table::from_rows([
+    ["N", "column 0", "column 1", "column 2"],
+    ["0", "0-0", "0-1", "0-2"],
+    ["1", "1-0", "1-1", "1-2"],
+  ])
+  table.apply(@tabular.Style::psql()) |> ignore
+  table.modify_columns(
+    @tabular.Columns::last_offset(1),
+    @tabular.Setting::alignment(@tabular.Alignment::right()),
+  )
+  |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #| N | column 0 | column 1 | column 2 
+      #|----+----------+----------+-----------
+      #| 0 |   0-0    |      0-1 |   0-2    
+      #| 1 |   1-0    |      1-1 |   1-2    
+    ),
+  )
+}
