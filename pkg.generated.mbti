@@ -186,6 +186,7 @@ pub enum Setting {
   H(Height)
   Fmt(Format)
   SpanColumn(Int)
+  SpanRow(Int)
 }
 pub fn Setting::alignment(Alignment) -> Self
 pub fn Setting::format(Format) -> Self
@@ -197,6 +198,7 @@ pub fn Setting::width(Width) -> Self
 pub enum Span {
 }
 pub fn Span::column(Int) -> Setting
+pub fn Span::row(Int) -> Setting
 
 pub struct Style {
   borders : @papergrid.Borders

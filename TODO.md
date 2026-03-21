@@ -213,20 +213,30 @@ Completed in this phase:
   - visibility checks for covered cells
   - dimension estimation aware of `colspan`
   - row rendering aware of merged cell widths and hidden covered cells
-- Added a MoonBit-friendly public span entrypoint for the completed slice
+- Added focused row span support in `papergrid`
+  - row-span storage and remapping in `SpannedConfig`
+  - visibility checks for cells covered from rows above
+  - row-block height estimation aware of merged vertical content
+  - split-line rendering that suppresses horizontal rules through active row spans
+- Added MoonBit-friendly public span entrypoints for the completed slice
   - `Span::column(size)` returns a setting usable with existing `modify_*` APIs
   - currently supports `1` for span removal and `>1` for rightward column spans
+  - `Span::row(size)` returns a setting usable with existing `modify_*` APIs
+  - currently supports `1` for span removal and `>1` for downward row spans
 - Ported a focused non-ANSI subset of upstream span behavior
   - low-level `papergrid` column span rendering
-  - table-level cell/segment column spans
-  - span remapping after column extraction
-- Expanded the test suite to `99`
+  - low-level `papergrid` row span rendering
+  - table-level cell/segment column and row spans
+  - span remapping after column extraction and row extraction
+- Expanded the test suite to `105`
 - Re-verified `moon info`, `moon fmt`, `moon check -d`, `moon build -d`, and `moon test -d`
 
 Remaining work:
 
-- Add row span support if feasible
 - Refine border junction behavior for span-heavy `psql` / markdown edge cases
+- Extend safe span semantics beyond the current non-destructive subset
+  - `0`
+  - negative values
 - Port more upstream `span_test.rs` coverage
 - Validate interaction with:
   - padding

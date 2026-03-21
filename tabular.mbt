@@ -102,6 +102,7 @@ pub enum Setting {
   H(Height)
   Fmt(Format)
   SpanColumn(Int)
+  SpanRow(Int)
 }
 
 ///|
@@ -925,6 +926,11 @@ pub fn Span::column(size : Int) -> Setting {
 }
 
 ///|
+pub fn Span::row(size : Int) -> Setting {
+  SpanRow(size)
+}
+
+///|
 pub fn Padding::new(
   left : Int,
   right : Int,
@@ -1438,6 +1444,7 @@ fn apply_setting_to_row(
       config.set_height_mode_for_rows(row, row + 1, convert_height(height))
     Fmt(_) => ()
     SpanColumn(_) => ()
+    SpanRow(_) => ()
   }
 }
 
@@ -1483,6 +1490,7 @@ fn apply_setting_to_column(
       )
     Fmt(_) => ()
     SpanColumn(_) => ()
+    SpanRow(_) => ()
   }
 }
 
@@ -1517,6 +1525,7 @@ fn apply_setting_to_cell(
       config.set_height_mode_for_cell(row, column, convert_height(height))
     Fmt(_) => ()
     SpanColumn(_) => ()
+    SpanRow(_) => ()
   }
 }
 
@@ -1530,6 +1539,22 @@ fn span_intersects_column(
   let end_ = column + span
   for current = column; current < end_; current = current + 1 {
     if !config.is_cell_visible(row, current) {
+      return true
+    }
+  }
+  false
+}
+
+///|
+fn span_intersects_row(
+  config : @papergrid.SpannedConfig,
+  row : Int,
+  column : Int,
+  span : Int,
+) -> Bool {
+  let end_ = row + span
+  for current = row; current < end_; current = current + 1 {
+    if !config.is_cell_visible(current, column) {
       return true
     }
   }
@@ -1570,6 +1595,37 @@ fn apply_column_span(
     return
   }
   config.set_column_span(row, column, span)
+}
+
+///|
+fn apply_row_span(
+  rows : Array[Array[String]],
+  config : @papergrid.SpannedConfig,
+  row : Int,
+  column : Int,
+  size : Int,
+) -> Unit {
+  if rows.is_empty() || row < 0 || row >= rows.length() {
+    return
+  }
+  let column_count = @papergrid.IterRecords::new(rows).count_columns()
+  if column < 0 ||
+    column >= column_count ||
+    !config.is_cell_visible(row, column) {
+    return
+  }
+  if size == 1 {
+    config.set_row_span(row, column, 1)
+    return
+  }
+  if size <= 0 {
+    return
+  }
+  let span = if row + size > rows.length() { rows.length() - row } else { size }
+  if span <= 1 || span_intersects_row(config, row, column, span) {
+    return
+  }
+  config.set_row_span(row, column, span)
 }
 
 ///|
@@ -1639,6 +1695,7 @@ fn apply_setting_to_cell_value(
     W(_) => ()
     H(_) => ()
     SpanColumn(size) => apply_column_span(rows, config, row, column, size)
+    SpanRow(size) => apply_row_span(rows, config, row, column, size)
     _ => ()
   }
 }
@@ -1871,7 +1928,7 @@ pub fn Table::modify_rows(
   setting : Setting,
 ) -> Table {
   let row_indexes = resolve_rows(rows, self.rows.length())
-  if setting is SpanColumn(_) {
+  if setting is SpanColumn(_) || setting is SpanRow(_) {
     let column_count = @papergrid.IterRecords::new(self.rows).count_columns()
     row_indexes.each(row => {
       for column = 0; column < column_count; column = column + 1 {
@@ -1901,7 +1958,7 @@ pub fn Table::modify_columns(
 ) -> Table {
   let column_count = @papergrid.IterRecords::new(self.rows).count_columns()
   let column_indexes = resolve_columns(columns, column_count)
-  if setting is SpanColumn(_) {
+  if setting is SpanColumn(_) || setting is SpanRow(_) {
     for row = 0; row < self.rows.length(); row = row + 1 {
       column_indexes.each(column => {
         apply_setting_to_cell_value(
@@ -1954,6 +2011,20 @@ pub fn Table::modify_segment(
             }
           }
         SpanColumn(_) => {
+          let column_count = @papergrid.IterRecords::new(self.rows).count_columns()
+          for row = 0; row < self.rows.length(); row = row + 1 {
+            for column = 0; column < column_count; column = column + 1 {
+              apply_setting_to_cell_value(
+                self.rows,
+                self.config,
+                row,
+                column,
+                setting,
+              )
+            }
+          }
+        }
+        SpanRow(_) => {
           let column_count = @papergrid.IterRecords::new(self.rows).count_columns()
           for row = 0; row < self.rows.length(); row = row + 1 {
             for column = 0; column < column_count; column = column + 1 {

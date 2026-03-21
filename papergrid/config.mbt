@@ -150,6 +150,7 @@ pub struct SpannedConfig {
   vertical_alignment_rules : Array[(Int, Int, Int, AlignmentVertical)]
   padding_rules : Array[(Int, Int, Int, Int, Int, Int, Int)]
   column_spans : Array[(Int, Int, Int)]
+  row_spans : Array[(Int, Int, Int)]
 }
 
 ///|
@@ -172,6 +173,7 @@ pub fn SpannedConfig::default() -> SpannedConfig {
     vertical_alignment_rules: [],
     padding_rules: [],
     column_spans: [],
+    row_spans: [],
   }
 }
 
@@ -637,6 +639,26 @@ pub fn SpannedConfig::set_column_span(
 }
 
 ///|
+pub fn SpannedConfig::set_row_span(
+  self : SpannedConfig,
+  row : Int,
+  column : Int,
+  span : Int,
+) -> Unit {
+  let next = []
+  self.row_spans.each(item => {
+    if item.0 != row || item.1 != column {
+      next.push(item)
+    }
+  })
+  self.row_spans.clear()
+  next.each(item => self.row_spans.push(item))
+  if span > 1 {
+    self.row_spans.push((row, column, span))
+  }
+}
+
+///|
 pub fn SpannedConfig::get_column_span(
   self : SpannedConfig,
   row : Int,
@@ -645,6 +667,23 @@ pub fn SpannedConfig::get_column_span(
   let mut index = self.column_spans.length() - 1
   while index >= 0 {
     let item = self.column_spans[index]
+    if item.0 == row && item.1 == column {
+      return Some(item.2)
+    }
+    index = index - 1
+  }
+  None
+}
+
+///|
+pub fn SpannedConfig::get_row_span(
+  self : SpannedConfig,
+  row : Int,
+  column : Int,
+) -> Int? {
+  let mut index = self.row_spans.length() - 1
+  while index >= 0 {
+    let item = self.row_spans[index]
     if item.0 == row && item.1 == column {
       return Some(item.2)
     }
@@ -666,8 +705,25 @@ pub fn SpannedConfig::column_span_at(
 }
 
 ///|
+pub fn SpannedConfig::row_span_at(
+  self : SpannedConfig,
+  row : Int,
+  column : Int,
+) -> Int {
+  match self.get_row_span(row, column) {
+    Some(span) => span
+    None => 1
+  }
+}
+
+///|
 pub fn SpannedConfig::has_column_spans(self : SpannedConfig) -> Bool {
   !self.column_spans.is_empty()
+}
+
+///|
+pub fn SpannedConfig::has_row_spans(self : SpannedConfig) -> Bool {
+  !self.row_spans.is_empty()
 }
 
 ///|
@@ -686,6 +742,35 @@ pub fn SpannedConfig::is_cell_covered_by_column_span(
 }
 
 ///|
+pub fn SpannedConfig::is_cell_covered_by_row_span(
+  self : SpannedConfig,
+  row : Int,
+  column : Int,
+) -> Bool {
+  for index = 0; index < self.row_spans.length(); index = index + 1 {
+    let item = self.row_spans[index]
+    let colspan = self.column_span_at(item.0, item.1)
+    if row > item.0 &&
+      row < item.0 + item.2 &&
+      column >= item.1 &&
+      column < item.1 + colspan {
+      return true
+    }
+  }
+  false
+}
+
+///|
+pub fn SpannedConfig::is_cell_covered_by_both_spans(
+  self : SpannedConfig,
+  row : Int,
+  column : Int,
+) -> Bool {
+  self.is_cell_covered_by_column_span(row, column) &&
+  self.is_cell_covered_by_row_span(row, column)
+}
+
+///|
 pub fn SpannedConfig::is_cell_visible(
   self : SpannedConfig,
   row : Int,
@@ -693,7 +778,21 @@ pub fn SpannedConfig::is_cell_visible(
 ) -> Bool {
   for index = 0; index < self.column_spans.length(); index = index + 1 {
     let item = self.column_spans[index]
-    if row == item.0 && column > item.1 && column < item.1 + item.2 {
+    let rowspan = self.row_span_at(item.0, item.1)
+    if row >= item.0 &&
+      row < item.0 + rowspan &&
+      column > item.1 &&
+      column < item.1 + item.2 {
+      return false
+    }
+  }
+  for index = 0; index < self.row_spans.length(); index = index + 1 {
+    let item = self.row_spans[index]
+    let colspan = self.column_span_at(item.0, item.1)
+    if row > item.0 &&
+      row < item.0 + item.2 &&
+      column >= item.1 &&
+      column < item.1 + colspan {
       return false
     }
   }
@@ -904,4 +1003,20 @@ pub fn SpannedConfig::remap(
   })
   self.column_spans.clear()
   next_column_spans.each(item => self.column_spans.push(item))
+
+  let next_row_spans = []
+  self.row_spans.each(item => {
+    let rows = mapped_runs(row_map, item.0, item.0 + item.2)
+    let mapped_column = map_index(column_map, item.1)
+    if rows.is_empty() || mapped_column < 0 {
+      return
+    }
+    let run = rows[0]
+    let span = run.1 - run.0
+    if span > 1 {
+      next_row_spans.push((run.0, mapped_column, span))
+    }
+  })
+  self.row_spans.clear()
+  next_row_spans.each(item => self.row_spans.push(item))
 }

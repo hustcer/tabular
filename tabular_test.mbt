@@ -451,6 +451,109 @@ test "column span can be removed without losing hidden cell values" {
 }
 
 ///|
+test "modify cell row span" {
+  let table = @tabular.Table::from_rows([
+    ["N", "column 0", "column 1"],
+    ["0", "0-0", "0-1"],
+    ["1", "1-0", "1-1"],
+  ])
+  table.apply(@tabular.Style::psql()) |> ignore
+  table.modify_segment(
+    @tabular.Segment::all(),
+    @tabular.Setting::alignment(@tabular.Alignment::left()),
+  )
+  |> ignore
+  table.modify_cell(@tabular.Cell::new(1, 1), @tabular.Span::row(2)) |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #| N | column 0 | column 1 
+      #|----+----------+-----------
+      #| 0 | 0-0      | 0-1      
+      #| 1 |          | 1-1      
+    ),
+  )
+}
+
+///|
+test "modify first-column row span" {
+  let table = @tabular.Table::from_rows([
+    ["N", "column 0", "column 1"],
+    ["0", "0-0", "0-1"],
+    ["1", "1-0", "1-1"],
+  ])
+  table.apply(@tabular.Style::psql()) |> ignore
+  table.modify_segment(
+    @tabular.Segment::all(),
+    @tabular.Setting::alignment(@tabular.Alignment::left()),
+  )
+  |> ignore
+  table.modify_cell(@tabular.Cell::new(1, 0), @tabular.Span::row(2)) |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #| N | column 0 | column 1 
+      #|----+----------+-----------
+      #| 0 | 0-0      | 0-1      
+      #|   | 1-0      | 1-1      
+    ),
+  )
+}
+
+///|
+test "row span can be removed without losing hidden cell values" {
+  let table = @tabular.Table::from_rows([
+    ["N", "column 0", "column 1"],
+    ["0", "0-0", "0-1"],
+    ["1", "1-0", "1-1"],
+  ])
+  table.apply(@tabular.Style::psql()) |> ignore
+  table.modify_segment(
+    @tabular.Segment::all(),
+    @tabular.Setting::alignment(@tabular.Alignment::left()),
+  )
+  |> ignore
+  table.modify_cell(@tabular.Cell::new(1, 1), @tabular.Span::row(2)) |> ignore
+  table.modify_cell(@tabular.Cell::new(1, 1), @tabular.Span::row(1)) |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #| N | column 0 | column 1 
+      #|----+----------+-----------
+      #| 0 | 0-0      | 0-1      
+      #| 1 | 1-0      | 1-1      
+    ),
+  )
+}
+
+///|
+test "row span survives extract rows remap" {
+  let table = @tabular.Table::from_rows([
+    ["N", "column 0", "column 1"],
+    ["0", "0-0", "0-1"],
+    ["1", "1-0", "1-1"],
+    ["2", "2-0", "2-1"],
+  ])
+  table.apply(@tabular.Style::psql()) |> ignore
+  table.modify_segment(
+    @tabular.Segment::all(),
+    @tabular.Setting::alignment(@tabular.Alignment::left()),
+  )
+  |> ignore
+  table.modify_cell(@tabular.Cell::new(1, 1), @tabular.Span::row(2)) |> ignore
+  table.extract_rows(@tabular.Rows::new(1, 4)) |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #| 0 | 0-0 | 0-1 
+      #|----+     +------
+      #| 1 |     | 1-1 
+      #| 2 | 2-0 | 2-1 
+    ),
+  )
+}
+
+///|
 test "modify cell height limit" {
   let table = @tabular.Table::from_rows([
     ["N", "text"],

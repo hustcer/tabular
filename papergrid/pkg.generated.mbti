@@ -155,6 +155,7 @@ pub struct SpannedConfig {
   vertical_alignment_rules : Array[(Int, Int, Int, AlignmentVertical)]
   padding_rules : Array[(Int, Int, Int, Int, Int, Int, Int)]
   column_spans : Array[(Int, Int, Int)]
+  row_spans : Array[(Int, Int, Int)]
 }
 pub fn SpannedConfig::alignment(Self) -> AlignmentHorizontal
 pub fn SpannedConfig::alignment_at(Self, Int, Int) -> AlignmentHorizontal
@@ -163,11 +164,15 @@ pub fn SpannedConfig::column_span_at(Self, Int, Int) -> Int
 pub fn SpannedConfig::custom_horizontal_line(Self, Int) -> HorizontalLine?
 pub fn SpannedConfig::default() -> Self
 pub fn SpannedConfig::get_column_span(Self, Int, Int) -> Int?
+pub fn SpannedConfig::get_row_span(Self, Int, Int) -> Int?
 pub fn SpannedConfig::has_column_spans(Self) -> Bool
+pub fn SpannedConfig::has_row_spans(Self) -> Bool
 pub fn SpannedConfig::height_mode(Self) -> HeightMode
 pub fn SpannedConfig::height_mode_at(Self, Int, Int) -> HeightMode
 pub fn SpannedConfig::horizontal_lines(Self) -> HorizontalLines
+pub fn SpannedConfig::is_cell_covered_by_both_spans(Self, Int, Int) -> Bool
 pub fn SpannedConfig::is_cell_covered_by_column_span(Self, Int, Int) -> Bool
+pub fn SpannedConfig::is_cell_covered_by_row_span(Self, Int, Int) -> Bool
 pub fn SpannedConfig::is_cell_visible(Self, Int, Int) -> Bool
 pub fn SpannedConfig::padding_at(Self, Int, Int) -> (Int, Int, Int, Int)
 pub fn SpannedConfig::padding_bottom(Self) -> Int
@@ -175,6 +180,7 @@ pub fn SpannedConfig::padding_left(Self) -> Int
 pub fn SpannedConfig::padding_right(Self) -> Int
 pub fn SpannedConfig::padding_top(Self) -> Int
 pub fn SpannedConfig::remap(Self, Array[Int], Array[Int]) -> Unit
+pub fn SpannedConfig::row_span_at(Self, Int, Int) -> Int
 pub fn SpannedConfig::set_alignment(Self, AlignmentHorizontal) -> Unit
 pub fn SpannedConfig::set_alignment_for_all(Self, AlignmentHorizontal) -> Unit
 pub fn SpannedConfig::set_alignment_for_cell(Self, Int, Int, AlignmentHorizontal) -> Unit
@@ -194,6 +200,7 @@ pub fn SpannedConfig::set_padding_for_all(Self, Int, Int, Int, Int) -> Unit
 pub fn SpannedConfig::set_padding_for_cell(Self, Int, Int, Int, Int, Int, Int) -> Unit
 pub fn SpannedConfig::set_padding_for_columns(Self, Int, Int, Int, Int, Int, Int) -> Unit
 pub fn SpannedConfig::set_padding_for_rows(Self, Int, Int, Int, Int, Int, Int) -> Unit
+pub fn SpannedConfig::set_row_span(Self, Int, Int, Int) -> Unit
 pub fn SpannedConfig::set_vertical_alignment(Self, AlignmentVertical) -> Unit
 pub fn SpannedConfig::set_vertical_alignment_for_all(Self, AlignmentVertical) -> Unit
 pub fn SpannedConfig::set_vertical_alignment_for_cell(Self, Int, Int, AlignmentVertical) -> Unit
