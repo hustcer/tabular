@@ -247,12 +247,14 @@ Completed in this phase:
   - negative and zero spans normalize to a visible top/left anchor without destructively moving stored cell values
   - `Span::column(1)` / `Span::row(1)` can remove earlier negative/zero spans through the original source cell
   - dimension and render paths now resolve span content from the stored source cell when anchor and source differ
+  - source-mapped spans now remap correctly across `extract_*` and `remove_*` even when the original anchor is discarded but the covered run survives
 - Added focused high-level coverage for:
   - `Span::column(-1)`
   - `Span::column(0)` plus removal
   - `Span::row(-1)`
   - `Span::row(0)` plus removal
-- Expanded the test suite to `117`
+  - negative/zero span remapping through extraction and removal
+- Expanded the test suite to `121`
 - Re-verified `moon info`, `moon fmt`, `moon check -d`, `moon build -d`, and `moon test -d`
 
 Remaining work:

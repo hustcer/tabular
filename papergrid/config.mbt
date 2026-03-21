@@ -932,6 +932,9 @@ pub fn SpannedConfig::remap(
   row_map : Array[Int],
   column_map : Array[Int],
 ) -> Unit {
+  let previous_column_spans = self.column_spans.copy()
+  let previous_row_spans = self.row_spans.copy()
+
   let next_alignment_rules = []
   self.alignment_rules.each(rule => {
     if rule.0 == 0 {
@@ -1109,14 +1112,28 @@ pub fn SpannedConfig::remap(
 
   let next_span_sources = []
   self.span_sources.each(item => {
-    let anchor_row = map_index(row_map, item.0)
-    let anchor_column = map_index(column_map, item.1)
+    let mut row_span = 1
+    previous_row_spans.each(span => {
+      if span.0 == item.0 && span.1 == item.1 {
+        row_span = span.2
+      }
+    })
+    let mut column_span = 1
+    previous_column_spans.each(span => {
+      if span.0 == item.0 && span.1 == item.1 {
+        column_span = span.2
+      }
+    })
+    let row_runs = mapped_runs(row_map, item.0, item.0 + row_span)
+    let column_runs = mapped_runs(column_map, item.1, item.1 + column_span)
     let source_row = map_index(row_map, item.2)
     let source_column = map_index(column_map, item.3)
-    if anchor_row >= 0 &&
-      anchor_column >= 0 &&
+    if !row_runs.is_empty() &&
+      !column_runs.is_empty() &&
       source_row >= 0 &&
       source_column >= 0 {
+      let anchor_row = row_runs[0].0
+      let anchor_column = column_runs[0].0
       next_span_sources.push(
         (anchor_row, anchor_column, source_row, source_column),
       )

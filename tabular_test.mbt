@@ -776,6 +776,120 @@ test "row span zero extends to full column height and can be removed" {
 }
 
 ///|
+test "column span negative survives extract columns when anchor column is removed" {
+  let table = @tabular.Table::from_rows([
+    ["a", "b", "c", "d", "e"],
+    ["f", "g", "h", "i", "j"],
+  ])
+  table.apply(@tabular.Style::ascii()) |> ignore
+  table.modify_segment(
+    @tabular.Segment::all(),
+    @tabular.Setting::alignment(@tabular.Alignment::left()),
+  )
+  |> ignore
+  table.modify_cell(@tabular.Cell::new(1, 3), @tabular.Span::column(-2))
+  |> ignore
+  table.extract_columns(@tabular.Columns::new(2, 5)) |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|+---+---+---+
+      #|| c | d | e |
+      #|+---+---+---+
+      #|| i     | j |
+      #|+---+---+---+
+    ),
+  )
+}
+
+///|
+test "row span zero survives extract rows when anchor row is removed" {
+  let table = @tabular.Table::from_rows([
+    ["a", "b"],
+    ["c", "d"],
+    ["e", "f"],
+    ["g", "h"],
+  ])
+  table.apply(@tabular.Style::ascii()) |> ignore
+  table.modify_segment(
+    @tabular.Segment::all(),
+    @tabular.Setting::alignment(@tabular.Alignment::left()),
+  )
+  |> ignore
+  table.modify_cell(@tabular.Cell::new(3, 1), @tabular.Span::row(0)) |> ignore
+  table.extract_rows(@tabular.Rows::new(1, 4)) |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|+---+---+
+      #|| c | h |
+      #|+---+   +
+      #|| e |   |
+      #|+---+   +
+      #|| g |   |
+      #|+---+---+
+    ),
+  )
+}
+
+///|
+test "column span zero survives remove first columns" {
+  let table = @tabular.Table::from_rows([
+    ["a", "b", "c", "d"],
+    ["e", "f", "g", "h"],
+  ])
+  table.apply(@tabular.Style::ascii()) |> ignore
+  table.modify_segment(
+    @tabular.Segment::all(),
+    @tabular.Setting::alignment(@tabular.Alignment::left()),
+  )
+  |> ignore
+  table.modify_cell(@tabular.Cell::new(1, 3), @tabular.Span::column(0))
+  |> ignore
+  table.remove_columns(@tabular.Columns::new(0, 2)) |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|+---+---+
+      #|| c | d |
+      #|+---+---+
+      #|| h     |
+      #|+---+---+
+    ),
+  )
+}
+
+///|
+test "row span negative survives remove first row" {
+  let table = @tabular.Table::from_rows([
+    ["a", "b"],
+    ["c", "d"],
+    ["e", "f"],
+    ["g", "h"],
+  ])
+  table.apply(@tabular.Style::ascii()) |> ignore
+  table.modify_segment(
+    @tabular.Segment::all(),
+    @tabular.Setting::alignment(@tabular.Alignment::left()),
+  )
+  |> ignore
+  table.modify_cell(@tabular.Cell::new(2, 1), @tabular.Span::row(-1)) |> ignore
+  table.remove_rows(@tabular.Rows::first()) |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|+---+---+
+      #|| c | f |
+      #|+---+   +
+      #|| e |   |
+      #|+---+---+
+      #|| g | h |
+      #|+---+---+
+    ),
+  )
+}
+
+///|
 test "modify cell height limit" {
   let table = @tabular.Table::from_rows([
     ["N", "text"],
