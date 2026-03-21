@@ -105,6 +105,17 @@ pub enum Height {
 pub fn Height::increase(Int) -> Self
 pub fn Height::limit(Int) -> Self
 
+pub struct HorizontalLine {
+  line : @papergrid.HorizontalLine
+}
+pub fn HorizontalLine::filled(Char) -> Self
+pub fn HorizontalLine::from_style(Style) -> Self
+pub fn HorizontalLine::full(Char, left? : Char, intersection? : Char, right? : Char) -> Self
+pub fn HorizontalLine::intersection(Self, Char) -> Self
+pub fn HorizontalLine::left(Self, Char) -> Self
+pub fn HorizontalLine::new(Char) -> Self
+pub fn HorizontalLine::right(Self, Char) -> Self
+
 pub struct Padding {
   left : Int
   right : Int
@@ -181,14 +192,45 @@ pub fn Setting::vertical_alignment(VerticalAlignment) -> Self
 pub struct Style {
   borders : @papergrid.Borders
   horizontal_lines : @papergrid.HorizontalLines
+  custom_horizontal_lines : Array[(Int, @papergrid.HorizontalLine)]
 }
 pub fn Style::ascii() -> Self
+pub fn Style::ascii_rounded() -> Self
+pub fn Style::blank() -> Self
 pub fn Style::borders(Self) -> @papergrid.Borders
+pub fn Style::bottom(Self, Char) -> Self
+pub fn Style::corner_bottom_left(Self, Char) -> Self
+pub fn Style::corner_bottom_right(Self, Char) -> Self
+pub fn Style::corner_top_left(Self, Char) -> Self
+pub fn Style::corner_top_right(Self, Char) -> Self
+pub fn Style::custom_horizontal_lines(Self) -> Array[(Int, @papergrid.HorizontalLine)]
+pub fn Style::dots() -> Self
+pub fn Style::empty() -> Self
+pub fn Style::extended() -> Self
+pub fn Style::horizontal(Self, Char) -> Self
 pub fn Style::horizontal_lines(Self) -> @papergrid.HorizontalLines
+pub fn Style::horizontals(Self, Array[(Int, HorizontalLine)]) -> Self
+pub fn Style::intersection(Self, Char) -> Self
+pub fn Style::intersection_bottom(Self, Char) -> Self
+pub fn Style::intersection_left(Self, Char) -> Self
+pub fn Style::intersection_right(Self, Char) -> Self
+pub fn Style::intersection_top(Self, Char) -> Self
+pub fn Style::left(Self, Char) -> Self
 pub fn Style::markdown() -> Self
 pub fn Style::modern() -> Self
 pub fn Style::psql() -> Self
+pub fn Style::re_structured_text() -> Self
+pub fn Style::remove_bottom(Self) -> Self
+pub fn Style::remove_horizontal(Self) -> Self
+pub fn Style::remove_horizontals(Self) -> Self
+pub fn Style::remove_left(Self) -> Self
+pub fn Style::remove_right(Self) -> Self
+pub fn Style::remove_top(Self) -> Self
+pub fn Style::remove_vertical(Self) -> Self
+pub fn Style::right(Self, Char) -> Self
 pub fn Style::rounded() -> Self
+pub fn Style::top(Self, Char) -> Self
+pub fn Style::vertical(Self, Char) -> Self
 
 pub struct Table {
   mut rows : Array[Array[String]]

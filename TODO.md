@@ -17,6 +17,15 @@ Already implemented and passing:
 
 - Core rendering primitives under `papergrid`
 - Styles: `ascii`, `modern`, `rounded`, `markdown`, `psql`
+- Additional style presets: `empty`, `blank`, `extended`, `dots`, `re_structured_text`, `ascii_rounded`
+- Style builder surface:
+  - `top`, `bottom`, `left`, `right`
+  - `horizontal`, `vertical`
+  - `corner_top_left`, `corner_top_right`, `corner_bottom_left`, `corner_bottom_right`
+  - `intersection_top`, `intersection_bottom`, `intersection_left`, `intersection_right`, `intersection`
+  - `remove_top`, `remove_bottom`, `remove_left`, `remove_right`
+  - `remove_horizontal`, `remove_horizontals`, `remove_vertical`
+  - `horizontals` with custom inserted horizontal lines
 - Global settings:
   - horizontal alignment
   - vertical alignment
@@ -46,7 +55,7 @@ Already implemented and passing:
   - `Format::content`
   - `Format::positioned`
   - `Format::multiline`
-- Test count: `73`
+- Test count: `84`
 
 ## Constraints
 
@@ -125,21 +134,32 @@ Acceptance:
 
 ### Phase 3: Richer Style Builder Surface
 
-Status: presets only
+Status: complete
 
-Remaining work:
+Completed in this phase:
 
-- Add style builder APIs closer to upstream:
+- Added style builder APIs closer to upstream:
   - horizontal-line toggles
   - vertical-line toggles
   - top/bottom/left/right border controls
-  - custom line insertion / removal
-- Add partial border customization helpers
-- Add more style presets if upstream coverage depends on them
-- Ensure style changes work after:
-  - removal
-  - extraction
-  - selector-scoped settings
+  - custom horizontal line insertion
+- Added partial border customization helpers
+  - corners
+  - intersections
+  - directional removers
+- Added more style presets needed for meaningful upstream coverage:
+  - `empty`
+  - `blank`
+  - `extended`
+  - `dots`
+  - `re_structured_text`
+  - `ascii_rounded`
+- Ported a focused non-ANSI subset of upstream `style_test.rs`
+  - preset rendering
+  - remove/top/bottom/frame behavior
+  - custom horizontal lines
+  - empty-style border composition
+  - vertical removal on a custom frame
 
 Acceptance:
 

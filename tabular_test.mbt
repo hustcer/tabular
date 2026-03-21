@@ -322,6 +322,313 @@ test "table psql style" {
 }
 
 ///|
+test "style blank" {
+  let table = @tabular.Table::from_rows([
+    ["N", "column 0", "column 1"],
+    ["0", "0-0", "0-1"],
+    ["1", "1-0", "1-1"],
+  ])
+  table.apply(@tabular.Style::blank()) |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #| N  column 0  column 1 
+      #| 0    0-0       0-1    
+      #| 1    1-0       1-1    
+    ),
+  )
+}
+
+///|
+test "style extended" {
+  let table = @tabular.Table::from_rows([["N", "column 0"], ["0", "0-0"]])
+  table.apply(@tabular.Style::extended()) |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|╔═══╦══════════╗
+      #|║ N ║ column 0 ║
+      #|╠═══╬══════════╣
+      #|║ 0 ║   0-0    ║
+      #|╚═══╩══════════╝
+    ),
+  )
+}
+
+///|
+test "style dots" {
+  let table = @tabular.Table::from_rows([["N", "column 0"], ["0", "0-0"]])
+  table.apply(@tabular.Style::dots()) |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|:..............:
+      #|: N : column 0 :
+      #|:...:..........:
+      #|: 0 :   0-0    :
+      #|:..............:
+    ),
+  )
+}
+
+///|
+test "style re structured text" {
+  let table = @tabular.Table::from_rows([["N", "column 0"], ["0", "0-0"]])
+  table.apply(@tabular.Style::re_structured_text()) |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|==== ===========
+      #| N   column 0 
+      #|==== ===========
+      #| 0     0-0    
+      #|==== ===========
+    ),
+  )
+}
+
+///|
+test "style ascii rounded" {
+  let table = @tabular.Table::from_rows([["N", "column 0"], ["0", "0-0"]])
+  table.apply(@tabular.Style::ascii_rounded()) |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|.--------------.
+      #|| N | column 0 |
+      #|| 0 |   0-0    |
+      #|'--------------'
+    ),
+  )
+}
+
+///|
+test "style remove horizontal with custom middle line" {
+  let table = @tabular.Table::from_rows([
+    ["N", "column 0", "column 1"],
+    ["0", "0-0", "0-1"],
+    ["1", "1-0", "1-1"],
+  ])
+  table.apply(
+    @tabular.Style::modern()
+    .remove_horizontal()
+    .horizontals([
+      (
+        1,
+        @tabular.HorizontalLine::new('─')
+        .left('├')
+        .intersection('┼')
+        .right('┤'),
+      ),
+    ]),
+  )
+  |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|┌───┬──────────┬──────────┐
+      #|│ N │ column 0 │ column 1 │
+      #|├───┼──────────┼──────────┤
+      #|│ 0 │   0-0    │   0-1    │
+      #|│ 1 │   1-0    │   1-1    │
+      #|└───┴──────────┴──────────┘
+    ),
+  )
+}
+
+///|
+test "horizontal line from style modern" {
+  let table = @tabular.Table::from_rows([
+    ["N", "column 0", "column 1"],
+    ["0", "0-0", "0-1"],
+    ["1", "1-0", "1-1"],
+  ])
+  table.apply(
+    @tabular.Style::modern()
+    .remove_horizontal()
+    .horizontals([
+      (1, @tabular.HorizontalLine::from_style(@tabular.Style::modern())),
+    ]),
+  )
+  |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|┌───┬──────────┬──────────┐
+      #|│ N │ column 0 │ column 1 │
+      #|├───┼──────────┼──────────┤
+      #|│ 0 │   0-0    │   0-1    │
+      #|│ 1 │   1-0    │   1-1    │
+      #|└───┴──────────┴──────────┘
+    ),
+  )
+}
+
+///|
+test "style remove horizontal preserves custom lines" {
+  let table = @tabular.Table::from_rows([
+    ["N", "column 0", "column 1"],
+    ["0", "0-0", "0-1"],
+    ["1", "1-0", "1-1"],
+  ])
+  table.apply(
+    @tabular.Style::modern()
+    .horizontals([
+      (1, @tabular.HorizontalLine::from_style(@tabular.Style::modern())),
+    ])
+    .remove_horizontal(),
+  )
+  |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|┌───┬──────────┬──────────┐
+      #|│ N │ column 0 │ column 1 │
+      #|├───┼──────────┼──────────┤
+      #|│ 0 │   0-0    │   0-1    │
+      #|│ 1 │   1-0    │   1-1    │
+      #|└───┴──────────┴──────────┘
+    ),
+  )
+}
+
+///|
+test "style remove horizontals clears custom lines" {
+  let table = @tabular.Table::from_rows([
+    ["N", "column 0", "column 1"],
+    ["0", "0-0", "0-1"],
+    ["1", "1-0", "1-1"],
+  ])
+  table.apply(
+    @tabular.Style::modern()
+    .horizontals([
+      (1, @tabular.HorizontalLine::from_style(@tabular.Style::modern())),
+    ])
+    .remove_horizontals(),
+  )
+  |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|┌───┬──────────┬──────────┐
+      #|│ N │ column 0 │ column 1 │
+      #|│ 0 │   0-0    │   0-1    │
+      #|│ 1 │   1-0    │   1-1    │
+      #|└───┴──────────┴──────────┘
+    ),
+  )
+}
+
+///|
+test "style frame changes" {
+  let table = @tabular.Table::from_rows([
+    ["N", "column 0", "column 1"],
+    ["0", "0-0", "0-1"],
+    ["1", "1-0", "1-1"],
+  ])
+  table.apply(
+    @tabular.Style::modern().remove_top().remove_bottom().remove_horizontal(),
+  )
+  |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|│ N │ column 0 │ column 1 │
+      #|│ 0 │   0-0    │   0-1    │
+      #|│ 1 │   1-0    │   1-1    │
+    ),
+  )
+}
+
+///|
+test "style empty top" {
+  let table = @tabular.Table::from_rows([["N", "column 0"], ["0", "0-0"]])
+  table.apply(@tabular.Style::empty().top('-')) |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|----------------
+      #| N  column 0 
+      #| 0    0-0    
+    ),
+  )
+}
+
+///|
+test "style empty left right vertical horizontal" {
+  let table = @tabular.Table::from_rows([["N", "column 0"], ["0", "0-0"]])
+  table.apply(
+    @tabular.Style::empty().left('|').right('*').vertical('#').horizontal('='),
+  )
+  |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|| N # column 0 *
+      #|================
+      #|| 0 #   0-0    *
+    ),
+  )
+}
+
+///|
+test "style empty custom horizontal only" {
+  let table = @tabular.Table::from_rows([
+    ["N", "column 0", "column 1"],
+    ["0", "0-0", "0-1"],
+    ["1", "1-0", "1-1"],
+  ])
+  table.apply(
+    @tabular.Style::empty().horizontals([(1, @tabular.HorizontalLine::new('-'))]),
+  )
+  |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #| N  column 0  column 1 
+      #|---------------------------
+      #| 0    0-0       0-1    
+      #| 1    1-0       1-1    
+    ),
+  )
+}
+
+///|
+test "style remove vertical from full custom frame" {
+  let table = @tabular.Table::from_rows([["N", "column 0"], ["0", "0-0"]])
+  table.apply(
+    @tabular.Style::empty()
+    .top('-')
+    .bottom('+')
+    .left('|')
+    .right('*')
+    .horizontal('x')
+    .vertical('#')
+    .intersection_bottom('@')
+    .intersection_top('!')
+    .intersection_left('=')
+    .intersection_right('$')
+    .intersection('+')
+    .corner_top_left(';')
+    .corner_bottom_left('?')
+    .corner_top_right('.')
+    .corner_bottom_right('%')
+    .remove_vertical(),
+  )
+  |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|;--------------.
+      #|| N  column 0 *
+      #|=xxxxxxxxxxxxxx$
+      #|| 0    0-0    *
+      #|?++++++++++++++%
+    ),
+  )
+}
+
+///|
 test "modify segment alignment left" {
   let table = @tabular.Table::from_rows([
     ["N", "column 0", "column 1"],

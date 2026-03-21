@@ -49,12 +49,36 @@ pub struct Borders {
   right_intersection : Char?
 }
 pub fn Borders::ascii() -> Self
+pub fn Borders::ascii_rounded() -> Self
 pub fn Borders::build_line(Self, Char?, Char?, Char?, Char?, Array[Int]) -> String
+pub fn Borders::dots() -> Self
 pub fn Borders::empty() -> Self
+pub fn Borders::extended() -> Self
 pub fn Borders::markdown() -> Self
 pub fn Borders::modern() -> Self
 pub fn Borders::psql() -> Self
+pub fn Borders::re_structured_text() -> Self
+pub fn Borders::remove_bottom(Self) -> Self
+pub fn Borders::remove_left(Self) -> Self
+pub fn Borders::remove_right(Self) -> Self
+pub fn Borders::remove_top(Self) -> Self
+pub fn Borders::remove_vertical(Self) -> Self
 pub fn Borders::rounded() -> Self
+pub fn Borders::with_bottom(Self, Char) -> Self
+pub fn Borders::with_bottom_intersection(Self, Char) -> Self
+pub fn Borders::with_bottom_left(Self, Char) -> Self
+pub fn Borders::with_bottom_right(Self, Char) -> Self
+pub fn Borders::with_horizontal(Self, Char) -> Self
+pub fn Borders::with_intersection(Self, Char) -> Self
+pub fn Borders::with_left(Self, Char) -> Self
+pub fn Borders::with_left_intersection(Self, Char) -> Self
+pub fn Borders::with_right(Self, Char) -> Self
+pub fn Borders::with_right_intersection(Self, Char) -> Self
+pub fn Borders::with_top(Self, Char) -> Self
+pub fn Borders::with_top_intersection(Self, Char) -> Self
+pub fn Borders::with_top_left(Self, Char) -> Self
+pub fn Borders::with_top_right(Self, Char) -> Self
+pub fn Borders::with_vertical(Self, Char) -> Self
 
 pub enum HeightMode {
   None
@@ -64,6 +88,20 @@ pub enum HeightMode {
 pub fn HeightMode::increase(Int) -> Self
 pub fn HeightMode::limit(Int) -> Self
 pub fn HeightMode::none() -> Self
+
+pub struct HorizontalLine {
+  main : Char?
+  left : Char?
+  intersection : Char?
+  right : Char?
+}
+pub fn HorizontalLine::filled(Char) -> Self
+pub fn HorizontalLine::from_chars(Char?, Char?, Char?, Char?) -> Self
+pub fn HorizontalLine::full(Char, Char, Char, Char) -> Self
+pub fn HorizontalLine::new(Char) -> Self
+pub fn HorizontalLine::with_intersection(Self, Char) -> Self
+pub fn HorizontalLine::with_left(Self, Char) -> Self
+pub fn HorizontalLine::with_right(Self, Char) -> Self
 
 pub enum HorizontalLines {
   All
@@ -110,6 +148,7 @@ pub struct SpannedConfig {
   mut width_mode : WidthMode
   mut height_mode : HeightMode
   mut horizontal_lines : HorizontalLines
+  custom_horizontal_lines : Array[(Int, HorizontalLine)]
   alignment_rules : Array[(Int, Int, Int, AlignmentHorizontal)]
   vertical_alignment_rules : Array[(Int, Int, Int, AlignmentVertical)]
   padding_rules : Array[(Int, Int, Int, Int, Int, Int, Int)]
@@ -117,6 +156,7 @@ pub struct SpannedConfig {
 pub fn SpannedConfig::alignment(Self) -> AlignmentHorizontal
 pub fn SpannedConfig::alignment_at(Self, Int, Int) -> AlignmentHorizontal
 pub fn SpannedConfig::borders(Self) -> Borders
+pub fn SpannedConfig::custom_horizontal_line(Self, Int) -> HorizontalLine?
 pub fn SpannedConfig::default() -> Self
 pub fn SpannedConfig::height_mode(Self) -> HeightMode
 pub fn SpannedConfig::horizontal_lines(Self) -> HorizontalLines
@@ -131,6 +171,7 @@ pub fn SpannedConfig::set_alignment_for_cell(Self, Int, Int, AlignmentHorizontal
 pub fn SpannedConfig::set_alignment_for_columns(Self, Int, Int, AlignmentHorizontal) -> Unit
 pub fn SpannedConfig::set_alignment_for_rows(Self, Int, Int, AlignmentHorizontal) -> Unit
 pub fn SpannedConfig::set_borders(Self, Borders) -> Unit
+pub fn SpannedConfig::set_custom_horizontal_lines(Self, Array[(Int, HorizontalLine)]) -> Unit
 pub fn SpannedConfig::set_height_mode(Self, HeightMode) -> Unit
 pub fn SpannedConfig::set_horizontal_lines(Self, HorizontalLines) -> Unit
 pub fn SpannedConfig::set_padding(Self, Int, Int, Int, Int) -> Unit

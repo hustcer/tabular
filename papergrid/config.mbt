@@ -20,6 +20,14 @@ pub enum HorizontalLines {
 }
 
 ///|
+pub struct HorizontalLine {
+  main : Char?
+  left : Char?
+  intersection : Char?
+  right : Char?
+}
+
+///|
 pub fn AlignmentHorizontal::left() -> AlignmentHorizontal {
   Left
 }
@@ -65,6 +73,65 @@ pub fn HorizontalLines::none() -> HorizontalLines {
 }
 
 ///|
+pub fn HorizontalLine::new(ch : Char) -> HorizontalLine {
+  { main: Some(ch), left: None, intersection: None, right: None }
+}
+
+///|
+pub fn HorizontalLine::filled(ch : Char) -> HorizontalLine {
+  HorizontalLine::new(ch)
+}
+
+///|
+pub fn HorizontalLine::full(
+  main : Char,
+  left : Char,
+  intersection : Char,
+  right : Char,
+) -> HorizontalLine {
+  {
+    main: Some(main),
+    left: Some(left),
+    intersection: Some(intersection),
+    right: Some(right),
+  }
+}
+
+///|
+pub fn HorizontalLine::from_chars(
+  main : Char?,
+  left : Char?,
+  intersection : Char?,
+  right : Char?,
+) -> HorizontalLine {
+  { main, left, intersection, right }
+}
+
+///|
+pub fn HorizontalLine::with_left(
+  self : HorizontalLine,
+  ch : Char,
+) -> HorizontalLine {
+  { ..self, left: Some(ch) }
+}
+
+///|
+pub fn HorizontalLine::with_intersection(
+  self : HorizontalLine,
+  ch : Char,
+) -> HorizontalLine {
+  { ..self, intersection: Some(ch) }
+}
+
+///|
+pub fn HorizontalLine::with_right(
+  self : HorizontalLine,
+  ch : Char,
+) -> HorizontalLine {
+  { ..self, right: Some(ch) }
+}
+
+///|
 pub struct SpannedConfig {
   mut borders : Borders
   mut padding_left : Int
@@ -76,6 +143,7 @@ pub struct SpannedConfig {
   mut width_mode : WidthMode
   mut height_mode : HeightMode
   mut horizontal_lines : HorizontalLines
+  custom_horizontal_lines : Array[(Int, HorizontalLine)]
   alignment_rules : Array[(Int, Int, Int, AlignmentHorizontal)]
   vertical_alignment_rules : Array[(Int, Int, Int, AlignmentVertical)]
   padding_rules : Array[(Int, Int, Int, Int, Int, Int, Int)]
@@ -94,6 +162,7 @@ pub fn SpannedConfig::default() -> SpannedConfig {
     width_mode: WidthMode::none(),
     height_mode: HeightMode::none(),
     horizontal_lines: HorizontalLines::all(),
+    custom_horizontal_lines: [],
     alignment_rules: [],
     vertical_alignment_rules: [],
     padding_rules: [],
@@ -212,6 +281,31 @@ pub fn SpannedConfig::set_horizontal_lines(
 ///|
 pub fn SpannedConfig::horizontal_lines(self : SpannedConfig) -> HorizontalLines {
   self.horizontal_lines
+}
+
+///|
+pub fn SpannedConfig::set_custom_horizontal_lines(
+  self : SpannedConfig,
+  lines : Array[(Int, HorizontalLine)],
+) -> Unit {
+  self.custom_horizontal_lines.clear()
+  lines.each(line => self.custom_horizontal_lines.push(line))
+}
+
+///|
+pub fn SpannedConfig::custom_horizontal_line(
+  self : SpannedConfig,
+  row : Int,
+) -> HorizontalLine? {
+  let mut index = self.custom_horizontal_lines.length() - 1
+  while index >= 0 {
+    let line = self.custom_horizontal_lines[index]
+    if line.0 == row {
+      return Some(line.1)
+    }
+    index = index - 1
+  }
+  None
 }
 
 ///|

@@ -198,11 +198,23 @@ pub fn IterGrid::to_string(self : IterGrid) -> String {
   }
 
   let lines : Array[String] = []
+  let top_left = match borders.top {
+    Some(_) => first_char([borders.top_left, borders.left, borders.top])
+    None => None
+  }
+  let top_intersection = match borders.top {
+    Some(_) => first_char([borders.top_intersection, borders.top])
+    None => None
+  }
+  let top_right = match borders.top {
+    Some(_) => first_char([borders.top_right, borders.right, borders.top])
+    None => None
+  }
   let top = borders.build_line(
-    borders.top_left,
+    top_left,
     borders.top,
-    borders.top_intersection,
-    borders.top_right,
+    top_intersection,
+    top_right,
     widths,
   )
   if top != "" {
@@ -229,25 +241,76 @@ pub fn IterGrid::to_string(self : IterGrid) -> String {
       HeaderOnly => row_index == 0 && row_index + 1 < rows.length()
       None => false
     }
-    if show_middle {
-      let middle = borders.build_line(
-        borders.left_intersection,
-        borders.horizontal,
-        borders.intersection,
-        borders.right_intersection,
-        widths,
-      )
+    let custom_middle = self.config.custom_horizontal_line(row_index + 1)
+    if show_middle || custom_middle is Some(_) {
+      let middle = match custom_middle {
+        Some(line) =>
+          borders.build_line(
+            first_char([
+              line.left,
+              borders.left_intersection,
+              borders.left,
+              line.main,
+            ]),
+            line.main,
+            first_char([
+              line.intersection,
+              borders.intersection,
+              borders.vertical,
+              line.main,
+            ]),
+            first_char([
+              line.right,
+              borders.right_intersection,
+              borders.right,
+              line.main,
+            ]),
+            widths,
+          )
+        None =>
+          borders.build_line(
+            first_char([
+              borders.left_intersection,
+              borders.left,
+              borders.horizontal,
+            ]),
+            borders.horizontal,
+            first_char([
+              borders.intersection,
+              borders.vertical,
+              borders.horizontal,
+            ]),
+            first_char([
+              borders.right_intersection,
+              borders.right,
+              borders.horizontal,
+            ]),
+            widths,
+          )
+      }
       if middle != "" {
         lines.push(middle)
       }
     }
   }
 
+  let bottom_left = match borders.bottom {
+    Some(_) => first_char([borders.bottom_left, borders.left, borders.bottom])
+    None => None
+  }
+  let bottom_intersection = match borders.bottom {
+    Some(_) => first_char([borders.bottom_intersection, borders.bottom])
+    None => None
+  }
+  let bottom_right = match borders.bottom {
+    Some(_) => first_char([borders.bottom_right, borders.right, borders.bottom])
+    None => None
+  }
   let bottom = borders.build_line(
-    borders.bottom_left,
+    bottom_left,
     borders.bottom,
-    borders.bottom_intersection,
-    borders.bottom_right,
+    bottom_intersection,
+    bottom_right,
     widths,
   )
   if bottom != "" {
