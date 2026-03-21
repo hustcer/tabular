@@ -913,3 +913,90 @@ test "modify segment difference by cell" {
     ),
   )
 }
+
+///|
+test "format full segment surround" {
+  let table = @tabular.Table::from_rows([["N", "name"], ["0", "alice"]])
+  table.modify_segment(
+    @tabular.Segment::all(),
+    @tabular.Setting::format(@tabular.Format::surround("[", "]")),
+  )
+  |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|+-----+---------+
+      #|| [N] | [name]  |
+      #|+-----+---------+
+      #|| [0] | [alice] |
+      #|+-----+---------+
+    ),
+  )
+}
+
+///|
+test "format first row surround" {
+  let table = @tabular.Table::from_rows([["N", "name"], ["0", "alice"]])
+  table.apply(@tabular.Style::markdown()) |> ignore
+  table.modify_rows(
+    @tabular.Rows::first(),
+    @tabular.Setting::format(@tabular.Format::surround(":", "")),
+  )
+  |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|| :N | :name |
+      #||----|-------|
+      #|| 0  | alice |
+    ),
+  )
+}
+
+///|
+test "format first column surround" {
+  let table = @tabular.Table::from_rows([
+    ["N", "name"],
+    ["0", "alice"],
+    ["1", "bob"],
+  ])
+  table.apply(@tabular.Style::psql()) |> ignore
+  table.modify_columns(
+    @tabular.Columns::one(0),
+    @tabular.Setting::format(@tabular.Format::surround("(x) ", "")),
+  )
+  |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #| (x) N | name  
+      #|--------+--------
+      #| (x) 0 | alice 
+      #| (x) 1 |  bob  
+    ),
+  )
+}
+
+///|
+test "format cell value" {
+  let table = @tabular.Table::from_rows([
+    ["N", "name"],
+    ["0", "alice"],
+    ["1", "bob"],
+  ])
+  table.apply(@tabular.Style::psql()) |> ignore
+  table.modify_cell(
+    @tabular.Cell::new(2, 1),
+    @tabular.Setting::format(@tabular.Format::value("X")),
+  )
+  |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #| N | name  
+      #|----+--------
+      #| 0 | alice 
+      #| 1 |   X   
+    ),
+  )
+}

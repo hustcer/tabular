@@ -66,6 +66,13 @@ pub fn Columns::one(Int) -> Self
 pub fn Columns::skip(Self, Int) -> Self
 pub fn Columns::step_by(Self, Int) -> Self
 
+pub enum Format {
+  Surround(String, String)
+  Value(String)
+}
+pub fn Format::surround(String, String) -> Self
+pub fn Format::value(String) -> Self
+
 pub enum Height {
   Increase(Int)
   Limit(Int)
@@ -126,8 +133,10 @@ pub enum Setting {
   Align(Alignment)
   VAlign(VerticalAlignment)
   Pad(Padding)
+  Fmt(Format)
 }
 pub fn Setting::alignment(Alignment) -> Self
+pub fn Setting::format(Format) -> Self
 pub fn Setting::padding(Padding) -> Self
 pub fn Setting::vertical_alignment(VerticalAlignment) -> Self
 

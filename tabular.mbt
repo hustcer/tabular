@@ -31,6 +31,12 @@ pub enum Height {
 }
 
 ///|
+pub enum Format {
+  Surround(String, String)
+  Value(String)
+}
+
+///|
 pub struct Rows {
   start : Int
   end_ : Int
@@ -76,6 +82,7 @@ pub enum Setting {
   Align(Alignment)
   VAlign(VerticalAlignment)
   Pad(Padding)
+  Fmt(Format)
 }
 
 ///|
@@ -184,6 +191,16 @@ pub fn Height::increase(size : Int) -> Height {
 ///|
 pub fn Height::limit(size : Int) -> Height {
   Limit(size)
+}
+
+///|
+pub fn Format::surround(prefix : String, suffix : String) -> Format {
+  Surround(prefix, suffix)
+}
+
+///|
+pub fn Format::value(text : String) -> Format {
+  Value(text)
 }
 
 ///|
@@ -450,6 +467,11 @@ pub fn Setting::padding(padding : Padding) -> Setting {
 }
 
 ///|
+pub fn Setting::format(format : Format) -> Setting {
+  Fmt(format)
+}
+
+///|
 pub fn Padding::new(
   left : Int,
   right : Int,
@@ -492,6 +514,14 @@ fn convert_height(height : Height) -> @papergrid.HeightMode {
   match height {
     Increase(size) => @papergrid.HeightMode::increase(size)
     Limit(size) => @papergrid.HeightMode::limit(size)
+  }
+}
+
+///|
+fn format_content(value : String, format : Format) -> String {
+  match format {
+    Surround(prefix, suffix) => prefix + value + suffix
+    Value(text) => text
   }
 }
 
@@ -757,6 +787,7 @@ fn apply_setting_to_row(
         padding.top,
         padding.bottom,
       )
+    Fmt(_) => ()
   }
 }
 
@@ -788,6 +819,7 @@ fn apply_setting_to_column(
         padding.top,
         padding.bottom,
       )
+    Fmt(_) => ()
   }
 }
 
@@ -816,6 +848,70 @@ fn apply_setting_to_cell(
         padding.top,
         padding.bottom,
       )
+    Fmt(_) => ()
+  }
+}
+
+///|
+fn apply_format_to_cell(
+  rows : Array[Array[String]],
+  row : Int,
+  column : Int,
+  format : Format,
+) -> Unit {
+  if row < 0 || row >= rows.length() {
+    return
+  }
+  let row_values = rows[row]
+  if column < 0 || column >= row_values.length() {
+    return
+  }
+  row_values[column] = format_content(row_values[column], format)
+}
+
+///|
+fn apply_setting_to_row_values(
+  rows : Array[Array[String]],
+  row : Int,
+  setting : Setting,
+) -> Unit {
+  match setting {
+    Fmt(format) =>
+      if row >= 0 && row < rows.length() {
+        let row_values = rows[row]
+        for column = 0; column < row_values.length(); column = column + 1 {
+          apply_format_to_cell(rows, row, column, format)
+        }
+      }
+    _ => ()
+  }
+}
+
+///|
+fn apply_setting_to_column_values(
+  rows : Array[Array[String]],
+  column : Int,
+  setting : Setting,
+) -> Unit {
+  match setting {
+    Fmt(format) =>
+      for row = 0; row < rows.length(); row = row + 1 {
+        apply_format_to_cell(rows, row, column, format)
+      }
+    _ => ()
+  }
+}
+
+///|
+fn apply_setting_to_cell_value(
+  rows : Array[Array[String]],
+  row : Int,
+  column : Int,
+  setting : Setting,
+) -> Unit {
+  match setting {
+    Fmt(format) => apply_format_to_cell(rows, row, column, format)
+    _ => ()
   }
 }
 
@@ -1046,6 +1142,7 @@ pub fn Table::modify_rows(
   setting : Setting,
 ) -> Table {
   resolve_rows(rows, self.rows.length()).each(row => {
+    apply_setting_to_row_values(self.rows, row, setting)
     apply_setting_to_row(self.config, row, setting)
   })
   self
@@ -1059,6 +1156,7 @@ pub fn Table::modify_columns(
 ) -> Table {
   let column_count = @papergrid.IterRecords::new(self.rows).count_columns()
   resolve_columns(columns, column_count).each(column => {
+    apply_setting_to_column_values(self.rows, column, setting)
     apply_setting_to_column(self.config, column, setting)
   })
   self
@@ -1086,10 +1184,18 @@ pub fn Table::modify_segment(
             padding.top,
             padding.bottom,
           )
+        Fmt(format) =>
+          for row = 0; row < self.rows.length(); row = row + 1 {
+            let row_values = self.rows[row]
+            for column = 0; column < row_values.length(); column = column + 1 {
+              apply_format_to_cell(self.rows, row, column, format)
+            }
+          }
       }
     _ => {
       let column_count = @papergrid.IterRecords::new(self.rows).count_columns()
       resolve_segment_cells(segment, self.rows.length(), column_count).each(cell => {
+        apply_setting_to_cell_value(self.rows, cell.0, cell.1, setting)
         apply_setting_to_cell(self.config, cell.0, cell.1, setting)
       })
     }
@@ -1103,6 +1209,7 @@ pub fn Table::modify_cell(
   cell : Cell,
   setting : Setting,
 ) -> Table {
+  apply_setting_to_cell_value(self.rows, cell.row, cell.column, setting)
   apply_setting_to_cell(self.config, cell.row, cell.column, setting)
   self
 }
