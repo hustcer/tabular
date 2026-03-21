@@ -547,7 +547,16 @@ fn render_row_line(
   count_columns : Int,
   config : SpannedConfig,
 ) -> String {
-  let mut out = match borders.left {
+  let has_overrides = config.has_cell_borders()
+  let left_ch = if has_overrides {
+    match config.vertical_override_at(row_index, 0) {
+      Some(ch) => Some(ch)
+      None => borders.left
+    }
+  } else {
+    borders.left
+  }
+  let mut out = match left_ch {
     Some(value) => value.to_string()
     None => ""
   }
@@ -582,16 +591,32 @@ fn render_row_line(
       )
     column = column + colspan
     if column < count_columns {
+      let sep_ch = if has_overrides {
+        match config.vertical_override_at(row_index, column) {
+          Some(ch) => Some(ch)
+          None => borders.vertical
+        }
+      } else {
+        borders.vertical
+      }
       out = out +
-        (match borders.vertical {
+        (match sep_ch {
           Some(value) => value.to_string()
           None => ""
         })
     }
   }
 
+  let right_ch = if has_overrides {
+    match config.vertical_override_at(row_index, count_columns) {
+      Some(ch) => Some(ch)
+      None => borders.right
+    }
+  } else {
+    borders.right
+  }
   out +
-  (match borders.right {
+  (match right_ch {
     Some(value) => value.to_string()
     None => ""
   })
@@ -655,6 +680,62 @@ fn render_row(
 }
 
 ///|
+/// Build a horizontal line with per-cell border overrides.
+/// row_boundary: 0 = above row 0, count_rows = below last row
+fn build_line_with_overrides(
+  config : SpannedConfig,
+  widths : Array[Int],
+  default_left : Char?,
+  default_fill : Char?,
+  default_intersection : Char?,
+  default_right : Char?,
+  row_boundary : Int,
+  count_columns : Int,
+) -> String {
+  let left = match config.intersection_override_at(row_boundary, 0) {
+    Some(ch) => Some(ch)
+    None => default_left
+  }
+  let mut out = match left {
+    Some(value) => value.to_string()
+    None => ""
+  }
+  for column = 0; column < count_columns; column = column + 1 {
+    let fill = match config.horizontal_override_at(row_boundary, column) {
+      Some(ch) => Some(ch)
+      None => default_fill
+    }
+    let w = widths[column]
+    out = out +
+      (match fill {
+        Some(value) => value.to_string().repeat(w)
+        None => "".repeat(w)
+      })
+    if column + 1 < count_columns {
+      let ix = match config.intersection_override_at(row_boundary, column + 1) {
+        Some(ch) => Some(ch)
+        None => default_intersection
+      }
+      out = out +
+        (match ix {
+          Some(value) => value.to_string()
+          None => ""
+        })
+    }
+  }
+  let right = match
+    config.intersection_override_at(row_boundary, count_columns) {
+    Some(ch) => Some(ch)
+    None => default_right
+  }
+  out +
+  (match right {
+    Some(value) => value.to_string()
+    None => ""
+  })
+}
+
+///|
 pub fn IterGrid::to_string(self : IterGrid) -> String {
   let widths = self.dimension.widths()
   let borders = self.config.borders()
@@ -663,6 +744,8 @@ pub fn IterGrid::to_string(self : IterGrid) -> String {
   }
 
   let lines : Array[String] = []
+  let has_overrides = self.config.has_cell_borders()
+  let count_columns = self.records.count_columns()
   let top_left = match borders.top {
     Some(_) => first_char([borders.top_left, borders.left])
     None => None
@@ -675,13 +758,26 @@ pub fn IterGrid::to_string(self : IterGrid) -> String {
     Some(_) => first_char([borders.top_right, borders.right])
     None => None
   }
-  let top = borders.build_line(
-    top_left,
-    borders.top,
-    top_intersection,
-    top_right,
-    widths,
-  )
+  let top = if has_overrides {
+    build_line_with_overrides(
+      self.config,
+      widths,
+      top_left,
+      borders.top,
+      top_intersection,
+      top_right,
+      0,
+      count_columns,
+    )
+  } else {
+    borders.build_line(
+      top_left,
+      borders.top,
+      top_intersection,
+      top_right,
+      widths,
+    )
+  }
   if top != "" {
     lines.push(top)
   }
@@ -689,7 +785,7 @@ pub fn IterGrid::to_string(self : IterGrid) -> String {
   let rows = self.records.rows()
   let (row_heights, row_top_paddings, row_bottom_paddings) = row_metrics(
     self.records,
-    self.records.count_columns(),
+    count_columns,
     self.config,
   )
   let horizontal_lines = self.config.horizontal_lines()
@@ -699,7 +795,7 @@ pub fn IterGrid::to_string(self : IterGrid) -> String {
       borders,
       widths,
       row_index,
-      self.records.count_columns(),
+      count_columns,
       self.config,
       row_heights,
       row_top_paddings,
@@ -712,6 +808,7 @@ pub fn IterGrid::to_string(self : IterGrid) -> String {
     }
     let custom_middle = self.config.custom_horizontal_line(row_index + 1)
     if show_middle || custom_middle is Some(_) {
+      let boundary = row_index + 1
       let middle = match custom_middle {
         Some(line) =>
           if self.config.has_row_spans() {
@@ -738,10 +835,26 @@ pub fn IterGrid::to_string(self : IterGrid) -> String {
                 ]),
               },
               widths,
-              row_index + 1,
-              self.records.count_columns(),
+              boundary,
+              count_columns,
               self.config,
               row_heights,
+            )
+          } else if has_overrides {
+            build_line_with_overrides(
+              self.config,
+              widths,
+              first_char([line.left, borders.left_intersection, borders.left]),
+              line.main,
+              first_char([
+                line.intersection,
+                borders.intersection,
+                borders.vertical,
+                line.main,
+              ]),
+              first_char([line.right, borders.right_intersection, borders.right]),
+              boundary,
+              count_columns,
             )
           } else {
             borders.build_line(
@@ -763,10 +876,25 @@ pub fn IterGrid::to_string(self : IterGrid) -> String {
               self.records,
               borders,
               widths,
-              row_index + 1,
-              self.records.count_columns(),
+              boundary,
+              count_columns,
               self.config,
               row_heights,
+            )
+          } else if has_overrides {
+            build_line_with_overrides(
+              self.config,
+              widths,
+              first_char([borders.left_intersection, borders.left]),
+              borders.horizontal,
+              first_char([
+                borders.intersection,
+                borders.vertical,
+                borders.horizontal,
+              ]),
+              first_char([borders.right_intersection, borders.right]),
+              boundary,
+              count_columns,
             )
           } else {
             borders.build_line(
@@ -800,13 +928,26 @@ pub fn IterGrid::to_string(self : IterGrid) -> String {
     Some(_) => first_char([borders.bottom_right, borders.right])
     None => None
   }
-  let bottom = borders.build_line(
-    bottom_left,
-    borders.bottom,
-    bottom_intersection,
-    bottom_right,
-    widths,
-  )
+  let bottom = if has_overrides {
+    build_line_with_overrides(
+      self.config,
+      widths,
+      bottom_left,
+      borders.bottom,
+      bottom_intersection,
+      bottom_right,
+      rows.length(),
+      count_columns,
+    )
+  } else {
+    borders.build_line(
+      bottom_left,
+      borders.bottom,
+      bottom_intersection,
+      bottom_right,
+      widths,
+    )
+  }
   if bottom != "" {
     lines.push(bottom)
   }

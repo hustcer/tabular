@@ -105,6 +105,27 @@ pub enum Height {
 pub fn Height::increase(Int) -> Self
 pub fn Height::limit(Int) -> Self
 
+pub struct Highlight {
+  target : HighlightTarget
+  border : @papergrid.CellBorder
+}
+pub fn Highlight::new_cell(Cell) -> Self
+pub fn Highlight::new_columns(Columns) -> Self
+pub fn Highlight::new_rows(Rows) -> Self
+pub fn Highlight::new_segment(Segment) -> Self
+pub fn Highlight::outline_cell(Cell, Char) -> Self
+pub fn Highlight::outline_columns(Columns, Char) -> Self
+pub fn Highlight::outline_rows(Rows, Char) -> Self
+pub fn Highlight::outline_segment(Segment, Char) -> Self
+pub fn Highlight::with_border(Self, @papergrid.CellBorder) -> Self
+
+pub enum HighlightTarget {
+  HCell(Cell)
+  HRows(Rows)
+  HColumns(Columns)
+  HSegment(Segment)
+}
+
 pub struct HorizontalLine {
   line : @papergrid.HorizontalLine
 }
@@ -116,6 +137,13 @@ pub fn HorizontalLine::left(Self, Char) -> Self
 pub fn HorizontalLine::new(Char) -> Self
 pub fn HorizontalLine::right(Self, Char) -> Self
 
+pub enum Merge {
+  Horizontal
+  Vertical
+}
+pub fn Merge::horizontal() -> Self
+pub fn Merge::vertical() -> Self
+
 pub struct Padding {
   left : Int
   right : Int
@@ -123,6 +151,14 @@ pub struct Padding {
   bottom : Int
 }
 pub fn Padding::new(Int, Int, Int, Int) -> Self
+
+pub enum Panel {
+}
+pub fn Panel::footer(String) -> (Int, String, Bool)
+pub fn Panel::header(String) -> (Int, String, Bool)
+pub fn Panel::horizontal(Int, String) -> (Int, String, Bool)
+pub fn Panel::vertical(Int, String) -> (Int, String, Bool)
+pub fn Panel::vertical_with_width(Int, String, Int) -> (Int, String, Bool)
 
 pub struct Rows {
   start : Int
@@ -248,6 +284,9 @@ pub struct Table {
   config : @papergrid.SpannedConfig
 }
 pub fn Table::apply(Self, Style) -> Self
+pub fn Table::apply_highlight(Self, Highlight) -> Self
+pub fn Table::apply_merge(Self, Merge) -> Self
+pub fn Table::apply_panel(Self, (Int, String, Bool)) -> Self
 pub fn Table::extract_columns(Self, Columns) -> Self
 pub fn Table::extract_rows(Self, Rows) -> Self
 pub fn Table::extract_segment(Self, Rows, Columns) -> Self

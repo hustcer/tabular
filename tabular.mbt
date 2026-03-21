@@ -122,6 +122,581 @@ pub struct HorizontalLine {
 pub enum Span {}
 
 ///|
+pub enum Panel {}
+
+///|
+/// Insert a horizontal panel at the given row index.
+/// The panel text spans all columns.
+pub fn Panel::horizontal(row : Int, text : String) -> (Int, String, Bool) {
+  (row, text, true)
+}
+
+///|
+/// Insert a header panel at row 0.
+pub fn Panel::header(text : String) -> (Int, String, Bool) {
+  (0, text, true)
+}
+
+///|
+/// Insert a footer panel after the last row.
+pub fn Panel::footer(text : String) -> (Int, String, Bool) {
+  (-1, text, true)
+}
+
+///|
+/// Insert a vertical panel at the given column index.
+/// The panel text spans all rows.
+pub fn Panel::vertical(col : Int, text : String) -> (Int, String, Bool) {
+  (col, text, false)
+}
+
+///|
+/// Apply a horizontal or vertical panel to the table.
+pub fn Table::apply_panel(self : Table, panel : (Int, String, Bool)) -> Table {
+  let (index, text, is_horizontal) = panel
+  if is_horizontal {
+    self.apply_horizontal_panel(index, text)
+  } else {
+    self.apply_vertical_panel(index, text)
+  }
+  self
+}
+
+///|
+fn Table::apply_horizontal_panel(
+  self : Table,
+  row : Int,
+  text : String,
+) -> Unit {
+  let count_rows = self.rows.length()
+  let count_cols = if count_rows > 0 { self.rows[0].length() } else { 1 }
+  // Resolve special row values
+  let target_row = if row < 0 { count_rows } else { row }
+  // Bounds check
+  if target_row > count_rows {
+    return
+  }
+  // Check if any cell at target_row is covered by a row span
+  for col = 0; col < count_cols; col = col + 1 {
+    if self.config.is_cell_covered_by_row_span(target_row, col) {
+      return
+    }
+  }
+  // Insert an empty row at target_row, shifting existing rows down
+  let new_row = Array::make(count_cols, "")
+  self.rows.insert(target_row, new_row)
+  // Shift span metadata
+  self.config.shift_row_spans_down(target_row)
+  // Set the panel text in the first column
+  self.rows[target_row][0] = text
+  // Set column span to cover all columns
+  if count_cols > 1 {
+    self.config.set_column_span(target_row, 0, count_cols)
+  }
+}
+
+///|
+fn Table::apply_vertical_panel(self : Table, col : Int, text : String) -> Unit {
+  let count_rows = self.rows.length()
+  let count_cols = if count_rows > 0 { self.rows[0].length() } else { 0 }
+  // Bounds check
+  if col > count_cols {
+    return
+  }
+  // Check if any cell at target_col is covered by a column span
+  for row = 0; row <= count_rows; row = row + 1 {
+    if row < count_rows && self.config.is_cell_covered_by_column_span(row, col) {
+      return
+    }
+  }
+  // Insert an empty column at target_col in each row
+  self.rows.each(row => row.insert(col, ""))
+  // Shift span metadata
+  self.config.shift_column_spans_right(col)
+  // Set the panel text in the first row
+  if count_rows > 0 {
+    self.rows[0][col] = text
+  }
+  // Set row span to cover all rows
+  if count_rows > 1 {
+    self.config.set_row_span(0, col, count_rows)
+  }
+}
+
+///|
+/// Split a string by character width, inserting newlines.
+fn split_string_by_width(s : String, width : Int) -> String {
+  if width <= 0 {
+    return ""
+  }
+  let buf = StringBuilder::new()
+  let mut count = 0
+  let mut first_chunk = true
+  for ch in s {
+    if count >= width {
+      buf.write_char('\n')
+      count = 0
+      first_chunk = false
+    }
+    ignore(first_chunk)
+    buf.write_char(ch)
+    count = count + 1
+  }
+  buf.to_string()
+}
+
+///|
+/// Insert a vertical panel with text split to fit a certain width.
+pub fn Panel::vertical_with_width(
+  col : Int,
+  text : String,
+  width : Int,
+) -> (Int, String, Bool) {
+  let split_text = split_string_by_width(text, width)
+  (col, split_text, false)
+}
+
+///|
+pub enum Merge {
+  Horizontal
+  Vertical
+}
+
+///|
+pub fn Merge::horizontal() -> Merge {
+  Horizontal
+}
+
+///|
+pub fn Merge::vertical() -> Merge {
+  Vertical
+}
+
+///|
+/// Apply merge to the table, combining adjacent duplicate cells using spans.
+pub fn Table::apply_merge(self : Table, merge : Merge) -> Table {
+  let count_rows = self.rows.length()
+  if count_rows == 0 {
+    return self
+  }
+  let count_cols = self.rows[0].length()
+  if count_cols == 0 {
+    return self
+  }
+  match merge {
+    Horizontal =>
+      merge_horizontal(self.rows, self.config, count_rows, count_cols)
+    Vertical => merge_vertical(self.rows, self.config, count_rows, count_cols)
+  }
+  self
+}
+
+///|
+fn merge_horizontal(
+  rows : Array[Array[String]],
+  config : @papergrid.SpannedConfig,
+  count_rows : Int,
+  count_cols : Int,
+) -> Unit {
+  for row = 0; row < count_rows; row = row + 1 {
+    let mut repeat_length = 0
+    let mut repeat_value = ""
+    let mut repeat_is_set = false
+    let mut last_is_col_span = false
+    for column = count_cols - 1; column >= 0; column = column - 1 {
+      if last_is_col_span {
+        last_is_col_span = false
+        continue
+      }
+      let is_cell_visible = config.is_cell_visible(row, column)
+      let is_col_span_cell = config.get_row_span(row, column) is Some(_)
+      if not(repeat_is_set) {
+        if not(is_cell_visible) {
+          continue
+        }
+        if is_col_span_cell {
+          continue
+        }
+        repeat_length = 1
+        repeat_value = rows[row][column]
+        repeat_is_set = true
+        continue
+      }
+      if is_col_span_cell {
+        repeat_is_set = false
+        last_is_col_span = true
+        continue
+      }
+      if not(is_cell_visible) {
+        repeat_is_set = false
+        continue
+      }
+      let text = rows[row][column]
+      if text == repeat_value {
+        repeat_length = repeat_length + 1
+        continue
+      }
+      if repeat_length > 1 {
+        config.set_column_span(row, column + 1, repeat_length)
+      }
+      repeat_length = 1
+      repeat_value = rows[row][column]
+    }
+    if repeat_length > 1 {
+      config.set_column_span(row, 0, repeat_length)
+    }
+  }
+}
+
+///|
+fn merge_vertical(
+  rows : Array[Array[String]],
+  config : @papergrid.SpannedConfig,
+  count_rows : Int,
+  count_cols : Int,
+) -> Unit {
+  for column = 0; column < count_cols; column = column + 1 {
+    let mut repeat_length = 0
+    let mut repeat_value = ""
+    let mut repeat_is_set = false
+    let mut last_is_row_span = false
+    for row = count_rows - 1; row >= 0; row = row - 1 {
+      if last_is_row_span {
+        last_is_row_span = false
+        continue
+      }
+      let is_cell_visible = config.is_cell_visible(row, column)
+      let is_row_span_cell = config.get_column_span(row, column) is Some(_)
+      if not(repeat_is_set) {
+        if not(is_cell_visible) {
+          continue
+        }
+        if is_row_span_cell {
+          continue
+        }
+        repeat_length = 1
+        repeat_value = rows[row][column]
+        repeat_is_set = true
+        continue
+      }
+      if is_row_span_cell {
+        repeat_is_set = false
+        last_is_row_span = true
+        continue
+      }
+      if not(is_cell_visible) {
+        repeat_is_set = false
+        continue
+      }
+      let text = rows[row][column]
+      if text == repeat_value {
+        repeat_length = repeat_length + 1
+        continue
+      }
+      if repeat_length > 1 {
+        config.set_row_span(row + 1, column, repeat_length)
+      }
+      repeat_length = 1
+      repeat_value = rows[row][column]
+    }
+    if repeat_length > 1 {
+      config.set_row_span(0, column, repeat_length)
+    }
+  }
+}
+
+///|
+pub enum HighlightTarget {
+  HCell(Cell)
+  HRows(Rows)
+  HColumns(Columns)
+  HSegment(Segment)
+}
+
+///|
+pub struct Highlight {
+  target : HighlightTarget
+  border : @papergrid.CellBorder
+}
+
+///|
+pub fn Highlight::outline_cell(cell : Cell, ch : Char) -> Highlight {
+  { target: HCell(cell), border: @papergrid.CellBorder::filled(ch) }
+}
+
+///|
+pub fn Highlight::outline_rows(rows : Rows, ch : Char) -> Highlight {
+  { target: HRows(rows), border: @papergrid.CellBorder::filled(ch) }
+}
+
+///|
+pub fn Highlight::outline_columns(columns : Columns, ch : Char) -> Highlight {
+  { target: HColumns(columns), border: @papergrid.CellBorder::filled(ch) }
+}
+
+///|
+pub fn Highlight::outline_segment(segment : Segment, ch : Char) -> Highlight {
+  { target: HSegment(segment), border: @papergrid.CellBorder::filled(ch) }
+}
+
+///|
+pub fn Highlight::new_cell(cell : Cell) -> Highlight {
+  { target: HCell(cell), border: @papergrid.CellBorder::empty() }
+}
+
+///|
+pub fn Highlight::new_rows(rows : Rows) -> Highlight {
+  { target: HRows(rows), border: @papergrid.CellBorder::empty() }
+}
+
+///|
+pub fn Highlight::new_columns(columns : Columns) -> Highlight {
+  { target: HColumns(columns), border: @papergrid.CellBorder::empty() }
+}
+
+///|
+pub fn Highlight::new_segment(segment : Segment) -> Highlight {
+  { target: HSegment(segment), border: @papergrid.CellBorder::empty() }
+}
+
+///|
+pub fn Highlight::with_border(
+  self : Highlight,
+  border : @papergrid.CellBorder,
+) -> Highlight {
+  { ..self, border, }
+}
+
+///|
+fn resolve_target_to_cells(
+  target : HighlightTarget,
+  count_rows : Int,
+  count_cols : Int,
+) -> Array[(Int, Int)] {
+  match target {
+    HCell(cell) =>
+      if cell.row >= 0 &&
+        cell.row < count_rows &&
+        cell.column >= 0 &&
+        cell.column < count_cols {
+        [(cell.row, cell.column)]
+      } else {
+        []
+      }
+    HRows(rows) => {
+      let row_indexes = resolve_rows(rows, count_rows)
+      let cells = []
+      row_indexes.each(row => {
+        for col = 0; col < count_cols; col = col + 1 {
+          cells.push((row, col))
+        }
+      })
+      cells
+    }
+    HColumns(columns) => {
+      let col_indexes = resolve_columns(columns, count_cols)
+      let cells = []
+      for row = 0; row < count_rows; row = row + 1 {
+        col_indexes.each(col => cells.push((row, col)))
+      }
+      cells
+    }
+    HSegment(segment) => resolve_segment_cells(segment, count_rows, count_cols)
+  }
+}
+
+///|
+fn is_cell_connected(p1 : (Int, Int), p2 : (Int, Int)) -> Bool {
+  if p1.0 == p2.0 {
+    // same row: check left/right adjacency
+    if p1.1 + 1 == p2.1 || p2.1 + 1 == p1.1 {
+      return true
+    }
+  }
+  if p1.1 == p2.1 {
+    // same column: check up/down adjacency
+    if p1.0 + 1 == p2.0 || p2.0 + 1 == p1.0 {
+      return true
+    }
+  }
+  false
+}
+
+///|
+fn split_segments(cells : Array[(Int, Int)]) -> Array[Array[(Int, Int)]] {
+  let segments : Array[Array[(Int, Int)]] = []
+  cells.each(cell => {
+    let mut found_index = -1
+    for i = 0; i < segments.length(); i = i + 1 {
+      let seg = segments[i]
+      for j = 0; j < seg.length(); j = j + 1 {
+        if is_cell_connected(cell, seg[j]) {
+          found_index = i
+          break
+        }
+      }
+      if found_index >= 0 {
+        break
+      }
+    }
+    if found_index >= 0 {
+      segments[found_index].push(cell)
+    } else {
+      segments.push([cell])
+    }
+  })
+  // Merge segments that are connected to each other
+  let result : Array[Array[(Int, Int)]] = []
+  while not(segments.is_empty()) {
+    let segment = segments.remove(0)
+    let mut i = 0
+    while i < segments.length() {
+      let mut connected = false
+      for j = 0; j < segment.length(); j = j + 1 {
+        for k = 0; k < segments[i].length(); k = k + 1 {
+          if is_cell_connected(segment[j], segments[i][k]) {
+            connected = true
+            break
+          }
+        }
+        if connected {
+          break
+        }
+      }
+      if connected {
+        segments[i].each(c => segment.push(c))
+        ignore(segments.remove(i))
+      } else {
+        i = i + 1
+      }
+    }
+    result.push(segment)
+  }
+  result
+}
+
+///|
+fn sector_contains(sector : Array[(Int, Int)], p : (Int, Int)) -> Bool {
+  sector.contains(p)
+}
+
+///|
+fn build_highlight_cell_border(
+  sector : Array[(Int, Int)],
+  p : (Int, Int),
+  border : @papergrid.CellBorder,
+) -> @papergrid.CellBorder {
+  let has_top = p.0 > 0 && sector_contains(sector, (p.0 - 1, p.1))
+  let has_bottom = sector_contains(sector, (p.0 + 1, p.1))
+  let has_left = p.1 > 0 && sector_contains(sector, (p.0, p.1 - 1))
+  let has_right = sector_contains(sector, (p.0, p.1 + 1))
+  let has_lt = p.0 > 0 && p.1 > 0 && sector_contains(sector, (p.0 - 1, p.1 - 1))
+  let has_rt = p.0 > 0 && sector_contains(sector, (p.0 - 1, p.1 + 1))
+  let has_lb = p.1 > 0 && sector_contains(sector, (p.0 + 1, p.1 - 1))
+  let has_rb = sector_contains(sector, (p.0 + 1, p.1 + 1))
+  let mut b = @papergrid.CellBorder::empty()
+  // Top side
+  if not(has_top) {
+    b = { ..b, top: border.top }
+    if has_right && not(has_rt) {
+      b = { ..b, right_top_corner: border.top }
+    }
+  }
+  // Bottom side
+  if not(has_bottom) {
+    b = { ..b, bottom: border.bottom }
+    if has_right && not(has_rb) {
+      b = { ..b, right_bottom_corner: border.bottom }
+    }
+  }
+  // Left side
+  if not(has_left) {
+    b = { ..b, left: border.left }
+    if has_bottom && not(has_lb) {
+      b = { ..b, left_bottom_corner: border.left }
+    }
+  }
+  // Right side
+  if not(has_right) {
+    b = { ..b, right: border.right }
+    if has_bottom && not(has_rb) {
+      b = { ..b, right_bottom_corner: border.right }
+    }
+  }
+  // Corners (only when no neighbor in both directions)
+  if not(has_left) && not(has_top) {
+    b = { ..b, left_top_corner: border.left_top_corner }
+  }
+  if not(has_left) && not(has_bottom) {
+    b = { ..b, left_bottom_corner: border.left_bottom_corner }
+  }
+  if not(has_right) && not(has_top) {
+    b = { ..b, right_top_corner: border.right_top_corner }
+  }
+  if not(has_right) && not(has_bottom) {
+    b = { ..b, right_bottom_corner: border.right_bottom_corner }
+  }
+  // Diagonal rules for L-shaped segments
+  if not(has_bottom) {
+    if not(has_left) && has_lt {
+      b = { ..b, left_top_corner: border.right_top_corner }
+    }
+    if has_left && has_lb {
+      b = { ..b, left_bottom_corner: border.left_top_corner }
+    }
+    if not(has_right) && has_rt {
+      b = { ..b, right_top_corner: border.left_top_corner }
+    }
+    if has_right && has_rb {
+      b = { ..b, right_bottom_corner: border.right_top_corner }
+    }
+  }
+  if not(has_top) {
+    if not(has_left) && has_lb {
+      b = { ..b, left_bottom_corner: border.right_bottom_corner }
+    }
+    if has_left && has_lt {
+      b = { ..b, left_top_corner: border.left_bottom_corner }
+    }
+    if not(has_right) && has_rb {
+      b = { ..b, right_bottom_corner: border.left_bottom_corner }
+    }
+    if has_right && has_rt {
+      b = { ..b, right_top_corner: border.right_bottom_corner }
+    }
+  }
+  b
+}
+
+///|
+pub fn Table::apply_highlight(self : Table, highlight : Highlight) -> Table {
+  let count_rows = self.rows.length()
+  if count_rows == 0 {
+    return self
+  }
+  let count_cols = self.rows[0].length()
+  if count_cols == 0 {
+    return self
+  }
+  let cells = resolve_target_to_cells(highlight.target, count_rows, count_cols)
+  if cells.is_empty() {
+    return self
+  }
+  let segments = split_segments(cells)
+  segments.each(segment => {
+    segment.each(p => {
+      let cell_border = build_highlight_cell_border(
+        segment,
+        p,
+        highlight.border,
+      )
+      self.config.set_cell_border(p.0, p.1, cell_border)
+    })
+  })
+  self
+}
+
+///|
 pub fn Style::ascii() -> Style {
   {
     borders: @papergrid.Borders::ascii(),

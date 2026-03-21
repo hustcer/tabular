@@ -4168,3 +4168,967 @@ test "row span invalid position both" {
     ),
   )
 }
+
+// ──────────────────────────────────────────────────
+// Upstream panel_test.rs
+// ──────────────────────────────────────────────────
+
+///|
+fn matrix33() -> @tabular.Table {
+  @tabular.Table::from_rows([
+    ["N", "column 0", "column 1", "column 2"],
+    ["0", "0-0", "0-1", "0-2"],
+    ["1", "1-0", "1-1", "1-2"],
+    ["2", "2-0", "2-1", "2-2"],
+  ])
+}
+
+///|
+test "panel_has_no_style_by_default" {
+  let table = matrix33()
+  table.apply_panel(@tabular.Panel::horizontal(0, "Linux Distributions"))
+  |> ignore
+  table.apply(@tabular.Style::psql()) |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|        Linux Distributions         
+      #|---+----------+----------+----------
+      #| N | column 0 | column 1 | column 2 
+      #| 0 |   0-0    |   0-1    |   0-2    
+      #| 1 |   1-0    |   1-1    |   1-2    
+      #| 2 |   2-0    |   2-1    |   2-2    
+    ),
+  )
+}
+
+///|
+test "top_panel" {
+  let table = matrix33()
+  table.apply_panel(@tabular.Panel::horizontal(0, "Linux Distributions"))
+  |> ignore
+  table.modify_segment(
+    @tabular.Segment::all(),
+    @tabular.Setting::alignment(@tabular.Alignment::center()),
+  )
+  |> ignore
+  table.apply(@tabular.Style::psql()) |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|        Linux Distributions         
+      #|---+----------+----------+----------
+      #| N | column 0 | column 1 | column 2 
+      #| 0 |   0-0    |   0-1    |   0-2    
+      #| 1 |   1-0    |   1-1    |   1-2    
+      #| 2 |   2-0    |   2-1    |   2-2    
+    ),
+  )
+}
+
+///|
+test "bottom_panel" {
+  let table = matrix33()
+  table.apply_panel(@tabular.Panel::horizontal(4, "Linux Distributions"))
+  |> ignore
+  table.modify_segment(
+    @tabular.Segment::all(),
+    @tabular.Setting::alignment(@tabular.Alignment::center()),
+  )
+  |> ignore
+  table.apply(@tabular.Style::psql()) |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #| N | column 0 | column 1 | column 2 
+      #|---+----------+----------+----------
+      #| 0 |   0-0    |   0-1    |   0-2    
+      #| 1 |   1-0    |   1-1    |   1-2    
+      #| 2 |   2-0    |   2-1    |   2-2    
+      #|        Linux Distributions         
+    ),
+  )
+}
+
+///|
+test "inner_panel" {
+  let table = matrix33()
+  table.apply_panel(@tabular.Panel::horizontal(2, "Linux Distributions"))
+  |> ignore
+  table.modify_rows(
+    @tabular.Rows::new(2, -1),
+    @tabular.Setting::alignment(@tabular.Alignment::center()),
+  )
+  |> ignore
+  table.apply(@tabular.Style::psql()) |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #| N | column 0 | column 1 | column 2 
+      #|---+----------+----------+----------
+      #| 0 |   0-0    |   0-1    |   0-2    
+      #|        Linux Distributions         
+      #| 1 |   1-0    |   1-1    |   1-2    
+      #| 2 |   2-0    |   2-1    |   2-2    
+    ),
+  )
+}
+
+///|
+test "panel_header" {
+  let table = matrix33()
+  table.apply_panel(@tabular.Panel::header("Linux Distributions")) |> ignore
+  table.apply(@tabular.Style::psql()) |> ignore
+  table.modify_rows(
+    @tabular.Rows::new(0, 1),
+    @tabular.Setting::alignment(@tabular.Alignment::center()),
+  )
+  |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|        Linux Distributions         
+      #|---+----------+----------+----------
+      #| N | column 0 | column 1 | column 2 
+      #| 0 |   0-0    |   0-1    |   0-2    
+      #| 1 |   1-0    |   1-1    |   1-2    
+      #| 2 |   2-0    |   2-1    |   2-2    
+    ),
+  )
+}
+
+///|
+test "panel_footer" {
+  let table = matrix33()
+  table.apply_panel(@tabular.Panel::header("Linux Distributions")) |> ignore
+  table.apply_panel(@tabular.Panel::footer("The end")) |> ignore
+  table.apply(@tabular.Style::psql()) |> ignore
+  // Center first and last rows
+  table.modify_rows(
+    @tabular.Rows::one(0),
+    @tabular.Setting::alignment(@tabular.Alignment::center()),
+  )
+  |> ignore
+  table.modify_rows(
+    @tabular.Rows::last(),
+    @tabular.Setting::alignment(@tabular.Alignment::center()),
+  )
+  |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|        Linux Distributions         
+      #|---+----------+----------+----------
+      #| N | column 0 | column 1 | column 2 
+      #| 0 |   0-0    |   0-1    |   0-2    
+      #| 1 |   1-0    |   1-1    |   1-2    
+      #| 2 |   2-0    |   2-1    |   2-2    
+      #|              The end               
+    ),
+  )
+}
+
+///|
+test "panel_style_uses_most_left_and_right_cell_styles" {
+  let table = @tabular.Table::from_rows([["i32", "i32"], ["0", "1"]])
+  table.apply_panel(@tabular.Panel::horizontal(0, "Numbers")) |> ignore
+  table.apply(@tabular.Style::modern()) |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|┌─────┬─────┐
+      #|│  Numbers  │
+      #|├─────┼─────┤
+      #|│ i32 │ i32 │
+      #|├─────┼─────┤
+      #|│  0  │  1  │
+      #|└─────┴─────┘
+    ),
+  )
+}
+
+///|
+test "panel_in_single_column" {
+  let table = @tabular.Table::from_rows([["i32"], ["0"]])
+  table.apply_panel(@tabular.Panel::horizontal(0, "Numbers")) |> ignore
+  table.apply(@tabular.Style::modern()) |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|┌─────────┐
+      #|│ Numbers │
+      #|├─────────┤
+      #|│   i32   │
+      #|├─────────┤
+      #|│    0    │
+      #|└─────────┘
+    ),
+  )
+}
+
+///|
+test "panel_vertical_0" {
+  let table = matrix33()
+  table.apply(@tabular.Style::psql()) |> ignore
+  table.apply_panel(@tabular.Panel::vertical(0, "Linux Distributions"))
+  |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #| Linux Distributions | N | column 0 | column 1 | column 2 
+      #|                     +---+----------+----------+----------
+      #|                     | 0 |   0-0    |   0-1    |   0-2    
+      #|                     | 1 |   1-0    |   1-1    |   1-2    
+      #|                     | 2 |   2-0    |   2-1    |   2-2    
+    ),
+  )
+}
+
+///|
+test "panel_vertical_1" {
+  let table = matrix33()
+  table.apply(@tabular.Style::psql()) |> ignore
+  table.apply_panel(@tabular.Panel::vertical(1, "Linux Distributions"))
+  |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #| N | Linux Distributions | column 0 | column 1 | column 2 
+      #|---+                     +----------+----------+----------
+      #| 0 |                     |   0-0    |   0-1    |   0-2    
+      #| 1 |                     |   1-0    |   1-1    |   1-2    
+      #| 2 |                     |   2-0    |   2-1    |   2-2    
+    ),
+  )
+}
+
+///|
+test "panel_vertical_2" {
+  let table = matrix33()
+  table.apply(@tabular.Style::psql()) |> ignore
+  table.apply_panel(@tabular.Panel::vertical(4, "Linux Distributions"))
+  |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #| N | column 0 | column 1 | column 2 | Linux Distributions 
+      #|---+----------+----------+----------+                     
+      #| 0 |   0-0    |   0-1    |   0-2    |                     
+      #| 1 |   1-0    |   1-1    |   1-2    |                     
+      #| 2 |   2-0    |   2-1    |   2-2    |                     
+    ),
+  )
+}
+
+///|
+test "panel_horizontal_set_0" {
+  let table = matrix33()
+  table.apply(@tabular.Style::psql()) |> ignore
+  table.apply_panel(@tabular.Panel::horizontal(0, "Linux Distributions"))
+  |> ignore
+  table.apply_panel(@tabular.Panel::vertical(0, "asd")) |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #| asd |        Linux Distributions         
+      #|     +---+----------+----------+----------
+      #|     | N | column 0 | column 1 | column 2 
+      #|     | 0 |   0-0    |   0-1    |   0-2    
+      #|     | 1 |   1-0    |   1-1    |   1-2    
+      #|     | 2 |   2-0    |   2-1    |   2-2    
+    ),
+  )
+}
+
+///|
+test "panel_horizontal_set_1" {
+  let table = matrix33()
+  table.apply(@tabular.Style::psql()) |> ignore
+  table.apply_panel(@tabular.Panel::horizontal(0, "Linux Distributions"))
+  |> ignore
+  table.apply_panel(@tabular.Panel::vertical(0, "asd")) |> ignore
+  table.apply_panel(@tabular.Panel::vertical(5, "asd")) |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #| asd |        Linux Distributions         | asd 
+      #|     +---+----------+----------+----------+     
+      #|     | N | column 0 | column 1 | column 2 |     
+      #|     | 0 |   0-0    |   0-1    |   0-2    |     
+      #|     | 1 |   1-0    |   1-1    |   1-2    |     
+      #|     | 2 |   2-0    |   2-1    |   2-2    |     
+    ),
+  )
+}
+
+// ──────────────────────────────────────────────────
+// Upstream merge_test.rs
+// ──────────────────────────────────────────────────
+
+///|
+test "merge_horizontal" {
+  let table = @tabular.Table::from_rows([
+    ["0", "1", "2"],
+    ["0", "1", "1"],
+    ["1", "1", "2"],
+    ["1", "1", "1"],
+  ])
+  table.apply_merge(@tabular.Merge::horizontal()) |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|+---+---+---+
+      #|| 0 | 1 | 2 |
+      #|+---+---+---+
+      #|| 0 |   1   |
+      #|+---+---+---+
+      #||   1   | 2 |
+      #|+---+---+---+
+      #||     1     |
+      #|+---+---+---+
+    ),
+  )
+}
+
+///|
+test "merge_horizontal_with_no_duplicates" {
+  let table = @tabular.Table::from_rows([
+    ["0", "1", "2"],
+    ["0", "1", "2"],
+    ["0", "1", "2"],
+    ["0", "1", "2"],
+  ])
+  table.apply_merge(@tabular.Merge::horizontal()) |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|+---+---+---+
+      #|| 0 | 1 | 2 |
+      #|+---+---+---+
+      #|| 0 | 1 | 2 |
+      #|+---+---+---+
+      #|| 0 | 1 | 2 |
+      #|+---+---+---+
+      #|| 0 | 1 | 2 |
+      #|+---+---+---+
+    ),
+  )
+}
+
+///|
+test "merge_horizontal_empty" {
+  let table = @tabular.Table::from_rows([])
+  table.apply_merge(@tabular.Merge::horizontal()) |> ignore
+  inspect(table.to_string(), content="")
+}
+
+///|
+test "merge_vertical_0" {
+  let table = @tabular.Table::from_rows([
+    ["0", "1", "2"],
+    ["0", "3", "5"],
+    ["0", "3", "3"],
+    ["0", "2", "3"],
+  ])
+  table.apply_merge(@tabular.Merge::vertical()) |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|+---+---+---+
+      #|| 0 | 1 | 2 |
+      #|+   +---+---+
+      #||   | 3 | 5 |
+      #|+   +   +---+
+      #|+   +---+ 3 +
+      #||   | 2 |   |
+      #|+---+---+---+
+    ),
+  )
+}
+
+///|
+test "merge_vertical_1" {
+  let table = @tabular.Table::from_rows([
+    ["0", "1", "2"],
+    ["0", "3", "2"],
+    ["0", "3", "3"],
+    ["0", "2", "3"],
+  ])
+  table.apply_merge(@tabular.Merge::vertical()) |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|+---+---+---+
+      #|| 0 | 1 | 2 |
+      #|+   +---+   +
+      #|+   + 3 +---+
+      #|+   +---+ 3 +
+      #||   | 2 |   |
+      #|+---+---+---+
+    ),
+  )
+}
+
+///|
+test "merge_vertical_with_no_duplicates" {
+  let table = @tabular.Table::from_rows([
+    ["0", "1", "2"],
+    ["5", "5", "5"],
+    ["15", "15", "15"],
+    ["115", "115", "115"],
+  ])
+  table.apply_merge(@tabular.Merge::vertical()) |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|+-----+-----+-----+
+      #||  0  |  1  |  2  |
+      #|+-----+-----+-----+
+      #||  5  |  5  |  5  |
+      #|+-----+-----+-----+
+      #|| 15  | 15  | 15  |
+      #|+-----+-----+-----+
+      #|| 115 | 115 | 115 |
+      #|+-----+-----+-----+
+    ),
+  )
+}
+
+///|
+test "merge_vertical_empty" {
+  let table = @tabular.Table::from_rows([])
+  table.apply_merge(@tabular.Merge::vertical()) |> ignore
+  inspect(table.to_string(), content="")
+}
+
+///|
+test "merge_horizontal_and_vertical_0" {
+  let table = @tabular.Table::from_rows([
+    ["0", "1", "2"],
+    ["3", "3", "5"],
+    ["3", "7", "8"],
+    ["9", "10", "11"],
+  ])
+  table.apply_merge(@tabular.Merge::horizontal()) |> ignore
+  table.apply_merge(@tabular.Merge::vertical()) |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|+---+----+----+
+      #|| 0 | 1  | 2  |
+      #|+---+----+----+
+      #||   3    | 5  |
+      #|+---+----+----+
+      #|| 3 | 7  | 8  |
+      #|+---+----+----+
+      #|| 9 | 10 | 11 |
+      #|+---+----+----+
+    ),
+  )
+}
+
+///|
+test "merge_horizontal_and_vertical_1" {
+  let table = @tabular.Table::from_rows([
+    ["0", "1", "2"],
+    ["0", "1", "1"],
+    ["1", "1", "2"],
+    ["1", "1", "1"],
+  ])
+  table.apply_merge(@tabular.Merge::horizontal()) |> ignore
+  table.apply_merge(@tabular.Merge::vertical()) |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|+---+---+---+
+      #|| 0 | 1 | 2 |
+      #|+   +---+---+
+      #||   |   1   |
+      #|+---+---+---+
+      #||   1   | 2 |
+      #|+---+---+---+
+      #||     1     |
+      #|+---+---+---+
+    ),
+  )
+}
+
+///|
+test "merge_horizontal_and_vertical_7" {
+  let table = @tabular.Table::from_rows([
+    ["0", "1", "2"],
+    ["0", "0", "0"],
+    ["0", "0", "1"],
+    ["2", "0", "0"],
+  ])
+  table.apply_merge(@tabular.Merge::horizontal()) |> ignore
+  table.apply_merge(@tabular.Merge::vertical()) |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|+---+---+---+
+      #|| 0 | 1 | 2 |
+      #|+---+---+---+
+      #||     0     |
+      #|+---+---+---+
+      #||   0   | 1 |
+      #|+---+---+---+
+      #|| 2 |   0   |
+      #|+---+---+---+
+    ),
+  )
+}
+
+///|
+test "merge_vertical_then_horizontal_3" {
+  let table = @tabular.Table::from_rows([
+    ["0", "1", "2"],
+    ["3", "4", "5"],
+    ["3", "3", "8"],
+    ["3", "10", "11"],
+  ])
+  table.apply_merge(@tabular.Merge::vertical()) |> ignore
+  table.apply_merge(@tabular.Merge::horizontal()) |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|+---+----+----+
+      #|| 0 | 1  | 2  |
+      #|+---+----+----+
+      #|| 3 | 4  | 5  |
+      #|+   +----+----+
+      #||   | 3  | 8  |
+      #|+   +----+----+
+      #||   | 10 | 11 |
+      #|+---+----+----+
+    ),
+  )
+}
+
+///|
+test "merge_vertical_then_horizontal_4" {
+  let table = @tabular.Table::from_rows([
+    ["0", "1", "2"],
+    ["3", "4", "5"],
+    ["4", "4", "8"],
+    ["3", "4", "11"],
+  ])
+  table.apply_merge(@tabular.Merge::vertical()) |> ignore
+  table.apply_merge(@tabular.Merge::horizontal()) |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|+---+---+----+
+      #|| 0 | 1 | 2  |
+      #|+---+---+----+
+      #|| 3 | 4 | 5  |
+      #|+---+   +----+
+      #|| 4 |   | 8  |
+      #|+---+   +----+
+      #|| 3 |   | 11 |
+      #|+---+---+----+
+    ),
+  )
+}
+
+///|
+fn matrix_n_cols(rows : Int, cols : Int) -> @tabular.Table {
+  let data = []
+  let header = []
+  for c = 0; c < cols; c = c + 1 {
+    header.push("column \{c}")
+  }
+  data.push(["N"] + header)
+  for r = 0; r < rows; r = r + 1 {
+    let row = [r.to_string()]
+    for c = 0; c < cols; c = c + 1 {
+      row.push("\{r}-\{c}")
+    }
+    data.push(row)
+  }
+  @tabular.Table::from_rows(data)
+}
+
+///|
+test "highlingt_object_exceeds_boundaries" {
+  let table = matrix33()
+  table.apply(@tabular.Style::modern()) |> ignore
+  table.apply_highlight(
+    @tabular.Highlight::outline_cell(@tabular.Cell::new(1000, 0), '+'),
+  )
+  |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|┌───┬──────────┬──────────┬──────────┐
+      #|│ N │ column 0 │ column 1 │ column 2 │
+      #|├───┼──────────┼──────────┼──────────┤
+      #|│ 0 │   0-0    │   0-1    │   0-2    │
+      #|├───┼──────────┼──────────┼──────────┤
+      #|│ 1 │   1-0    │   1-1    │   1-2    │
+      #|├───┼──────────┼──────────┼──────────┤
+      #|│ 2 │   2-0    │   2-1    │   2-2    │
+      #|└───┴──────────┴──────────┴──────────┘
+    ),
+  )
+}
+
+///|
+test "highlingt_empty_table" {
+  let table = @tabular.Table::from_rows([])
+  table.apply_highlight(
+    @tabular.Highlight::outline_segment(@tabular.Segment::all(), '+'),
+  )
+  |> ignore
+  inspect(table.to_string(), content="")
+}
+
+///|
+test "highlingt_cell" {
+  let table = matrix33()
+  table.apply(@tabular.Style::modern()) |> ignore
+  table.apply_highlight(
+    @tabular.Highlight::outline_cell(@tabular.Cell::new(0, 0), '+'),
+  )
+  |> ignore
+  table.apply_highlight(
+    @tabular.Highlight::outline_cell(@tabular.Cell::new(1, 1), '*'),
+  )
+  |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|+++++──────────┬──────────┬──────────┐
+      #|+ N + column 0 │ column 1 │ column 2 │
+      #|++++************──────────┼──────────┤
+      #|│ 0 *   0-0    *   0-1    │   0-2    │
+      #|├───************──────────┼──────────┤
+      #|│ 1 │   1-0    │   1-1    │   1-2    │
+      #|├───┼──────────┼──────────┼──────────┤
+      #|│ 2 │   2-0    │   2-1    │   2-2    │
+      #|└───┴──────────┴──────────┴──────────┘
+    ),
+  )
+}
+
+///|
+test "highlingt_row" {
+  let table = matrix33()
+  table.apply(@tabular.Style::modern()) |> ignore
+  table.apply_highlight(
+    @tabular.Highlight::outline_rows(@tabular.Rows::one(0), '+'),
+  )
+  |> ignore
+  table.apply_highlight(
+    @tabular.Highlight::outline_rows(@tabular.Rows::one(3), '*'),
+  )
+  |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|++++++++++++++++++++++++++++++++++++++
+      #|+ N │ column 0 │ column 1 │ column 2 +
+      #|++++++++++++++++++++++++++++++++++++++
+      #|│ 0 │   0-0    │   0-1    │   0-2    │
+      #|├───┼──────────┼──────────┼──────────┤
+      #|│ 1 │   1-0    │   1-1    │   1-2    │
+      #|**************************************
+      #|* 2 │   2-0    │   2-1    │   2-2    *
+      #|**************************************
+    ),
+  )
+}
+
+///|
+test "highlingt_column" {
+  let table = matrix33()
+  table.apply(@tabular.Style::modern()) |> ignore
+  table.apply_highlight(
+    @tabular.Highlight::new_columns(@tabular.Columns::one(0)).with_border(
+      @papergrid.CellBorder::filled('+'),
+    ),
+  )
+  |> ignore
+  table.apply_highlight(
+    @tabular.Highlight::new_columns(@tabular.Columns::one(2)).with_border(
+      @papergrid.CellBorder::filled('*'),
+    ),
+  )
+  |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|+++++──────────************──────────┐
+      #|+ N + column 0 * column 1 * column 2 │
+      #|+───+──────────*──────────*──────────┤
+      #|+ 0 +   0-0    *   0-1    *   0-2    │
+      #|+───+──────────*──────────*──────────┤
+      #|+ 1 +   1-0    *   1-1    *   1-2    │
+      #|+───+──────────*──────────*──────────┤
+      #|+ 2 +   2-0    *   2-1    *   2-2    │
+      #|+++++──────────************──────────┘
+    ),
+  )
+}
+
+///|
+test "highlingt_row_range" {
+  let table = matrix33()
+  table.apply(@tabular.Style::modern()) |> ignore
+  table.apply_highlight(
+    @tabular.Highlight::outline_rows(@tabular.Rows::new(1, 3), '+'),
+  )
+  |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|┌───┬──────────┬──────────┬──────────┐
+      #|│ N │ column 0 │ column 1 │ column 2 │
+      #|++++++++++++++++++++++++++++++++++++++
+      #|+ 0 │   0-0    │   0-1    │   0-2    +
+      #|+───┼──────────┼──────────┼──────────+
+      #|+ 1 │   1-0    │   1-1    │   1-2    +
+      #|++++++++++++++++++++++++++++++++++++++
+      #|│ 2 │   2-0    │   2-1    │   2-2    │
+      #|└───┴──────────┴──────────┴──────────┘
+    ),
+  )
+}
+
+///|
+test "highlingt_column_range" {
+  let table = matrix33()
+  table.apply(@tabular.Style::modern()) |> ignore
+  table.apply_highlight(
+    @tabular.Highlight::outline_columns(@tabular.Columns::new(0, 2), '+'),
+  )
+  |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|++++++++++++++++──────────┬──────────┐
+      #|+ N │ column 0 + column 1 │ column 2 │
+      #|+───┼──────────+──────────┼──────────┤
+      #|+ 0 │   0-0    +   0-1    │   0-2    │
+      #|+───┼──────────+──────────┼──────────┤
+      #|+ 1 │   1-0    +   1-1    │   1-2    │
+      #|+───┼──────────+──────────┼──────────┤
+      #|+ 2 │   2-0    +   2-1    │   2-2    │
+      #|++++++++++++++++──────────┴──────────┘
+    ),
+  )
+}
+
+///|
+test "highlingt_frame" {
+  let border : @papergrid.CellBorder = {
+    top: Some('+'),
+    bottom: Some('+'),
+    left: Some('+'),
+    right: Some('+'),
+    left_top_corner: Some('*'),
+    right_top_corner: Some('#'),
+    left_bottom_corner: Some('@'),
+    right_bottom_corner: Some('.'),
+  }
+  let table = matrix33()
+  table.apply(@tabular.Style::modern()) |> ignore
+  table.apply_highlight(
+    @tabular.Highlight::outline_segment(@tabular.Segment::all(), '+').with_border(
+      border,
+    ),
+  )
+  |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|*++++++++++++++++++++++++++++++++++++#
+      #|+ N │ column 0 │ column 1 │ column 2 +
+      #|+───┼──────────┼──────────┼──────────+
+      #|+ 0 │   0-0    │   0-1    │   0-2    +
+      #|+───┼──────────┼──────────┼──────────+
+      #|+ 1 │   1-0    │   1-1    │   1-2    +
+      #|+───┼──────────┼──────────┼──────────+
+      #|+ 2 │   2-0    │   2-1    │   2-2    +
+      #|@++++++++++++++++++++++++++++++++++++.
+    ),
+  )
+}
+
+///|
+test "highlingt_single_column" {
+  let table = matrix_n_cols(3, 0)
+  table.apply(@tabular.Style::modern()) |> ignore
+  table.apply_highlight(
+    @tabular.Highlight::new_cell(@tabular.Cell::new(0, 0)).with_border({
+      ..@papergrid.CellBorder::empty(),
+      left: Some('*'),
+      top: Some('x'),
+    }),
+  )
+  |> ignore
+  table.apply_highlight(
+    @tabular.Highlight::new_rows(@tabular.Rows::new(1, 3)).with_border({
+      ..@papergrid.CellBorder::empty(),
+      left: Some('n'),
+    }),
+  )
+  |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|┌xxx┐
+      #|* N │
+      #|├───┤
+      #|n 0 │
+      #|n───┤
+      #|n 1 │
+      #|├───┤
+      #|│ 2 │
+      #|└───┘
+    ),
+  )
+}
+
+///|
+test "highlingt_several_times" {
+  let table = matrix33()
+  table.apply(@tabular.Style::modern()) |> ignore
+  table.apply_highlight(
+    @tabular.Highlight::outline_segment(@tabular.Segment::all(), '*'),
+  )
+  |> ignore
+  table.apply_highlight(
+    @tabular.Highlight::outline_cell(@tabular.Cell::new(1, 1), '#'),
+  )
+  |> ignore
+  table.apply_highlight(
+    @tabular.Highlight::outline_columns(@tabular.Columns::one(3), 'x'),
+  )
+  |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|**************************xxxxxxxxxxxx
+      #|* N │ column 0 │ column 1 x column 2 x
+      #|*───############──────────x──────────x
+      #|* 0 #   0-0    #   0-1    x   0-2    x
+      #|*───############──────────x──────────x
+      #|* 1 │   1-0    │   1-1    x   1-2    x
+      #|*───┼──────────┼──────────x──────────x
+      #|* 2 │   2-0    │   2-1    x   2-2    x
+      #|**************************xxxxxxxxxxxx
+    ),
+  )
+}
+
+///|
+test "highlingt_complex_figures_corners" {
+  let border : @papergrid.CellBorder = {
+    top: Some('+'),
+    bottom: Some('+'),
+    left: Some('+'),
+    right: Some('+'),
+    left_top_corner: Some('*'),
+    right_top_corner: Some('#'),
+    left_bottom_corner: Some('@'),
+    right_bottom_corner: Some('.'),
+  }
+  let table = matrix33()
+  table.apply(@tabular.Style::modern()) |> ignore
+  table.apply_highlight(
+    @tabular.Highlight::outline_segment(
+      @tabular.Cell::new(0, 0)
+      .as_segment()
+      .and_cell(@tabular.Cell::new(3, 3))
+      .and_cell(@tabular.Cell::new(0, 3))
+      .and_cell(@tabular.Cell::new(3, 0)),
+      '+',
+    ).with_border(border),
+  )
+  |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|*+++#──────────┬──────────*++++++++++#
+      #|+ N + column 0 │ column 1 + column 2 +
+      #|@+++.──────────┼──────────@++++++++++.
+      #|│ 0 │   0-0    │   0-1    │   0-2    │
+      #|├───┼──────────┼──────────┼──────────┤
+      #|│ 1 │   1-0    │   1-1    │   1-2    │
+      #|*+++#──────────┼──────────*++++++++++#
+      #|+ 2 +   2-0    │   2-1    +   2-2    +
+      #|@+++.──────────┴──────────@++++++++++.
+    ),
+  )
+}
+
+///|
+test "highlingt_complex_rows_and_columns" {
+  let border : @papergrid.CellBorder = {
+    top: Some('+'),
+    bottom: Some('+'),
+    left: Some('+'),
+    right: Some('+'),
+    left_top_corner: Some('*'),
+    right_top_corner: Some('#'),
+    left_bottom_corner: Some('@'),
+    right_bottom_corner: Some('.'),
+  }
+  let table1 = matrix33()
+  table1.apply(@tabular.Style::modern()) |> ignore
+  table1.apply_highlight(
+    @tabular.Highlight::outline_rows(@tabular.Rows::one(0), '+').with_border(
+      border,
+    ),
+  )
+  |> ignore
+  table1.apply_highlight(
+    @tabular.Highlight::outline_rows(@tabular.Rows::one(3), '+').with_border(
+      border,
+    ),
+  )
+  |> ignore
+  inspect(
+    table1.to_string(),
+    content=(
+      #|*++++++++++++++++++++++++++++++++++++#
+      #|+ N │ column 0 │ column 1 │ column 2 +
+      #|@++++++++++++++++++++++++++++++++++++.
+      #|│ 0 │   0-0    │   0-1    │   0-2    │
+      #|├───┼──────────┼──────────┼──────────┤
+      #|│ 1 │   1-0    │   1-1    │   1-2    │
+      #|*++++++++++++++++++++++++++++++++++++#
+      #|+ 2 │   2-0    │   2-1    │   2-2    +
+      #|@++++++++++++++++++++++++++++++++++++.
+    ),
+  )
+  let table2 = matrix33()
+  table2.apply(@tabular.Style::modern()) |> ignore
+  table2.apply_highlight(
+    @tabular.Highlight::outline_columns(@tabular.Columns::one(0), '+').with_border(
+      border,
+    ),
+  )
+  |> ignore
+  table2.apply_highlight(
+    @tabular.Highlight::outline_columns(@tabular.Columns::one(3), '+').with_border(
+      border,
+    ),
+  )
+  |> ignore
+  inspect(
+    table2.to_string(),
+    content=(
+      #|*+++#──────────┬──────────*++++++++++#
+      #|+ N + column 0 │ column 1 + column 2 +
+      #|+───+──────────┼──────────+──────────+
+      #|+ 0 +   0-0    │   0-1    +   0-2    +
+      #|+───+──────────┼──────────+──────────+
+      #|+ 1 +   1-0    │   1-1    +   1-2    +
+      #|+───+──────────┼──────────+──────────+
+      #|+ 2 +   2-0    │   2-1    +   2-2    +
+      #|@+++.──────────┴──────────@++++++++++.
+    ),
+  )
+}

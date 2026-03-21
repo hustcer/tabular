@@ -132,6 +132,46 @@ pub fn HorizontalLine::with_right(
 }
 
 ///|
+pub(all) struct CellBorder {
+  top : Char?
+  bottom : Char?
+  left : Char?
+  right : Char?
+  left_top_corner : Char?
+  right_top_corner : Char?
+  left_bottom_corner : Char?
+  right_bottom_corner : Char?
+}
+
+///|
+pub fn CellBorder::empty() -> CellBorder {
+  {
+    top: None,
+    bottom: None,
+    left: None,
+    right: None,
+    left_top_corner: None,
+    right_top_corner: None,
+    left_bottom_corner: None,
+    right_bottom_corner: None,
+  }
+}
+
+///|
+pub fn CellBorder::filled(ch : Char) -> CellBorder {
+  {
+    top: Some(ch),
+    bottom: Some(ch),
+    left: Some(ch),
+    right: Some(ch),
+    left_top_corner: Some(ch),
+    right_top_corner: Some(ch),
+    left_bottom_corner: Some(ch),
+    right_bottom_corner: Some(ch),
+  }
+}
+
+///|
 pub struct SpannedConfig {
   mut borders : Borders
   mut padding_left : Int
@@ -152,6 +192,13 @@ pub struct SpannedConfig {
   column_spans : Array[(Int, Int, Int)]
   row_spans : Array[(Int, Int, Int)]
   span_sources : Array[(Int, Int, Int, Int)]
+  // Per-position border overrides for Highlight
+  // (row_boundary, column, char) — horizontal fill overrides
+  border_horizontal : Array[(Int, Int, Char)]
+  // (row, column_boundary, char) — vertical fill overrides
+  border_vertical : Array[(Int, Int, Char)]
+  // (row_boundary, column_boundary, char) — intersection/corner overrides
+  border_intersection : Array[(Int, Int, Char)]
 }
 
 ///|
@@ -176,6 +223,9 @@ pub fn SpannedConfig::default() -> SpannedConfig {
     column_spans: [],
     row_spans: [],
     span_sources: [],
+    border_horizontal: [],
+    border_vertical: [],
+    border_intersection: [],
   }
 }
 
@@ -927,6 +977,107 @@ fn mapped_runs(
 }
 
 ///|
+fn set_or_overwrite_3(
+  arr : Array[(Int, Int, Char)],
+  a : Int,
+  b : Int,
+  ch : Char,
+) -> Unit {
+  for i = 0; i < arr.length(); i = i + 1 {
+    if arr[i].0 == a && arr[i].1 == b {
+      arr[i] = (a, b, ch)
+      return
+    }
+  }
+  arr.push((a, b, ch))
+}
+
+///|
+fn lookup_3(arr : Array[(Int, Int, Char)], a : Int, b : Int) -> Char? {
+  let mut result : Char? = None
+  arr.each(item => if item.0 == a && item.1 == b { result = Some(item.2) })
+  result
+}
+
+///|
+/// Set per-cell border overrides at the grid-position level.
+/// Each border component is stored at the actual grid position it affects.
+pub fn SpannedConfig::set_cell_border(
+  self : SpannedConfig,
+  row : Int,
+  col : Int,
+  border : CellBorder,
+) -> Unit {
+  match border.top {
+    Some(ch) => set_or_overwrite_3(self.border_horizontal, row, col, ch)
+    None => ()
+  }
+  match border.bottom {
+    Some(ch) => set_or_overwrite_3(self.border_horizontal, row + 1, col, ch)
+    None => ()
+  }
+  match border.left {
+    Some(ch) => set_or_overwrite_3(self.border_vertical, row, col, ch)
+    None => ()
+  }
+  match border.right {
+    Some(ch) => set_or_overwrite_3(self.border_vertical, row, col + 1, ch)
+    None => ()
+  }
+  match border.left_top_corner {
+    Some(ch) => set_or_overwrite_3(self.border_intersection, row, col, ch)
+    None => ()
+  }
+  match border.right_top_corner {
+    Some(ch) => set_or_overwrite_3(self.border_intersection, row, col + 1, ch)
+    None => ()
+  }
+  match border.left_bottom_corner {
+    Some(ch) => set_or_overwrite_3(self.border_intersection, row + 1, col, ch)
+    None => ()
+  }
+  match border.right_bottom_corner {
+    Some(ch) =>
+      set_or_overwrite_3(self.border_intersection, row + 1, col + 1, ch)
+    None => ()
+  }
+}
+
+///|
+pub fn SpannedConfig::horizontal_override_at(
+  self : SpannedConfig,
+  row_boundary : Int,
+  column : Int,
+) -> Char? {
+  lookup_3(self.border_horizontal, row_boundary, column)
+}
+
+///|
+pub fn SpannedConfig::vertical_override_at(
+  self : SpannedConfig,
+  row : Int,
+  column_boundary : Int,
+) -> Char? {
+  lookup_3(self.border_vertical, row, column_boundary)
+}
+
+///|
+pub fn SpannedConfig::intersection_override_at(
+  self : SpannedConfig,
+  row_boundary : Int,
+  column_boundary : Int,
+) -> Char? {
+  lookup_3(self.border_intersection, row_boundary, column_boundary)
+}
+
+///|
+pub fn SpannedConfig::has_cell_borders(self : SpannedConfig) -> Bool {
+  not(self.border_horizontal.is_empty()) ||
+  not(self.border_vertical.is_empty()) ||
+  not(self.border_intersection.is_empty())
+}
+
+///|
 pub fn SpannedConfig::remap(
   self : SpannedConfig,
   row_map : Array[Int],
@@ -1141,4 +1292,115 @@ pub fn SpannedConfig::remap(
   })
   self.span_sources.clear()
   next_span_sources.each(item => self.span_sources.push(item))
+}
+
+///|
+/// Shift all spans whose row >= target_row downward by 1.
+/// Used when inserting a horizontal panel row.
+pub fn SpannedConfig::shift_row_spans_down(
+  self : SpannedConfig,
+  target_row : Int,
+) -> Unit {
+  // Collect current spans, then rewrite them shifted
+  let col_spans : Array[(Int, Int, Int)] = []
+  self.column_spans.each(item => col_spans.push(item))
+  let row_spans : Array[(Int, Int, Int)] = []
+  self.row_spans.each(item => row_spans.push(item))
+  // Process column_spans: shift rows >= target_row
+  col_spans.each(item => {
+    if item.0 >= target_row {
+      self.set_column_span(item.0, item.1, 1) // remove old
+      self.set_column_span(item.0 + 1, item.1, item.2) // add shifted
+    }
+  })
+  // Process row_spans: shift rows >= target_row
+  row_spans.each(item => {
+    if item.0 >= target_row {
+      self.set_row_span(item.0, item.1, 1) // remove old
+      self.set_row_span(item.0 + 1, item.1, item.2) // add shifted
+    }
+  })
+  // Shift span sources
+  let sources : Array[(Int, Int, Int, Int)] = []
+  self.span_sources.each(item => sources.push(item))
+  self.span_sources.clear()
+  sources.each(item => {
+    let anchor_row = if item.0 >= target_row { item.0 + 1 } else { item.0 }
+    let source_row = if item.2 >= target_row { item.2 + 1 } else { item.2 }
+    self.span_sources.push((anchor_row, item.1, source_row, item.3))
+  })
+  // Shift border overrides
+  let h = self.border_horizontal.copy()
+  self.border_horizontal.clear()
+  h.each(item => {
+    let rb = if item.0 >= target_row { item.0 + 1 } else { item.0 }
+    self.border_horizontal.push((rb, item.1, item.2))
+  })
+  let v = self.border_vertical.copy()
+  self.border_vertical.clear()
+  v.each(item => {
+    let r = if item.0 >= target_row { item.0 + 1 } else { item.0 }
+    self.border_vertical.push((r, item.1, item.2))
+  })
+  let ix = self.border_intersection.copy()
+  self.border_intersection.clear()
+  ix.each(item => {
+    let rb = if item.0 >= target_row { item.0 + 1 } else { item.0 }
+    self.border_intersection.push((rb, item.1, item.2))
+  })
+}
+
+///|
+/// Shift all spans whose column >= target_col rightward by 1.
+/// Used when inserting a vertical panel column.
+pub fn SpannedConfig::shift_column_spans_right(
+  self : SpannedConfig,
+  target_col : Int,
+) -> Unit {
+  let col_spans : Array[(Int, Int, Int)] = []
+  self.column_spans.each(item => col_spans.push(item))
+  let row_spans : Array[(Int, Int, Int)] = []
+  self.row_spans.each(item => row_spans.push(item))
+  // Process column_spans: shift cols >= target_col
+  col_spans.each(item => {
+    if item.1 >= target_col {
+      self.set_column_span(item.0, item.1, 1) // remove old
+      self.set_column_span(item.0, item.1 + 1, item.2) // add shifted
+    }
+  })
+  // Process row_spans: shift cols >= target_col
+  row_spans.each(item => {
+    if item.1 >= target_col {
+      self.set_row_span(item.0, item.1, 1) // remove old
+      self.set_row_span(item.0, item.1 + 1, item.2) // add shifted
+    }
+  })
+  // Shift span sources
+  let sources : Array[(Int, Int, Int, Int)] = []
+  self.span_sources.each(item => sources.push(item))
+  self.span_sources.clear()
+  sources.each(item => {
+    let anchor_col = if item.1 >= target_col { item.1 + 1 } else { item.1 }
+    let source_col = if item.3 >= target_col { item.3 + 1 } else { item.3 }
+    self.span_sources.push((item.0, anchor_col, item.2, source_col))
+  })
+  // Shift border overrides
+  let h = self.border_horizontal.copy()
+  self.border_horizontal.clear()
+  h.each(item => {
+    let c = if item.1 >= target_col { item.1 + 1 } else { item.1 }
+    self.border_horizontal.push((item.0, c, item.2))
+  })
+  let v = self.border_vertical.copy()
+  self.border_vertical.clear()
+  v.each(item => {
+    let cb = if item.1 >= target_col { item.1 + 1 } else { item.1 }
+    self.border_vertical.push((item.0, cb, item.2))
+  })
+  let ix = self.border_intersection.copy()
+  self.border_intersection.clear()
+  ix.each(item => {
+    let cb = if item.1 >= target_col { item.1 + 1 } else { item.1 }
+    self.border_intersection.push((item.0, cb, item.2))
+  })
 }
