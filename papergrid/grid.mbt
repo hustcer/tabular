@@ -47,6 +47,37 @@ fn render_cell(
 }
 
 ///|
+fn span_width(
+  widths : Array[Int],
+  borders : Borders,
+  start : Int,
+  span : Int,
+) -> Int {
+  let end_ = if start + span < widths.length() {
+    start + span
+  } else {
+    widths.length()
+  }
+  let mut total = 0
+  for column = start; column < end_; column = column + 1 {
+    total = total + widths[column]
+  }
+  if borders.vertical is Some(_) && end_ - start > 1 {
+    total = total + (end_ - start - 1)
+  }
+  total
+}
+
+///|
+fn blank_values(count_columns : Int) -> Array[String] {
+  let values = []
+  for column = 0; column < count_columns; column = column + 1 {
+    values.push("")
+  }
+  values
+}
+
+///|
 fn render_row_line(
   borders : Borders,
   widths : Array[Int],
@@ -60,21 +91,28 @@ fn render_row_line(
     None => ""
   }
 
-  for column = 0; column < count_columns; column = column + 1 {
+  let mut column = 0
+  while column < count_columns {
+    if !config.is_cell_visible(row_index, column) {
+      column = column + 1
+      continue
+    }
     let content = if column < values.length() { values[column] } else { "" }
     let (padding_left, padding_right, _, _) = config.padding_at(
       row_index, column,
     )
     let alignment = config.alignment_at(row_index, column)
+    let colspan = config.column_span_at(row_index, column)
     out = out +
       render_cell(
         content,
-        widths[column],
+        span_width(widths, borders, column, colspan),
         padding_left,
         padding_right,
         alignment,
       )
-    if column + 1 < count_columns {
+    column = column + colspan
+    if column < count_columns {
       out = out +
         (match borders.vertical {
           Some(value) => value.to_string()
@@ -104,6 +142,10 @@ fn render_row(
   let mut row_padding_top = 0
   let mut row_padding_bottom = 0
   for column = 0; column < count_columns; column = column + 1 {
+    if !config.is_cell_visible(row_index, column) {
+      cell_lines.push([""])
+      continue
+    }
     let content = if column < row.length() { row[column] } else { "" }
     let lines = processed_lines(
       content,
@@ -150,13 +192,14 @@ fn render_row(
   let lines = []
   for i = 0; i < row_padding_top; i = i + 1 {
     ignore(i)
-    let blank_values = []
-    for column = 0; column < count_columns; column = column + 1 {
-      blank_values.push("")
-    }
     lines.push(
       render_row_line(
-        borders, widths, blank_values, row_index, count_columns, config,
+        borders,
+        widths,
+        blank_values(count_columns),
+        row_index,
+        count_columns,
+        config,
       ),
     )
   }
@@ -178,13 +221,14 @@ fn render_row(
   }
   for i = 0; i < row_padding_bottom; i = i + 1 {
     ignore(i)
-    let blank_values = []
-    for column = 0; column < count_columns; column = column + 1 {
-      blank_values.push("")
-    }
     lines.push(
       render_row_line(
-        borders, widths, blank_values, row_index, count_columns, config,
+        borders,
+        widths,
+        blank_values(count_columns),
+        row_index,
+        count_columns,
+        config,
       ),
     )
   }

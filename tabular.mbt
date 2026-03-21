@@ -101,6 +101,7 @@ pub enum Setting {
   W(Width)
   H(Height)
   Fmt(Format)
+  SpanColumn(Int)
 }
 
 ///|
@@ -115,6 +116,9 @@ pub struct Padding {
 pub struct HorizontalLine {
   line : @papergrid.HorizontalLine
 }
+
+///|
+pub enum Span {}
 
 ///|
 pub fn Style::ascii() -> Style {
@@ -916,6 +920,11 @@ pub fn Setting::height(height : Height) -> Setting {
 }
 
 ///|
+pub fn Span::column(size : Int) -> Setting {
+  SpanColumn(size)
+}
+
+///|
 pub fn Padding::new(
   left : Int,
   right : Int,
@@ -1428,6 +1437,7 @@ fn apply_setting_to_row(
     H(height) =>
       config.set_height_mode_for_rows(row, row + 1, convert_height(height))
     Fmt(_) => ()
+    SpanColumn(_) => ()
   }
 }
 
@@ -1472,6 +1482,7 @@ fn apply_setting_to_column(
         convert_height(height),
       )
     Fmt(_) => ()
+    SpanColumn(_) => ()
   }
 }
 
@@ -1505,7 +1516,60 @@ fn apply_setting_to_cell(
     H(height) =>
       config.set_height_mode_for_cell(row, column, convert_height(height))
     Fmt(_) => ()
+    SpanColumn(_) => ()
   }
+}
+
+///|
+fn span_intersects_column(
+  config : @papergrid.SpannedConfig,
+  row : Int,
+  column : Int,
+  span : Int,
+) -> Bool {
+  let end_ = column + span
+  for current = column; current < end_; current = current + 1 {
+    if !config.is_cell_visible(row, current) {
+      return true
+    }
+  }
+  false
+}
+
+///|
+fn apply_column_span(
+  rows : Array[Array[String]],
+  config : @papergrid.SpannedConfig,
+  row : Int,
+  column : Int,
+  size : Int,
+) -> Unit {
+  if row < 0 || row >= rows.length() {
+    return
+  }
+  let column_count = @papergrid.IterRecords::new(rows).count_columns()
+  if column < 0 ||
+    column >= column_count ||
+    !config.is_cell_visible(row, column) {
+    return
+  }
+  if size == 1 {
+    config.set_column_span(row, column, 1)
+    return
+  }
+  if size <= 0 {
+    return
+  }
+
+  let span = if column + size > column_count {
+    column_count - column
+  } else {
+    size
+  }
+  if span <= 1 || span_intersects_column(config, row, column, span) {
+    return
+  }
+  config.set_column_span(row, column, span)
 }
 
 ///|
@@ -1565,6 +1629,7 @@ fn apply_setting_to_column_values(
 ///|
 fn apply_setting_to_cell_value(
   rows : Array[Array[String]],
+  config : @papergrid.SpannedConfig,
   row : Int,
   column : Int,
   setting : Setting,
@@ -1573,6 +1638,7 @@ fn apply_setting_to_cell_value(
     Fmt(format) => apply_format_to_cell(rows, row, column, format)
     W(_) => ()
     H(_) => ()
+    SpanColumn(size) => apply_column_span(rows, config, row, column, size)
     _ => ()
   }
 }
@@ -1804,10 +1870,26 @@ pub fn Table::modify_rows(
   rows : Rows,
   setting : Setting,
 ) -> Table {
-  resolve_rows(rows, self.rows.length()).each(row => {
-    apply_setting_to_row_values(self.rows, row, setting)
-    apply_setting_to_row(self.config, row, setting)
-  })
+  let row_indexes = resolve_rows(rows, self.rows.length())
+  if setting is SpanColumn(_) {
+    let column_count = @papergrid.IterRecords::new(self.rows).count_columns()
+    row_indexes.each(row => {
+      for column = 0; column < column_count; column = column + 1 {
+        apply_setting_to_cell_value(
+          self.rows,
+          self.config,
+          row,
+          column,
+          setting,
+        )
+      }
+    })
+  } else {
+    row_indexes.each(row => {
+      apply_setting_to_row_values(self.rows, row, setting)
+      apply_setting_to_row(self.config, row, setting)
+    })
+  }
   self
 }
 
@@ -1818,10 +1900,25 @@ pub fn Table::modify_columns(
   setting : Setting,
 ) -> Table {
   let column_count = @papergrid.IterRecords::new(self.rows).count_columns()
-  resolve_columns(columns, column_count).each(column => {
-    apply_setting_to_column_values(self.rows, column, setting)
-    apply_setting_to_column(self.config, column, setting)
-  })
+  let column_indexes = resolve_columns(columns, column_count)
+  if setting is SpanColumn(_) {
+    for row = 0; row < self.rows.length(); row = row + 1 {
+      column_indexes.each(column => {
+        apply_setting_to_cell_value(
+          self.rows,
+          self.config,
+          row,
+          column,
+          setting,
+        )
+      })
+    }
+  } else {
+    column_indexes.each(column => {
+      apply_setting_to_column_values(self.rows, column, setting)
+      apply_setting_to_column(self.config, column, setting)
+    })
+  }
   self
 }
 
@@ -1856,11 +1953,31 @@ pub fn Table::modify_segment(
               apply_format_to_cell(self.rows, row, column, format)
             }
           }
+        SpanColumn(_) => {
+          let column_count = @papergrid.IterRecords::new(self.rows).count_columns()
+          for row = 0; row < self.rows.length(); row = row + 1 {
+            for column = 0; column < column_count; column = column + 1 {
+              apply_setting_to_cell_value(
+                self.rows,
+                self.config,
+                row,
+                column,
+                setting,
+              )
+            }
+          }
+        }
       }
     _ => {
       let column_count = @papergrid.IterRecords::new(self.rows).count_columns()
       resolve_segment_cells(segment, self.rows.length(), column_count).each(cell => {
-        apply_setting_to_cell_value(self.rows, cell.0, cell.1, setting)
+        apply_setting_to_cell_value(
+          self.rows,
+          self.config,
+          cell.0,
+          cell.1,
+          setting,
+        )
         apply_setting_to_cell(self.config, cell.0, cell.1, setting)
       })
     }
@@ -1874,7 +1991,13 @@ pub fn Table::modify_cell(
   cell : Cell,
   setting : Setting,
 ) -> Table {
-  apply_setting_to_cell_value(self.rows, cell.row, cell.column, setting)
+  apply_setting_to_cell_value(
+    self.rows,
+    self.config,
+    cell.row,
+    cell.column,
+    setting,
+  )
   apply_setting_to_cell(self.config, cell.row, cell.column, setting)
   self
 }

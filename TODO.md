@@ -202,17 +202,32 @@ Acceptance:
 
 ### Phase 5: Spans
 
-Status: not started
+Status: in progress
 
 This is likely the largest renderer change still missing.
 
+Completed in this phase:
+
+- Added focused column span support in `papergrid`
+  - span storage and remapping in `SpannedConfig`
+  - visibility checks for covered cells
+  - dimension estimation aware of `colspan`
+  - row rendering aware of merged cell widths and hidden covered cells
+- Added a MoonBit-friendly public span entrypoint for the completed slice
+  - `Span::column(size)` returns a setting usable with existing `modify_*` APIs
+  - currently supports `1` for span removal and `>1` for rightward column spans
+- Ported a focused non-ANSI subset of upstream span behavior
+  - low-level `papergrid` column span rendering
+  - table-level cell/segment column spans
+  - span remapping after column extraction
+- Expanded the test suite to `99`
+- Re-verified `moon info`, `moon fmt`, `moon check -d`, `moon build -d`, and `moon test -d`
+
 Remaining work:
 
-- Add column span support in `papergrid`
 - Add row span support if feasible
-- Update dimension estimation for spans
-- Update line rendering and border junction logic for spans
-- Add APIs mirroring upstream span settings as closely as MoonBit allows
+- Refine border junction behavior for span-heavy `psql` / markdown edge cases
+- Port more upstream `span_test.rs` coverage
 - Validate interaction with:
   - padding
   - alignment

@@ -43,3 +43,24 @@ test "iter grid multiline output" {
     ),
   )
 }
+
+///|
+test "iter grid column span output" {
+  let cfg = SpannedConfig::default()
+  cfg.set_borders(Borders::ascii())
+  cfg.set_column_span(0, 0, 2)
+  let records = IterRecords::new([["0-0", ""], ["1-0", "1-1"]])
+  let dims = IterGridDimension::default()
+  dims.estimate(records, cfg)
+  let grid = IterGrid::new(records, cfg, dims)
+  inspect(
+    grid.to_string(),
+    content=(
+      #|+-----+-----+
+      #||    0-0    |
+      #|+-----+-----+
+      #|| 1-0 | 1-1 |
+      #|+-----+-----+
+    ),
+  )
+}

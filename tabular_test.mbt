@@ -341,6 +341,116 @@ test "modify rows height increase" {
 }
 
 ///|
+test "modify cell column span" {
+  let table = @tabular.Table::from_rows([
+    ["N", "column 0", "column 1", "column 2"],
+    ["0", "0-0", "0-1", "0-2"],
+    ["1", "1-0", "1-1", "1-2"],
+  ])
+  table.apply(@tabular.Style::psql()) |> ignore
+  table.modify_segment(
+    @tabular.Segment::all(),
+    @tabular.Setting::alignment(@tabular.Alignment::left()),
+  )
+  |> ignore
+  table.modify_cell(@tabular.Cell::new(1, 1), @tabular.Span::column(2))
+  |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #| N | column 0 | column 1 | column 2 
+      #|----+----------+----------+-----------
+      #| 0 | 0-0                 | 0-2      
+      #| 1 | 1-0      | 1-1      | 1-2      
+    ),
+  )
+}
+
+///|
+test "modify column span for a whole column selection" {
+  let table = @tabular.Table::from_rows([
+    ["N", "column 0", "column 1", "column 2"],
+    ["0", "0-0", "0-1", "0-2"],
+    ["1", "1-0", "1-1", "1-2"],
+  ])
+  table.apply(@tabular.Style::psql()) |> ignore
+  table.modify_segment(
+    @tabular.Segment::all(),
+    @tabular.Setting::alignment(@tabular.Alignment::left()),
+  )
+  |> ignore
+  table.modify_segment(
+    @tabular.Rows::new(1, 3).intersect(@tabular.Columns::one(1)),
+    @tabular.Span::column(2),
+  )
+  |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #| N | column 0 | column 1 | column 2 
+      #|----+----------+----------+-----------
+      #| 0 | 0-0                 | 0-2      
+      #| 1 | 1-0                 | 1-2      
+    ),
+  )
+}
+
+///|
+test "column span survives extract columns remap" {
+  let table = @tabular.Table::from_rows([
+    ["N", "column 0", "column 1", "column 2"],
+    ["0", "0-0", "0-1", "0-2"],
+    ["1", "1-0", "1-1", "1-2"],
+  ])
+  table.apply(@tabular.Style::psql()) |> ignore
+  table.modify_segment(
+    @tabular.Segment::all(),
+    @tabular.Setting::alignment(@tabular.Alignment::left()),
+  )
+  |> ignore
+  table.modify_cell(@tabular.Cell::new(1, 1), @tabular.Span::column(2))
+  |> ignore
+  table.extract_columns(@tabular.Columns::new(1, 3)) |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #| column 0 | column 1 
+      #|-----------+-----------
+      #| 0-0                 
+      #| 1-0      | 1-1      
+    ),
+  )
+}
+
+///|
+test "column span can be removed without losing hidden cell values" {
+  let table = @tabular.Table::from_rows([
+    ["N", "column 0", "column 1", "column 2"],
+    ["0", "0-0", "0-1", "0-2"],
+    ["1", "1-0", "1-1", "1-2"],
+  ])
+  table.apply(@tabular.Style::psql()) |> ignore
+  table.modify_segment(
+    @tabular.Segment::all(),
+    @tabular.Setting::alignment(@tabular.Alignment::left()),
+  )
+  |> ignore
+  table.modify_cell(@tabular.Cell::new(1, 1), @tabular.Span::column(2))
+  |> ignore
+  table.modify_cell(@tabular.Cell::new(1, 1), @tabular.Span::column(1))
+  |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #| N | column 0 | column 1 | column 2 
+      #|----+----------+----------+-----------
+      #| 0 | 0-0      | 0-1      | 0-2      
+      #| 1 | 1-0      | 1-1      | 1-2      
+    ),
+  )
+}
+
+///|
 test "modify cell height limit" {
   let table = @tabular.Table::from_rows([
     ["N", "text"],

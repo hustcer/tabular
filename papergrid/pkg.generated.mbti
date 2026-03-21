@@ -154,15 +154,21 @@ pub struct SpannedConfig {
   alignment_rules : Array[(Int, Int, Int, AlignmentHorizontal)]
   vertical_alignment_rules : Array[(Int, Int, Int, AlignmentVertical)]
   padding_rules : Array[(Int, Int, Int, Int, Int, Int, Int)]
+  column_spans : Array[(Int, Int, Int)]
 }
 pub fn SpannedConfig::alignment(Self) -> AlignmentHorizontal
 pub fn SpannedConfig::alignment_at(Self, Int, Int) -> AlignmentHorizontal
 pub fn SpannedConfig::borders(Self) -> Borders
+pub fn SpannedConfig::column_span_at(Self, Int, Int) -> Int
 pub fn SpannedConfig::custom_horizontal_line(Self, Int) -> HorizontalLine?
 pub fn SpannedConfig::default() -> Self
+pub fn SpannedConfig::get_column_span(Self, Int, Int) -> Int?
+pub fn SpannedConfig::has_column_spans(Self) -> Bool
 pub fn SpannedConfig::height_mode(Self) -> HeightMode
 pub fn SpannedConfig::height_mode_at(Self, Int, Int) -> HeightMode
 pub fn SpannedConfig::horizontal_lines(Self) -> HorizontalLines
+pub fn SpannedConfig::is_cell_covered_by_column_span(Self, Int, Int) -> Bool
+pub fn SpannedConfig::is_cell_visible(Self, Int, Int) -> Bool
 pub fn SpannedConfig::padding_at(Self, Int, Int) -> (Int, Int, Int, Int)
 pub fn SpannedConfig::padding_bottom(Self) -> Int
 pub fn SpannedConfig::padding_left(Self) -> Int
@@ -175,6 +181,7 @@ pub fn SpannedConfig::set_alignment_for_cell(Self, Int, Int, AlignmentHorizontal
 pub fn SpannedConfig::set_alignment_for_columns(Self, Int, Int, AlignmentHorizontal) -> Unit
 pub fn SpannedConfig::set_alignment_for_rows(Self, Int, Int, AlignmentHorizontal) -> Unit
 pub fn SpannedConfig::set_borders(Self, Borders) -> Unit
+pub fn SpannedConfig::set_column_span(Self, Int, Int, Int) -> Unit
 pub fn SpannedConfig::set_custom_horizontal_lines(Self, Array[(Int, HorizontalLine)]) -> Unit
 pub fn SpannedConfig::set_height_mode(Self, HeightMode) -> Unit
 pub fn SpannedConfig::set_height_mode_for_all(Self, HeightMode) -> Unit
