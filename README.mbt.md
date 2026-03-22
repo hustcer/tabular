@@ -64,8 +64,7 @@ table.apply(@tabular.Style::markdown())
 table.apply(@tabular.Style::psql())
 ```
 
-<details>
-<summary>Click to see all style examples</summary>
+### All Style Examples
 
 **ascii**
 ```
@@ -125,8 +124,6 @@ table.apply(@tabular.Style::psql())
 :  MoonBit : 2022 :
 :..........:.....:.
 ```
-
-</details>
 
 ### Custom Borders
 
@@ -576,27 +573,6 @@ Fix border junction characters after applying spans:
 table.modify_cell(@tabular.Cell::new(0, 0), @tabular.Span::col(2))
 table.correct_borders()
 ```
-
-## API Differences from Rust `tabled`
-
-This MoonBit port maintains close API parity with the upstream Rust library, with the following intentional differences due to MoonBit language constraints:
-
-| Rust `tabled` | MoonBit `tabular` | Reason |
-|---|---|---|
-| `table.with(setting)` | `table.apply(setting)` | `with` is a reserved keyword in MoonBit |
-| `.and(other)` | `.and_(other)` | `and` is a reserved keyword in MoonBit |
-| `.not(other)` | `.not_(other)` | Consistency with `and_` naming |
-| `Rows::first() + 1` | `Rows::first_offset(1)` | MoonBit does not support operator overloading on custom types in the same way |
-| `#[derive(Tabled)]` | `Builder::from_rows(...)` | MoonBit has no derive macros; use Builder for runtime table construction |
-| `Disable::row(...)` | `table.remove_rows(...)` | Simplified API using direct method calls |
-| `Disable::column(...)` | `table.remove_cols(...)` | Simplified API using direct method calls |
-| ANSI color support | Not implemented | Deferred; no ANSI color infrastructure yet |
-| `Colorization` | Not implemented | Requires ANSI support |
-| `ColumnNames` / `RowNames` | Not implemented | Complex line-text overlay, niche feature |
-| `Layout` | Not implemented | Head position reorientation, lower priority |
-| `Rotate` | Not implemented | Can be achieved via `IndexBuilder::transpose()` |
-| `Concat` | Not implemented | Can be achieved via Builder manipulation |
-| `IterTable` / `CompactTable` / `PoolTable` / `ExtendedTable` | Not implemented | Only `Table` is ported |
 
 ## License
 
