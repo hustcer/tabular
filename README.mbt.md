@@ -1,19 +1,16 @@
 # Tabular
 
-A MoonBit library for pretty-printing tables in terminal. Ported from the Rust [tabled](https://github.com/zhiburt/tabled) library.
+A MoonBit library for pretty-printing tables in the terminal. Inspired by the Rust [tabled](https://github.com/zhiburt/tabled) project.
 
 ## Features
 
-- 11 built-in style presets (ascii, modern, rounded, markdown, psql, etc.)
-- Customizable borders, corners, intersections, and horizontal lines
-- Row/column/cell-level alignment, padding, width, and height control
-- Powerful selector system for targeting rows, columns, segments, and cells
-- Column and row spans with negative/zero span support
-- Panel (header/footer/horizontal/vertical), Merge, Highlight, Shadow
-- Split and border correction for advanced table reshaping
-- Extract and Remove operations with config remapping
-- Builder pattern with index/transpose support
-- 290+ passing tests
+- 11 built-in style presets
+- Customizable borders and horizontal lines
+- Alignment, padding, width, height, and formatting controls
+- Row, column, cell, and segment based table editing
+- Column span and row span
+- Panel, merge, highlight, shadow, split, extract, remove, and border correction
+- Builder helpers with index and transpose support
 
 ## Installation
 
@@ -30,6 +27,7 @@ let table = @tabular.Table::from_rows([
   ["Bun", "Zig/C++", "76k"],
   ["Node.js", "C++/JS", "110k"],
 ])
+
 table.apply(@tabular.Style::modern()) |> ignore
 println(table.to_string())
 ```
@@ -51,20 +49,20 @@ Output:
 ## Style Presets
 
 ```moonbit nocheck
-table.apply(@tabular.Style::ascii())
-table.apply(@tabular.Style::modern())
-table.apply(@tabular.Style::rounded())
-table.apply(@tabular.Style::extended())
-table.apply(@tabular.Style::dots())
-table.apply(@tabular.Style::empty())
-table.apply(@tabular.Style::blank())
-table.apply(@tabular.Style::re_structured_text())
-table.apply(@tabular.Style::ascii_rounded())
-table.apply(@tabular.Style::markdown())
-table.apply(@tabular.Style::psql())
+table.apply(@tabular.Style::ascii()) |> ignore
+table.apply(@tabular.Style::modern()) |> ignore
+table.apply(@tabular.Style::rounded()) |> ignore
+table.apply(@tabular.Style::extended()) |> ignore
+table.apply(@tabular.Style::dots()) |> ignore
+table.apply(@tabular.Style::empty()) |> ignore
+table.apply(@tabular.Style::blank()) |> ignore
+table.apply(@tabular.Style::re_structured_text()) |> ignore
+table.apply(@tabular.Style::ascii_rounded()) |> ignore
+table.apply(@tabular.Style::markdown()) |> ignore
+table.apply(@tabular.Style::psql()) |> ignore
 ```
 
-### All Style Examples
+### Gallery
 
 **ascii**
 
@@ -144,15 +142,7 @@ table.apply(@tabular.Style::psql())
 ╚══════════╩══════╝
 ```
 
-**empty**
-
-```
- language  year
-   Rust    2010
- MoonBit   2022
-```
-
-**blank**
+**empty / blank**
 
 ```
  language  year
@@ -181,32 +171,31 @@ table.apply(@tabular.Style::psql())
 '-----------------'
 ```
 
-### Custom Borders
+## Custom Style
 
 ```moonbit nocheck
 let style = @tabular.Style::ascii()
-  .top('─').bottom('─').left('│').right('│')
-  .horizontal('─').vertical('│')
-  .corner_top_left('┌').corner_top_right('┐')
-  .corner_bottom_left('└').corner_bottom_right('┘')
+  .top('─')
+  .bottom('─')
+  .left('│')
+  .right('│')
+  .horizontal('─')
+  .vertical('│')
+  .corner_top_left('┌')
+  .corner_top_right('┐')
+  .corner_bottom_left('└')
+  .corner_bottom_right('┘')
+
 table.apply(style) |> ignore
 ```
-
-### Removing Borders
-
-```moonbit nocheck
-let style = @tabular.Style::modern()
-  .remove_horizontal()
-  .remove_vertical()
-table.apply(style) |> ignore
-```
-
-### Custom Horizontal Lines
 
 ```moonbit nocheck
 let style = @tabular.Style::ascii()
   .remove_horizontal()
-  .horizontals([@tabular.HorizontalLine::new(1, '-', '+', '+', '+')])
+  .horizontals([
+    (1, @tabular.HorizontalLine::full('-', '+', '+', '+')),
+  ])
+
 table.apply(style) |> ignore
 ```
 
@@ -217,417 +206,117 @@ let builder = @tabular.Builder::default()
 builder.push_record(["Name", "Age", "City"])
 builder.push_record(["Alice", "30", "NYC"])
 builder.push_record(["Bob", "25", "LA"])
+
 let table = builder.build()
 println(table.to_string())
 ```
 
-### Insert and Remove
-
 ```moonbit nocheck
-let builder = @tabular.Builder::default()
-builder.push_record(["0", "0", "0"])
-builder.push_record(["1", "2", "3"])
-builder.insert_record(0, ["A", "B", "C"])  // Insert header row
-builder.insert_col(0, ["#", "1", "2"])  // Insert index column
-builder.remove_record(2)                    // Remove a row
-builder.remove_col(3)                    // Remove a column
-let table = builder.build()
-```
-
-### Fill Empty Cells
-
-```moonbit nocheck
-let builder = @tabular.Builder::default()
-builder.set_empty("N/A")
-builder.push_record(["a", "b", "c"])
-builder.push_record(["d"])  // Missing cells filled with "N/A"
-let table = builder.build()
-```
-
-### Clean Empty Rows/Columns
-
-```moonbit nocheck
-let builder = @tabular.Builder::from_rows([
-  ["", "data", ""],
-  ["", "more", ""],
-])
-builder.clean()  // Removes all-empty columns and rows
-let table = builder.build()
-```
-
-### Index and Transpose
-
-```moonbit nocheck
-///|
 let builder = @tabular.Builder::from_rows([
   ["Name", "Age"],
   ["Alice", "30"],
   ["Bob", "25"],
 ])
 
-// Add auto-generated index
+let table1 = builder.index().build()
 
-///|
-let table = builder.index().build()
+let table2 = builder.index().transpose().build()
 
-// Transpose the table (swap rows and columns)
-
-///|
-let builder2 = @tabular.Builder::from_rows([["Name", "Age"], ["Alice", "30"]])
-
-///|
-let table2 = builder2.index().transpose().build()
-
-// Use a column as index, hide the default index
-
-///|
-let builder3 = @tabular.Builder::from_rows([["Name", "Age"], ["Alice", "30"]])
-
-///|
-let table3 = builder3.index().col(0).hide().build()
+let table3 = builder.index().col(0).hide().build()
 ```
 
-## Alignment
+## Common Edits
 
 ```moonbit nocheck
-// Global alignment
-table.set_align(@tabular.Align::left()) |> ignore
 table.set_align(@tabular.Align::right()) |> ignore
-table.set_align(@tabular.Align::center()) |> ignore
+table.set_padding(@tabular.Padding::new(1, 1, 0, 0)) |> ignore
+table.set_width(@tabular.Width::wrap(10)) |> ignore
+table.set_height(@tabular.Height::increase(2)) |> ignore
+```
 
-// Per-row alignment
+```moonbit nocheck
 table.modify_rows(
   @tabular.Rows::first(),
   @tabular.Setting::align(@tabular.Align::center()),
-)
+) |> ignore
 
-// Per-column alignment
 table.modify_cols(
   @tabular.Cols::one(1),
-  @tabular.Setting::align(@tabular.Align::right()),
-)
-```
-
-### Vertical Alignment
-
-```moonbit nocheck
-table.set_valign(@tabular.VAlign::top()) |> ignore
-table.set_valign(@tabular.VAlign::center()) |> ignore
-table.set_valign(@tabular.VAlign::bottom()) |> ignore
-```
-
-## Padding
-
-```moonbit nocheck
-// Global padding: left, right, top, bottom
-table.apply(@tabular.Padding::new(2, 2, 0, 0)) |> ignore
-
-// Per-row padding
-table.modify_rows(
-  @tabular.Rows::first(),
-  @tabular.Setting::padding(@tabular.Padding::new(1, 1, 1, 1)),
-)
-```
-
-## Width and Height
-
-```moonbit nocheck
-// Wrap text at width 10
-table.apply(@tabular.Width::wrap(10)) |> ignore
-
-// Truncate text at width 5 with "..." suffix
-table.apply(@tabular.Width::truncate_with_suffix(5, "...")) |> ignore
-
-// Set minimum height
-table.apply(@tabular.Height::increase(3)) |> ignore
-
-// Limit height
-table.apply(@tabular.Height::limit(2)) |> ignore
-
-// Per-column width
-table.modify_cols(
-  @tabular.Cols::one(0),
   @tabular.Setting::width(@tabular.Width::wrap(8)),
-)
+) |> ignore
 
-// Per-row height
-table.modify_rows(
-  @tabular.Rows::one(1),
-  @tabular.Setting::height(@tabular.Height::increase(3)),
-)
-```
-
-## Selectors
-
-Selectors let you target specific rows, columns, cells, or segments for modification.
-
-### Row Selectors
-
-```moonbit nocheck
-@tabular.Rows::all()           // All rows
-@tabular.Rows::first()         // First row (header)
-@tabular.Rows::last()          // Last row
-@tabular.Rows::one(2)          // Row at index 2
-@tabular.Rows::new(1, 3)       // Rows 1..3 (exclusive)
-@tabular.Rows::first_offset(1) // Second row (first + 1)
-@tabular.Rows::last_offset(1)  // Second-to-last row
-@tabular.Rows::all().skip(1)         // All except first
-@tabular.Rows::all().step_by(2)      // Every other row
-@tabular.Rows::all().filter(fn(i) { i % 2 == 0 })  // Even-indexed rows
-```
-
-### Column Selectors
-
-```moonbit nocheck
-@tabular.Cols::all()           // All columns
-@tabular.Cols::first()         // First column
-@tabular.Cols::last()          // Last column
-@tabular.Cols::one(1)          // Column at index 1
-@tabular.Cols::new(0, 2)       // Columns 0..2
-```
-
-### Combining Selectors
-
-```moonbit nocheck
-// Union: rows AND columns
-let rows = @tabular.Rows::first()
-let cols = @tabular.Cols::last()
-table.modify_segment(
-  rows.as_segment().and_cols(cols),
-  @tabular.Setting::align(@tabular.Align::right()),
-)
-
-// Difference: rows NOT columns
-table.modify_segment(
-  @tabular.Rows::all().as_segment().not_(@tabular.Cols::one(0).as_segment()),
-  @tabular.Setting::format(@tabular.Format::surround("[", "]")),
-)
-
-// Intersection
-table.modify_segment(
-  @tabular.Rows::first().intersect(@tabular.Cols::last()).as_segment(),
-  @tabular.Setting::align(@tabular.Align::center()),
-)
-
-// Inverse
-table.modify_segment(
-  @tabular.Cell::new(0, 0).inverse().as_segment(),
-  @tabular.Setting::format(@tabular.Format::surround("*", "*")),
-)
-```
-
-### Cell and Segment
-
-```moonbit nocheck
-// Single cell
 table.modify_cell(
   @tabular.Cell::new(1, 2),
-  @tabular.Setting::align(@tabular.Align::right()),
-)
-
-// Segment (row range x column range)
-table.modify_segment(
-  @tabular.Segment::new(1, 3, 0, 2),
-  @tabular.Setting::padding(@tabular.Padding::new(2, 2, 0, 0)),
-)
-
-// By column name
-table.modify_by_col_name(
-  @tabular.ByColName::new("Name"),
-  @tabular.Setting::align(@tabular.Align::left()),
-)
-```
-
-## Format
-
-```moonbit nocheck
-// Replace all cell content
-table.modify_segment(
-  @tabular.Segment::all(),
-  @tabular.Setting::format(@tabular.Format::value("X")),
-)
-
-// Surround with prefix/suffix
-table.modify_rows(
-  @tabular.Rows::all().skip(1),
   @tabular.Setting::format(@tabular.Format::surround("[", "]")),
-)
-
-// Transform content with a function
-table.modify_segment(
-  @tabular.Segment::all(),
-  @tabular.Setting::format(
-    @tabular.Format::content(fn(value) { value.to_upper() }),
-  ),
-)
-
-// Position-aware formatting
-table.modify_segment(
-  @tabular.Segment::all(),
-  @tabular.Setting::format(
-    @tabular.Format::positioned(
-      fn(value, row, col) {
-        if row == 0 { value.to_upper() } else { value }
-      },
-    ),
-  ),
-)
-
-// Multiline formatting (applies per line)
-table.modify_segment(
-  @tabular.Segment::all(),
-  @tabular.Setting::format(
-    @tabular.Format::content(fn(value) { "> " + value }).multiline(),
-  ),
-)
+) |> ignore
 ```
 
 ## Spans
 
-### Column Span
-
 ```moonbit nocheck
-// Span cell (1,0) across 3 columns
-table.modify_cell(@tabular.Cell::new(1, 0), @tabular.Span::col(3))
+let table = @tabular.Table::from_rows([
+  ["Team", "Q1", "Q2", "Q3"],
+  ["A", "12", "18", "22"],
+  ["B", "10", "16", "21"],
+])
 
-// Full-row span (span 0 = entire row width)
-table.modify_cell(@tabular.Cell::new(0, 0), @tabular.Span::col(0))
-
-// Negative span: span leftward from the target cell
-table.modify_cell(@tabular.Cell::new(1, 2), @tabular.Span::col(-1))
-
-// Remove span
-table.modify_cell(@tabular.Cell::new(1, 0), @tabular.Span::col(1))
+table.apply(@tabular.Style::modern()) |> ignore
+table.modify_cell(@tabular.Cell::new(0, 0), @tabular.Span::col(2)) |> ignore
+table.correct_borders() |> ignore
+println(table.to_string())
 ```
 
-### Row Span
+Possible output:
 
-```moonbit nocheck
-// Span cell (0,0) across 2 rows
-table.modify_cell(@tabular.Cell::new(0, 0), @tabular.Span::row(2))
-
-// Full-column span (span 0 = entire column height)
-table.modify_cell(@tabular.Cell::new(0, 0), @tabular.Span::row(0))
-
-// Negative span: span upward from the target cell
-table.modify_cell(@tabular.Cell::new(2, 0), @tabular.Span::row(-1))
+```
+┌─────────────┬────┬────┐
+│    Team     │ Q2 │ Q3 │
+├──────┬──────┼────┼────┤
+│  A   │  12  │ 18 │ 22 │
+├──────┼──────┼────┼────┤
+│  B   │  10  │ 16 │ 21 │
+└──────┴──────┴────┴────┘
 ```
 
-## Panel
+## Panels And Merge
 
 ```moonbit nocheck
-// Add header panel
-table.panel(@tabular.Panel::header("Runtime Comparison"))
+let table = @tabular.Table::from_rows([
+  ["0", "1", "2"],
+  ["0", "1", "1"],
+  ["1", "1", "2"],
+  ["1", "1", "1"],
+])
 
-// Add footer panel
-table.panel(@tabular.Panel::footer("Source: GitHub"))
-
-// Insert horizontal panel at row index
-table.panel(@tabular.Panel::horizontal(2, "--- Section ---"))
-
-// Insert vertical panel at column index
-table.panel(@tabular.Panel::vertical(0, "Index"))
-
-// Vertical panel with text wrapping at specified width
-table.panel(@tabular.Panel::vertical_with_width(0, "Long text here", 5))
+table.panel(@tabular.Panel::header("Runtime Comparison")) |> ignore
+table.merge(@tabular.Merge::horizontal()) |> ignore
+println(table.to_string())
 ```
 
-## Merge
+## Highlight And Shadow
 
 ```moonbit nocheck
-// Merge adjacent duplicate cells horizontally
-table.merge(@tabular.Merge::horizontal())
-
-// Merge adjacent duplicate cells vertically
-table.merge(@tabular.Merge::vertical())
-```
-
-## Highlight
-
-```moonbit nocheck
-// Highlight a single cell with a border character
 table.highlight(
   @tabular.Highlight::outline_cell(@tabular.Cell::new(1, 1), '*'),
-)
+) |> ignore
 
-// Highlight entire rows
-table.highlight(
-  @tabular.Highlight::outline_rows(@tabular.Rows::first(), '#'),
-)
-
-// Highlight with a custom border
-let border = @tabular.Border::new()
-  .top('-').bottom('-').left('|').right('|')
-  .corner_top_left('+').corner_top_right('+')
-  .corner_bottom_left('+').corner_bottom_right('+')
-table.highlight(
-  @tabular.Highlight::new_cell(@tabular.Cell::new(0, 0)).with_border(border),
-)
+table.shadow(@tabular.Shadow::new(1)) |> ignore
 ```
 
-## Shadow
+## Split, Extract, Remove
 
 ```moonbit nocheck
-// Add shadow with size 1 (default: bottom-right, fill '▒')
-let shadow = @tabular.Shadow::new(1)
-table.shadow(shadow)
-
-// Custom shadow direction and fill
-let shadow = @tabular.Shadow::new(2)
-shadow.set_fill('#')
-shadow.set_top()     // Shadow on top
-shadow.set_left()    // Shadow on left
-table.shadow(shadow)
+table.extract_rows(@tabular.Rows::new(0, 2)) |> ignore
+table.remove_cols(@tabular.Cols::one(0)) |> ignore
+table.split(@tabular.Split::col(2).concat()) |> ignore
 ```
 
-## Extract and Remove
+## Validation
 
-```moonbit nocheck
-// Extract specific rows
-table.extract_rows(@tabular.Rows::new(0, 2))
+The current repository test suite passes:
 
-// Extract specific columns
-table.extract_cols(@tabular.Cols::new(1, 3))
-
-// Extract a segment (rows x columns intersection)
-table.extract_segment(
-  @tabular.Rows::new(1, 3),
-  @tabular.Cols::new(0, 2),
-)
-
-// Remove rows
-table.remove_rows(@tabular.Rows::first())
-
-// Remove columns
-table.remove_cols(@tabular.Cols::new(0, 2))
-
-// Remove column by header name
-table.remove_by_col_name(@tabular.ByColName::new("Age"))
-```
-
-## Split
-
-```moonbit nocheck
-// Split table at column 2 (zip mode by default)
-table.split(@tabular.Split::col(2))
-
-// Split and concatenate instead of zip
-table.split(@tabular.Split::col(2).concat())
-
-// Split at row 1, retain all cells (no cleanup)
-table.split(@tabular.Split::row(1).retain())
-
-// Split with clean mode (default: removes empty rows/columns)
-table.split(@tabular.Split::col(2).clean())
-```
-
-## Border Correction
-
-Fix border junction characters after applying spans:
-
-```moonbit nocheck
-table.modify_cell(@tabular.Cell::new(0, 0), @tabular.Span::col(2))
-table.correct_borders()
+```bash
+moon test
 ```
 
 ## License
