@@ -33,7 +33,7 @@ fn render_cell(
   align : HAlign,
 ) -> String {
   let available = width - padding_left - padding_right
-  let gap = available - content.length()
+  let gap = available - string_display_width(content)
   let (left_fill, right_fill) = match align {
     Left => (0, gap)
     Right => (gap, 0)

@@ -33,7 +33,7 @@ pub fn IterGridDimension::estimate(
           source.0,
           source.1,
         )
-        let width = line.length() + padding_left + padding_right
+        let width = string_display_width(line) + padding_left + padding_right
         if colspan <= 1 && width > widths[col] {
           widths[col] = width
         } else if colspan > 1 {

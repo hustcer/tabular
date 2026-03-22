@@ -214,6 +214,24 @@ test "table width wrap" {
 }
 
 ///|
+test "table width wrap with wide chars" {
+  let table = @tabular.Table::from_rows([["词条"], ["中中中"]])
+  table.apply(@tabular.Style::ascii()) |> ignore
+  table.set_width(@tabular.Width::wrap(4)) |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|+------+
+      #|| 词条 |
+      #|+------+
+      #|| 中中 |
+      #||  中  |
+      #|+------+
+    ),
+  )
+}
+
+///|
 test "table width truncate" {
   let table = @tabular.Table::from_rows([["text"], ["abcdef"]])
   table.modify_segment(
@@ -6610,6 +6628,28 @@ test "builder index col name none" {
 }
 
 ///|
+test "builder index col hide returns original table" {
+  let b = @tabular.Builder::from_rows([
+    ["n", "name"],
+    ["0", "Dmitriy"],
+    ["1", "Vladislav"],
+  ])
+  let table = b.index().col(1).hide().build()
+  inspect(
+    table.to_string(),
+    content=(
+      #|+---+-----------+
+      #|| n |   name    |
+      #|+---+-----------+
+      #|| 0 |  Dmitriy  |
+      #|+---+-----------+
+      #|| 1 | Vladislav |
+      #|+---+-----------+
+    ),
+  )
+}
+
+///|
 test "builder index transpose" {
   let b = @tabular.Builder::from_rows([
     ["n", "name", "zz"],
@@ -6634,12 +6674,58 @@ test "builder index transpose" {
 }
 
 ///|
+test "builder invalid negative indexes are no-op" {
+  let b = @tabular.Builder::from_rows([["a", "b"], ["c", "d"]])
+  b.insert_record(-1, ["x", "y"])
+  b.remove_record(-1)
+  b.insert_col(-1, ["x", "y"])
+  b.remove_col(-1)
+  inspect(
+    b.build().to_string(),
+    content=(
+      #|+---+---+
+      #|| a | b |
+      #|+---+---+
+      #|| c | d |
+      #|+---+---+
+    ),
+  )
+}
+
+///|
 test "builder count_records and count_cols" {
   let b = @tabular.Builder::default()
   b.push_record(["a", "b", "c"])
   b.push_record(["d", "e"])
   inspect(b.count_records(), content="2")
   inspect(b.count_cols(), content="3")
+}
+
+///|
+test "extract rows excluding all yields empty" {
+  let table = @tabular.Table::from_rows([["h1", "h2"], ["a", "b"]])
+  let extracted = table.extract_rows(
+    @tabular.Rows::all().not(@tabular.Rows::all()),
+  )
+  inspect(extracted.to_string(), content="")
+}
+
+///|
+test "extract cols excluding last keeps first cols only" {
+  let table = @tabular.Table::from_rows([["h1", "h2", "h3"], ["a", "b", "c"]])
+  let extracted = table.extract_cols(
+    @tabular.Cols::all().not(@tabular.Cols::last()),
+  )
+  inspect(
+    extracted.to_string(),
+    content=(
+      #|+----+----+
+      #|| h1 | h2 |
+      #|+----+----+
+      #|| a  | b  |
+      #|+----+----+
+    ),
+  )
 }
 
 ///|

@@ -226,7 +226,7 @@ let table1 = builder.index().build()
 let table2 = builder.index().transpose().build()
 
 ///|
-let table3 = builder.index().col(0).hide().build()
+let table3 = builder.index().hide().build()
 ```
 
 ## Common Edits

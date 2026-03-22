@@ -47,6 +47,7 @@ pub struct Rows {
   step_n : Int
   exclude_start : Int
   exclude_end : Int
+  exclude : Rows?
   predicate : ((Entity) -> Bool)?
 }
 
@@ -58,6 +59,7 @@ pub struct Cols {
   step_n : Int
   exclude_start : Int
   exclude_end : Int
+  exclude : Cols?
   predicate : ((Entity) -> Bool)?
 }
 

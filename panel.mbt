@@ -48,15 +48,13 @@ fn split_string_by_width(s : String, width : Int) -> String {
   if width <= 0 {
     return ""
   }
+  let lines = @papergrid.apply_width(s, @papergrid.WidthMode::wrap(width))
   let buf = StringBuilder::new()
-  let mut count = 0
-  for ch in s {
-    if count >= width {
+  for i, line in lines {
+    if i > 0 {
       buf.write_char('\n')
-      count = 0
     }
-    buf.write_char(ch)
-    count += 1
+    buf.write_string(line)
   }
   buf.to_string()
 }

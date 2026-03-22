@@ -53,22 +53,103 @@ pub fn split_lines(content : String) -> Array[String] {
 }
 
 ///|
+fn is_zero_width_char(ch : Char) -> Bool {
+  let code = ch.to_int()
+  (code >= 0x0300 && code <= 0x036F) ||
+  (code >= 0x1AB0 && code <= 0x1AFF) ||
+  (code >= 0x1DC0 && code <= 0x1DFF) ||
+  (code >= 0x20D0 && code <= 0x20FF) ||
+  (code >= 0xFE00 && code <= 0xFE0F) ||
+  (code >= 0xFE20 && code <= 0xFE2F)
+}
+
+///|
+fn is_wide_char(ch : Char) -> Bool {
+  let code = ch.to_int()
+  (code >= 0x1100 && code <= 0x115F) ||
+  (code >= 0x2329 && code <= 0x232A) ||
+  (code >= 0x2E80 && code <= 0xA4CF) ||
+  (code >= 0xAC00 && code <= 0xD7A3) ||
+  (code >= 0xF900 && code <= 0xFAFF) ||
+  (code >= 0xFE10 && code <= 0xFE19) ||
+  (code >= 0xFE30 && code <= 0xFE6F) ||
+  (code >= 0xFF00 && code <= 0xFF60) ||
+  (code >= 0xFFE0 && code <= 0xFFE6) ||
+  (code >= 0x1F300 && code <= 0x1FAFF) ||
+  (code >= 0x20000 && code <= 0x3FFFD)
+}
+
+///|
+fn char_display_width(ch : Char) -> Int {
+  if is_zero_width_char(ch) {
+    0
+  } else if is_wide_char(ch) {
+    2
+  } else {
+    1
+  }
+}
+
+///|
+fn string_display_width(line : String) -> Int {
+  let mut width = 0
+  for ch in line {
+    width += char_display_width(ch)
+  }
+  width
+}
+
+///|
+fn take_prefix_by_width(line : String, width : Int) -> String {
+  if width <= 0 {
+    return ""
+  }
+  let sb = StringBuilder::new()
+  let mut used = 0
+  for ch in line {
+    let ch_width = char_display_width(ch)
+    if used + ch_width > width && used > 0 {
+      break
+    }
+    if ch_width > width && used == 0 {
+      break
+    }
+    sb.write_char(ch)
+    used += ch_width
+    if used >= width {
+      break
+    }
+  }
+  sb.to_string()
+}
+
+///|
 fn chunk_line(line : String, width : Int) -> Array[String] {
   if width <= 0 {
     return [""]
   }
-  if line.length() <= width {
+  if string_display_width(line) <= width {
     return [line]
   }
-
   let parts = []
-  for start = 0; start < line.length(); start = start + width {
-    let end_index = if start + width < line.length() {
-      start + width
-    } else {
-      line.length()
+  let mut current = StringBuilder::new()
+  let mut current_width = 0
+  for ch in line {
+    let ch_width = char_display_width(ch)
+    if current_width > 0 && current_width + ch_width > width {
+      parts.push(current.to_string())
+      current = StringBuilder::new()
+      current_width = 0
     }
-    parts.push(line.unsafe_substring(start~, end=end_index))
+    if current_width == 0 && ch_width > width {
+      parts.push(ch.to_string())
+      continue
+    }
+    current.write_char(ch)
+    current_width += ch_width
+  }
+  if current_width > 0 || parts.is_empty() {
+    parts.push(current.to_string())
   }
   parts
 }
@@ -89,16 +170,17 @@ pub fn apply_width(content : String, mode : WidthMode) -> Array[String] {
     }
     Truncate(width, suffix) => {
       let result = []
+      let suffix_width = string_display_width(suffix)
       lines.each(line => {
         if width <= 0 {
           result.push("")
-        } else if line.length() <= width {
+        } else if string_display_width(line) <= width {
           result.push(line)
-        } else if suffix.length() >= width {
-          result.push(suffix.unsafe_substring(start=0, end=width))
+        } else if suffix_width >= width {
+          result.push(take_prefix_by_width(suffix, width))
         } else {
-          let keep = width - suffix.length()
-          result.push(line.unsafe_substring(start=0, end=keep) + suffix)
+          let keep = width - suffix_width
+          result.push(take_prefix_by_width(line, keep) + suffix)
         }
       })
       if result.is_empty() {

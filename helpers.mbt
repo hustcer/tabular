@@ -140,7 +140,7 @@ fn resolve_indexes(
 
 ///|
 fn resolve_rows(rows : Rows, count : Int) -> Array[Int] {
-  let indexes = resolve_indexes(
+  let mut indexes = resolve_indexes(
     rows.start,
     rows.end_,
     count,
@@ -149,6 +149,19 @@ fn resolve_rows(rows : Rows, count : Int) -> Array[Int] {
     rows.skip_n,
     rows.step_n,
   )
+  match rows.exclude {
+    Some(excluded_rows) => {
+      let excluded = resolve_rows(excluded_rows, count)
+      let filtered = []
+      indexes.each(index => {
+        if !excluded.contains(index) {
+          filtered.push(index)
+        }
+      })
+      indexes = filtered
+    }
+    None => ()
+  }
   match rows.predicate {
     Some(predicate) => {
       let filtered = []
@@ -161,7 +174,7 @@ fn resolve_rows(rows : Rows, count : Int) -> Array[Int] {
 
 ///|
 fn resolve_cols(cols : Cols, count : Int) -> Array[Int] {
-  let indexes = resolve_indexes(
+  let mut indexes = resolve_indexes(
     cols.start,
     cols.end_,
     count,
@@ -170,6 +183,19 @@ fn resolve_cols(cols : Cols, count : Int) -> Array[Int] {
     cols.skip_n,
     cols.step_n,
   )
+  match cols.exclude {
+    Some(excluded_cols) => {
+      let excluded = resolve_cols(excluded_cols, count)
+      let filtered = []
+      indexes.each(index => {
+        if !excluded.contains(index) {
+          filtered.push(index)
+        }
+      })
+      indexes = filtered
+    }
+    None => ()
+  }
   match cols.predicate {
     Some(predicate) => {
       let filtered = []
@@ -881,12 +907,12 @@ pub fn IndexBuilder::build(self : IndexBuilder) -> Table {
   if row_count == 0 || col_count == 0 {
     return Table::from_rows(norm)
   }
+  if not(self.show_index) {
+    return Table::from_rows(norm)
+  }
   match self.index_col {
     None => {
       // Default: add a numeric index col at position 0
-      if not(self.show_index) {
-        return Table::from_rows(norm)
-      }
       let result : Array[Array[String]] = []
       for i in 0..<row_count {
         let row : Array[String] = []

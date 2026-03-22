@@ -30,12 +30,15 @@ pub fn Builder::insert_record(
   index : Int,
   row : Array[String],
 ) -> Unit {
+  if index < 0 || index > self.rows.length() {
+    return
+  }
   self.rows.insert(index, row)
 }
 
 ///|
 pub fn Builder::remove_record(self : Builder, index : Int) -> Unit {
-  if index < self.rows.length() {
+  if index >= 0 && index < self.rows.length() {
     self.rows.remove(index) |> ignore
   }
 }
@@ -46,6 +49,9 @@ pub fn Builder::insert_col(
   index : Int,
   col : Array[String],
 ) -> Unit {
+  if index < 0 {
+    return
+  }
   let row_count = if self.rows.length() > col.length() {
     self.rows.length()
   } else {
@@ -81,6 +87,9 @@ pub fn Builder::push_col(self : Builder, col : Array[String]) -> Unit {
 
 ///|
 pub fn Builder::remove_col(self : Builder, index : Int) -> Unit {
+  if index < 0 {
+    return
+  }
   self.rows.each(row => if index < row.length() { row.remove(index) |> ignore })
 }
 
