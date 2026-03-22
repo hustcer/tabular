@@ -7,6 +7,9 @@ fn main {
     ["Node.js", "C++/JS", "110k", "MIT"],
     ["MoonBit", "Rust", "1.2k", "Apache-2.0"],
   ]
+
+  // 1. Style presets
+  println("== Style Presets ==\n")
   let styles : Array[(String, @tabular.Style)] = [
     ("ascii", @tabular.Style::ascii()),
     ("modern", @tabular.Style::modern()),
@@ -27,9 +30,104 @@ fn main {
     if i > 0 {
       println("")
     }
-    println(
-      "────────── Style: \{name} ──────────\n",
-    )
+    println("--- Style: \{name} ---\n")
     println(table.to_string())
   }
+
+  // 2. Builder usage
+  println("\n== Builder ==\n")
+  let builder = @tabular.Builder::default()
+  builder.push_record(["Language", "Type", "Year"])
+  builder.push_record(["Rust", "Compiled", "2010"])
+  builder.push_record(["MoonBit", "Compiled", "2022"])
+  builder.push_record(["Python", "Interpreted", "1991"])
+  let table = builder.build()
+  table.apply(@tabular.Style::rounded()) |> ignore
+  println(table.to_string())
+
+  // 3. Alignment and padding
+  println("\n== Alignment & Padding ==\n")
+  let table = @tabular.Table::from_rows(data)
+  table.apply(@tabular.Style::modern()) |> ignore
+  table.modify_rows(
+    @tabular.Rows::first(),
+    @tabular.Setting::alignment(@tabular.Alignment::center()),
+  )
+  |> ignore
+  table.modify_columns(
+    @tabular.Columns::last(),
+    @tabular.Setting::alignment(@tabular.Alignment::right()),
+  )
+  |> ignore
+  table.modify_rows(
+    @tabular.Rows::first(),
+    @tabular.Setting::padding(@tabular.Padding::new(2, 2, 0, 0)),
+  )
+  |> ignore
+  println(table.to_string())
+
+  // 4. Format
+  println("\n== Format ==\n")
+  let table = @tabular.Table::from_rows([
+    ["name", "value"],
+    ["pi", "3.14"],
+    ["e", "2.72"],
+  ])
+  table.apply(@tabular.Style::ascii()) |> ignore
+  table.modify_rows(
+    @tabular.Rows::first(),
+    @tabular.Setting::format(@tabular.Format::content(fn(v) { v.to_upper() })),
+  )
+  |> ignore
+  table.modify_rows(
+    @tabular.Rows::all().skip(1),
+    @tabular.Setting::format(@tabular.Format::surround("[", "]")),
+  )
+  |> ignore
+  println(table.to_string())
+
+  // 5. Panel
+  println("\n== Panel ==\n")
+  let table = @tabular.Table::from_rows(data)
+  table.apply(@tabular.Style::modern()) |> ignore
+  table.apply_panel(@tabular.Panel::header("JavaScript Runtime Comparison"))
+  |> ignore
+  println(table.to_string())
+
+  // 6. Shadow
+  println("\n== Shadow ==\n")
+  let table = @tabular.Table::from_rows([["A", "B"], ["1", "2"], ["3", "4"]])
+  table.apply(@tabular.Style::rounded()) |> ignore
+  let shadow = @tabular.Shadow::new(1)
+  table.apply_shadow(shadow) |> ignore
+  println(table.to_string())
+
+  // 7. Extract
+  println("\n== Extract ==\n")
+  let table = @tabular.Table::from_rows(data)
+  table.apply(@tabular.Style::modern()) |> ignore
+  table.extract_columns(@tabular.Columns::new(0, 2)) |> ignore
+  println(table.to_string())
+
+  // 8. Merge
+  println("\n== Merge ==\n")
+  let table = @tabular.Table::from_rows([
+    ["name", "type", "type"],
+    ["Rust", "compiled", "compiled"],
+    ["Python", "interpreted", "dynamic"],
+  ])
+  table.apply(@tabular.Style::modern()) |> ignore
+  table.apply_merge(@tabular.Merge::horizontal()) |> ignore
+  println(table.to_string())
+
+  // 9. Split
+  println("\n== Split ==\n")
+  let table = @tabular.Table::from_rows([
+    ["A", "B", "C", "D"],
+    ["1", "2", "3", "4"],
+    ["5", "6", "7", "8"],
+  ])
+  table.apply(@tabular.Style::ascii()) |> ignore
+  table.apply_split(@tabular.Split::column(2)) |> ignore
+  println(table.to_string())
 }

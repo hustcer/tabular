@@ -59,6 +59,7 @@ Already implemented and passing:
   - `Format::positioned`
   - `Format::multiline`
 - Test count: `294`
+- Phase 9 (docs/examples) complete
 
 ## Constraints
 
@@ -438,20 +439,36 @@ Acceptance:
 
 ### Phase 9: Examples / Docs / API Cleanup
 
-Status: not started
+Status: complete
 
-Remaining work:
+Completed in this phase:
 
-- Add README examples reflecting the actual MoonBit API
-- Document intentional API differences from Rust upstream
-  - `apply` vs `with`
-  - `and_` / `not_`
-  - any explicit `as_segment()` bridging
-- Add examples for:
-  - builder usage
-  - selector composition
-  - formatting
-  - removal / extraction
+- Updated `moon.mod.json` with description, keywords, and repository metadata
+- Wrote comprehensive `README.mbt.md` with:
+  - Project introduction and feature overview
+  - Installation instructions
+  - Quick start example with output
+  - All 11 style preset examples with collapsible rendered output
+  - Custom borders, border removal, and custom horizontal lines
+  - Builder usage: construction, insert/remove, fill empty, clean, index/transpose
+  - Alignment (horizontal and vertical) with global and scoped examples
+  - Padding with global and per-row examples
+  - Width and Height (wrap, truncate, increase, limit) with per-column/row scoping
+  - Full selector documentation: Rows, Columns, Cell, Segment, ByColumnName
+  - Selector composition: union, difference, intersection, inverse
+  - Format: value, surround, content, positioned, multiline
+  - Column and row spans including negative/zero span semantics
+  - Panel (header, footer, horizontal, vertical)
+  - Merge (horizontal, vertical)
+  - Highlight (cell, row, column, custom border)
+  - Shadow (directions, fill, offset)
+  - Extract and Remove operations
+  - Split (column, row, zip, concat, clean, retain)
+  - Border Correction
+  - API differences table documenting all intentional deviations from Rust upstream
+- Updated `cmd/main/main.mbt` demo to showcase 9 feature categories:
+  - Style presets (all 11), Builder, Alignment & Padding, Format, Panel, Shadow, Extract, Merge, Split
+- Re-verified `moon fmt`, `moon check -d`, `moon build -d`, and `moon test -d` (294 tests passing, 0 warnings)
 
 Acceptance:
 

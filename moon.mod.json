@@ -1,9 +1,9 @@
 {
   "name": "hustcer/tabular",
-  "version": "0.1.0",
+  "version": "0.5.0",
   "readme": "README.mbt.md",
-  "repository": "",
+  "repository": "https://github.com/hustcer/tabular",
   "license": "Apache-2.0",
-  "keywords": [],
-  "description": ""
+  "keywords": ["table", "tui", "terminal", "cli", "format", "grid", "pretty-print"],
+  "description": "A MoonBit library for pretty-printing tables in terminal. Ported from Rust tabled."
 }
