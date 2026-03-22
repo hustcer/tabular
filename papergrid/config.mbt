@@ -1,4 +1,12 @@
 ///|
+enum Scope {
+  RowRange(Int, Int)
+  ColRange(Int, Int)
+  All
+  Cell(Int, Int)
+}
+
+///|
 pub enum HAlign {
   Left
   Right
@@ -184,11 +192,11 @@ pub struct SpannedConfig {
   mut height_mode : HeightMode
   mut horizontal_lines : HorizontalLines
   custom_horizontal_lines : Array[(Int, HorizontalLine)]
-  width_rules : Array[(Int, Int, Int, WidthMode)]
-  height_rules : Array[(Int, Int, Int, HeightMode)]
-  align_rules : Array[(Int, Int, Int, HAlign)]
-  valign_rules : Array[(Int, Int, Int, VAlign)]
-  padding_rules : Array[(Int, Int, Int, Int, Int, Int, Int)]
+  width_rules : Array[(Scope, WidthMode)]
+  height_rules : Array[(Scope, HeightMode)]
+  align_rules : Array[(Scope, HAlign)]
+  valign_rules : Array[(Scope, VAlign)]
+  padding_rules : Array[(Scope, Int, Int, Int, Int)]
   col_spans : Array[(Int, Int, Int)]
   row_spans : Array[(Int, Int, Int)]
   span_sources : Array[(Int, Int, Int, Int)]
@@ -341,7 +349,7 @@ pub fn SpannedConfig::set_width_mode_for_rows(
   end : Int,
   mode : WidthMode,
 ) -> Unit {
-  self.width_rules.push((0, start, end, mode))
+  self.width_rules.push((RowRange(start, end), mode))
 }
 
 ///|
@@ -351,7 +359,7 @@ pub fn SpannedConfig::set_width_mode_for_cols(
   end : Int,
   mode : WidthMode,
 ) -> Unit {
-  self.width_rules.push((1, start, end, mode))
+  self.width_rules.push((ColRange(start, end), mode))
 }
 
 ///|
@@ -359,7 +367,7 @@ pub fn SpannedConfig::set_width_mode_for_all(
   self : SpannedConfig,
   mode : WidthMode,
 ) -> Unit {
-  self.width_rules.push((2, 0, 0, mode))
+  self.width_rules.push((All, mode))
 }
 
 ///|
@@ -369,7 +377,7 @@ pub fn SpannedConfig::set_width_mode_for_cell(
   col : Int,
   mode : WidthMode,
 ) -> Unit {
-  self.width_rules.push((3, row, col, mode))
+  self.width_rules.push((Cell(row, col), mode))
 }
 
 ///|
@@ -380,8 +388,8 @@ pub fn SpannedConfig::width_mode_at(
 ) -> WidthMode {
   let mut value = self.width_mode
   self.width_rules.each(rule => {
-    if scope_matches(rule.0, rule.1, rule.2, row, col) {
-      value = rule.3
+    if scope_matches(rule.0, row, col) {
+      value = rule.1
     }
   })
   value
@@ -407,7 +415,7 @@ pub fn SpannedConfig::set_height_mode_for_rows(
   end : Int,
   mode : HeightMode,
 ) -> Unit {
-  self.height_rules.push((0, start, end, mode))
+  self.height_rules.push((RowRange(start, end), mode))
 }
 
 ///|
@@ -417,7 +425,7 @@ pub fn SpannedConfig::set_height_mode_for_cols(
   end : Int,
   mode : HeightMode,
 ) -> Unit {
-  self.height_rules.push((1, start, end, mode))
+  self.height_rules.push((ColRange(start, end), mode))
 }
 
 ///|
@@ -425,7 +433,7 @@ pub fn SpannedConfig::set_height_mode_for_all(
   self : SpannedConfig,
   mode : HeightMode,
 ) -> Unit {
-  self.height_rules.push((2, 0, 0, mode))
+  self.height_rules.push((All, mode))
 }
 
 ///|
@@ -435,7 +443,7 @@ pub fn SpannedConfig::set_height_mode_for_cell(
   col : Int,
   mode : HeightMode,
 ) -> Unit {
-  self.height_rules.push((3, row, col, mode))
+  self.height_rules.push((Cell(row, col), mode))
 }
 
 ///|
@@ -446,8 +454,8 @@ pub fn SpannedConfig::height_mode_at(
 ) -> HeightMode {
   let mut value = self.height_mode
   self.height_rules.each(rule => {
-    if scope_matches(rule.0, rule.1, rule.2, row, col) {
-      value = rule.3
+    if scope_matches(rule.0, row, col) {
+      value = rule.1
     }
   })
   value
@@ -492,21 +500,12 @@ pub fn SpannedConfig::custom_horizontal_line(
 }
 
 ///|
-fn scope_matches(
-  kind : Int,
-  start : Int,
-  end : Int,
-  row : Int,
-  col : Int,
-) -> Bool {
-  if kind == 0 {
-    row >= start && row < end
-  } else if kind == 1 {
-    col >= start && col < end
-  } else if kind == 3 {
-    row == start && col == end
-  } else {
-    true
+fn scope_matches(scope : Scope, row : Int, col : Int) -> Bool {
+  match scope {
+    RowRange(start, end) => row >= start && row < end
+    ColRange(start, end) => col >= start && col < end
+    Cell(r, c) => row == r && col == c
+    All => true
   }
 }
 
@@ -517,7 +516,7 @@ pub fn SpannedConfig::set_align_for_rows(
   end : Int,
   align : HAlign,
 ) -> Unit {
-  self.align_rules.push((0, start, end, align))
+  self.align_rules.push((RowRange(start, end), align))
 }
 
 ///|
@@ -527,7 +526,7 @@ pub fn SpannedConfig::set_align_for_cols(
   end : Int,
   align : HAlign,
 ) -> Unit {
-  self.align_rules.push((1, start, end, align))
+  self.align_rules.push((ColRange(start, end), align))
 }
 
 ///|
@@ -535,7 +534,7 @@ pub fn SpannedConfig::set_align_for_all(
   self : SpannedConfig,
   align : HAlign,
 ) -> Unit {
-  self.align_rules.push((2, 0, 0, align))
+  self.align_rules.push((All, align))
 }
 
 ///|
@@ -545,7 +544,7 @@ pub fn SpannedConfig::set_align_for_cell(
   col : Int,
   align : HAlign,
 ) -> Unit {
-  self.align_rules.push((3, row, col, align))
+  self.align_rules.push((Cell(row, col), align))
 }
 
 ///|
@@ -556,8 +555,8 @@ pub fn SpannedConfig::align_at(
 ) -> HAlign {
   let mut value = self.align
   self.align_rules.each(rule => {
-    if scope_matches(rule.0, rule.1, rule.2, row, col) {
-      value = rule.3
+    if scope_matches(rule.0, row, col) {
+      value = rule.1
     }
   })
   value
@@ -570,7 +569,7 @@ pub fn SpannedConfig::set_valign_for_rows(
   end : Int,
   align : VAlign,
 ) -> Unit {
-  self.valign_rules.push((0, start, end, align))
+  self.valign_rules.push((RowRange(start, end), align))
 }
 
 ///|
@@ -580,7 +579,7 @@ pub fn SpannedConfig::set_valign_for_cols(
   end : Int,
   align : VAlign,
 ) -> Unit {
-  self.valign_rules.push((1, start, end, align))
+  self.valign_rules.push((ColRange(start, end), align))
 }
 
 ///|
@@ -588,7 +587,7 @@ pub fn SpannedConfig::set_valign_for_all(
   self : SpannedConfig,
   align : VAlign,
 ) -> Unit {
-  self.valign_rules.push((2, 0, 0, align))
+  self.valign_rules.push((All, align))
 }
 
 ///|
@@ -598,7 +597,7 @@ pub fn SpannedConfig::set_valign_for_cell(
   col : Int,
   align : VAlign,
 ) -> Unit {
-  self.valign_rules.push((3, row, col, align))
+  self.valign_rules.push((Cell(row, col), align))
 }
 
 ///|
@@ -609,8 +608,8 @@ pub fn SpannedConfig::valign_at(
 ) -> VAlign {
   let mut value = self.valign
   self.valign_rules.each(rule => {
-    if scope_matches(rule.0, rule.1, rule.2, row, col) {
-      value = rule.3
+    if scope_matches(rule.0, row, col) {
+      value = rule.1
     }
   })
   value
@@ -626,7 +625,7 @@ pub fn SpannedConfig::set_padding_for_rows(
   top : Int,
   bottom : Int,
 ) -> Unit {
-  self.padding_rules.push((0, start, end, left, right, top, bottom))
+  self.padding_rules.push((RowRange(start, end), left, right, top, bottom))
 }
 
 ///|
@@ -639,7 +638,7 @@ pub fn SpannedConfig::set_padding_for_cols(
   top : Int,
   bottom : Int,
 ) -> Unit {
-  self.padding_rules.push((1, start, end, left, right, top, bottom))
+  self.padding_rules.push((ColRange(start, end), left, right, top, bottom))
 }
 
 ///|
@@ -650,7 +649,7 @@ pub fn SpannedConfig::set_padding_for_all(
   top : Int,
   bottom : Int,
 ) -> Unit {
-  self.padding_rules.push((2, 0, 0, left, right, top, bottom))
+  self.padding_rules.push((All, left, right, top, bottom))
 }
 
 ///|
@@ -663,7 +662,7 @@ pub fn SpannedConfig::set_padding_for_cell(
   top : Int,
   bottom : Int,
 ) -> Unit {
-  self.padding_rules.push((3, row, col, left, right, top, bottom))
+  self.padding_rules.push((Cell(row, col), left, right, top, bottom))
 }
 
 ///|
@@ -677,11 +676,11 @@ pub fn SpannedConfig::padding_at(
   let mut top = self.padding_top
   let mut bottom = self.padding_bottom
   self.padding_rules.each(rule => {
-    if scope_matches(rule.0, rule.1, rule.2, row, col) {
-      left = rule.3
-      right = rule.4
-      top = rule.5
-      bottom = rule.6
+    if scope_matches(rule.0, row, col) {
+      left = rule.1
+      right = rule.2
+      top = rule.3
+      bottom = rule.4
     }
   })
   (left, right, top, bottom)
@@ -896,7 +895,7 @@ pub fn SpannedConfig::is_cell_covered_by_col_span(
   row : Int,
   col : Int,
 ) -> Bool {
-  for index = 0; index < self.col_spans.length(); index = index + 1 {
+  for index in 0..<self.col_spans.length() {
     let item = self.col_spans[index]
     if item.0 == row && col > item.1 && col < item.1 + item.2 {
       return true
@@ -911,7 +910,7 @@ pub fn SpannedConfig::is_cell_covered_by_row_span(
   row : Int,
   col : Int,
 ) -> Bool {
-  for index = 0; index < self.row_spans.length(); index = index + 1 {
+  for index in 0..<self.row_spans.length() {
     let item = self.row_spans[index]
     let colspan = self.col_span_at(item.0, item.1)
     if row > item.0 &&
@@ -932,14 +931,14 @@ pub fn SpannedConfig::is_cell_covered_by_both_spans(
 ) -> Bool {
   // Find anchor cells that have BOTH row and col spans,
   // then check if (row, col) is strictly inside both ranges.
-  for i = 0; i < self.row_spans.length(); i = i + 1 {
+  for i in 0..<self.row_spans.length() {
     let rs = self.row_spans[i]
     let anchor_row = rs.0
     let anchor_col = rs.1
     let row_span = rs.2
     if row > anchor_row && row < anchor_row + row_span {
       // This anchor's row span covers our row. Check if it also has a col span.
-      for j = 0; j < self.col_spans.length(); j = j + 1 {
+      for j in 0..<self.col_spans.length() {
         let cs = self.col_spans[j]
         if cs.0 == anchor_row && cs.1 == anchor_col {
           let col_span = cs.2
@@ -959,7 +958,7 @@ pub fn SpannedConfig::is_cell_visible(
   row : Int,
   col : Int,
 ) -> Bool {
-  for index = 0; index < self.col_spans.length(); index = index + 1 {
+  for index in 0..<self.col_spans.length() {
     let item = self.col_spans[index]
     let rowspan = self.row_span_at(item.0, item.1)
     if row >= item.0 &&
@@ -969,7 +968,7 @@ pub fn SpannedConfig::is_cell_visible(
       return false
     }
   }
-  for index = 0; index < self.row_spans.length(); index = index + 1 {
+  for index in 0..<self.row_spans.length() {
     let item = self.row_spans[index]
     let colspan = self.col_span_at(item.0, item.1)
     if row > item.0 &&
@@ -1029,7 +1028,7 @@ fn set_or_overwrite_3(
   b : Int,
   ch : Char,
 ) -> Unit {
-  for i = 0; i < arr.length(); i = i + 1 {
+  for i in 0..<arr.length() {
     if arr[i].0 == a && arr[i].1 == b {
       arr[i] = (a, b, ch)
       return
@@ -1342,21 +1341,22 @@ pub fn SpannedConfig::remap(
 
   let next_align_rules = []
   self.align_rules.each(rule => {
-    if rule.0 == 0 {
-      mapped_runs(row_map, rule.1, rule.2).each(run => {
-        next_align_rules.push((0, run.0, run.1, rule.3))
-      })
-    } else if rule.0 == 1 {
-      mapped_runs(col_map, rule.1, rule.2).each(run => {
-        next_align_rules.push((1, run.0, run.1, rule.3))
-      })
-    } else if rule.0 == 2 {
-      next_align_rules.push(rule)
-    } else {
-      let row = map_index(row_map, rule.1)
-      let col = map_index(col_map, rule.2)
-      if row >= 0 && col >= 0 {
-        next_align_rules.push((3, row, col, rule.3))
+    match rule.0 {
+      RowRange(start, end) =>
+        mapped_runs(row_map, start, end).each(run => {
+          next_align_rules.push((RowRange(run.0, run.1), rule.1))
+        })
+      ColRange(start, end) =>
+        mapped_runs(col_map, start, end).each(run => {
+          next_align_rules.push((ColRange(run.0, run.1), rule.1))
+        })
+      All => next_align_rules.push(rule)
+      Cell(r, c) => {
+        let row = map_index(row_map, r)
+        let col = map_index(col_map, c)
+        if row >= 0 && col >= 0 {
+          next_align_rules.push((Cell(row, col), rule.1))
+        }
       }
     }
   })
@@ -1365,21 +1365,22 @@ pub fn SpannedConfig::remap(
 
   let next_valign_rules = []
   self.valign_rules.each(rule => {
-    if rule.0 == 0 {
-      mapped_runs(row_map, rule.1, rule.2).each(run => {
-        next_valign_rules.push((0, run.0, run.1, rule.3))
-      })
-    } else if rule.0 == 1 {
-      mapped_runs(col_map, rule.1, rule.2).each(run => {
-        next_valign_rules.push((1, run.0, run.1, rule.3))
-      })
-    } else if rule.0 == 2 {
-      next_valign_rules.push(rule)
-    } else {
-      let row = map_index(row_map, rule.1)
-      let col = map_index(col_map, rule.2)
-      if row >= 0 && col >= 0 {
-        next_valign_rules.push((3, row, col, rule.3))
+    match rule.0 {
+      RowRange(start, end) =>
+        mapped_runs(row_map, start, end).each(run => {
+          next_valign_rules.push((RowRange(run.0, run.1), rule.1))
+        })
+      ColRange(start, end) =>
+        mapped_runs(col_map, start, end).each(run => {
+          next_valign_rules.push((ColRange(run.0, run.1), rule.1))
+        })
+      All => next_valign_rules.push(rule)
+      Cell(r, c) => {
+        let row = map_index(row_map, r)
+        let col = map_index(col_map, c)
+        if row >= 0 && col >= 0 {
+          next_valign_rules.push((Cell(row, col), rule.1))
+        }
       }
     }
   })
@@ -1388,25 +1389,28 @@ pub fn SpannedConfig::remap(
 
   let next_padding_rules = []
   self.padding_rules.each(rule => {
-    if rule.0 == 0 {
-      mapped_runs(row_map, rule.1, rule.2).each(run => {
-        next_padding_rules.push(
-          (0, run.0, run.1, rule.3, rule.4, rule.5, rule.6),
-        )
-      })
-    } else if rule.0 == 1 {
-      mapped_runs(col_map, rule.1, rule.2).each(run => {
-        next_padding_rules.push(
-          (1, run.0, run.1, rule.3, rule.4, rule.5, rule.6),
-        )
-      })
-    } else if rule.0 == 2 {
-      next_padding_rules.push(rule)
-    } else {
-      let row = map_index(row_map, rule.1)
-      let col = map_index(col_map, rule.2)
-      if row >= 0 && col >= 0 {
-        next_padding_rules.push((3, row, col, rule.3, rule.4, rule.5, rule.6))
+    match rule.0 {
+      RowRange(start, end) =>
+        mapped_runs(row_map, start, end).each(run => {
+          next_padding_rules.push(
+            (RowRange(run.0, run.1), rule.1, rule.2, rule.3, rule.4),
+          )
+        })
+      ColRange(start, end) =>
+        mapped_runs(col_map, start, end).each(run => {
+          next_padding_rules.push(
+            (ColRange(run.0, run.1), rule.1, rule.2, rule.3, rule.4),
+          )
+        })
+      All => next_padding_rules.push(rule)
+      Cell(r, c) => {
+        let row = map_index(row_map, r)
+        let col = map_index(col_map, c)
+        if row >= 0 && col >= 0 {
+          next_padding_rules.push(
+            (Cell(row, col), rule.1, rule.2, rule.3, rule.4),
+          )
+        }
       }
     }
   })
@@ -1415,21 +1419,22 @@ pub fn SpannedConfig::remap(
 
   let next_width_rules = []
   self.width_rules.each(rule => {
-    if rule.0 == 0 {
-      mapped_runs(row_map, rule.1, rule.2).each(run => {
-        next_width_rules.push((0, run.0, run.1, rule.3))
-      })
-    } else if rule.0 == 1 {
-      mapped_runs(col_map, rule.1, rule.2).each(run => {
-        next_width_rules.push((1, run.0, run.1, rule.3))
-      })
-    } else if rule.0 == 2 {
-      next_width_rules.push(rule)
-    } else {
-      let row = map_index(row_map, rule.1)
-      let col = map_index(col_map, rule.2)
-      if row >= 0 && col >= 0 {
-        next_width_rules.push((3, row, col, rule.3))
+    match rule.0 {
+      RowRange(start, end) =>
+        mapped_runs(row_map, start, end).each(run => {
+          next_width_rules.push((RowRange(run.0, run.1), rule.1))
+        })
+      ColRange(start, end) =>
+        mapped_runs(col_map, start, end).each(run => {
+          next_width_rules.push((ColRange(run.0, run.1), rule.1))
+        })
+      All => next_width_rules.push(rule)
+      Cell(r, c) => {
+        let row = map_index(row_map, r)
+        let col = map_index(col_map, c)
+        if row >= 0 && col >= 0 {
+          next_width_rules.push((Cell(row, col), rule.1))
+        }
       }
     }
   })
@@ -1438,21 +1443,22 @@ pub fn SpannedConfig::remap(
 
   let next_height_rules = []
   self.height_rules.each(rule => {
-    if rule.0 == 0 {
-      mapped_runs(row_map, rule.1, rule.2).each(run => {
-        next_height_rules.push((0, run.0, run.1, rule.3))
-      })
-    } else if rule.0 == 1 {
-      mapped_runs(col_map, rule.1, rule.2).each(run => {
-        next_height_rules.push((1, run.0, run.1, rule.3))
-      })
-    } else if rule.0 == 2 {
-      next_height_rules.push(rule)
-    } else {
-      let row = map_index(row_map, rule.1)
-      let col = map_index(col_map, rule.2)
-      if row >= 0 && col >= 0 {
-        next_height_rules.push((3, row, col, rule.3))
+    match rule.0 {
+      RowRange(start, end) =>
+        mapped_runs(row_map, start, end).each(run => {
+          next_height_rules.push((RowRange(run.0, run.1), rule.1))
+        })
+      ColRange(start, end) =>
+        mapped_runs(col_map, start, end).each(run => {
+          next_height_rules.push((ColRange(run.0, run.1), rule.1))
+        })
+      All => next_height_rules.push(rule)
+      Cell(r, c) => {
+        let row = map_index(row_map, r)
+        let col = map_index(col_map, c)
+        if row >= 0 && col >= 0 {
+          next_height_rules.push((Cell(row, col), rule.1))
+        }
       }
     }
   })

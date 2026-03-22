@@ -17,8 +17,8 @@ pub fn IterGridDimension::estimate(
   let count = records.count_cols()
   let widths = Array::make(count, 0)
   let spanned = []
-  for row = 0; row < records.count_rows(); row = row + 1 {
-    for col = 0; col < count; col = col + 1 {
+  for row in 0..<records.count_rows() {
+    for col in 0..<count {
       if !cfg.is_cell_visible(row, col) {
         continue
       }

@@ -17,7 +17,7 @@ pub fn IterGrid::new(
 ///|
 fn render_padding(size : Int) -> String {
   let mut out = ""
-  for i = 0; i < size; i = i + 1 {
+  for i in 0..<size {
     ignore(i)
     out += " "
   }
@@ -71,7 +71,7 @@ fn span_width(
 ///|
 fn blank_values(count_cols : Int) -> Array[String] {
   let values = []
-  for col = 0; col < count_cols; col = col + 1 {
+  for _ in 0..<count_cols {
     values.push("")
   }
   values
@@ -161,7 +161,7 @@ fn row_span_crosses_boundary(
   boundary_row : Int,
   col : Int,
 ) -> Bool {
-  for index = 0; index < config.row_spans.length(); index = index + 1 {
+  for index in 0..<config.row_spans.length() {
     let item = config.row_spans[index]
     let colspan = config.col_span_at(item.0, item.1)
     if boundary_row > item.0 &&
@@ -228,8 +228,8 @@ fn row_metrics(
   let content_heights = Array::make(count_rows, 0)
   let top_paddings = Array::make(count_rows, 0)
   let bottom_paddings = Array::make(count_rows, 0)
-  for row = 0; row < count_rows; row = row + 1 {
-    for col = 0; col < count_cols; col = col + 1 {
+  for row in 0..<count_rows {
+    for col in 0..<count_cols {
       if !config.is_cell_visible(row, col) {
         continue
       }
@@ -270,8 +270,8 @@ fn row_metrics(
   let mut changed = true
   while changed {
     changed = false
-    for row = 0; row < count_rows; row = row + 1 {
-      for col = 0; col < count_cols; col = col + 1 {
+    for row in 0..<count_rows {
+      for col in 0..<count_cols {
         let rowspan = config.row_span_at(row, col)
         if rowspan <= 1 || !config.is_cell_visible(row, col) {
           continue
@@ -427,7 +427,7 @@ fn render_split_line(
 ) -> String {
   let mut has_uncovered = false
   let mut has_content = false
-  for col = 0; col < count_cols; col = col + 1 {
+  for col in 0..<count_cols {
     if !row_span_crosses_boundary(config, boundary_row, col) {
       has_uncovered = true
     }
@@ -646,7 +646,7 @@ fn render_row(
   row_bottom_paddings : Array[Int],
 ) -> Array[String] {
   let lines = []
-  for i = 0; i < row_top_paddings[row_index]; i = i + 1 {
+  for i in 0..<row_top_paddings[row_index] {
     ignore(i)
     lines.push(
       render_row_line(
@@ -663,7 +663,7 @@ fn render_row(
       line_index < row_heights[row_index]
       line_index = line_index + 1 {
     let values = []
-    for col = 0; col < count_cols; col = col + 1 {
+    for col in 0..<count_cols {
       values.push(
         cell_content_for_row(
           records, config, row_heights, row_index, col, line_index,
@@ -674,7 +674,7 @@ fn render_row(
       render_row_line(borders, widths, values, row_index, count_cols, config),
     )
   }
-  for i = 0; i < row_bottom_paddings[row_index]; i = i + 1 {
+  for i in 0..<row_bottom_paddings[row_index] {
     ignore(i)
     lines.push(
       render_row_line(
@@ -711,7 +711,7 @@ fn build_line_with_overrides(
     Some(value) => value.to_string()
     None => ""
   }
-  for col = 0; col < count_cols; col = col + 1 {
+  for col in 0..<count_cols {
     let fill = match config.horizontal_override_at(row_boundary, col) {
       Some(ch) => Some(ch)
       None => default_fill
@@ -799,7 +799,7 @@ pub fn IterGrid::to_string(self : IterGrid) -> String {
     self.config,
   )
   let horizontal_lines = self.config.horizontal_lines()
-  for row_index = 0; row_index < rows.length(); row_index = row_index + 1 {
+  for row_index in 0..<rows.length() {
     render_row(
       self.records,
       borders,
@@ -971,7 +971,7 @@ pub fn IterGrid::to_string(self : IterGrid) -> String {
     let table_height = lines.length()
     // Add left/right margins to each line
     if self.config.margin_left > 0 || self.config.margin_right > 0 {
-      for i = 0; i < lines.length(); i = i + 1 {
+      for i in 0..<lines.length() {
         let left = margin_vertical_str(
           self.config.margin_fill_left,
           self.config.margin_left,
@@ -1009,7 +1009,7 @@ pub fn IterGrid::to_string(self : IterGrid) -> String {
         self.config.margin_offset_bottom,
         full_width,
       )
-      for i = 0; i < bottom_lines.length(); i = i + 1 {
+      for i in 0..<bottom_lines.length() {
         lines.push(bottom_lines[i])
       }
     }
@@ -1085,7 +1085,7 @@ fn margin_horizontal_lines(
   }
   let indent_size = width - start_offset - end_offset
   let result = []
-  for i = 0; i < size; i = i + 1 {
+  for _ in 0..<size {
     let line = " ".repeat(start_offset) +
       fill.to_string().repeat(indent_size) +
       " ".repeat(end_offset)

@@ -212,16 +212,20 @@ println(table.to_string())
 ```
 
 ```moonbit nocheck
+///|
 let builder = @tabular.Builder::from_rows([
   ["Name", "Age"],
   ["Alice", "30"],
   ["Bob", "25"],
 ])
 
+///|
 let table1 = builder.index().build()
 
+///|
 let table2 = builder.index().transpose().build()
 
+///|
 let table3 = builder.index().col(0).hide().build()
 ```
 

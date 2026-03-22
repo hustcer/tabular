@@ -170,11 +170,13 @@ pub fn Padding::new(Int, Int, Int, Int) -> Self
 
 pub enum Panel {
 }
-pub fn Panel::footer(String) -> (Int, String, Bool)
-pub fn Panel::header(String) -> (Int, String, Bool)
-pub fn Panel::horizontal(Int, String) -> (Int, String, Bool)
-pub fn Panel::vertical(Int, String) -> (Int, String, Bool)
-pub fn Panel::vertical_with_width(Int, String, Int) -> (Int, String, Bool)
+pub fn Panel::footer(String) -> PanelConfig
+pub fn Panel::header(String) -> PanelConfig
+pub fn Panel::horizontal(Int, String) -> PanelConfig
+pub fn Panel::vertical(Int, String) -> PanelConfig
+pub fn Panel::vertical_with_width(Int, String, Int) -> PanelConfig
+
+type PanelConfig
 
 pub struct Rows {
   start : Int
@@ -205,18 +207,10 @@ pub fn Rows::one(Int) -> Self
 pub fn Rows::skip(Self, Int) -> Self
 pub fn Rows::step_by(Self, Int) -> Self
 
-pub enum Segment {
-  All(Int, Int)
-  Range(Int, Int, Int, Int, Int, Int)
-  RowsOnly(Rows, Int, Int)
-  ColsOnly(Cols, Int, Int)
-  CellOnly(Cell, Int, Int)
-  Cross(Rows, Cols, Int, Int)
-  InverseRows(Rows, Int, Int)
-  InverseCols(Cols, Int, Int)
-  InverseCell(Cell, Int, Int)
-  Union2(Segment, Segment, Int, Int)
-  Diff2(Segment, Segment, Int, Int)
+pub struct Segment {
+  kind : SegmentKind
+  skip_n : Int
+  step_n : Int
 }
 pub fn Segment::all() -> Self
 pub fn Segment::and_(Self, Self) -> Self
@@ -229,6 +223,20 @@ pub fn Segment::not_(Self, Self) -> Self
 pub fn Segment::not_cell(Self, Cell) -> Self
 pub fn Segment::skip(Self, Int) -> Self
 pub fn Segment::step_by(Self, Int) -> Self
+
+pub enum SegmentKind {
+  All
+  Range(Int, Int, Int, Int)
+  RowsOnly(Rows)
+  ColsOnly(Cols)
+  CellOnly(Cell)
+  Cross(Rows, Cols)
+  InverseRows(Rows)
+  InverseCols(Cols)
+  InverseCell(Cell)
+  Union2(Segment, Segment)
+  Diff2(Segment, Segment)
+}
 
 pub enum Setting {
   Align(Align)
@@ -339,7 +347,7 @@ pub fn Table::modify_cell(Self, Cell, Setting) -> Self
 pub fn Table::modify_cols(Self, Cols, Setting) -> Self
 pub fn Table::modify_rows(Self, Rows, Setting) -> Self
 pub fn Table::modify_segment(Self, Segment, Setting) -> Self
-pub fn Table::panel(Self, (Int, String, Bool)) -> Self
+pub fn Table::panel(Self, PanelConfig) -> Self
 pub fn Table::remove_by_col_name(Self, ByColName) -> Self
 pub fn Table::remove_cols(Self, Cols) -> Self
 pub fn Table::remove_rows(Self, Rows) -> Self

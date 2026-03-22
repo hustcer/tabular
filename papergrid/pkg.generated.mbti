@@ -141,6 +141,8 @@ pub fn IterRecords::get_cell(Self, Int, Int) -> String
 pub fn IterRecords::new(Array[Array[String]]) -> Self
 pub fn IterRecords::rows(Self) -> Array[Array[String]]
 
+type Scope
+
 pub struct SpannedConfig {
   mut borders : Borders
   mut padding_left : Int
@@ -153,11 +155,11 @@ pub struct SpannedConfig {
   mut height_mode : HeightMode
   mut horizontal_lines : HorizontalLines
   custom_horizontal_lines : Array[(Int, HorizontalLine)]
-  width_rules : Array[(Int, Int, Int, WidthMode)]
-  height_rules : Array[(Int, Int, Int, HeightMode)]
-  align_rules : Array[(Int, Int, Int, HAlign)]
-  valign_rules : Array[(Int, Int, Int, VAlign)]
-  padding_rules : Array[(Int, Int, Int, Int, Int, Int, Int)]
+  width_rules : Array[(Scope, WidthMode)]
+  height_rules : Array[(Scope, HeightMode)]
+  align_rules : Array[(Scope, HAlign)]
+  valign_rules : Array[(Scope, VAlign)]
+  padding_rules : Array[(Scope, Int, Int, Int, Int)]
   col_spans : Array[(Int, Int, Int)]
   row_spans : Array[(Int, Int, Int)]
   span_sources : Array[(Int, Int, Int, Int)]

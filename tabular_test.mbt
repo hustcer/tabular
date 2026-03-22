@@ -4661,13 +4661,13 @@ test "merge_vertical_then_horizontal_4" {
 fn matrix_n_cols(rows : Int, cols : Int) -> @tabular.Table {
   let data = []
   let header = []
-  for c = 0; c < cols; c = c + 1 {
+  for c in 0..<cols {
     header.push("col \{c}")
   }
   data.push(["N"] + header)
-  for r = 0; r < rows; r = r + 1 {
+  for r in 0..<rows {
     let row = [r.to_string()]
-    for c = 0; c < cols; c = c + 1 {
+    for c in 0..<cols {
       row.push("\{r}-\{c}")
     }
     data.push(row)
@@ -6640,4 +6640,142 @@ test "builder count_records and count_cols" {
   b.push_record(["d", "e"])
   inspect(b.count_records(), content="2")
   inspect(b.count_cols(), content="3")
+}
+
+///|
+test "panel header" {
+  let data = [["A", "B"], ["1", "2"], ["3", "4"]]
+  let table = @tabular.Table::from_rows(data)
+  table.apply(@tabular.Style::modern()) |> ignore
+  table.panel(@tabular.Panel::header("Title")) |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|┌───┬───┐
+      #|│ Title │
+      #|├───┼───┤
+      #|│ A │ B │
+      #|├───┼───┤
+      #|│ 1 │ 2 │
+      #|├───┼───┤
+      #|│ 3 │ 4 │
+      #|└───┴───┘
+    ),
+  )
+}
+
+///|
+test "panel footer" {
+  let data = [["A", "B"], ["1", "2"]]
+  let table = @tabular.Table::from_rows(data)
+  table.apply(@tabular.Style::ascii()) |> ignore
+  table.panel(@tabular.Panel::footer("End")) |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|+---+---+
+      #|| A | B |
+      #|+---+---+
+      #|| 1 | 2 |
+      #|+---+---+
+      #||  End  |
+      #|+---+---+
+    ),
+  )
+}
+
+///|
+test "shadow" {
+  let table = @tabular.Table::from_rows([["A", "B"], ["1", "2"]])
+  table.apply(@tabular.Style::rounded()) |> ignore
+  table.shadow(@tabular.Shadow::new(1)) |> ignore
+  let s = table.to_string()
+  // Shadow adds extra characters around the table
+  inspect(s.contains("╭"), content="true")
+}
+
+///|
+test "merge horizontal" {
+  let data = [["A", "A"], ["1", "2"]]
+  let table = @tabular.Table::from_rows(data)
+  table.apply(@tabular.Style::modern()) |> ignore
+  table.merge(@tabular.Merge::horizontal()) |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|┌───┬───┐
+      #|│   A   │
+      #|├───┼───┤
+      #|│ 1 │ 2 │
+      #|└───┴───┘
+    ),
+  )
+}
+
+///|
+test "merge vertical" {
+  let data = [["A", "B"], ["A", "C"]]
+  let table = @tabular.Table::from_rows(data)
+  table.apply(@tabular.Style::modern()) |> ignore
+  table.merge(@tabular.Merge::vertical()) |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|┌───┬───┐
+      #|│ A │ B │
+      #|├   ┼───┤
+      #|│   │ C │
+      #|└───┴───┘
+    ),
+  )
+}
+
+///|
+test "split col" {
+  let data = [["A", "B", "C", "D"], ["1", "2", "3", "4"]]
+  let table = @tabular.Table::from_rows(data)
+  table.apply(@tabular.Style::ascii()) |> ignore
+  table.split(@tabular.Split::col(2)) |> ignore
+  let s = table.to_string()
+  inspect(s.contains("A"), content="true")
+  inspect(s.contains("D"), content="true")
+}
+
+///|
+test "segment skip and step_by" {
+  let data = [["H1", "H2"], ["a", "b"], ["c", "d"], ["e", "f"], ["g", "h"]]
+  let table = @tabular.Table::from_rows(data)
+  table.apply(@tabular.Style::ascii()) |> ignore
+  // Apply format to every other row starting from row 1
+  table.modify_segment(
+    @tabular.Rows::all().skip(1).step_by(2).as_segment(),
+    @tabular.Setting::format(@tabular.Format::surround("[", "]")),
+  )
+  |> ignore
+  let s = table.to_string()
+  inspect(s.contains("[a]"), content="true")
+  inspect(s.contains("[c]"), content="false")
+  inspect(s.contains("[e]"), content="true")
+}
+
+///|
+test "rows inverse" {
+  let data = [["H"], ["a"], ["b"], ["c"]]
+  let table = @tabular.Table::from_rows(data)
+  table.apply(@tabular.Style::ascii()) |> ignore
+  table.modify_segment(
+    @tabular.Rows::first().inverse(),
+    @tabular.Setting::format(@tabular.Format::surround("<", ">")),
+  )
+  |> ignore
+  let s = table.to_string()
+  // First row should NOT have surround, others should
+  inspect(
+    s.contains("| H |"),
+    content=(
+      #|false
+    ),
+  )
+  inspect(s.contains("<a>"), content="true")
+  inspect(s.contains("<b>"), content="true")
 }

@@ -204,7 +204,7 @@ fn char_to_string(ch : Char?) -> String {
 
 ///|
 fn first_char(chars : Array[Char?]) -> Char? {
-  for index = 0; index < chars.length(); index = index + 1 {
+  for index in 0..<chars.length() {
     match chars[index] {
       Some(value) => return Some(value)
       None => ()
@@ -351,9 +351,9 @@ pub fn Borders::build_line(
   }
 
   let mut out = char_to_string(left)
-  for i = 0; i < widths.length(); i = i + 1 {
+  for i in 0..<widths.length() {
     let width = widths[i]
-    for j = 0; j < width; j = j + 1 {
+    for j in 0..<width {
       ignore(j)
       out = out + char_to_string(fill)
     }
