@@ -51,7 +51,7 @@ pub struct Rows {
 }
 
 ///|
-pub struct Columns {
+pub struct Cols {
   start : Int
   end_ : Int
   skip_n : Int
@@ -64,18 +64,18 @@ pub struct Columns {
 ///|
 pub struct Cell {
   row : Int
-  column : Int
+  col : Int
 }
 
 ///|
-pub struct ByColumnName {
+pub struct ByColName {
   name : String
 }
 
 ///|
 pub enum Entity {
   Row(Int)
-  Column(Int)
+  Col(Int)
 }
 
 ///|
@@ -83,11 +83,11 @@ pub enum Segment {
   All(Int, Int)
   Range(Int, Int, Int, Int, Int, Int)
   RowsOnly(Rows, Int, Int)
-  ColumnsOnly(Columns, Int, Int)
+  ColsOnly(Cols, Int, Int)
   CellOnly(Cell, Int, Int)
-  Cross(Rows, Columns, Int, Int)
+  Cross(Rows, Cols, Int, Int)
   InverseRows(Rows, Int, Int)
-  InverseColumns(Columns, Int, Int)
+  InverseCols(Cols, Int, Int)
   InverseCell(Cell, Int, Int)
   Union2(Segment, Segment, Int, Int)
   Diff2(Segment, Segment, Int, Int)
@@ -101,7 +101,7 @@ pub enum Setting {
   W(Width)
   H(Height)
   Fmt(Format)
-  SpanColumn(Int)
+  SpanCol(Int)
   SpanRow(Int)
 }
 
@@ -126,7 +126,7 @@ pub enum Panel {}
 
 ///|
 /// Insert a horizontal panel at the given row index.
-/// The panel text spans all columns.
+/// The panel text spans all cols.
 pub fn Panel::horizontal(row : Int, text : String) -> (Int, String, Bool) {
   (row, text, true)
 }
@@ -144,7 +144,7 @@ pub fn Panel::footer(text : String) -> (Int, String, Bool) {
 }
 
 ///|
-/// Insert a vertical panel at the given column index.
+/// Insert a vertical panel at the given col index.
 /// The panel text spans all rows.
 pub fn Panel::vertical(col : Int, text : String) -> (Int, String, Bool) {
   (col, text, false)
@@ -187,11 +187,11 @@ fn Table::apply_horizontal_panel(
   self.rows.insert(target_row, new_row)
   // Shift span metadata
   self.config.shift_row_spans_down(target_row)
-  // Set the panel text in the first column
+  // Set the panel text in the first col
   self.rows[target_row][0] = text
-  // Set column span to cover all columns
+  // Set col span to cover all cols
   if count_cols > 1 {
-    self.config.set_column_span(target_row, 0, count_cols)
+    self.config.set_col_span(target_row, 0, count_cols)
   }
 }
 
@@ -203,13 +203,13 @@ fn Table::apply_vertical_panel(self : Table, col : Int, text : String) -> Unit {
   if col > count_cols {
     return
   }
-  // Check if any cell at target_col is covered by a column span
+  // Check if any cell at target_col is covered by a col span
   for row = 0; row <= count_rows; row = row + 1 {
-    if row < count_rows && self.config.is_cell_covered_by_column_span(row, col) {
+    if row < count_rows && self.config.is_cell_covered_by_col_span(row, col) {
       return
     }
   }
-  // Insert an empty column at target_col in each row
+  // Insert an empty col at target_col in each row
   self.rows.each(row => row.insert(col, ""))
   // Shift span metadata
   self.config.shift_col_spans_right(col)
@@ -303,13 +303,13 @@ fn merge_horizontal(
     let mut repeat_value = ""
     let mut repeat_is_set = false
     let mut last_is_col_span = false
-    for column = count_cols - 1; column >= 0; column = column - 1 {
+    for col = count_cols - 1; col >= 0; col = col - 1 {
       if last_is_col_span {
         last_is_col_span = false
         continue
       }
-      let is_cell_visible = config.is_cell_visible(row, column)
-      let is_col_span_cell = config.get_row_span(row, column) is Some(_)
+      let is_cell_visible = config.is_cell_visible(row, col)
+      let is_col_span_cell = config.get_row_span(row, col) is Some(_)
       if not(repeat_is_set) {
         if not(is_cell_visible) {
           continue
@@ -318,7 +318,7 @@ fn merge_horizontal(
           continue
         }
         repeat_length = 1
-        repeat_value = rows[row][column]
+        repeat_value = rows[row][col]
         repeat_is_set = true
         continue
       }
@@ -331,19 +331,19 @@ fn merge_horizontal(
         repeat_is_set = false
         continue
       }
-      let text = rows[row][column]
+      let text = rows[row][col]
       if text == repeat_value {
         repeat_length = repeat_length + 1
         continue
       }
       if repeat_length > 1 {
-        config.set_column_span(row, column + 1, repeat_length)
+        config.set_col_span(row, col + 1, repeat_length)
       }
       repeat_length = 1
-      repeat_value = rows[row][column]
+      repeat_value = rows[row][col]
     }
     if repeat_length > 1 {
-      config.set_column_span(row, 0, repeat_length)
+      config.set_col_span(row, 0, repeat_length)
     }
   }
 }
@@ -355,7 +355,7 @@ fn merge_vertical(
   count_rows : Int,
   count_cols : Int,
 ) -> Unit {
-  for column = 0; column < count_cols; column = column + 1 {
+  for col = 0; col < count_cols; col = col + 1 {
     let mut repeat_length = 0
     let mut repeat_value = ""
     let mut repeat_is_set = false
@@ -365,8 +365,8 @@ fn merge_vertical(
         last_is_row_span = false
         continue
       }
-      let is_cell_visible = config.is_cell_visible(row, column)
-      let is_row_span_cell = config.get_column_span(row, column) is Some(_)
+      let is_cell_visible = config.is_cell_visible(row, col)
+      let is_row_span_cell = config.get_col_span(row, col) is Some(_)
       if not(repeat_is_set) {
         if not(is_cell_visible) {
           continue
@@ -375,7 +375,7 @@ fn merge_vertical(
           continue
         }
         repeat_length = 1
-        repeat_value = rows[row][column]
+        repeat_value = rows[row][col]
         repeat_is_set = true
         continue
       }
@@ -388,19 +388,19 @@ fn merge_vertical(
         repeat_is_set = false
         continue
       }
-      let text = rows[row][column]
+      let text = rows[row][col]
       if text == repeat_value {
         repeat_length = repeat_length + 1
         continue
       }
       if repeat_length > 1 {
-        config.set_row_span(row + 1, column, repeat_length)
+        config.set_row_span(row + 1, col, repeat_length)
       }
       repeat_length = 1
-      repeat_value = rows[row][column]
+      repeat_value = rows[row][col]
     }
     if repeat_length > 1 {
-      config.set_row_span(0, column, repeat_length)
+      config.set_row_span(0, col, repeat_length)
     }
   }
 }
@@ -418,10 +418,10 @@ pub fn Table::correct_borders(self : Table) -> Table {
   }
   let cfg = self.config
   let borders = cfg.borders()
-  // Phase 1: Fix column span junctions
+  // Phase 1: Fix col span junctions
   for row = 0; row < count_rows; row = row + 1 {
     for col = 0; col < count_cols; col = col + 1 {
-      let span = match cfg.get_column_span(row, col) {
+      let span = match cfg.get_col_span(row, col) {
         Some(s) => s
         None => continue
       }
@@ -534,7 +534,7 @@ pub fn Table::correct_borders(self : Table) -> Table {
       }
     }
   }
-  // Phase 3: Fix cells covered by both row and column spans
+  // Phase 3: Fix cells covered by both row and col spans
   for row = 0; row < count_rows; row = row + 1 {
     for col = 0; col < count_cols; col = col + 1 {
       if not(cfg.is_cell_covered_by_both_spans(row, col)) {
@@ -584,7 +584,7 @@ pub fn Table::correct_borders(self : Table) -> Table {
 pub enum HighlightTarget {
   HCell(Cell)
   HRows(Rows)
-  HColumns(Columns)
+  HCols(Cols)
   HSegment(Segment)
 }
 
@@ -605,8 +605,8 @@ pub fn Highlight::outline_rows(rows : Rows, ch : Char) -> Highlight {
 }
 
 ///|
-pub fn Highlight::outline_columns(columns : Columns, ch : Char) -> Highlight {
-  { target: HColumns(columns), border: @papergrid.CellBorder::filled(ch) }
+pub fn Highlight::outline_cols(cols : Cols, ch : Char) -> Highlight {
+  { target: HCols(cols), border: @papergrid.CellBorder::filled(ch) }
 }
 
 ///|
@@ -625,8 +625,8 @@ pub fn Highlight::new_rows(rows : Rows) -> Highlight {
 }
 
 ///|
-pub fn Highlight::new_columns(columns : Columns) -> Highlight {
-  { target: HColumns(columns), border: @papergrid.CellBorder::empty() }
+pub fn Highlight::new_cols(cols : Cols) -> Highlight {
+  { target: HCols(cols), border: @papergrid.CellBorder::empty() }
 }
 
 ///|
@@ -652,9 +652,9 @@ fn resolve_target_to_cells(
     HCell(cell) =>
       if cell.row >= 0 &&
         cell.row < count_rows &&
-        cell.column >= 0 &&
-        cell.column < count_cols {
-        [(cell.row, cell.column)]
+        cell.col >= 0 &&
+        cell.col < count_cols {
+        [(cell.row, cell.col)]
       } else {
         []
       }
@@ -668,8 +668,8 @@ fn resolve_target_to_cells(
       })
       cells
     }
-    HColumns(columns) => {
-      let col_indexes = resolve_columns(columns, count_cols)
+    HCols(cols) => {
+      let col_indexes = resolve_cols(cols, count_cols)
       let cells = []
       for row = 0; row < count_rows; row = row + 1 {
         col_indexes.each(col => cells.push((row, col)))
@@ -689,7 +689,7 @@ fn is_cell_connected(p1 : (Int, Int), p2 : (Int, Int)) -> Bool {
     }
   }
   if p1.1 == p2.1 {
-    // same column: check up/down adjacency
+    // same col: check up/down adjacency
     if p1.0 + 1 == p2.0 || p2.0 + 1 == p1.0 {
       return true
     }
@@ -1385,8 +1385,8 @@ pub fn Rows::all() -> Rows {
 }
 
 ///|
-pub fn Rows::intersect(self : Rows, columns : Columns) -> Segment {
-  Cross(self, columns, 0, 1)
+pub fn Rows::intersect(self : Rows, cols : Cols) -> Segment {
+  Cross(self, cols, 0, 1)
 }
 
 ///|
@@ -1395,8 +1395,8 @@ pub fn Rows::and_(self : Rows, other : Rows) -> Segment {
 }
 
 ///|
-pub fn Rows::and_columns(self : Rows, columns : Columns) -> Segment {
-  self.as_segment().and_(columns.as_segment())
+pub fn Rows::and_cols(self : Rows, cols : Cols) -> Segment {
+  self.as_segment().and_(cols.as_segment())
 }
 
 ///|
@@ -1428,8 +1428,8 @@ pub fn Rows::not(self : Rows, other : Rows) -> Rows {
 }
 
 ///|
-pub fn Rows::not_columns(self : Rows, columns : Columns) -> Segment {
-  self.as_segment().not(columns.as_segment())
+pub fn Rows::not_cols(self : Rows, cols : Cols) -> Segment {
+  self.as_segment().not(cols.as_segment())
 }
 
 ///|
@@ -1481,7 +1481,7 @@ pub fn Rows::filter(self : Rows, predicate : (Entity) -> Bool) -> Rows {
 }
 
 ///|
-pub fn Columns::new(start : Int, end_ : Int) -> Columns {
+pub fn Cols::new(start : Int, end_ : Int) -> Cols {
   {
     start,
     end_,
@@ -1494,67 +1494,67 @@ pub fn Columns::new(start : Int, end_ : Int) -> Columns {
 }
 
 ///|
-pub fn Columns::first() -> Columns {
-  Columns::new(0, 1)
+pub fn Cols::first() -> Cols {
+  Cols::new(0, 1)
 }
 
 ///|
-pub fn Columns::one(index : Int) -> Columns {
-  Columns::new(index, index + 1)
+pub fn Cols::one(index : Int) -> Cols {
+  Cols::new(index, index + 1)
 }
 
 ///|
-pub fn Columns::first_offset(offset : Int) -> Columns {
-  Columns::one(offset)
+pub fn Cols::first_offset(offset : Int) -> Cols {
+  Cols::one(offset)
 }
 
 ///|
-pub fn Columns::last() -> Columns {
-  Columns::new(-2, 0)
+pub fn Cols::last() -> Cols {
+  Cols::new(-2, 0)
 }
 
 ///|
-pub fn Columns::last_offset(offset : Int) -> Columns {
-  Columns::new(-2 - offset, 0)
+pub fn Cols::last_offset(offset : Int) -> Cols {
+  Cols::new(-2 - offset, 0)
 }
 
 ///|
-pub fn Columns::all() -> Columns {
-  Columns::new(0, -1)
+pub fn Cols::all() -> Cols {
+  Cols::new(0, -1)
 }
 
 ///|
-pub fn Columns::intersect(self : Columns, rows : Rows) -> Segment {
+pub fn Cols::intersect(self : Cols, rows : Rows) -> Segment {
   Cross(rows, self, 0, 1)
 }
 
 ///|
-pub fn Columns::and_(self : Columns, other : Columns) -> Segment {
+pub fn Cols::and_(self : Cols, other : Cols) -> Segment {
   self.as_segment().and_(other.as_segment())
 }
 
 ///|
-pub fn Columns::and_rows(self : Columns, rows : Rows) -> Segment {
+pub fn Cols::and_rows(self : Cols, rows : Rows) -> Segment {
   self.as_segment().and_(rows.as_segment())
 }
 
 ///|
-pub fn Columns::and_cell(self : Columns, cell : Cell) -> Segment {
+pub fn Cols::and_cell(self : Cols, cell : Cell) -> Segment {
   self.as_segment().and_(cell.as_segment())
 }
 
 ///|
-pub fn Columns::as_segment(self : Columns) -> Segment {
-  ColumnsOnly(self, 0, 1)
+pub fn Cols::as_segment(self : Cols) -> Segment {
+  ColsOnly(self, 0, 1)
 }
 
 ///|
-pub fn Columns::inverse(self : Columns) -> Segment {
-  InverseColumns(self, 0, 1)
+pub fn Cols::inverse(self : Cols) -> Segment {
+  InverseCols(self, 0, 1)
 }
 
 ///|
-pub fn Columns::not(self : Columns, other : Columns) -> Columns {
+pub fn Cols::not(self : Cols, other : Cols) -> Cols {
   {
     start: self.start,
     end_: self.end_,
@@ -1567,17 +1567,17 @@ pub fn Columns::not(self : Columns, other : Columns) -> Columns {
 }
 
 ///|
-pub fn Columns::not_rows(self : Columns, rows : Rows) -> Segment {
+pub fn Cols::not_rows(self : Cols, rows : Rows) -> Segment {
   self.as_segment().not(rows.as_segment())
 }
 
 ///|
-pub fn Columns::not_cell(self : Columns, cell : Cell) -> Segment {
+pub fn Cols::not_cell(self : Cols, cell : Cell) -> Segment {
   self.as_segment().not(cell.as_segment())
 }
 
 ///|
-pub fn Columns::skip(self : Columns, count : Int) -> Columns {
+pub fn Cols::skip(self : Cols, count : Int) -> Cols {
   {
     start: self.start,
     end_: self.end_,
@@ -1590,7 +1590,7 @@ pub fn Columns::skip(self : Columns, count : Int) -> Columns {
 }
 
 ///|
-pub fn Columns::step_by(self : Columns, step : Int) -> Columns {
+pub fn Cols::step_by(self : Cols, step : Int) -> Cols {
   {
     start: self.start,
     end_: self.end_,
@@ -1607,7 +1607,7 @@ pub fn Columns::step_by(self : Columns, step : Int) -> Columns {
 }
 
 ///|
-pub fn Columns::filter(self : Columns, predicate : (Entity) -> Bool) -> Columns {
+pub fn Cols::filter(self : Cols, predicate : (Entity) -> Bool) -> Cols {
   {
     start: self.start,
     end_: self.end_,
@@ -1625,12 +1625,12 @@ pub fn Segment::all() -> Segment {
 }
 
 ///|
-pub fn Cell::new(row : Int, column : Int) -> Cell {
-  { row, column }
+pub fn Cell::new(row : Int, col : Int) -> Cell {
+  { row, col }
 }
 
 ///|
-pub fn ByColumnName::new(name : String) -> ByColumnName {
+pub fn ByColName::new(name : String) -> ByColName {
   { name, }
 }
 
@@ -1658,10 +1658,10 @@ pub fn Cell::inverse(self : Cell) -> Segment {
 pub fn Segment::new(
   row_start : Int,
   row_end : Int,
-  column_start : Int,
-  column_end : Int,
+  col_start : Int,
+  col_end : Int,
 ) -> Segment {
-  Range(row_start, row_end, column_start, column_end, 0, 1)
+  Range(row_start, row_end, col_start, col_end, 0, 1)
 }
 
 ///|
@@ -1675,8 +1675,8 @@ pub fn Segment::and_rows(self : Segment, rows : Rows) -> Segment {
 }
 
 ///|
-pub fn Segment::and_columns(self : Segment, columns : Columns) -> Segment {
-  self.and_(columns.as_segment())
+pub fn Segment::and_cols(self : Segment, cols : Cols) -> Segment {
+  self.and_(cols.as_segment())
 }
 
 ///|
@@ -1703,14 +1703,14 @@ pub fn Segment::not_cell(self : Segment, cell : Cell) -> Segment {
 pub fn Segment::skip(self : Segment, count : Int) -> Segment {
   match self {
     All(_, step) => All(count, step)
-    Range(row_start, row_end, column_start, column_end, _, step) =>
-      Range(row_start, row_end, column_start, column_end, count, step)
+    Range(row_start, row_end, col_start, col_end, _, step) =>
+      Range(row_start, row_end, col_start, col_end, count, step)
     RowsOnly(rows, _, step) => RowsOnly(rows, count, step)
-    ColumnsOnly(columns, _, step) => ColumnsOnly(columns, count, step)
+    ColsOnly(cols, _, step) => ColsOnly(cols, count, step)
     CellOnly(cell, _, step) => CellOnly(cell, count, step)
-    Cross(rows, columns, _, step) => Cross(rows, columns, count, step)
+    Cross(rows, cols, _, step) => Cross(rows, cols, count, step)
     InverseRows(rows, _, step) => InverseRows(rows, count, step)
-    InverseColumns(columns, _, step) => InverseColumns(columns, count, step)
+    InverseCols(cols, _, step) => InverseCols(cols, count, step)
     InverseCell(cell, _, step) => InverseCell(cell, count, step)
     Union2(lhs, rhs, _, step) => Union2(lhs, rhs, count, step)
     Diff2(lhs, rhs, _, step) => Diff2(lhs, rhs, count, step)
@@ -1722,15 +1722,14 @@ pub fn Segment::step_by(self : Segment, step : Int) -> Segment {
   let next_step = if step <= 0 { 1 } else { step }
   match self {
     All(skip_n, _) => All(skip_n, next_step)
-    Range(row_start, row_end, column_start, column_end, skip_n, _) =>
-      Range(row_start, row_end, column_start, column_end, skip_n, next_step)
+    Range(row_start, row_end, col_start, col_end, skip_n, _) =>
+      Range(row_start, row_end, col_start, col_end, skip_n, next_step)
     RowsOnly(rows, skip_n, _) => RowsOnly(rows, skip_n, next_step)
-    ColumnsOnly(columns, skip_n, _) => ColumnsOnly(columns, skip_n, next_step)
+    ColsOnly(cols, skip_n, _) => ColsOnly(cols, skip_n, next_step)
     CellOnly(cell, skip_n, _) => CellOnly(cell, skip_n, next_step)
-    Cross(rows, columns, skip_n, _) => Cross(rows, columns, skip_n, next_step)
+    Cross(rows, cols, skip_n, _) => Cross(rows, cols, skip_n, next_step)
     InverseRows(rows, skip_n, _) => InverseRows(rows, skip_n, next_step)
-    InverseColumns(columns, skip_n, _) =>
-      InverseColumns(columns, skip_n, next_step)
+    InverseCols(cols, skip_n, _) => InverseCols(cols, skip_n, next_step)
     InverseCell(cell, skip_n, _) => InverseCell(cell, skip_n, next_step)
     Union2(lhs, rhs, skip_n, _) => Union2(lhs, rhs, skip_n, next_step)
     Diff2(lhs, rhs, skip_n, _) => Diff2(lhs, rhs, skip_n, next_step)
@@ -1768,8 +1767,8 @@ pub fn Setting::height(height : Height) -> Setting {
 }
 
 ///|
-pub fn Span::column(size : Int) -> Setting {
-  SpanColumn(size)
+pub fn Span::col(size : Int) -> Setting {
+  SpanCol(size)
 }
 
 ///|
@@ -1838,13 +1837,13 @@ fn format_content_once(
   value : String,
   format : Format,
   row : Int,
-  column : Int,
+  col : Int,
 ) -> String {
   match format {
     Surround(prefix, suffix, _) => prefix + value + suffix
     Value(text, _) => text
     Content(transform, _) => transform(value)
-    Positioned(transform, _) => transform(value, row, column)
+    Positioned(transform, _) => transform(value, row, col)
   }
 }
 
@@ -1853,7 +1852,7 @@ fn format_content(
   value : String,
   format : Format,
   row : Int,
-  column : Int,
+  col : Int,
 ) -> String {
   let multiline = match format {
     Surround(_, _, multiline) => multiline
@@ -1862,14 +1861,12 @@ fn format_content(
     Positioned(_, multiline) => multiline
   }
   if !multiline {
-    return format_content_once(value, format, row, column)
+    return format_content_once(value, format, row, col)
   }
 
   let lines = @papergrid.split_lines(value)
   let formatted = []
-  lines.each(line => {
-    formatted.push(format_content_once(line, format, row, column))
-  })
+  lines.each(line => formatted.push(format_content_once(line, format, row, col)))
   join_lines(formatted)
 }
 
@@ -1951,20 +1948,20 @@ fn resolve_rows(rows : Rows, count : Int) -> Array[Int] {
 }
 
 ///|
-fn resolve_columns(columns : Columns, count : Int) -> Array[Int] {
+fn resolve_cols(cols : Cols, count : Int) -> Array[Int] {
   let indexes = resolve_indexes(
-    columns.start,
-    columns.end_,
+    cols.start,
+    cols.end_,
     count,
-    columns.exclude_start,
-    columns.exclude_end,
-    columns.skip_n,
-    columns.step_n,
+    cols.exclude_start,
+    cols.exclude_end,
+    cols.skip_n,
+    cols.step_n,
   )
-  match columns.predicate {
+  match cols.predicate {
     Some(predicate) => {
       let filtered = []
-      indexes.each(index => if predicate(Column(index)) { filtered.push(index) })
+      indexes.each(index => if predicate(Col(index)) { filtered.push(index) })
       filtered
     }
     None => indexes
@@ -1972,9 +1969,9 @@ fn resolve_columns(columns : Columns, count : Int) -> Array[Int] {
 }
 
 ///|
-fn resolve_columns_by_name(
+fn resolve_cols_by_name(
   rows : Array[Array[String]],
-  by_name : ByColumnName,
+  by_name : ByColName,
 ) -> Array[Int] {
   if rows.is_empty() {
     return []
@@ -2087,7 +2084,7 @@ fn remove_rows_at(rows : Array[Array[String]], indexes : Array[Int]) -> Unit {
 }
 
 ///|
-fn remove_columns_at(rows : Array[Array[String]], indexes : Array[Int]) -> Unit {
+fn remove_cols_at(rows : Array[Array[String]], indexes : Array[Int]) -> Unit {
   let unique = unique_indexes(indexes)
   let sorted = sort_indexes_desc(unique)
   rows.each(row => {
@@ -2114,7 +2111,7 @@ fn extract_rows_at(
 }
 
 ///|
-fn extract_columns_at(
+fn extract_cols_at(
   rows : Array[Array[String]],
   indexes : Array[Int],
 ) -> Array[Array[String]] {
@@ -2135,18 +2132,17 @@ fn extract_columns_at(
 fn resolve_segment_cells(
   segment : Segment,
   row_count : Int,
-  column_count : Int,
+  col_count : Int,
 ) -> Array[(Int, Int)] {
   let result = []
-  let (row_start, row_end, column_start, column_end, skip_n, step_n) = match
-    segment {
-    All(skip_n, step_n) => (0, row_count, 0, column_count, skip_n, step_n)
-    Range(row_start, row_end, column_start, column_end, skip_n, step_n) =>
+  let (row_start, row_end, col_start, col_end, skip_n, step_n) = match segment {
+    All(skip_n, step_n) => (0, row_count, 0, col_count, skip_n, step_n)
+    Range(row_start, row_end, col_start, col_end, skip_n, step_n) =>
       (
         clamp_start(row_start),
         clamp_end(row_end, row_count),
-        clamp_start(column_start),
-        clamp_end(column_end, column_count),
+        clamp_start(col_start),
+        clamp_end(col_end, col_count),
         skip_n,
         step_n,
       )
@@ -2154,38 +2150,36 @@ fn resolve_segment_cells(
       let row_indexes = resolve_rows(rows, row_count)
       let cells = []
       row_indexes.each(row => {
-        for column = 0; column < column_count; column = column + 1 {
-          cells.push((row, column))
+        for col = 0; col < col_count; col = col + 1 {
+          cells.push((row, col))
         }
       })
       return apply_skip_step_to_cells(cells, skip_n, step_n)
     }
-    ColumnsOnly(columns, skip_n, step_n) => {
-      let column_indexes = resolve_columns(columns, column_count)
+    ColsOnly(cols, skip_n, step_n) => {
+      let col_indexes = resolve_cols(cols, col_count)
       let cells = []
       for row = 0; row < row_count; row = row + 1 {
-        column_indexes.each(column => cells.push((row, column)))
+        col_indexes.each(col => cells.push((row, col)))
       }
       return apply_skip_step_to_cells(cells, skip_n, step_n)
     }
     CellOnly(cell, skip_n, step_n) => {
       let cells = if cell.row >= 0 &&
         cell.row < row_count &&
-        cell.column >= 0 &&
-        cell.column < column_count {
-        [(cell.row, cell.column)]
+        cell.col >= 0 &&
+        cell.col < col_count {
+        [(cell.row, cell.col)]
       } else {
         []
       }
       return apply_skip_step_to_cells(cells, skip_n, step_n)
     }
-    Cross(rows, columns, skip_n, step_n) => {
+    Cross(rows, cols, skip_n, step_n) => {
       let row_indexes = resolve_rows(rows, row_count)
-      let column_indexes = resolve_columns(columns, column_count)
+      let col_indexes = resolve_cols(cols, col_count)
       let cells = []
-      row_indexes.each(row => {
-        column_indexes.each(column => cells.push((row, column)))
-      })
+      row_indexes.each(row => col_indexes.each(col => cells.push((row, col))))
       return apply_skip_step_to_cells(cells, skip_n, step_n)
     }
     InverseRows(rows, skip_n, step_n) => {
@@ -2195,21 +2189,21 @@ fn resolve_segment_cells(
         if excluded.contains(row) {
           continue
         }
-        for column = 0; column < column_count; column = column + 1 {
-          cells.push((row, column))
+        for col = 0; col < col_count; col = col + 1 {
+          cells.push((row, col))
         }
       }
       return apply_skip_step_to_cells(cells, skip_n, step_n)
     }
-    InverseColumns(columns, skip_n, step_n) => {
-      let excluded = resolve_columns(columns, column_count)
+    InverseCols(cols, skip_n, step_n) => {
+      let excluded = resolve_cols(cols, col_count)
       let cells = []
       for row = 0; row < row_count; row = row + 1 {
-        for column = 0; column < column_count; column = column + 1 {
-          if excluded.contains(column) {
+        for col = 0; col < col_count; col = col + 1 {
+          if excluded.contains(col) {
             continue
           }
-          cells.push((row, column))
+          cells.push((row, col))
         }
       }
       return apply_skip_step_to_cells(cells, skip_n, step_n)
@@ -2217,18 +2211,18 @@ fn resolve_segment_cells(
     InverseCell(cell, skip_n, step_n) => {
       let cells = []
       for row = 0; row < row_count; row = row + 1 {
-        for column = 0; column < column_count; column = column + 1 {
-          if row == cell.row && column == cell.column {
+        for col = 0; col < col_count; col = col + 1 {
+          if row == cell.row && col == cell.col {
             continue
           }
-          cells.push((row, column))
+          cells.push((row, col))
         }
       }
       return apply_skip_step_to_cells(cells, skip_n, step_n)
     }
     Union2(lhs, rhs, skip_n, step_n) => {
-      let lhs_cells = resolve_segment_cells(lhs, row_count, column_count)
-      let rhs_cells = resolve_segment_cells(rhs, row_count, column_count)
+      let lhs_cells = resolve_segment_cells(lhs, row_count, col_count)
+      let rhs_cells = resolve_segment_cells(rhs, row_count, col_count)
       return apply_skip_step_to_cells(
         unique_cells(lhs_cells + rhs_cells),
         skip_n,
@@ -2236,8 +2230,8 @@ fn resolve_segment_cells(
       )
     }
     Diff2(lhs, rhs, skip_n, step_n) => {
-      let lhs_cells = resolve_segment_cells(lhs, row_count, column_count)
-      let rhs_cells = resolve_segment_cells(rhs, row_count, column_count)
+      let lhs_cells = resolve_segment_cells(lhs, row_count, col_count)
+      let rhs_cells = resolve_segment_cells(rhs, row_count, col_count)
       let cells = []
       lhs_cells.each(cell => if !rhs_cells.contains(cell) { cells.push(cell) })
       return apply_skip_step_to_cells(unique_cells(cells), skip_n, step_n)
@@ -2245,13 +2239,13 @@ fn resolve_segment_cells(
   }
   let mut seen = 0
   for row = row_start; row < row_end; row = row + 1 {
-    for column = column_start; column < column_end; column = column + 1 {
+    for col = col_start; col < col_end; col = col + 1 {
       if seen < skip_n {
         seen = seen + 1
         continue
       }
       if step_n <= 1 || (seen - skip_n) % step_n == 0 {
-        result.push((row, column))
+        result.push((row, col))
       }
       seen = seen + 1
     }
@@ -2284,45 +2278,37 @@ fn apply_setting_to_row(
     H(height) =>
       config.set_height_mode_for_rows(row, row + 1, convert_height(height))
     Fmt(_) => ()
-    SpanColumn(_) => ()
+    SpanCol(_) => ()
     SpanRow(_) => ()
   }
 }
 
 ///|
-fn apply_setting_to_column(
+fn apply_setting_to_col(
   config : @papergrid.SpannedConfig,
-  column : Int,
+  col : Int,
   setting : Setting,
 ) -> Unit {
   match setting {
     Align(align) =>
-      config.set_align_for_columns(column, column + 1, convert_align(align))
+      config.set_align_for_cols(col, col + 1, convert_align(align))
     VAlign(align) =>
-      config.set_valign_for_columns(column, column + 1, convert_valign(align))
+      config.set_valign_for_cols(col, col + 1, convert_valign(align))
     Pad(padding) =>
-      config.set_padding_for_columns(
-        column,
-        column + 1,
+      config.set_padding_for_cols(
+        col,
+        col + 1,
         padding.left,
         padding.right,
         padding.top,
         padding.bottom,
       )
     W(width) =>
-      config.set_width_mode_for_columns(
-        column,
-        column + 1,
-        convert_width(width),
-      )
+      config.set_width_mode_for_cols(col, col + 1, convert_width(width))
     H(height) =>
-      config.set_height_mode_for_columns(
-        column,
-        column + 1,
-        convert_height(height),
-      )
+      config.set_height_mode_for_cols(col, col + 1, convert_height(height))
     Fmt(_) => ()
-    SpanColumn(_) => ()
+    SpanCol(_) => ()
     SpanRow(_) => ()
   }
 }
@@ -2331,41 +2317,39 @@ fn apply_setting_to_column(
 fn apply_setting_to_cell(
   config : @papergrid.SpannedConfig,
   row : Int,
-  column : Int,
+  col : Int,
   setting : Setting,
 ) -> Unit {
   match setting {
-    Align(align) => config.set_align_for_cell(row, column, convert_align(align))
-    VAlign(align) =>
-      config.set_valign_for_cell(row, column, convert_valign(align))
+    Align(align) => config.set_align_for_cell(row, col, convert_align(align))
+    VAlign(align) => config.set_valign_for_cell(row, col, convert_valign(align))
     Pad(padding) =>
       config.set_padding_for_cell(
         row,
-        column,
+        col,
         padding.left,
         padding.right,
         padding.top,
         padding.bottom,
       )
-    W(width) =>
-      config.set_width_mode_for_cell(row, column, convert_width(width))
+    W(width) => config.set_width_mode_for_cell(row, col, convert_width(width))
     H(height) =>
-      config.set_height_mode_for_cell(row, column, convert_height(height))
+      config.set_height_mode_for_cell(row, col, convert_height(height))
     Fmt(_) => ()
-    SpanColumn(_) => ()
+    SpanCol(_) => ()
     SpanRow(_) => ()
   }
 }
 
 ///|
-fn span_intersects_column(
+fn span_intersects_col(
   config : @papergrid.SpannedConfig,
   row : Int,
-  column : Int,
+  col : Int,
   span : Int,
 ) -> Bool {
-  let end_ = column + span
-  for current = column; current < end_; current = current + 1 {
+  let end_ = col + span
+  for current = col; current < end_; current = current + 1 {
     if !config.is_cell_visible(row, current) {
       return true
     }
@@ -2377,12 +2361,12 @@ fn span_intersects_column(
 fn span_intersects_row(
   config : @papergrid.SpannedConfig,
   row : Int,
-  column : Int,
+  col : Int,
   span : Int,
 ) -> Bool {
   let end_ = row + span
   for current = row; current < end_; current = current + 1 {
-    if !config.is_cell_visible(current, column) {
+    if !config.is_cell_visible(current, col) {
       return true
     }
   }
@@ -2393,48 +2377,48 @@ fn span_intersects_row(
 fn resolved_span_anchor(
   config : @papergrid.SpannedConfig,
   row : Int,
-  column : Int,
+  col : Int,
 ) -> (Int, Int) {
-  match config.span_anchor_for_source(row, column) {
+  match config.span_anchor_for_source(row, col) {
     Some(anchor) => anchor
-    None => (row, column)
+    None => (row, col)
   }
 }
 
 ///|
-fn apply_column_span(
+fn apply_col_span(
   rows : Array[Array[String]],
   config : @papergrid.SpannedConfig,
   row : Int,
-  column : Int,
+  col : Int,
   size : Int,
 ) -> Unit {
   if row < 0 || row >= rows.length() {
     return
   }
-  let column_count = @papergrid.IterRecords::new(rows).count_columns()
-  if column < 0 || column >= column_count {
+  let col_count = @papergrid.IterRecords::new(rows).count_cols()
+  if col < 0 || col >= col_count {
     return
   }
-  let current_anchor = resolved_span_anchor(config, row, column)
-  if (current_anchor.0 == row && current_anchor.1 == column) &&
-    !config.is_cell_visible(row, column) {
+  let current_anchor = resolved_span_anchor(config, row, col)
+  if (current_anchor.0 == row && current_anchor.1 == col) &&
+    !config.is_cell_visible(row, col) {
     return
   }
   if size == 1 {
-    config.set_column_span(current_anchor.0, current_anchor.1, 1)
+    config.set_col_span(current_anchor.0, current_anchor.1, 1)
     config.clear_unused_span_source(current_anchor.0, current_anchor.1)
     return
   }
-  config.set_column_span(current_anchor.0, current_anchor.1, 1)
+  config.set_col_span(current_anchor.0, current_anchor.1, 1)
   config.clear_unused_span_source(current_anchor.0, current_anchor.1)
 
   let start = if size > 1 {
-    column
+    col
   } else if size == 0 {
     0
   } else {
-    let normalized = column + size
+    let normalized = col + size
     if normalized < 0 {
       0
     } else {
@@ -2442,21 +2426,21 @@ fn apply_column_span(
     }
   }
   let span = if size > 1 {
-    if start + size > column_count {
-      column_count - start
+    if start + size > col_count {
+      col_count - start
     } else {
       size
     }
   } else if size == 0 {
-    column_count - start
+    col_count - start
   } else {
-    column - start + 1
+    col - start + 1
   }
-  if span <= 1 || span_intersects_column(config, row, start, span) {
+  if span <= 1 || span_intersects_col(config, row, start, span) {
     return
   }
-  config.set_column_span(row, start, span)
-  config.set_span_source(row, start, row, column)
+  config.set_col_span(row, start, span)
+  config.set_span_source(row, start, row, col)
 }
 
 ///|
@@ -2464,19 +2448,19 @@ fn apply_row_span(
   rows : Array[Array[String]],
   config : @papergrid.SpannedConfig,
   row : Int,
-  column : Int,
+  col : Int,
   size : Int,
 ) -> Unit {
   if rows.is_empty() || row < 0 || row >= rows.length() {
     return
   }
-  let column_count = @papergrid.IterRecords::new(rows).count_columns()
-  if column < 0 || column >= column_count {
+  let col_count = @papergrid.IterRecords::new(rows).count_cols()
+  if col < 0 || col >= col_count {
     return
   }
-  let current_anchor = resolved_span_anchor(config, row, column)
-  if (current_anchor.0 == row && current_anchor.1 == column) &&
-    !config.is_cell_visible(row, column) {
+  let current_anchor = resolved_span_anchor(config, row, col)
+  if (current_anchor.0 == row && current_anchor.1 == col) &&
+    !config.is_cell_visible(row, col) {
     return
   }
   if size == 1 {
@@ -2510,28 +2494,28 @@ fn apply_row_span(
   } else {
     row - start + 1
   }
-  if span <= 1 || span_intersects_row(config, start, column, span) {
+  if span <= 1 || span_intersects_row(config, start, col, span) {
     return
   }
-  config.set_row_span(start, column, span)
-  config.set_span_source(start, column, row, column)
+  config.set_row_span(start, col, span)
+  config.set_span_source(start, col, row, col)
 }
 
 ///|
 fn apply_format_to_cell(
   rows : Array[Array[String]],
   row : Int,
-  column : Int,
+  col : Int,
   format : Format,
 ) -> Unit {
   if row < 0 || row >= rows.length() {
     return
   }
   let row_values = rows[row]
-  if column < 0 || column >= row_values.length() {
+  if col < 0 || col >= row_values.length() {
     return
   }
-  row_values[column] = format_content(row_values[column], format, row, column)
+  row_values[col] = format_content(row_values[col], format, row, col)
 }
 
 ///|
@@ -2544,8 +2528,8 @@ fn apply_setting_to_row_values(
     Fmt(format) =>
       if row >= 0 && row < rows.length() {
         let row_values = rows[row]
-        for column = 0; column < row_values.length(); column = column + 1 {
-          apply_format_to_cell(rows, row, column, format)
+        for col = 0; col < row_values.length(); col = col + 1 {
+          apply_format_to_cell(rows, row, col, format)
         }
       }
     W(_) => ()
@@ -2555,15 +2539,15 @@ fn apply_setting_to_row_values(
 }
 
 ///|
-fn apply_setting_to_column_values(
+fn apply_setting_to_col_values(
   rows : Array[Array[String]],
-  column : Int,
+  col : Int,
   setting : Setting,
 ) -> Unit {
   match setting {
     Fmt(format) =>
       for row = 0; row < rows.length(); row = row + 1 {
-        apply_format_to_cell(rows, row, column, format)
+        apply_format_to_cell(rows, row, col, format)
       }
     W(_) => ()
     H(_) => ()
@@ -2576,15 +2560,15 @@ fn apply_setting_to_cell_value(
   rows : Array[Array[String]],
   config : @papergrid.SpannedConfig,
   row : Int,
-  column : Int,
+  col : Int,
   setting : Setting,
 ) -> Unit {
   match setting {
-    Fmt(format) => apply_format_to_cell(rows, row, column, format)
+    Fmt(format) => apply_format_to_cell(rows, row, col, format)
     W(_) => ()
     H(_) => ()
-    SpanColumn(size) => apply_column_span(rows, config, row, column, size)
-    SpanRow(size) => apply_row_span(rows, config, row, column, size)
+    SpanCol(size) => apply_col_span(rows, config, row, col, size)
+    SpanRow(size) => apply_row_span(rows, config, row, col, size)
     _ => ()
   }
 }
@@ -2632,15 +2616,15 @@ pub fn Builder::remove_record(self : Builder, index : Int) -> Unit {
 }
 
 ///|
-pub fn Builder::insert_column(
+pub fn Builder::insert_col(
   self : Builder,
   index : Int,
-  column : Array[String],
+  col : Array[String],
 ) -> Unit {
-  let row_count = if self.rows.length() > column.length() {
+  let row_count = if self.rows.length() > col.length() {
     self.rows.length()
   } else {
-    column.length()
+    col.length()
   }
 
   while self.rows.length() < row_count {
@@ -2654,8 +2638,8 @@ pub fn Builder::insert_column(
     }
     row.insert(
       index,
-      if row_index < column.length() {
-        column[row_index]
+      if row_index < col.length() {
+        col[row_index]
       } else {
         ""
       },
@@ -2664,14 +2648,14 @@ pub fn Builder::insert_column(
 }
 
 ///|
-pub fn Builder::push_column(self : Builder, column : Array[String]) -> Unit {
+pub fn Builder::push_col(self : Builder, col : Array[String]) -> Unit {
   let mut index = 0
   self.rows.each(row => if row.length() > index { index = row.length() })
-  self.insert_column(index, column)
+  self.insert_col(index, col)
 }
 
 ///|
-pub fn Builder::remove_column(self : Builder, index : Int) -> Unit {
+pub fn Builder::remove_col(self : Builder, index : Int) -> Unit {
   self.rows.each(row => if index < row.length() { row.remove(index) |> ignore })
 }
 
@@ -2687,30 +2671,26 @@ pub fn Builder::clear(self : Builder) -> Unit {
 
 ///|
 pub fn Builder::clean(self : Builder) -> Unit {
-  let mut max_columns = 0
-  self.rows.each(row => {
-    if row.length() > max_columns {
-      max_columns = row.length()
-    }
-  })
-  if max_columns == 0 {
+  let mut max_cols = 0
+  self.rows.each(row => if row.length() > max_cols { max_cols = row.length() })
+  if max_cols == 0 {
     return
   }
-  // Determine which columns to keep (at least one non-empty cell)
-  let keep_col = Array::make(max_columns, false)
+  // Determine which cols to keep (at least one non-empty cell)
+  let keep_col = Array::make(max_cols, false)
   self.rows.each(row => {
-    for column = 0; column < max_columns; column = column + 1 {
-      if column < row.length() && row[column] != "" {
-        keep_col[column] = true
+    for col = 0; col < max_cols; col = col + 1 {
+      if col < row.length() && row[col] != "" {
+        keep_col[col] = true
       }
     }
   })
-  // Filter columns in-place
+  // Filter cols in-place
   self.rows.each(row => {
     let next = []
-    for column = 0; column < max_columns; column = column + 1 {
-      if keep_col[column] {
-        next.push(if column < row.length() { row[column] } else { "" })
+    for col = 0; col < max_cols; col = col + 1 {
+      if keep_col[col] {
+        next.push(if col < row.length() { row[col] } else { "" })
       }
     }
     row.clear()
@@ -2737,14 +2717,14 @@ fn normalize_rows(
   rows : Array[Array[String]],
   empty_cell : String,
 ) -> Array[Array[String]] {
-  let mut max_columns = 0
-  rows.each(row => if row.length() > max_columns { max_columns = row.length() })
+  let mut max_cols = 0
+  rows.each(row => if row.length() > max_cols { max_cols = row.length() })
 
   rows.map(row => {
     let normalized = []
-    for column = 0; column < max_columns; column = column + 1 {
-      if column < row.length() {
-        normalized.push(row[column])
+    for col = 0; col < max_cols; col = col + 1 {
+      if col < row.length() {
+        normalized.push(row[col])
       } else {
         normalized.push(empty_cell)
       }
@@ -2764,7 +2744,7 @@ pub fn Builder::count_records(self : Builder) -> Int {
 }
 
 ///|
-pub fn Builder::count_columns(self : Builder) -> Int {
+pub fn Builder::count_cols(self : Builder) -> Int {
   let mut max = 0
   self.rows.each(row => if row.length() > max { max = row.length() })
   max
@@ -2776,7 +2756,7 @@ pub fn Builder::index(self : Builder) -> IndexBuilder {
   {
     rows: self.rows,
     empty_cell: self.empty_cell,
-    index_column: None,
+    index_col: None,
     index_name: Some(""),
     show_index: true,
   }
@@ -2786,34 +2766,34 @@ pub fn Builder::index(self : Builder) -> IndexBuilder {
 pub struct IndexBuilder {
   rows : Array[Array[String]]
   empty_cell : String
-  mut index_column : Int?
+  mut index_col : Int?
   mut index_name : String?
   mut show_index : Bool
 }
 
 ///|
-/// Use the specified column as the index column (0-based).
-pub fn IndexBuilder::column(self : IndexBuilder, col : Int) -> IndexBuilder {
-  self.index_column = Some(col)
+/// Use the specified col as the index col (0-based).
+pub fn IndexBuilder::col(self : IndexBuilder, col : Int) -> IndexBuilder {
+  self.index_col = Some(col)
   self
 }
 
 ///|
-/// Set the name for the index column. None removes the name row.
+/// Set the name for the index col. None removes the name row.
 pub fn IndexBuilder::name(self : IndexBuilder, name : String?) -> IndexBuilder {
   self.index_name = name
   self
 }
 
 ///|
-/// Hide the index column.
+/// Hide the index col.
 pub fn IndexBuilder::hide(self : IndexBuilder) -> IndexBuilder {
   self.show_index = false
   self
 }
 
 ///|
-/// Transpose the table (swap rows and columns).
+/// Transpose the table (swap rows and cols).
 pub fn IndexBuilder::transpose(self : IndexBuilder) -> IndexBuilder {
   let norm = normalize_rows(self.rows, self.empty_cell)
   let row_count = norm.length()
@@ -2821,8 +2801,8 @@ pub fn IndexBuilder::transpose(self : IndexBuilder) -> IndexBuilder {
   if row_count == 0 || col_count == 0 {
     return self
   }
-  // After transpose, first column = original headers (row 0 values),
-  // remaining columns = original data rows, new header = row indices
+  // After transpose, first col = original headers (row 0 values),
+  // remaining cols = original data rows, new header = row indices
   let result : Array[Array[String]] = []
   // Header row: empty + original row indices
   let header : Array[String] = [""]
@@ -2830,7 +2810,7 @@ pub fn IndexBuilder::transpose(self : IndexBuilder) -> IndexBuilder {
     header.push((r - 1).to_string())
   }
   result.push(header)
-  // Each original column becomes a data row
+  // Each original col becomes a data row
   for c = 0; c < col_count; c = c + 1 {
     let new_row : Array[String] = []
     for r = 0; r < row_count; r = r + 1 {
@@ -2854,9 +2834,9 @@ pub fn IndexBuilder::build(self : IndexBuilder) -> Table {
   if row_count == 0 || col_count == 0 {
     return Table::from_rows(norm)
   }
-  match self.index_column {
+  match self.index_col {
     None => {
-      // Default: add a numeric index column at position 0
+      // Default: add a numeric index col at position 0
       if not(self.show_index) {
         return Table::from_rows(norm)
       }
@@ -2875,7 +2855,7 @@ pub fn IndexBuilder::build(self : IndexBuilder) -> Table {
       Table::from_rows(result)
     }
     Some(col_idx) => {
-      // Use specified column as index, move it to position 0
+      // Use specified col as index, move it to position 0
       if col_idx >= col_count {
         return Table::from_rows(norm)
       }
@@ -2898,7 +2878,7 @@ pub fn IndexBuilder::build(self : IndexBuilder) -> Table {
         }
         None => ()
       }
-      // Data rows: use column value as index
+      // Data rows: use col value as index
       for r = 1; r < row_count; r = r + 1 {
         let data_row : Array[String] = []
         data_row.push(norm[r][col_idx])
@@ -2984,17 +2964,11 @@ pub fn Table::modify_rows(
   setting : Setting,
 ) -> Table {
   let row_indexes = resolve_rows(rows, self.rows.length())
-  if setting is SpanColumn(_) || setting is SpanRow(_) {
-    let column_count = @papergrid.IterRecords::new(self.rows).count_columns()
+  if setting is SpanCol(_) || setting is SpanRow(_) {
+    let col_count = @papergrid.IterRecords::new(self.rows).count_cols()
     row_indexes.each(row => {
-      for column = 0; column < column_count; column = column + 1 {
-        apply_setting_to_cell_value(
-          self.rows,
-          self.config,
-          row,
-          column,
-          setting,
-        )
+      for col = 0; col < col_count; col = col + 1 {
+        apply_setting_to_cell_value(self.rows, self.config, row, col, setting)
       }
     })
   } else {
@@ -3007,29 +2981,23 @@ pub fn Table::modify_rows(
 }
 
 ///|
-pub fn Table::modify_columns(
+pub fn Table::modify_cols(
   self : Table,
-  columns : Columns,
+  cols : Cols,
   setting : Setting,
 ) -> Table {
-  let column_count = @papergrid.IterRecords::new(self.rows).count_columns()
-  let column_indexes = resolve_columns(columns, column_count)
-  if setting is SpanColumn(_) || setting is SpanRow(_) {
+  let col_count = @papergrid.IterRecords::new(self.rows).count_cols()
+  let col_indexes = resolve_cols(cols, col_count)
+  if setting is SpanCol(_) || setting is SpanRow(_) {
     for row = 0; row < self.rows.length(); row = row + 1 {
-      column_indexes.each(column => {
-        apply_setting_to_cell_value(
-          self.rows,
-          self.config,
-          row,
-          column,
-          setting,
-        )
+      col_indexes.each(col => {
+        apply_setting_to_cell_value(self.rows, self.config, row, col, setting)
       })
     }
   } else {
-    column_indexes.each(column => {
-      apply_setting_to_column_values(self.rows, column, setting)
-      apply_setting_to_column(self.config, column, setting)
+    col_indexes.each(col => {
+      apply_setting_to_col_values(self.rows, col, setting)
+      apply_setting_to_col(self.config, col, setting)
     })
   }
   self
@@ -3058,33 +3026,33 @@ pub fn Table::modify_segment(
         Fmt(format) =>
           for row = 0; row < self.rows.length(); row = row + 1 {
             let row_values = self.rows[row]
-            for column = 0; column < row_values.length(); column = column + 1 {
-              apply_format_to_cell(self.rows, row, column, format)
+            for col = 0; col < row_values.length(); col = col + 1 {
+              apply_format_to_cell(self.rows, row, col, format)
             }
           }
-        SpanColumn(_) => {
-          let column_count = @papergrid.IterRecords::new(self.rows).count_columns()
+        SpanCol(_) => {
+          let col_count = @papergrid.IterRecords::new(self.rows).count_cols()
           for row = 0; row < self.rows.length(); row = row + 1 {
-            for column = 0; column < column_count; column = column + 1 {
+            for col = 0; col < col_count; col = col + 1 {
               apply_setting_to_cell_value(
                 self.rows,
                 self.config,
                 row,
-                column,
+                col,
                 setting,
               )
             }
           }
         }
         SpanRow(_) => {
-          let column_count = @papergrid.IterRecords::new(self.rows).count_columns()
+          let col_count = @papergrid.IterRecords::new(self.rows).count_cols()
           for row = 0; row < self.rows.length(); row = row + 1 {
-            for column = 0; column < column_count; column = column + 1 {
+            for col = 0; col < col_count; col = col + 1 {
               apply_setting_to_cell_value(
                 self.rows,
                 self.config,
                 row,
-                column,
+                col,
                 setting,
               )
             }
@@ -3092,8 +3060,8 @@ pub fn Table::modify_segment(
         }
       }
     _ => {
-      let column_count = @papergrid.IterRecords::new(self.rows).count_columns()
-      resolve_segment_cells(segment, self.rows.length(), column_count).each(cell => {
+      let col_count = @papergrid.IterRecords::new(self.rows).count_cols()
+      resolve_segment_cells(segment, self.rows.length(), col_count).each(cell => {
         apply_setting_to_cell_value(
           self.rows,
           self.config,
@@ -3118,21 +3086,21 @@ pub fn Table::modify_cell(
     self.rows,
     self.config,
     cell.row,
-    cell.column,
+    cell.col,
     setting,
   )
-  apply_setting_to_cell(self.config, cell.row, cell.column, setting)
+  apply_setting_to_cell(self.config, cell.row, cell.col, setting)
   self
 }
 
 ///|
-pub fn Table::modify_by_column_name(
+pub fn Table::modify_by_col_name(
   self : Table,
-  by_name : ByColumnName,
+  by_name : ByColName,
   setting : Setting,
 ) -> Table {
-  resolve_columns_by_name(self.rows, by_name).each(column => {
-    self.modify_columns(Columns::one(column), setting) |> ignore
+  resolve_cols_by_name(self.rows, by_name).each(col => {
+    self.modify_cols(Cols::one(col), setting) |> ignore
   })
   self
 }
@@ -3141,32 +3109,29 @@ pub fn Table::modify_by_column_name(
 pub fn Table::remove_rows(self : Table, rows : Rows) -> Table {
   let indexes = resolve_rows(rows, self.rows.length())
   let row_map = build_remove_map(self.rows.length(), indexes)
-  let column_count = @papergrid.IterRecords::new(self.rows).count_columns()
+  let col_count = @papergrid.IterRecords::new(self.rows).count_cols()
   remove_rows_at(self.rows, indexes)
-  self.config.remap(row_map, build_identity_map(column_count))
+  self.config.remap(row_map, build_identity_map(col_count))
   self
 }
 
 ///|
-pub fn Table::remove_columns(self : Table, columns : Columns) -> Table {
-  let column_count = @papergrid.IterRecords::new(self.rows).count_columns()
-  let indexes = resolve_columns(columns, column_count)
-  let column_map = build_remove_map(column_count, indexes)
-  remove_columns_at(self.rows, indexes)
-  self.config.remap(build_identity_map(self.rows.length()), column_map)
+pub fn Table::remove_cols(self : Table, cols : Cols) -> Table {
+  let col_count = @papergrid.IterRecords::new(self.rows).count_cols()
+  let indexes = resolve_cols(cols, col_count)
+  let col_map = build_remove_map(col_count, indexes)
+  remove_cols_at(self.rows, indexes)
+  self.config.remap(build_identity_map(self.rows.length()), col_map)
   self
 }
 
 ///|
-pub fn Table::remove_by_column_name(
-  self : Table,
-  by_name : ByColumnName,
-) -> Table {
-  let column_count = @papergrid.IterRecords::new(self.rows).count_columns()
-  let indexes = resolve_columns_by_name(self.rows, by_name)
-  let column_map = build_remove_map(column_count, indexes)
-  remove_columns_at(self.rows, indexes)
-  self.config.remap(build_identity_map(self.rows.length()), column_map)
+pub fn Table::remove_by_col_name(self : Table, by_name : ByColName) -> Table {
+  let col_count = @papergrid.IterRecords::new(self.rows).count_cols()
+  let indexes = resolve_cols_by_name(self.rows, by_name)
+  let col_map = build_remove_map(col_count, indexes)
+  remove_cols_at(self.rows, indexes)
+  self.config.remap(build_identity_map(self.rows.length()), col_map)
   self
 }
 
@@ -3174,42 +3139,38 @@ pub fn Table::remove_by_column_name(
 pub fn Table::extract_rows(self : Table, rows : Rows) -> Table {
   let indexes = resolve_rows(rows, self.rows.length())
   let row_map = build_extract_map(self.rows.length(), indexes)
-  let column_count = @papergrid.IterRecords::new(self.rows).count_columns()
+  let col_count = @papergrid.IterRecords::new(self.rows).count_cols()
   self.rows = extract_rows_at(self.rows, indexes)
-  self.config.remap(row_map, build_identity_map(column_count))
+  self.config.remap(row_map, build_identity_map(col_count))
   self
 }
 
 ///|
-pub fn Table::extract_columns(self : Table, columns : Columns) -> Table {
-  let column_count = @papergrid.IterRecords::new(self.rows).count_columns()
-  let indexes = resolve_columns(columns, column_count)
-  let column_map = build_extract_map(column_count, indexes)
-  self.rows = extract_columns_at(self.rows, indexes)
-  self.config.remap(build_identity_map(self.rows.length()), column_map)
+pub fn Table::extract_cols(self : Table, cols : Cols) -> Table {
+  let col_count = @papergrid.IterRecords::new(self.rows).count_cols()
+  let indexes = resolve_cols(cols, col_count)
+  let col_map = build_extract_map(col_count, indexes)
+  self.rows = extract_cols_at(self.rows, indexes)
+  self.config.remap(build_identity_map(self.rows.length()), col_map)
   self
 }
 
 ///|
-pub fn Table::extract_segment(
-  self : Table,
-  rows : Rows,
-  columns : Columns,
-) -> Table {
+pub fn Table::extract_segment(self : Table, rows : Rows, cols : Cols) -> Table {
   let row_indexes = resolve_rows(rows, self.rows.length())
   let row_map = build_extract_map(self.rows.length(), row_indexes)
   let extracted_rows = extract_rows_at(self.rows, row_indexes)
-  let original_column_count = @papergrid.IterRecords::new(self.rows).count_columns()
-  let column_indexes = resolve_columns(columns, original_column_count)
-  let column_map = build_extract_map(original_column_count, column_indexes)
-  self.rows = extract_columns_at(extracted_rows, column_indexes)
-  self.config.remap(row_map, column_map)
+  let original_col_count = @papergrid.IterRecords::new(self.rows).count_cols()
+  let col_indexes = resolve_cols(cols, original_col_count)
+  let col_map = build_extract_map(original_col_count, col_indexes)
+  self.rows = extract_cols_at(extracted_rows, col_indexes)
+  self.config.remap(row_map, col_map)
   self
 }
 
 ///|
 priv enum SplitDirection {
-  SplitColumn
+  SplitCol
   SplitRow
 }
 
@@ -3234,8 +3195,8 @@ pub struct Split {
 }
 
 ///|
-pub fn Split::column(index : Int) -> Split {
-  { direction: SplitColumn, behavior: SplitZip, display: SplitClean, index }
+pub fn Split::col(index : Int) -> Split {
+  { direction: SplitCol, behavior: SplitZip, display: SplitClean, index }
 }
 
 ///|
@@ -3284,7 +3245,7 @@ pub fn Table::split(self : Table, split : Split) -> Table {
     return self
   }
   let (primary_length, secondary_length) = match split.direction {
-    SplitColumn => (count_cols, count_rows)
+    SplitCol => (count_cols, count_rows)
     SplitRow => (count_rows, count_cols)
   }
   let sections_per_direction = split_ceil_div(primary_length, section_length)
@@ -3319,12 +3280,12 @@ pub fn Table::split(self : Table, split : Split) -> Table {
           (si, fs, ts)
         }
       }
-      // Insert new row/column
+      // Insert new row/col
       match (split.direction, split.behavior) {
-        (SplitColumn, SplitConcat) => split_push_row(self.rows)
-        (SplitColumn, SplitZip) => split_insert_row(self.rows, to_sec)
-        (SplitRow, SplitConcat) => split_push_column(self.rows)
-        (SplitRow, SplitZip) => split_insert_column(self.rows, to_sec)
+        (SplitCol, SplitConcat) => split_push_row(self.rows)
+        (SplitCol, SplitZip) => split_insert_row(self.rows, to_sec)
+        (SplitRow, SplitConcat) => split_push_col(self.rows)
+        (SplitRow, SplitZip) => split_insert_col(self.rows, to_sec)
       }
       // Copy cells from overflow position to new position
       let section_is_empty = split_copy_section(
@@ -3336,22 +3297,22 @@ pub fn Table::split(self : Table, split : Split) -> Table {
         to_sec,
         split.direction,
       )
-      // If section is empty and display is Clean, delete the inserted row/column
+      // If section is empty and display is Clean, delete the inserted row/col
       if section_is_empty && split.display == SplitClean {
         match split.direction {
-          SplitColumn => split_remove_row(self.rows, to_sec)
-          SplitRow => split_remove_column(self.rows, to_sec)
+          SplitCol => split_remove_row(self.rows, to_sec)
+          SplitRow => split_remove_col(self.rows, to_sec)
         }
         filtered_sections = filtered_sections + 1
       }
     }
   }
-  // Cleanup: remove extra columns/rows beyond section_length
+  // Cleanup: remove extra cols/rows beyond section_length
   for segment = primary_length - 1
       segment >= section_length
       segment = segment - 1 {
     match split.direction {
-      SplitColumn => split_remove_column_all(self.rows, segment)
+      SplitCol => split_remove_col_all(self.rows, segment)
       SplitRow => split_remove_row(self.rows, segment)
     }
   }
@@ -3373,14 +3334,14 @@ fn split_insert_row(rows : Array[Array[String]], index : Int) -> Unit {
 }
 
 ///|
-fn split_push_column(rows : Array[Array[String]]) -> Unit {
+fn split_push_col(rows : Array[Array[String]]) -> Unit {
   for i = 0; i < rows.length(); i = i + 1 {
     rows[i].push("")
   }
 }
 
 ///|
-fn split_insert_column(rows : Array[Array[String]], col : Int) -> Unit {
+fn split_insert_col(rows : Array[Array[String]], col : Int) -> Unit {
   for i = 0; i < rows.length(); i = i + 1 {
     rows[i].insert(col, "")
   }
@@ -3392,7 +3353,7 @@ fn split_remove_row(rows : Array[Array[String]], index : Int) -> Unit {
 }
 
 ///|
-fn split_remove_column_all(rows : Array[Array[String]], col : Int) -> Unit {
+fn split_remove_col_all(rows : Array[Array[String]], col : Int) -> Unit {
   for i = 0; i < rows.length(); i = i + 1 {
     if col < rows[i].length() {
       rows[i].remove(col) |> ignore
@@ -3401,7 +3362,7 @@ fn split_remove_column_all(rows : Array[Array[String]], col : Int) -> Unit {
 }
 
 ///|
-fn split_remove_column(rows : Array[Array[String]], col : Int) -> Unit {
+fn split_remove_col(rows : Array[Array[String]], col : Int) -> Unit {
   for i = 0; i < rows.length(); i = i + 1 {
     if col < rows[i].length() {
       rows[i].remove(col) |> ignore
@@ -3416,7 +3377,7 @@ fn split_format_position(
   secondary_index : Int,
 ) -> (Int, Int) {
   match direction {
-    SplitColumn => (secondary_index, primary_index)
+    SplitCol => (secondary_index, primary_index)
     SplitRow => (primary_index, secondary_index)
   }
 }

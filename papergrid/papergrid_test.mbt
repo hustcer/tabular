@@ -25,7 +25,7 @@ test "iter grid multiline output" {
   cfg.set_borders(Borders::ascii())
   let records = IterRecords::new([
     ["left\ncell", "right one"],
-    ["the second column", "and\nhere"],
+    ["the second col", "and\nhere"],
   ])
   let dims = IterGridDimension::default()
   dims.estimate(records, cfg)
@@ -33,22 +33,22 @@ test "iter grid multiline output" {
   inspect(
     grid.to_string(),
     content=(
-      #|+-------------------+-----------+
-      #||       left        | right one |
-      #||       cell        |           |
-      #|+-------------------+-----------+
-      #|| the second column |    and    |
-      #||                   |   here    |
-      #|+-------------------+-----------+
+      #|+----------------+-----------+
+      #||      left      | right one |
+      #||      cell      |           |
+      #|+----------------+-----------+
+      #|| the second col |    and    |
+      #||                |   here    |
+      #|+----------------+-----------+
     ),
   )
 }
 
 ///|
-test "iter grid column span output" {
+test "iter grid col span output" {
   let cfg = SpannedConfig::default()
   cfg.set_borders(Borders::ascii())
-  cfg.set_column_span(0, 0, 2)
+  cfg.set_col_span(0, 0, 2)
   let records = IterRecords::new([["0-0", ""], ["1-0", "1-1"]])
   let dims = IterGridDimension::default()
   dims.estimate(records, cfg)
@@ -116,11 +116,11 @@ test "iter grid row span collision multiline output" {
 }
 
 ///|
-test "iter grid combined row and column span multiline output" {
+test "iter grid combined row and col span multiline output" {
   let cfg = SpannedConfig::default()
   cfg.set_borders(Borders::ascii())
   cfg.set_row_span(1, 1, 2)
-  cfg.set_column_span(1, 1, 2)
+  cfg.set_col_span(1, 1, 2)
   cfg.set_align_for_cell(1, 1, HAlign::center())
   cfg.set_valign_for_cell(1, 1, VAlign::center())
   let records = IterRecords::new([
@@ -196,15 +196,15 @@ test "iter grid row span boundary content with bottom vertical align" {
 }
 
 // ──────────────────────────────────────────────────
-// Column span edge cases from upstream column_span.rs
+// Col span edge cases from upstream col_span.rs
 // ──────────────────────────────────────────────────
 
 ///|
-test "column span multilane with custom data" {
+test "col span multilane with custom data" {
   let cfg = SpannedConfig::default()
   cfg.set_borders(Borders::ascii())
-  cfg.set_column_span(0, 0, 2)
-  cfg.set_column_span(3, 0, 3)
+  cfg.set_col_span(0, 0, 2)
+  cfg.set_col_span(3, 0, 3)
   let records = IterRecords::new([
     ["first line", "", "e.g."],
     ["0", "1", "2"],
@@ -231,11 +231,11 @@ test "column span multilane with custom data" {
 }
 
 ///|
-test "column span collision two spans different widths" {
+test "col span collision two spans different widths" {
   let cfg = SpannedConfig::default()
   cfg.set_borders(Borders::ascii())
-  cfg.set_column_span(0, 0, 2)
-  cfg.set_column_span(1, 1, 2)
+  cfg.set_col_span(0, 0, 2)
+  cfg.set_col_span(1, 1, 2)
   let records = IterRecords::new([
     ["0-0xxxxxxx", "0-1", "0-2"],
     ["1-0", "1-1", "1-2"],
@@ -259,12 +259,12 @@ test "column span collision two spans different widths" {
 }
 
 ///|
-test "column span all rows spanned" {
+test "col span all rows spanned" {
   let cfg = SpannedConfig::default()
   cfg.set_borders(Borders::ascii())
-  cfg.set_column_span(0, 0, 2)
-  cfg.set_column_span(1, 0, 2)
-  cfg.set_column_span(2, 0, 2)
+  cfg.set_col_span(0, 0, 2)
+  cfg.set_col_span(1, 0, 2)
+  cfg.set_col_span(2, 0, 2)
   let records = IterRecords::new([
     ["0-0", "0-1"],
     ["1-0", "1-1"],
@@ -288,11 +288,11 @@ test "column span all rows spanned" {
 }
 
 ///|
-test "column span with different length data" {
+test "col span with different length data" {
   let cfg = SpannedConfig::default()
   cfg.set_borders(Borders::ascii())
-  cfg.set_column_span(0, 0, 2)
-  cfg.set_column_span(2, 0, 2)
+  cfg.set_col_span(0, 0, 2)
+  cfg.set_col_span(2, 0, 2)
   let records = IterRecords::new([
     ["first row", ""],
     ["0", "1"],
@@ -316,9 +316,9 @@ test "column span with different length data" {
 }
 
 ///|
-test "column span no split style" {
+test "col span no split style" {
   let cfg = SpannedConfig::default()
-  cfg.set_column_span(0, 0, 2)
+  cfg.set_col_span(0, 0, 2)
   cfg.set_align_for_cell(0, 0, HAlign::center())
   let records = IterRecords::new([["0-0", ""], ["1-0", "1-1"]])
   let dims = IterGridDimension::default()
@@ -396,7 +396,7 @@ test "row span 3x3 render with multiple row spans" {
 }
 
 ///|
-test "row span all columns spanned" {
+test "row span all cols spanned" {
   let cfg = SpannedConfig::default()
   cfg.set_borders(Borders::ascii())
   cfg.set_row_span(0, 0, 2)
@@ -476,11 +476,11 @@ test "row span with vertical padding" {
 }
 
 ///|
-test "combined row and column span at top left corner" {
+test "combined row and col span at top left corner" {
   let cfg = SpannedConfig::default()
   cfg.set_borders(Borders::ascii())
   cfg.set_row_span(0, 0, 2)
-  cfg.set_column_span(0, 0, 2)
+  cfg.set_col_span(0, 0, 2)
   cfg.set_align_for_cell(0, 0, HAlign::center())
   cfg.set_valign_for_cell(0, 0, VAlign::center())
   let records = IterRecords::new([
@@ -510,11 +510,11 @@ test "combined row and column span at top left corner" {
 }
 
 ///|
-test "combined row and column span at bottom right corner" {
+test "combined row and col span at bottom right corner" {
   let cfg = SpannedConfig::default()
   cfg.set_borders(Borders::ascii())
   cfg.set_row_span(2, 2, 2)
-  cfg.set_column_span(2, 2, 2)
+  cfg.set_col_span(2, 2, 2)
   cfg.set_align_for_cell(2, 2, HAlign::center())
   cfg.set_valign_for_cell(2, 2, VAlign::center())
   let records = IterRecords::new([
@@ -544,11 +544,11 @@ test "combined row and column span at bottom right corner" {
 }
 
 ///|
-test "combined row and column span large center block" {
+test "combined row and col span large center block" {
   let cfg = SpannedConfig::default()
   cfg.set_borders(Borders::ascii())
   cfg.set_row_span(1, 1, 3)
-  cfg.set_column_span(1, 1, 3)
+  cfg.set_col_span(1, 1, 3)
   cfg.set_align_for_cell(1, 1, HAlign::center())
   cfg.set_valign_for_cell(1, 1, VAlign::center())
   let records = IterRecords::new([
@@ -577,11 +577,11 @@ test "combined row and column span large center block" {
 }
 
 ///|
-test "mixed row and column spans complex layout" {
+test "mixed row and col spans complex layout" {
   let cfg = SpannedConfig::default()
   cfg.set_borders(Borders::ascii())
-  cfg.set_column_span(1, 1, 2)
-  cfg.set_column_span(3, 0, 3)
+  cfg.set_col_span(1, 1, 2)
+  cfg.set_col_span(3, 0, 3)
   cfg.set_row_span(0, 0, 2)
   cfg.set_row_span(0, 3, 3)
   let records = IterRecords::new([
@@ -613,10 +613,10 @@ test "mixed row and column spans complex layout" {
 }
 
 ///|
-test "zero span in column dimension is ignored" {
+test "zero span in col dimension is ignored" {
   let cfg = SpannedConfig::default()
   cfg.set_borders(Borders::ascii())
-  cfg.set_column_span(0, 1, 0)
+  cfg.set_col_span(0, 1, 0)
   let records = IterRecords::new([["0-0", "0-1"], ["1-0", "1-1"]])
   let dims = IterGridDimension::default()
   dims.estimate(records, cfg)

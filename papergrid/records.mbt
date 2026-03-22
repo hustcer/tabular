@@ -1,18 +1,14 @@
 ///|
 pub struct IterRecords {
   rows : Array[Array[String]]
-  count_columns : Int
+  count_cols : Int
 }
 
 ///|
 pub fn IterRecords::new(rows : Array[Array[String]]) -> IterRecords {
-  let mut count_columns = 0
-  rows.each(row => {
-    if row.length() > count_columns {
-      count_columns = row.length()
-    }
-  })
-  { rows, count_columns }
+  let mut count_cols = 0
+  rows.each(row => if row.length() > count_cols { count_cols = row.length() })
+  { rows, count_cols }
 }
 
 ///|
@@ -21,18 +17,18 @@ pub fn IterRecords::count_rows(self : IterRecords) -> Int {
 }
 
 ///|
-pub fn IterRecords::count_columns(self : IterRecords) -> Int {
-  self.count_columns
+pub fn IterRecords::count_cols(self : IterRecords) -> Int {
+  self.count_cols
 }
 
 ///|
 pub fn IterRecords::get_cell(
   self : IterRecords,
   row : Int,
-  column : Int,
+  col : Int,
 ) -> String {
-  if row < self.rows.length() && column < self.rows[row].length() {
-    self.rows[row][column]
+  if row < self.rows.length() && col < self.rows[row].length() {
+    self.rows[row][col]
   } else {
     ""
   }

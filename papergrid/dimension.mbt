@@ -14,16 +14,16 @@ pub fn IterGridDimension::estimate(
   records : IterRecords,
   cfg : SpannedConfig,
 ) -> Unit {
-  let count = records.count_columns()
+  let count = records.count_cols()
   let widths = Array::make(count, 0)
   let spanned = []
   for row = 0; row < records.count_rows(); row = row + 1 {
-    for column = 0; column < count; column = column + 1 {
-      if !cfg.is_cell_visible(row, column) {
+    for col = 0; col < count; col = col + 1 {
+      if !cfg.is_cell_visible(row, col) {
         continue
       }
-      let source = cfg.span_source_at(row, column)
-      let colspan = cfg.column_span_at(row, column)
+      let source = cfg.span_source_at(row, col)
+      let colspan = cfg.col_span_at(row, col)
       processed_lines(
         records.get_cell(source.0, source.1),
         cfg.width_mode_at(source.0, source.1),
@@ -34,10 +34,10 @@ pub fn IterGridDimension::estimate(
           source.1,
         )
         let width = line.length() + padding_left + padding_right
-        if colspan <= 1 && width > widths[column] {
-          widths[column] = width
+        if colspan <= 1 && width > widths[col] {
+          widths[col] = width
         } else if colspan > 1 {
-          spanned.push((column, colspan, width))
+          spanned.push((col, colspan, width))
         }
       })
     }
@@ -45,8 +45,8 @@ pub fn IterGridDimension::estimate(
   spanned.each(item => {
     let end_ = if item.0 + item.1 < count { item.0 + item.1 } else { count }
     let mut current = 0
-    for column = item.0; column < end_; column = column + 1 {
-      current = current + widths[column]
+    for col = item.0; col < end_; col = col + 1 {
+      current = current + widths[col]
     }
     if end_ - item.0 > 1 {
       current = current + (end_ - item.0 - 1)

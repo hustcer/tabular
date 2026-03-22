@@ -26,28 +26,28 @@ pub struct Builder {
 pub fn Builder::build(Self) -> Table
 pub fn Builder::clean(Self) -> Unit
 pub fn Builder::clear(Self) -> Unit
-pub fn Builder::count_columns(Self) -> Int
+pub fn Builder::count_cols(Self) -> Int
 pub fn Builder::count_records(Self) -> Int
 pub fn Builder::default() -> Self
 pub fn Builder::extend(Self, Array[String]) -> Unit
 pub fn Builder::from_rows(Array[Array[String]]) -> Self
 pub fn Builder::index(Self) -> IndexBuilder
-pub fn Builder::insert_column(Self, Int, Array[String]) -> Unit
+pub fn Builder::insert_col(Self, Int, Array[String]) -> Unit
 pub fn Builder::insert_record(Self, Int, Array[String]) -> Unit
-pub fn Builder::push_column(Self, Array[String]) -> Unit
+pub fn Builder::push_col(Self, Array[String]) -> Unit
 pub fn Builder::push_record(Self, Array[String]) -> Unit
-pub fn Builder::remove_column(Self, Int) -> Unit
+pub fn Builder::remove_col(Self, Int) -> Unit
 pub fn Builder::remove_record(Self, Int) -> Unit
 pub fn Builder::set_empty(Self, String) -> Unit
 
-pub struct ByColumnName {
+pub struct ByColName {
   name : String
 }
-pub fn ByColumnName::new(String) -> Self
+pub fn ByColName::new(String) -> Self
 
 pub struct Cell {
   row : Int
-  column : Int
+  col : Int
 }
 pub fn Cell::and_(Self, Self) -> Segment
 pub fn Cell::as_segment(Self) -> Segment
@@ -55,7 +55,7 @@ pub fn Cell::inverse(Self) -> Segment
 pub fn Cell::new(Int, Int) -> Self
 pub fn Cell::not(Self, Self) -> Segment
 
-pub struct Columns {
+pub struct Cols {
   start : Int
   end_ : Int
   skip_n : Int
@@ -64,29 +64,29 @@ pub struct Columns {
   exclude_end : Int
   predicate : ((Entity) -> Bool)?
 }
-pub fn Columns::all() -> Self
-pub fn Columns::and_(Self, Self) -> Segment
-pub fn Columns::and_cell(Self, Cell) -> Segment
-pub fn Columns::and_rows(Self, Rows) -> Segment
-pub fn Columns::as_segment(Self) -> Segment
-pub fn Columns::filter(Self, (Entity) -> Bool) -> Self
-pub fn Columns::first() -> Self
-pub fn Columns::first_offset(Int) -> Self
-pub fn Columns::intersect(Self, Rows) -> Segment
-pub fn Columns::inverse(Self) -> Segment
-pub fn Columns::last() -> Self
-pub fn Columns::last_offset(Int) -> Self
-pub fn Columns::new(Int, Int) -> Self
-pub fn Columns::not(Self, Self) -> Self
-pub fn Columns::not_cell(Self, Cell) -> Segment
-pub fn Columns::not_rows(Self, Rows) -> Segment
-pub fn Columns::one(Int) -> Self
-pub fn Columns::skip(Self, Int) -> Self
-pub fn Columns::step_by(Self, Int) -> Self
+pub fn Cols::all() -> Self
+pub fn Cols::and_(Self, Self) -> Segment
+pub fn Cols::and_cell(Self, Cell) -> Segment
+pub fn Cols::and_rows(Self, Rows) -> Segment
+pub fn Cols::as_segment(Self) -> Segment
+pub fn Cols::filter(Self, (Entity) -> Bool) -> Self
+pub fn Cols::first() -> Self
+pub fn Cols::first_offset(Int) -> Self
+pub fn Cols::intersect(Self, Rows) -> Segment
+pub fn Cols::inverse(Self) -> Segment
+pub fn Cols::last() -> Self
+pub fn Cols::last_offset(Int) -> Self
+pub fn Cols::new(Int, Int) -> Self
+pub fn Cols::not(Self, Self) -> Self
+pub fn Cols::not_cell(Self, Cell) -> Segment
+pub fn Cols::not_rows(Self, Rows) -> Segment
+pub fn Cols::one(Int) -> Self
+pub fn Cols::skip(Self, Int) -> Self
+pub fn Cols::step_by(Self, Int) -> Self
 
 pub enum Entity {
   Row(Int)
-  Column(Int)
+  Col(Int)
 }
 
 pub enum Format {
@@ -113,11 +113,11 @@ pub struct Highlight {
   border : @papergrid.CellBorder
 }
 pub fn Highlight::new_cell(Cell) -> Self
-pub fn Highlight::new_columns(Columns) -> Self
+pub fn Highlight::new_cols(Cols) -> Self
 pub fn Highlight::new_rows(Rows) -> Self
 pub fn Highlight::new_segment(Segment) -> Self
 pub fn Highlight::outline_cell(Cell, Char) -> Self
-pub fn Highlight::outline_columns(Columns, Char) -> Self
+pub fn Highlight::outline_cols(Cols, Char) -> Self
 pub fn Highlight::outline_rows(Rows, Char) -> Self
 pub fn Highlight::outline_segment(Segment, Char) -> Self
 pub fn Highlight::with_border(Self, @papergrid.CellBorder) -> Self
@@ -125,7 +125,7 @@ pub fn Highlight::with_border(Self, @papergrid.CellBorder) -> Self
 pub enum HighlightTarget {
   HCell(Cell)
   HRows(Rows)
-  HColumns(Columns)
+  HCols(Cols)
   HSegment(Segment)
 }
 
@@ -143,12 +143,12 @@ pub fn HorizontalLine::right(Self, Char) -> Self
 pub struct IndexBuilder {
   rows : Array[Array[String]]
   empty_cell : String
-  mut index_column : Int?
+  mut index_col : Int?
   mut index_name : String?
   mut show_index : Bool
 }
 pub fn IndexBuilder::build(Self) -> Table
-pub fn IndexBuilder::column(Self, Int) -> Self
+pub fn IndexBuilder::col(Self, Int) -> Self
 pub fn IndexBuilder::hide(Self) -> Self
 pub fn IndexBuilder::name(Self, String?) -> Self
 pub fn IndexBuilder::transpose(Self) -> Self
@@ -188,19 +188,19 @@ pub struct Rows {
 pub fn Rows::all() -> Self
 pub fn Rows::and_(Self, Self) -> Segment
 pub fn Rows::and_cell(Self, Cell) -> Segment
-pub fn Rows::and_columns(Self, Columns) -> Segment
+pub fn Rows::and_cols(Self, Cols) -> Segment
 pub fn Rows::as_segment(Self) -> Segment
 pub fn Rows::filter(Self, (Entity) -> Bool) -> Self
 pub fn Rows::first() -> Self
 pub fn Rows::first_offset(Int) -> Self
-pub fn Rows::intersect(Self, Columns) -> Segment
+pub fn Rows::intersect(Self, Cols) -> Segment
 pub fn Rows::inverse(Self) -> Segment
 pub fn Rows::last() -> Self
 pub fn Rows::last_offset(Int) -> Self
 pub fn Rows::new(Int, Int) -> Self
 pub fn Rows::not(Self, Self) -> Self
 pub fn Rows::not_cell(Self, Cell) -> Segment
-pub fn Rows::not_columns(Self, Columns) -> Segment
+pub fn Rows::not_cols(Self, Cols) -> Segment
 pub fn Rows::one(Int) -> Self
 pub fn Rows::skip(Self, Int) -> Self
 pub fn Rows::step_by(Self, Int) -> Self
@@ -209,11 +209,11 @@ pub enum Segment {
   All(Int, Int)
   Range(Int, Int, Int, Int, Int, Int)
   RowsOnly(Rows, Int, Int)
-  ColumnsOnly(Columns, Int, Int)
+  ColsOnly(Cols, Int, Int)
   CellOnly(Cell, Int, Int)
-  Cross(Rows, Columns, Int, Int)
+  Cross(Rows, Cols, Int, Int)
   InverseRows(Rows, Int, Int)
-  InverseColumns(Columns, Int, Int)
+  InverseCols(Cols, Int, Int)
   InverseCell(Cell, Int, Int)
   Union2(Segment, Segment, Int, Int)
   Diff2(Segment, Segment, Int, Int)
@@ -221,7 +221,7 @@ pub enum Segment {
 pub fn Segment::all() -> Self
 pub fn Segment::and_(Self, Self) -> Self
 pub fn Segment::and_cell(Self, Cell) -> Self
-pub fn Segment::and_columns(Self, Columns) -> Self
+pub fn Segment::and_cols(Self, Cols) -> Self
 pub fn Segment::and_rows(Self, Rows) -> Self
 pub fn Segment::new(Int, Int, Int, Int) -> Self
 pub fn Segment::not(Self, Self) -> Self
@@ -237,7 +237,7 @@ pub enum Setting {
   W(Width)
   H(Height)
   Fmt(Format)
-  SpanColumn(Int)
+  SpanCol(Int)
   SpanRow(Int)
 }
 pub fn Setting::align(Align) -> Self
@@ -266,14 +266,14 @@ pub fn Shadow::set_top(Self) -> Self
 
 pub enum Span {
 }
-pub fn Span::column(Int) -> Setting
+pub fn Span::col(Int) -> Setting
 pub fn Span::row(Int) -> Setting
 
 pub struct Split {
   // private fields
 }
 pub fn Split::clean(Self) -> Self
-pub fn Split::column(Int) -> Self
+pub fn Split::col(Int) -> Self
 pub fn Split::concat(Self) -> Self
 pub fn Split::retain(Self) -> Self
 pub fn Split::row(Int) -> Self
@@ -328,20 +328,20 @@ pub struct Table {
 }
 pub fn Table::apply(Self, Style) -> Self
 pub fn Table::correct_borders(Self) -> Self
-pub fn Table::extract_columns(Self, Columns) -> Self
+pub fn Table::extract_cols(Self, Cols) -> Self
 pub fn Table::extract_rows(Self, Rows) -> Self
-pub fn Table::extract_segment(Self, Rows, Columns) -> Self
+pub fn Table::extract_segment(Self, Rows, Cols) -> Self
 pub fn Table::from_rows(Array[Array[String]]) -> Self
 pub fn Table::highlight(Self, Highlight) -> Self
 pub fn Table::merge(Self, Merge) -> Self
-pub fn Table::modify_by_column_name(Self, ByColumnName, Setting) -> Self
+pub fn Table::modify_by_col_name(Self, ByColName, Setting) -> Self
 pub fn Table::modify_cell(Self, Cell, Setting) -> Self
-pub fn Table::modify_columns(Self, Columns, Setting) -> Self
+pub fn Table::modify_cols(Self, Cols, Setting) -> Self
 pub fn Table::modify_rows(Self, Rows, Setting) -> Self
 pub fn Table::modify_segment(Self, Segment, Setting) -> Self
 pub fn Table::panel(Self, (Int, String, Bool)) -> Self
-pub fn Table::remove_by_column_name(Self, ByColumnName) -> Self
-pub fn Table::remove_columns(Self, Columns) -> Self
+pub fn Table::remove_by_col_name(Self, ByColName) -> Self
+pub fn Table::remove_cols(Self, Cols) -> Self
 pub fn Table::remove_rows(Self, Rows) -> Self
 pub fn Table::set_align(Self, Align) -> Self
 pub fn Table::set_height(Self, Height) -> Self

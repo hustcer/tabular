@@ -54,8 +54,8 @@ fn main {
     @tabular.Setting::align(@tabular.Align::center()),
   )
   |> ignore
-  table.modify_columns(
-    @tabular.Columns::last(),
+  table.modify_cols(
+    @tabular.Cols::last(),
     @tabular.Setting::align(@tabular.Align::right()),
   )
   |> ignore
@@ -105,7 +105,7 @@ fn main {
   println("\n== Extract ==\n")
   let table = @tabular.Table::from_rows(data)
   table.apply(@tabular.Style::modern()) |> ignore
-  table.extract_columns(@tabular.Columns::new(0, 2)) |> ignore
+  table.extract_cols(@tabular.Cols::new(0, 2)) |> ignore
   println(table.to_string())
 
   // 8. Merge
@@ -127,6 +127,6 @@ fn main {
     ["5", "6", "7", "8"],
   ])
   table.apply(@tabular.Style::ascii()) |> ignore
-  table.split(@tabular.Split::column(2)) |> ignore
+  table.split(@tabular.Split::col(2)) |> ignore
   println(table.to_string())
 }

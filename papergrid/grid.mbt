@@ -59,8 +59,8 @@ fn span_width(
     widths.length()
   }
   let mut total = 0
-  for column = start; column < end_; column = column + 1 {
-    total = total + widths[column]
+  for col = start; col < end_; col = col + 1 {
+    total = total + widths[col]
   }
   if borders.vertical is Some(_) && end_ - start > 1 {
     total = total + (end_ - start - 1)
@@ -69,9 +69,9 @@ fn span_width(
 }
 
 ///|
-fn blank_values(count_columns : Int) -> Array[String] {
+fn blank_values(count_cols : Int) -> Array[String] {
   let values = []
-  for column = 0; column < count_columns; column = column + 1 {
+  for col = 0; col < count_cols; col = col + 1 {
     values.push("")
   }
   values
@@ -139,19 +139,15 @@ fn inc_range(values : Array[Int], size : Int, start : Int, end_ : Int) -> Unit {
 }
 
 ///|
-fn row_span_anchor(
-  config : SpannedConfig,
-  row : Int,
-  column : Int,
-) -> (Int, Int)? {
+fn row_span_anchor(config : SpannedConfig, row : Int, col : Int) -> (Int, Int)? {
   let mut index = config.row_spans.length() - 1
   while index >= 0 {
     let item = config.row_spans[index]
-    let colspan = config.column_span_at(item.0, item.1)
+    let colspan = config.col_span_at(item.0, item.1)
     if row > item.0 &&
       row < item.0 + item.2 &&
-      column >= item.1 &&
-      column < item.1 + colspan {
+      col >= item.1 &&
+      col < item.1 + colspan {
       return Some((item.0, item.1))
     }
     index = index - 1
@@ -163,15 +159,15 @@ fn row_span_anchor(
 fn row_span_crosses_boundary(
   config : SpannedConfig,
   boundary_row : Int,
-  column : Int,
+  col : Int,
 ) -> Bool {
   for index = 0; index < config.row_spans.length(); index = index + 1 {
     let item = config.row_spans[index]
-    let colspan = config.column_span_at(item.0, item.1)
+    let colspan = config.col_span_at(item.0, item.1)
     if boundary_row > item.0 &&
       boundary_row < item.0 + item.2 &&
-      column >= item.1 &&
-      column < item.1 + colspan {
+      col >= item.1 &&
+      col < item.1 + colspan {
       return true
     }
   }
@@ -182,9 +178,9 @@ fn row_span_crosses_boundary(
 fn row_span_boundary_anchor(
   config : SpannedConfig,
   boundary_row : Int,
-  column : Int,
+  col : Int,
 ) -> (Int, Int)? {
-  match row_span_anchor(config, boundary_row, column) {
+  match row_span_anchor(config, boundary_row, col) {
     Some(anchor) =>
       if boundary_row > anchor.0 &&
         boundary_row < anchor.0 + config.row_span_at(anchor.0, anchor.1) {
@@ -200,13 +196,13 @@ fn row_span_boundary_anchor(
 fn display_anchor_for(
   config : SpannedConfig,
   row : Int,
-  column : Int,
+  col : Int,
 ) -> (Int, Int)? {
-  match row_span_anchor(config, row, column) {
-    Some(anchor) => if anchor.1 == column { Some(anchor) } else { None }
+  match row_span_anchor(config, row, col) {
+    Some(anchor) => if anchor.1 == col { Some(anchor) } else { None }
     None =>
-      if config.is_cell_visible(row, column) {
-        Some((row, column))
+      if config.is_cell_visible(row, col) {
+        Some((row, col))
       } else {
         None
       }
@@ -217,15 +213,15 @@ fn display_anchor_for(
 fn span_source_for_anchor(
   config : SpannedConfig,
   anchor_row : Int,
-  anchor_column : Int,
+  anchor_col : Int,
 ) -> (Int, Int) {
-  config.span_source_at(anchor_row, anchor_column)
+  config.span_source_at(anchor_row, anchor_col)
 }
 
 ///|
 fn row_metrics(
   records : IterRecords,
-  count_columns : Int,
+  count_cols : Int,
   config : SpannedConfig,
 ) -> (Array[Int], Array[Int], Array[Int]) {
   let count_rows = records.count_rows()
@@ -233,17 +229,17 @@ fn row_metrics(
   let top_paddings = Array::make(count_rows, 0)
   let bottom_paddings = Array::make(count_rows, 0)
   for row = 0; row < count_rows; row = row + 1 {
-    for column = 0; column < count_columns; column = column + 1 {
-      if !config.is_cell_visible(row, column) {
+    for col = 0; col < count_cols; col = col + 1 {
+      if !config.is_cell_visible(row, col) {
         continue
       }
-      let source = span_source_for_anchor(config, row, column)
+      let source = span_source_for_anchor(config, row, col)
       let lines = processed_lines(
         records.get_cell(source.0, source.1),
         config.width_mode_at(source.0, source.1),
         config.height_mode_at(source.0, source.1),
       )
-      let rowspan = config.row_span_at(row, column)
+      let rowspan = config.row_span_at(row, col)
       let (_, _, top, bottom) = config.padding_at(source.0, source.1)
       if rowspan > 1 {
         if top > top_paddings[row] {
@@ -275,12 +271,12 @@ fn row_metrics(
   while changed {
     changed = false
     for row = 0; row < count_rows; row = row + 1 {
-      for column = 0; column < count_columns; column = column + 1 {
-        let rowspan = config.row_span_at(row, column)
-        if rowspan <= 1 || !config.is_cell_visible(row, column) {
+      for col = 0; col < count_cols; col = col + 1 {
+        let rowspan = config.row_span_at(row, col)
+        if rowspan <= 1 || !config.is_cell_visible(row, col) {
           continue
         }
-        let source = span_source_for_anchor(config, row, column)
+        let source = span_source_for_anchor(config, row, col)
         let end_ = if row + rowspan < count_rows {
           row + rowspan
         } else {
@@ -309,10 +305,10 @@ fn cell_content_for_row(
   config : SpannedConfig,
   row_heights : Array[Int],
   row : Int,
-  column : Int,
+  col : Int,
   line_index : Int,
 ) -> String {
-  let anchor = match display_anchor_for(config, row, column) {
+  let anchor = match display_anchor_for(config, row, col) {
     Some(anchor) => anchor
     None => return ""
   }
@@ -377,9 +373,9 @@ fn cell_content_for_boundary(
   config : SpannedConfig,
   row_heights : Array[Int],
   boundary_row : Int,
-  column : Int,
+  col : Int,
 ) -> String {
-  let anchor = match row_span_boundary_anchor(config, boundary_row, column) {
+  let anchor = match row_span_boundary_anchor(config, boundary_row, col) {
     Some(anchor) => anchor
     None => return ""
   }
@@ -425,20 +421,18 @@ fn render_split_line(
   borders : Borders,
   widths : Array[Int],
   boundary_row : Int,
-  count_columns : Int,
+  count_cols : Int,
   config : SpannedConfig,
   row_heights : Array[Int],
 ) -> String {
   let mut has_uncovered = false
   let mut has_content = false
-  for column = 0; column < count_columns; column = column + 1 {
-    if !row_span_crosses_boundary(config, boundary_row, column) {
+  for col = 0; col < count_cols; col = col + 1 {
+    if !row_span_crosses_boundary(config, boundary_row, col) {
       has_uncovered = true
     }
     if !has_content &&
-      cell_content_for_boundary(
-        records, config, row_heights, boundary_row, column,
-      ) !=
+      cell_content_for_boundary(records, config, row_heights, boundary_row, col) !=
       "" {
       has_content = true
     }
@@ -455,27 +449,27 @@ fn render_split_line(
         None => ""
       }
   }
-  let mut column = 0
-  while column < count_columns {
-    let covered = row_span_crosses_boundary(config, boundary_row, column)
-    let fill = match row_span_boundary_anchor(config, boundary_row, column) {
+  let mut col = 0
+  while col < count_cols {
+    let covered = row_span_crosses_boundary(config, boundary_row, col)
+    let fill = match row_span_boundary_anchor(config, boundary_row, col) {
       Some(anchor) =>
-        if anchor.1 == column {
+        if anchor.1 == col {
           let source = span_source_for_anchor(config, anchor.0, anchor.1)
           let (padding_left, padding_right, _, _) = config.padding_at(
             source.0,
             source.1,
           )
           let align = config.align_at(source.0, source.1)
-          let colspan = config.column_span_at(anchor.0, anchor.1)
-          column = column + colspan
+          let colspan = config.col_span_at(anchor.0, anchor.1)
+          col = col + colspan
           render_cell(
             cell_content_for_boundary(
               records,
               config,
               row_heights,
               boundary_row,
-              column - colspan,
+              col - colspan,
             ),
             span_width(widths, borders, anchor.1, colspan),
             padding_left,
@@ -483,30 +477,30 @@ fn render_split_line(
             align,
           )
         } else {
-          column = column + 1
+          col = col + 1
           continue
         }
       None => {
-        column = column + 1
+        col = col + 1
         if covered {
-          " ".repeat(widths[column - 1])
+          " ".repeat(widths[col - 1])
         } else {
           match borders.horizontal {
-            Some(value) => value.to_string().repeat(widths[column - 1])
-            None => " ".repeat(widths[column - 1])
+            Some(value) => value.to_string().repeat(widths[col - 1])
+            None => " ".repeat(widths[col - 1])
           }
         }
       }
     }
     out = out + fill
-    if column < count_columns {
+    if col < count_cols {
       let current_anchor = row_span_boundary_anchor(
         config,
         boundary_row,
-        column - 1,
+        col - 1,
       )
-      let next_anchor = row_span_boundary_anchor(config, boundary_row, column)
-      let join = match config.intersection_override_at(boundary_row, column) {
+      let next_anchor = row_span_boundary_anchor(config, boundary_row, col)
+      let join = match config.intersection_override_at(boundary_row, col) {
         Some(ch) =>
           if current_anchor == next_anchor && current_anchor is Some(_) {
             ""
@@ -545,7 +539,7 @@ fn render_split_line(
     }
   }
   out +
-  (match config.intersection_override_at(boundary_row, count_columns) {
+  (match config.intersection_override_at(boundary_row, count_cols) {
     Some(ch) => ch.to_string()
     None =>
       match first_char([borders.right_intersection, borders.right]) {
@@ -561,7 +555,7 @@ fn render_row_line(
   widths : Array[Int],
   values : Array[String],
   row_index : Int,
-  count_columns : Int,
+  count_cols : Int,
   config : SpannedConfig,
 ) -> String {
   let has_overrides = config.has_cell_borders()
@@ -578,26 +572,26 @@ fn render_row_line(
     None => ""
   }
 
-  let mut column = 0
-  while column < count_columns {
-    let anchor = match display_anchor_for(config, row_index, column) {
+  let mut col = 0
+  while col < count_cols {
+    let anchor = match display_anchor_for(config, row_index, col) {
       Some(anchor) => anchor
       None => {
-        column = column + 1
+        col = col + 1
         continue
       }
     }
-    if anchor.1 != column {
-      column = column + 1
+    if anchor.1 != col {
+      col = col + 1
       continue
     }
-    let content = if column < values.length() { values[column] } else { "" }
+    let content = if col < values.length() { values[col] } else { "" }
     let (padding_left, padding_right, _, _) = config.padding_at(
       anchor.0,
       anchor.1,
     )
     let align = config.align_at(anchor.0, anchor.1)
-    let colspan = config.column_span_at(anchor.0, anchor.1)
+    let colspan = config.col_span_at(anchor.0, anchor.1)
     out = out +
       render_cell(
         content,
@@ -606,10 +600,10 @@ fn render_row_line(
         padding_right,
         align,
       )
-    column = column + colspan
-    if column < count_columns {
+    col = col + colspan
+    if col < count_cols {
       let sep_ch = if has_overrides {
-        match config.vertical_override_at(row_index, column) {
+        match config.vertical_override_at(row_index, col) {
           Some(ch) => Some(ch)
           None => borders.vertical
         }
@@ -625,7 +619,7 @@ fn render_row_line(
   }
 
   let right_ch = if has_overrides {
-    match config.vertical_override_at(row_index, count_columns) {
+    match config.vertical_override_at(row_index, count_cols) {
       Some(ch) => Some(ch)
       None => borders.right
     }
@@ -645,7 +639,7 @@ fn render_row(
   borders : Borders,
   widths : Array[Int],
   row_index : Int,
-  count_columns : Int,
+  count_cols : Int,
   config : SpannedConfig,
   row_heights : Array[Int],
   row_top_paddings : Array[Int],
@@ -658,9 +652,9 @@ fn render_row(
       render_row_line(
         borders,
         widths,
-        blank_values(count_columns),
+        blank_values(count_cols),
         row_index,
-        count_columns,
+        count_cols,
         config,
       ),
     )
@@ -669,15 +663,15 @@ fn render_row(
       line_index < row_heights[row_index]
       line_index = line_index + 1 {
     let values = []
-    for column = 0; column < count_columns; column = column + 1 {
+    for col = 0; col < count_cols; col = col + 1 {
       values.push(
         cell_content_for_row(
-          records, config, row_heights, row_index, column, line_index,
+          records, config, row_heights, row_index, col, line_index,
         ),
       )
     }
     lines.push(
-      render_row_line(borders, widths, values, row_index, count_columns, config),
+      render_row_line(borders, widths, values, row_index, count_cols, config),
     )
   }
   for i = 0; i < row_bottom_paddings[row_index]; i = i + 1 {
@@ -686,9 +680,9 @@ fn render_row(
       render_row_line(
         borders,
         widths,
-        blank_values(count_columns),
+        blank_values(count_cols),
         row_index,
-        count_columns,
+        count_cols,
         config,
       ),
     )
@@ -707,7 +701,7 @@ fn build_line_with_overrides(
   default_intersection : Char?,
   default_right : Char?,
   row_boundary : Int,
-  count_columns : Int,
+  count_cols : Int,
 ) -> String {
   let left = match config.intersection_override_at(row_boundary, 0) {
     Some(ch) => Some(ch)
@@ -717,19 +711,19 @@ fn build_line_with_overrides(
     Some(value) => value.to_string()
     None => ""
   }
-  for column = 0; column < count_columns; column = column + 1 {
-    let fill = match config.horizontal_override_at(row_boundary, column) {
+  for col = 0; col < count_cols; col = col + 1 {
+    let fill = match config.horizontal_override_at(row_boundary, col) {
       Some(ch) => Some(ch)
       None => default_fill
     }
-    let w = widths[column]
+    let w = widths[col]
     out = out +
       (match fill {
         Some(value) => value.to_string().repeat(w)
         None => "".repeat(w)
       })
-    if column + 1 < count_columns {
-      let ix = match config.intersection_override_at(row_boundary, column + 1) {
+    if col + 1 < count_cols {
+      let ix = match config.intersection_override_at(row_boundary, col + 1) {
         Some(ch) => Some(ch)
         None => default_intersection
       }
@@ -740,8 +734,7 @@ fn build_line_with_overrides(
         })
     }
   }
-  let right = match
-    config.intersection_override_at(row_boundary, count_columns) {
+  let right = match config.intersection_override_at(row_boundary, count_cols) {
     Some(ch) => Some(ch)
     None => default_right
   }
@@ -762,7 +755,7 @@ pub fn IterGrid::to_string(self : IterGrid) -> String {
 
   let lines : Array[String] = []
   let has_overrides = self.config.has_cell_borders()
-  let count_columns = self.records.count_columns()
+  let count_cols = self.records.count_cols()
   let top_left = match borders.top {
     Some(_) => first_char([borders.top_left, borders.left])
     None => None
@@ -784,7 +777,7 @@ pub fn IterGrid::to_string(self : IterGrid) -> String {
       top_intersection,
       top_right,
       0,
-      count_columns,
+      count_cols,
     )
   } else {
     borders.build_line(
@@ -802,7 +795,7 @@ pub fn IterGrid::to_string(self : IterGrid) -> String {
   let rows = self.records.rows()
   let (row_heights, row_top_paddings, row_bottom_paddings) = row_metrics(
     self.records,
-    count_columns,
+    count_cols,
     self.config,
   )
   let horizontal_lines = self.config.horizontal_lines()
@@ -812,7 +805,7 @@ pub fn IterGrid::to_string(self : IterGrid) -> String {
       borders,
       widths,
       row_index,
-      count_columns,
+      count_cols,
       self.config,
       row_heights,
       row_top_paddings,
@@ -853,7 +846,7 @@ pub fn IterGrid::to_string(self : IterGrid) -> String {
               },
               widths,
               boundary,
-              count_columns,
+              count_cols,
               self.config,
               row_heights,
             )
@@ -871,7 +864,7 @@ pub fn IterGrid::to_string(self : IterGrid) -> String {
               ]),
               first_char([line.right, borders.right_intersection, borders.right]),
               boundary,
-              count_columns,
+              count_cols,
             )
           } else {
             borders.build_line(
@@ -894,7 +887,7 @@ pub fn IterGrid::to_string(self : IterGrid) -> String {
               borders,
               widths,
               boundary,
-              count_columns,
+              count_cols,
               self.config,
               row_heights,
             )
@@ -911,7 +904,7 @@ pub fn IterGrid::to_string(self : IterGrid) -> String {
               ]),
               first_char([borders.right_intersection, borders.right]),
               boundary,
-              count_columns,
+              count_cols,
             )
           } else {
             borders.build_line(
@@ -954,7 +947,7 @@ pub fn IterGrid::to_string(self : IterGrid) -> String {
       bottom_intersection,
       bottom_right,
       rows.length(),
-      count_columns,
+      count_cols,
     )
   } else {
     borders.build_line(
@@ -1061,7 +1054,7 @@ fn margin_vertical_str(
 
 ///|
 /// Build horizontal margin lines (top or bottom).
-/// `offset` uses Start semantics: columns before offset get spaces, rest get fill.
+/// `offset` uses Start semantics: cols before offset get spaces, rest get fill.
 fn margin_horizontal_lines(
   fill : Char,
   size : Int,

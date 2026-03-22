@@ -189,15 +189,15 @@ pub struct SpannedConfig {
   align_rules : Array[(Int, Int, Int, HAlign)]
   valign_rules : Array[(Int, Int, Int, VAlign)]
   padding_rules : Array[(Int, Int, Int, Int, Int, Int, Int)]
-  column_spans : Array[(Int, Int, Int)]
+  col_spans : Array[(Int, Int, Int)]
   row_spans : Array[(Int, Int, Int)]
   span_sources : Array[(Int, Int, Int, Int)]
   // Per-position border overrides for Highlight
-  // (row_boundary, column, char) — horizontal fill overrides
+  // (row_boundary, col, char) — horizontal fill overrides
   border_horizontal : Array[(Int, Int, Char)]
-  // (row, column_boundary, char) — vertical fill overrides
+  // (row, col_boundary, char) — vertical fill overrides
   border_vertical : Array[(Int, Int, Char)]
-  // (row_boundary, column_boundary, char) — intersection/corner overrides
+  // (row_boundary, col_boundary, char) — intersection/corner overrides
   border_intersection : Array[(Int, Int, Char)]
   // Margin: per-side size, fill char, and offset
   mut margin_top : Int
@@ -233,7 +233,7 @@ pub fn SpannedConfig::default() -> SpannedConfig {
     align_rules: [],
     valign_rules: [],
     padding_rules: [],
-    column_spans: [],
+    col_spans: [],
     row_spans: [],
     span_sources: [],
     border_horizontal: [],
@@ -345,7 +345,7 @@ pub fn SpannedConfig::set_width_mode_for_rows(
 }
 
 ///|
-pub fn SpannedConfig::set_width_mode_for_columns(
+pub fn SpannedConfig::set_width_mode_for_cols(
   self : SpannedConfig,
   start : Int,
   end : Int,
@@ -366,21 +366,21 @@ pub fn SpannedConfig::set_width_mode_for_all(
 pub fn SpannedConfig::set_width_mode_for_cell(
   self : SpannedConfig,
   row : Int,
-  column : Int,
+  col : Int,
   mode : WidthMode,
 ) -> Unit {
-  self.width_rules.push((3, row, column, mode))
+  self.width_rules.push((3, row, col, mode))
 }
 
 ///|
 pub fn SpannedConfig::width_mode_at(
   self : SpannedConfig,
   row : Int,
-  column : Int,
+  col : Int,
 ) -> WidthMode {
   let mut value = self.width_mode
   self.width_rules.each(rule => {
-    if scope_matches(rule.0, rule.1, rule.2, row, column) {
+    if scope_matches(rule.0, rule.1, rule.2, row, col) {
       value = rule.3
     }
   })
@@ -411,7 +411,7 @@ pub fn SpannedConfig::set_height_mode_for_rows(
 }
 
 ///|
-pub fn SpannedConfig::set_height_mode_for_columns(
+pub fn SpannedConfig::set_height_mode_for_cols(
   self : SpannedConfig,
   start : Int,
   end : Int,
@@ -432,21 +432,21 @@ pub fn SpannedConfig::set_height_mode_for_all(
 pub fn SpannedConfig::set_height_mode_for_cell(
   self : SpannedConfig,
   row : Int,
-  column : Int,
+  col : Int,
   mode : HeightMode,
 ) -> Unit {
-  self.height_rules.push((3, row, column, mode))
+  self.height_rules.push((3, row, col, mode))
 }
 
 ///|
 pub fn SpannedConfig::height_mode_at(
   self : SpannedConfig,
   row : Int,
-  column : Int,
+  col : Int,
 ) -> HeightMode {
   let mut value = self.height_mode
   self.height_rules.each(rule => {
-    if scope_matches(rule.0, rule.1, rule.2, row, column) {
+    if scope_matches(rule.0, rule.1, rule.2, row, col) {
       value = rule.3
     }
   })
@@ -497,14 +497,14 @@ fn scope_matches(
   start : Int,
   end : Int,
   row : Int,
-  column : Int,
+  col : Int,
 ) -> Bool {
   if kind == 0 {
     row >= start && row < end
   } else if kind == 1 {
-    column >= start && column < end
+    col >= start && col < end
   } else if kind == 3 {
-    row == start && column == end
+    row == start && col == end
   } else {
     true
   }
@@ -521,7 +521,7 @@ pub fn SpannedConfig::set_align_for_rows(
 }
 
 ///|
-pub fn SpannedConfig::set_align_for_columns(
+pub fn SpannedConfig::set_align_for_cols(
   self : SpannedConfig,
   start : Int,
   end : Int,
@@ -542,21 +542,21 @@ pub fn SpannedConfig::set_align_for_all(
 pub fn SpannedConfig::set_align_for_cell(
   self : SpannedConfig,
   row : Int,
-  column : Int,
+  col : Int,
   align : HAlign,
 ) -> Unit {
-  self.align_rules.push((3, row, column, align))
+  self.align_rules.push((3, row, col, align))
 }
 
 ///|
 pub fn SpannedConfig::align_at(
   self : SpannedConfig,
   row : Int,
-  column : Int,
+  col : Int,
 ) -> HAlign {
   let mut value = self.align
   self.align_rules.each(rule => {
-    if scope_matches(rule.0, rule.1, rule.2, row, column) {
+    if scope_matches(rule.0, rule.1, rule.2, row, col) {
       value = rule.3
     }
   })
@@ -574,7 +574,7 @@ pub fn SpannedConfig::set_valign_for_rows(
 }
 
 ///|
-pub fn SpannedConfig::set_valign_for_columns(
+pub fn SpannedConfig::set_valign_for_cols(
   self : SpannedConfig,
   start : Int,
   end : Int,
@@ -595,21 +595,21 @@ pub fn SpannedConfig::set_valign_for_all(
 pub fn SpannedConfig::set_valign_for_cell(
   self : SpannedConfig,
   row : Int,
-  column : Int,
+  col : Int,
   align : VAlign,
 ) -> Unit {
-  self.valign_rules.push((3, row, column, align))
+  self.valign_rules.push((3, row, col, align))
 }
 
 ///|
 pub fn SpannedConfig::valign_at(
   self : SpannedConfig,
   row : Int,
-  column : Int,
+  col : Int,
 ) -> VAlign {
   let mut value = self.valign
   self.valign_rules.each(rule => {
-    if scope_matches(rule.0, rule.1, rule.2, row, column) {
+    if scope_matches(rule.0, rule.1, rule.2, row, col) {
       value = rule.3
     }
   })
@@ -630,7 +630,7 @@ pub fn SpannedConfig::set_padding_for_rows(
 }
 
 ///|
-pub fn SpannedConfig::set_padding_for_columns(
+pub fn SpannedConfig::set_padding_for_cols(
   self : SpannedConfig,
   start : Int,
   end : Int,
@@ -657,27 +657,27 @@ pub fn SpannedConfig::set_padding_for_all(
 pub fn SpannedConfig::set_padding_for_cell(
   self : SpannedConfig,
   row : Int,
-  column : Int,
+  col : Int,
   left : Int,
   right : Int,
   top : Int,
   bottom : Int,
 ) -> Unit {
-  self.padding_rules.push((3, row, column, left, right, top, bottom))
+  self.padding_rules.push((3, row, col, left, right, top, bottom))
 }
 
 ///|
 pub fn SpannedConfig::padding_at(
   self : SpannedConfig,
   row : Int,
-  column : Int,
+  col : Int,
 ) -> (Int, Int, Int, Int) {
   let mut left = self.padding_left
   let mut right = self.padding_right
   let mut top = self.padding_top
   let mut bottom = self.padding_bottom
   self.padding_rules.each(rule => {
-    if scope_matches(rule.0, rule.1, rule.2, row, column) {
+    if scope_matches(rule.0, rule.1, rule.2, row, col) {
       left = rule.3
       right = rule.4
       top = rule.5
@@ -688,22 +688,22 @@ pub fn SpannedConfig::padding_at(
 }
 
 ///|
-pub fn SpannedConfig::set_column_span(
+pub fn SpannedConfig::set_col_span(
   self : SpannedConfig,
   row : Int,
-  column : Int,
+  col : Int,
   span : Int,
 ) -> Unit {
   let next = []
-  self.column_spans.each(item => {
-    if item.0 != row || item.1 != column {
+  self.col_spans.each(item => {
+    if item.0 != row || item.1 != col {
       next.push(item)
     }
   })
-  self.column_spans.clear()
-  next.each(item => self.column_spans.push(item))
+  self.col_spans.clear()
+  next.each(item => self.col_spans.push(item))
   if span > 1 {
-    self.column_spans.push((row, column, span))
+    self.col_spans.push((row, col, span))
   }
 }
 
@@ -711,19 +711,19 @@ pub fn SpannedConfig::set_column_span(
 pub fn SpannedConfig::set_row_span(
   self : SpannedConfig,
   row : Int,
-  column : Int,
+  col : Int,
   span : Int,
 ) -> Unit {
   let next = []
   self.row_spans.each(item => {
-    if item.0 != row || item.1 != column {
+    if item.0 != row || item.1 != col {
       next.push(item)
     }
   })
   self.row_spans.clear()
   next.each(item => self.row_spans.push(item))
   if span > 1 {
-    self.row_spans.push((row, column, span))
+    self.row_spans.push((row, col, span))
   }
 }
 
@@ -731,22 +731,20 @@ pub fn SpannedConfig::set_row_span(
 pub fn SpannedConfig::set_span_source(
   self : SpannedConfig,
   anchor_row : Int,
-  anchor_column : Int,
+  anchor_col : Int,
   source_row : Int,
-  source_column : Int,
+  source_col : Int,
 ) -> Unit {
   let next = []
   self.span_sources.each(item => {
-    if item.0 != anchor_row || item.1 != anchor_column {
+    if item.0 != anchor_row || item.1 != anchor_col {
       next.push(item)
     }
   })
   self.span_sources.clear()
   next.each(item => self.span_sources.push(item))
-  if anchor_row != source_row || anchor_column != source_column {
-    self.span_sources.push(
-      (anchor_row, anchor_column, source_row, source_column),
-    )
+  if anchor_row != source_row || anchor_col != source_col {
+    self.span_sources.push((anchor_row, anchor_col, source_row, source_col))
   }
 }
 
@@ -754,11 +752,11 @@ pub fn SpannedConfig::set_span_source(
 pub fn SpannedConfig::clear_span_source(
   self : SpannedConfig,
   anchor_row : Int,
-  anchor_column : Int,
+  anchor_col : Int,
 ) -> Unit {
   let next = []
   self.span_sources.each(item => {
-    if item.0 != anchor_row || item.1 != anchor_column {
+    if item.0 != anchor_row || item.1 != anchor_col {
       next.push(item)
     }
   })
@@ -770,7 +768,7 @@ pub fn SpannedConfig::clear_span_source(
 /// Clear all spans and border override arrays.
 /// Used after operations like Split that completely reshape the table.
 pub fn SpannedConfig::clear_spans_and_overrides(self : SpannedConfig) -> Unit {
-  self.column_spans.clear()
+  self.col_spans.clear()
   self.row_spans.clear()
   self.span_sources.clear()
   self.border_horizontal.clear()
@@ -782,11 +780,11 @@ pub fn SpannedConfig::clear_spans_and_overrides(self : SpannedConfig) -> Unit {
 pub fn SpannedConfig::clear_unused_span_source(
   self : SpannedConfig,
   anchor_row : Int,
-  anchor_column : Int,
+  anchor_col : Int,
 ) -> Unit {
-  if self.column_span_at(anchor_row, anchor_column) <= 1 &&
-    self.row_span_at(anchor_row, anchor_column) <= 1 {
-    self.clear_span_source(anchor_row, anchor_column)
+  if self.col_span_at(anchor_row, anchor_col) <= 1 &&
+    self.row_span_at(anchor_row, anchor_col) <= 1 {
+    self.clear_span_source(anchor_row, anchor_col)
   }
 }
 
@@ -794,29 +792,29 @@ pub fn SpannedConfig::clear_unused_span_source(
 pub fn SpannedConfig::span_source_at(
   self : SpannedConfig,
   anchor_row : Int,
-  anchor_column : Int,
+  anchor_col : Int,
 ) -> (Int, Int) {
   let mut index = self.span_sources.length() - 1
   while index >= 0 {
     let item = self.span_sources[index]
-    if item.0 == anchor_row && item.1 == anchor_column {
+    if item.0 == anchor_row && item.1 == anchor_col {
       return (item.2, item.3)
     }
     index = index - 1
   }
-  (anchor_row, anchor_column)
+  (anchor_row, anchor_col)
 }
 
 ///|
 pub fn SpannedConfig::span_anchor_for_source(
   self : SpannedConfig,
   source_row : Int,
-  source_column : Int,
+  source_col : Int,
 ) -> (Int, Int)? {
   let mut index = self.span_sources.length() - 1
   while index >= 0 {
     let item = self.span_sources[index]
-    if item.2 == source_row && item.3 == source_column {
+    if item.2 == source_row && item.3 == source_col {
       return Some((item.0, item.1))
     }
     index = index - 1
@@ -825,15 +823,15 @@ pub fn SpannedConfig::span_anchor_for_source(
 }
 
 ///|
-pub fn SpannedConfig::get_column_span(
+pub fn SpannedConfig::get_col_span(
   self : SpannedConfig,
   row : Int,
-  column : Int,
+  col : Int,
 ) -> Int? {
-  let mut index = self.column_spans.length() - 1
+  let mut index = self.col_spans.length() - 1
   while index >= 0 {
-    let item = self.column_spans[index]
-    if item.0 == row && item.1 == column {
+    let item = self.col_spans[index]
+    if item.0 == row && item.1 == col {
       return Some(item.2)
     }
     index = index - 1
@@ -845,12 +843,12 @@ pub fn SpannedConfig::get_column_span(
 pub fn SpannedConfig::get_row_span(
   self : SpannedConfig,
   row : Int,
-  column : Int,
+  col : Int,
 ) -> Int? {
   let mut index = self.row_spans.length() - 1
   while index >= 0 {
     let item = self.row_spans[index]
-    if item.0 == row && item.1 == column {
+    if item.0 == row && item.1 == col {
       return Some(item.2)
     }
     index = index - 1
@@ -859,12 +857,12 @@ pub fn SpannedConfig::get_row_span(
 }
 
 ///|
-pub fn SpannedConfig::column_span_at(
+pub fn SpannedConfig::col_span_at(
   self : SpannedConfig,
   row : Int,
-  column : Int,
+  col : Int,
 ) -> Int {
-  match self.get_column_span(row, column) {
+  match self.get_col_span(row, col) {
     Some(span) => span
     None => 1
   }
@@ -874,17 +872,17 @@ pub fn SpannedConfig::column_span_at(
 pub fn SpannedConfig::row_span_at(
   self : SpannedConfig,
   row : Int,
-  column : Int,
+  col : Int,
 ) -> Int {
-  match self.get_row_span(row, column) {
+  match self.get_row_span(row, col) {
     Some(span) => span
     None => 1
   }
 }
 
 ///|
-pub fn SpannedConfig::has_column_spans(self : SpannedConfig) -> Bool {
-  !self.column_spans.is_empty()
+pub fn SpannedConfig::has_col_spans(self : SpannedConfig) -> Bool {
+  !self.col_spans.is_empty()
 }
 
 ///|
@@ -893,14 +891,14 @@ pub fn SpannedConfig::has_row_spans(self : SpannedConfig) -> Bool {
 }
 
 ///|
-pub fn SpannedConfig::is_cell_covered_by_column_span(
+pub fn SpannedConfig::is_cell_covered_by_col_span(
   self : SpannedConfig,
   row : Int,
-  column : Int,
+  col : Int,
 ) -> Bool {
-  for index = 0; index < self.column_spans.length(); index = index + 1 {
-    let item = self.column_spans[index]
-    if item.0 == row && column > item.1 && column < item.1 + item.2 {
+  for index = 0; index < self.col_spans.length(); index = index + 1 {
+    let item = self.col_spans[index]
+    if item.0 == row && col > item.1 && col < item.1 + item.2 {
       return true
     }
   }
@@ -911,15 +909,15 @@ pub fn SpannedConfig::is_cell_covered_by_column_span(
 pub fn SpannedConfig::is_cell_covered_by_row_span(
   self : SpannedConfig,
   row : Int,
-  column : Int,
+  col : Int,
 ) -> Bool {
   for index = 0; index < self.row_spans.length(); index = index + 1 {
     let item = self.row_spans[index]
-    let colspan = self.column_span_at(item.0, item.1)
+    let colspan = self.col_span_at(item.0, item.1)
     if row > item.0 &&
       row < item.0 + item.2 &&
-      column >= item.1 &&
-      column < item.1 + colspan {
+      col >= item.1 &&
+      col < item.1 + colspan {
       return true
     }
   }
@@ -930,22 +928,22 @@ pub fn SpannedConfig::is_cell_covered_by_row_span(
 pub fn SpannedConfig::is_cell_covered_by_both_spans(
   self : SpannedConfig,
   row : Int,
-  column : Int,
+  col : Int,
 ) -> Bool {
-  // Find anchor cells that have BOTH row and column spans,
-  // then check if (row, column) is strictly inside both ranges.
+  // Find anchor cells that have BOTH row and col spans,
+  // then check if (row, col) is strictly inside both ranges.
   for i = 0; i < self.row_spans.length(); i = i + 1 {
     let rs = self.row_spans[i]
     let anchor_row = rs.0
     let anchor_col = rs.1
     let row_span = rs.2
     if row > anchor_row && row < anchor_row + row_span {
-      // This anchor's row span covers our row. Check if it also has a column span.
-      for j = 0; j < self.column_spans.length(); j = j + 1 {
-        let cs = self.column_spans[j]
+      // This anchor's row span covers our row. Check if it also has a col span.
+      for j = 0; j < self.col_spans.length(); j = j + 1 {
+        let cs = self.col_spans[j]
         if cs.0 == anchor_row && cs.1 == anchor_col {
           let col_span = cs.2
-          if column > anchor_col && column < anchor_col + col_span {
+          if col > anchor_col && col < anchor_col + col_span {
             return true
           }
         }
@@ -959,25 +957,25 @@ pub fn SpannedConfig::is_cell_covered_by_both_spans(
 pub fn SpannedConfig::is_cell_visible(
   self : SpannedConfig,
   row : Int,
-  column : Int,
+  col : Int,
 ) -> Bool {
-  for index = 0; index < self.column_spans.length(); index = index + 1 {
-    let item = self.column_spans[index]
+  for index = 0; index < self.col_spans.length(); index = index + 1 {
+    let item = self.col_spans[index]
     let rowspan = self.row_span_at(item.0, item.1)
     if row >= item.0 &&
       row < item.0 + rowspan &&
-      column > item.1 &&
-      column < item.1 + item.2 {
+      col > item.1 &&
+      col < item.1 + item.2 {
       return false
     }
   }
   for index = 0; index < self.row_spans.length(); index = index + 1 {
     let item = self.row_spans[index]
-    let colspan = self.column_span_at(item.0, item.1)
+    let colspan = self.col_span_at(item.0, item.1)
     if row > item.0 &&
       row < item.0 + item.2 &&
-      column >= item.1 &&
-      column < item.1 + colspan {
+      col >= item.1 &&
+      col < item.1 + colspan {
       return false
     }
   }
@@ -1095,27 +1093,27 @@ pub fn SpannedConfig::set_cell_border(
 pub fn SpannedConfig::horizontal_override_at(
   self : SpannedConfig,
   row_boundary : Int,
-  column : Int,
+  col : Int,
 ) -> Char? {
-  lookup_3(self.border_horizontal, row_boundary, column)
+  lookup_3(self.border_horizontal, row_boundary, col)
 }
 
 ///|
 pub fn SpannedConfig::vertical_override_at(
   self : SpannedConfig,
   row : Int,
-  column_boundary : Int,
+  col_boundary : Int,
 ) -> Char? {
-  lookup_3(self.border_vertical, row, column_boundary)
+  lookup_3(self.border_vertical, row, col_boundary)
 }
 
 ///|
 pub fn SpannedConfig::intersection_override_at(
   self : SpannedConfig,
   row_boundary : Int,
-  column_boundary : Int,
+  col_boundary : Int,
 ) -> Char? {
-  lookup_3(self.border_intersection, row_boundary, column_boundary)
+  lookup_3(self.border_intersection, row_boundary, col_boundary)
 }
 
 ///|
@@ -1251,7 +1249,7 @@ pub fn SpannedConfig::get_cell_border(
 
 ///|
 /// Check if a cell has a "left" border (for border correction).
-/// Returns false if the cell is covered by a column span or both spans.
+/// Returns false if the cell is covered by a col span or both spans.
 pub fn SpannedConfig::has_left_border(
   self : SpannedConfig,
   row : Int,
@@ -1260,7 +1258,7 @@ pub fn SpannedConfig::has_left_border(
   count_cols : Int,
 ) -> Bool {
   if self.is_cell_covered_by_both_spans(row, col) ||
-    self.is_cell_covered_by_column_span(row, col) {
+    self.is_cell_covered_by_col_span(row, col) {
     return false
   }
   let border = self.get_cell_border(row, col, count_rows, count_cols)
@@ -1337,9 +1335,9 @@ pub fn SpannedConfig::has_margin(self : SpannedConfig) -> Bool {
 pub fn SpannedConfig::remap(
   self : SpannedConfig,
   row_map : Array[Int],
-  column_map : Array[Int],
+  col_map : Array[Int],
 ) -> Unit {
-  let previous_column_spans = self.column_spans.copy()
+  let previous_col_spans = self.col_spans.copy()
   let previous_row_spans = self.row_spans.copy()
 
   let next_align_rules = []
@@ -1349,16 +1347,16 @@ pub fn SpannedConfig::remap(
         next_align_rules.push((0, run.0, run.1, rule.3))
       })
     } else if rule.0 == 1 {
-      mapped_runs(column_map, rule.1, rule.2).each(run => {
+      mapped_runs(col_map, rule.1, rule.2).each(run => {
         next_align_rules.push((1, run.0, run.1, rule.3))
       })
     } else if rule.0 == 2 {
       next_align_rules.push(rule)
     } else {
       let row = map_index(row_map, rule.1)
-      let column = map_index(column_map, rule.2)
-      if row >= 0 && column >= 0 {
-        next_align_rules.push((3, row, column, rule.3))
+      let col = map_index(col_map, rule.2)
+      if row >= 0 && col >= 0 {
+        next_align_rules.push((3, row, col, rule.3))
       }
     }
   })
@@ -1372,16 +1370,16 @@ pub fn SpannedConfig::remap(
         next_valign_rules.push((0, run.0, run.1, rule.3))
       })
     } else if rule.0 == 1 {
-      mapped_runs(column_map, rule.1, rule.2).each(run => {
+      mapped_runs(col_map, rule.1, rule.2).each(run => {
         next_valign_rules.push((1, run.0, run.1, rule.3))
       })
     } else if rule.0 == 2 {
       next_valign_rules.push(rule)
     } else {
       let row = map_index(row_map, rule.1)
-      let column = map_index(column_map, rule.2)
-      if row >= 0 && column >= 0 {
-        next_valign_rules.push((3, row, column, rule.3))
+      let col = map_index(col_map, rule.2)
+      if row >= 0 && col >= 0 {
+        next_valign_rules.push((3, row, col, rule.3))
       }
     }
   })
@@ -1397,7 +1395,7 @@ pub fn SpannedConfig::remap(
         )
       })
     } else if rule.0 == 1 {
-      mapped_runs(column_map, rule.1, rule.2).each(run => {
+      mapped_runs(col_map, rule.1, rule.2).each(run => {
         next_padding_rules.push(
           (1, run.0, run.1, rule.3, rule.4, rule.5, rule.6),
         )
@@ -1406,11 +1404,9 @@ pub fn SpannedConfig::remap(
       next_padding_rules.push(rule)
     } else {
       let row = map_index(row_map, rule.1)
-      let column = map_index(column_map, rule.2)
-      if row >= 0 && column >= 0 {
-        next_padding_rules.push(
-          (3, row, column, rule.3, rule.4, rule.5, rule.6),
-        )
+      let col = map_index(col_map, rule.2)
+      if row >= 0 && col >= 0 {
+        next_padding_rules.push((3, row, col, rule.3, rule.4, rule.5, rule.6))
       }
     }
   })
@@ -1424,16 +1420,16 @@ pub fn SpannedConfig::remap(
         next_width_rules.push((0, run.0, run.1, rule.3))
       })
     } else if rule.0 == 1 {
-      mapped_runs(column_map, rule.1, rule.2).each(run => {
+      mapped_runs(col_map, rule.1, rule.2).each(run => {
         next_width_rules.push((1, run.0, run.1, rule.3))
       })
     } else if rule.0 == 2 {
       next_width_rules.push(rule)
     } else {
       let row = map_index(row_map, rule.1)
-      let column = map_index(column_map, rule.2)
-      if row >= 0 && column >= 0 {
-        next_width_rules.push((3, row, column, rule.3))
+      let col = map_index(col_map, rule.2)
+      if row >= 0 && col >= 0 {
+        next_width_rules.push((3, row, col, rule.3))
       }
     }
   })
@@ -1447,16 +1443,16 @@ pub fn SpannedConfig::remap(
         next_height_rules.push((0, run.0, run.1, rule.3))
       })
     } else if rule.0 == 1 {
-      mapped_runs(column_map, rule.1, rule.2).each(run => {
+      mapped_runs(col_map, rule.1, rule.2).each(run => {
         next_height_rules.push((1, run.0, run.1, rule.3))
       })
     } else if rule.0 == 2 {
       next_height_rules.push(rule)
     } else {
       let row = map_index(row_map, rule.1)
-      let column = map_index(column_map, rule.2)
-      if row >= 0 && column >= 0 {
-        next_height_rules.push((3, row, column, rule.3))
+      let col = map_index(col_map, rule.2)
+      if row >= 0 && col >= 0 {
+        next_height_rules.push((3, row, col, rule.3))
       }
     }
   })
@@ -1480,36 +1476,36 @@ pub fn SpannedConfig::remap(
     self.custom_horizontal_lines.push(line)
   })
 
-  let next_column_spans = []
-  self.column_spans.each(item => {
+  let next_col_spans = []
+  self.col_spans.each(item => {
     let mapped_row = map_index(row_map, item.0)
     if mapped_row < 0 {
       return
     }
-    let columns = mapped_runs(column_map, item.1, item.1 + item.2)
-    if columns.is_empty() {
+    let cols = mapped_runs(col_map, item.1, item.1 + item.2)
+    if cols.is_empty() {
       return
     }
-    let run = columns[0]
+    let run = cols[0]
     let span = run.1 - run.0
     if span > 1 {
-      next_column_spans.push((mapped_row, run.0, span))
+      next_col_spans.push((mapped_row, run.0, span))
     }
   })
-  self.column_spans.clear()
-  next_column_spans.each(item => self.column_spans.push(item))
+  self.col_spans.clear()
+  next_col_spans.each(item => self.col_spans.push(item))
 
   let next_row_spans = []
   self.row_spans.each(item => {
     let rows = mapped_runs(row_map, item.0, item.0 + item.2)
-    let mapped_column = map_index(column_map, item.1)
-    if rows.is_empty() || mapped_column < 0 {
+    let mapped_col = map_index(col_map, item.1)
+    if rows.is_empty() || mapped_col < 0 {
       return
     }
     let run = rows[0]
     let span = run.1 - run.0
     if span > 1 {
-      next_row_spans.push((run.0, mapped_column, span))
+      next_row_spans.push((run.0, mapped_col, span))
     }
   })
   self.row_spans.clear()
@@ -1523,25 +1519,23 @@ pub fn SpannedConfig::remap(
         row_span = span.2
       }
     })
-    let mut column_span = 1
-    previous_column_spans.each(span => {
+    let mut col_span = 1
+    previous_col_spans.each(span => {
       if span.0 == item.0 && span.1 == item.1 {
-        column_span = span.2
+        col_span = span.2
       }
     })
     let row_runs = mapped_runs(row_map, item.0, item.0 + row_span)
-    let column_runs = mapped_runs(column_map, item.1, item.1 + column_span)
+    let col_runs = mapped_runs(col_map, item.1, item.1 + col_span)
     let source_row = map_index(row_map, item.2)
-    let source_column = map_index(column_map, item.3)
+    let source_col = map_index(col_map, item.3)
     if !row_runs.is_empty() &&
-      !column_runs.is_empty() &&
+      !col_runs.is_empty() &&
       source_row >= 0 &&
-      source_column >= 0 {
+      source_col >= 0 {
       let anchor_row = row_runs[0].0
-      let anchor_column = column_runs[0].0
-      next_span_sources.push(
-        (anchor_row, anchor_column, source_row, source_column),
-      )
+      let anchor_col = col_runs[0].0
+      next_span_sources.push((anchor_row, anchor_col, source_row, source_col))
     }
   })
   self.span_sources.clear()
@@ -1557,14 +1551,14 @@ pub fn SpannedConfig::shift_row_spans_down(
 ) -> Unit {
   // Collect current spans, then rewrite them shifted
   let col_spans : Array[(Int, Int, Int)] = []
-  self.column_spans.each(item => col_spans.push(item))
+  self.col_spans.each(item => col_spans.push(item))
   let row_spans : Array[(Int, Int, Int)] = []
   self.row_spans.each(item => row_spans.push(item))
-  // Process column_spans: shift rows >= target_row
+  // Process col_spans: shift rows >= target_row
   col_spans.each(item => {
     if item.0 >= target_row {
-      self.set_column_span(item.0, item.1, 1) // remove old
-      self.set_column_span(item.0 + 1, item.1, item.2) // add shifted
+      self.set_col_span(item.0, item.1, 1) // remove old
+      self.set_col_span(item.0 + 1, item.1, item.2) // add shifted
     }
   })
   // Process row_spans: shift rows >= target_row
@@ -1605,21 +1599,21 @@ pub fn SpannedConfig::shift_row_spans_down(
 }
 
 ///|
-/// Shift all spans whose column >= target_col rightward by 1.
-/// Used when inserting a vertical panel column.
+/// Shift all spans whose col >= target_col rightward by 1.
+/// Used when inserting a vertical panel col.
 pub fn SpannedConfig::shift_col_spans_right(
   self : SpannedConfig,
   target_col : Int,
 ) -> Unit {
   let col_spans : Array[(Int, Int, Int)] = []
-  self.column_spans.each(item => col_spans.push(item))
+  self.col_spans.each(item => col_spans.push(item))
   let row_spans : Array[(Int, Int, Int)] = []
   self.row_spans.each(item => row_spans.push(item))
-  // Process column_spans: shift cols >= target_col
+  // Process col_spans: shift cols >= target_col
   col_spans.each(item => {
     if item.1 >= target_col {
-      self.set_column_span(item.0, item.1, 1) // remove old
-      self.set_column_span(item.0, item.1 + 1, item.2) // add shifted
+      self.set_col_span(item.0, item.1, 1) // remove old
+      self.set_col_span(item.0, item.1 + 1, item.2) // add shifted
     }
   })
   // Process row_spans: shift cols >= target_col
