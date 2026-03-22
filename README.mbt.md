@@ -10,7 +10,7 @@ A MoonBit library for pretty-printing tables in terminal. Ported from the Rust [
 - Powerful selector system for targeting rows, columns, segments, and cells
 - Column and row spans with negative/zero span support
 - Panel (header/footer/horizontal/vertical), Merge, Highlight, Shadow
-- Split and BorderCorrection for advanced table reshaping
+- Split and border correction for advanced table reshaping
 - Extract and Remove operations with config remapping
 - Builder pattern with index/transpose support
 - 290+ passing tests
@@ -175,9 +175,9 @@ let builder = @tabular.Builder::default()
 builder.push_record(["0", "0", "0"])
 builder.push_record(["1", "2", "3"])
 builder.insert_record(0, ["A", "B", "C"])  // Insert header row
-builder.insert_column(0, ["#", "1", "2"])  // Insert index column
+builder.insert_col(0, ["#", "1", "2"])  // Insert index column
 builder.remove_record(2)                    // Remove a row
-builder.remove_column(3)                    // Remove a column
+builder.remove_col(3)                    // Remove a column
 let table = builder.build()
 ```
 
@@ -231,36 +231,36 @@ let table2 = builder2.index().transpose().build()
 let builder3 = @tabular.Builder::from_rows([["Name", "Age"], ["Alice", "30"]])
 
 ///|
-let table3 = builder3.index().column(0).hide().build()
+let table3 = builder3.index().col(0).hide().build()
 ```
 
 ## Alignment
 
 ```moonbit nocheck
 // Global alignment
-table.apply(@tabular.Alignment::left()) |> ignore
-table.apply(@tabular.Alignment::right()) |> ignore
-table.apply(@tabular.Alignment::center()) |> ignore
+table.set_align(@tabular.Align::left()) |> ignore
+table.set_align(@tabular.Align::right()) |> ignore
+table.set_align(@tabular.Align::center()) |> ignore
 
 // Per-row alignment
 table.modify_rows(
   @tabular.Rows::first(),
-  @tabular.Setting::alignment(@tabular.Alignment::center()),
+  @tabular.Setting::align(@tabular.Align::center()),
 )
 
 // Per-column alignment
-table.modify_columns(
-  @tabular.Columns::one(1),
-  @tabular.Setting::alignment(@tabular.Alignment::right()),
+table.modify_cols(
+  @tabular.Cols::one(1),
+  @tabular.Setting::align(@tabular.Align::right()),
 )
 ```
 
 ### Vertical Alignment
 
 ```moonbit nocheck
-table.apply(@tabular.VerticalAlignment::top()) |> ignore
-table.apply(@tabular.VerticalAlignment::center()) |> ignore
-table.apply(@tabular.VerticalAlignment::bottom()) |> ignore
+table.set_valign(@tabular.VAlign::top()) |> ignore
+table.set_valign(@tabular.VAlign::center()) |> ignore
+table.set_valign(@tabular.VAlign::bottom()) |> ignore
 ```
 
 ## Padding
@@ -292,8 +292,8 @@ table.apply(@tabular.Height::increase(3)) |> ignore
 table.apply(@tabular.Height::limit(2)) |> ignore
 
 // Per-column width
-table.modify_columns(
-  @tabular.Columns::one(0),
+table.modify_cols(
+  @tabular.Cols::one(0),
   @tabular.Setting::width(@tabular.Width::wrap(8)),
 )
 
@@ -326,11 +326,11 @@ Selectors let you target specific rows, columns, cells, or segments for modifica
 ### Column Selectors
 
 ```moonbit nocheck
-@tabular.Columns::all()           // All columns
-@tabular.Columns::first()         // First column
-@tabular.Columns::last()          // Last column
-@tabular.Columns::one(1)          // Column at index 1
-@tabular.Columns::new(0, 2)       // Columns 0..2
+@tabular.Cols::all()           // All columns
+@tabular.Cols::first()         // First column
+@tabular.Cols::last()          // Last column
+@tabular.Cols::one(1)          // Column at index 1
+@tabular.Cols::new(0, 2)       // Columns 0..2
 ```
 
 ### Combining Selectors
@@ -338,22 +338,22 @@ Selectors let you target specific rows, columns, cells, or segments for modifica
 ```moonbit nocheck
 // Union: rows AND columns
 let rows = @tabular.Rows::first()
-let cols = @tabular.Columns::last()
+let cols = @tabular.Cols::last()
 table.modify_segment(
-  rows.as_segment().and_columns(cols),
-  @tabular.Setting::alignment(@tabular.Alignment::right()),
+  rows.as_segment().and_cols(cols),
+  @tabular.Setting::align(@tabular.Align::right()),
 )
 
 // Difference: rows NOT columns
 table.modify_segment(
-  @tabular.Rows::all().as_segment().not_(@tabular.Columns::one(0).as_segment()),
+  @tabular.Rows::all().as_segment().not_(@tabular.Cols::one(0).as_segment()),
   @tabular.Setting::format(@tabular.Format::surround("[", "]")),
 )
 
 // Intersection
 table.modify_segment(
-  @tabular.Rows::first().intersect(@tabular.Columns::last()).as_segment(),
-  @tabular.Setting::alignment(@tabular.Alignment::center()),
+  @tabular.Rows::first().intersect(@tabular.Cols::last()).as_segment(),
+  @tabular.Setting::align(@tabular.Align::center()),
 )
 
 // Inverse
@@ -369,7 +369,7 @@ table.modify_segment(
 // Single cell
 table.modify_cell(
   @tabular.Cell::new(1, 2),
-  @tabular.Setting::alignment(@tabular.Alignment::right()),
+  @tabular.Setting::align(@tabular.Align::right()),
 )
 
 // Segment (row range x column range)
@@ -379,9 +379,9 @@ table.modify_segment(
 )
 
 // By column name
-table.modify_by_column_name(
-  @tabular.ByColumnName::new("Name"),
-  @tabular.Setting::alignment(@tabular.Alignment::left()),
+table.modify_by_col_name(
+  @tabular.ByColName::new("Name"),
+  @tabular.Setting::align(@tabular.Align::left()),
 )
 ```
 
@@ -435,16 +435,16 @@ table.modify_segment(
 
 ```moonbit nocheck
 // Span cell (1,0) across 3 columns
-table.modify_cell(@tabular.Cell::new(1, 0), @tabular.Span::column(3))
+table.modify_cell(@tabular.Cell::new(1, 0), @tabular.Span::col(3))
 
 // Full-row span (span 0 = entire row width)
-table.modify_cell(@tabular.Cell::new(0, 0), @tabular.Span::column(0))
+table.modify_cell(@tabular.Cell::new(0, 0), @tabular.Span::col(0))
 
 // Negative span: span leftward from the target cell
-table.modify_cell(@tabular.Cell::new(1, 2), @tabular.Span::column(-1))
+table.modify_cell(@tabular.Cell::new(1, 2), @tabular.Span::col(-1))
 
 // Remove span
-table.modify_cell(@tabular.Cell::new(1, 0), @tabular.Span::column(1))
+table.modify_cell(@tabular.Cell::new(1, 0), @tabular.Span::col(1))
 ```
 
 ### Row Span
@@ -464,41 +464,41 @@ table.modify_cell(@tabular.Cell::new(2, 0), @tabular.Span::row(-1))
 
 ```moonbit nocheck
 // Add header panel
-table.apply_panel(@tabular.Panel::header("Runtime Comparison"))
+table.panel(@tabular.Panel::header("Runtime Comparison"))
 
 // Add footer panel
-table.apply_panel(@tabular.Panel::footer("Source: GitHub"))
+table.panel(@tabular.Panel::footer("Source: GitHub"))
 
 // Insert horizontal panel at row index
-table.apply_panel(@tabular.Panel::horizontal(2, "--- Section ---"))
+table.panel(@tabular.Panel::horizontal(2, "--- Section ---"))
 
 // Insert vertical panel at column index
-table.apply_panel(@tabular.Panel::vertical(0, "Index"))
+table.panel(@tabular.Panel::vertical(0, "Index"))
 
 // Vertical panel with text wrapping at specified width
-table.apply_panel(@tabular.Panel::vertical_with_width(0, "Long text here", 5))
+table.panel(@tabular.Panel::vertical_with_width(0, "Long text here", 5))
 ```
 
 ## Merge
 
 ```moonbit nocheck
 // Merge adjacent duplicate cells horizontally
-table.apply_merge(@tabular.Merge::horizontal())
+table.merge(@tabular.Merge::horizontal())
 
 // Merge adjacent duplicate cells vertically
-table.apply_merge(@tabular.Merge::vertical())
+table.merge(@tabular.Merge::vertical())
 ```
 
 ## Highlight
 
 ```moonbit nocheck
 // Highlight a single cell with a border character
-table.apply_highlight(
+table.highlight(
   @tabular.Highlight::outline_cell(@tabular.Cell::new(1, 1), '*'),
 )
 
 // Highlight entire rows
-table.apply_highlight(
+table.highlight(
   @tabular.Highlight::outline_rows(@tabular.Rows::first(), '#'),
 )
 
@@ -507,7 +507,7 @@ let border = @tabular.Border::new()
   .top('-').bottom('-').left('|').right('|')
   .corner_top_left('+').corner_top_right('+')
   .corner_bottom_left('+').corner_bottom_right('+')
-table.apply_highlight(
+table.highlight(
   @tabular.Highlight::new_cell(@tabular.Cell::new(0, 0)).with_border(border),
 )
 ```
@@ -517,14 +517,14 @@ table.apply_highlight(
 ```moonbit nocheck
 // Add shadow with size 1 (default: bottom-right, fill '▒')
 let shadow = @tabular.Shadow::new(1)
-table.apply_shadow(shadow)
+table.shadow(shadow)
 
 // Custom shadow direction and fill
 let shadow = @tabular.Shadow::new(2)
 shadow.set_fill('#')
 shadow.set_top()     // Shadow on top
 shadow.set_left()    // Shadow on left
-table.apply_shadow(shadow)
+table.shadow(shadow)
 ```
 
 ## Extract and Remove
@@ -534,38 +534,38 @@ table.apply_shadow(shadow)
 table.extract_rows(@tabular.Rows::new(0, 2))
 
 // Extract specific columns
-table.extract_columns(@tabular.Columns::new(1, 3))
+table.extract_cols(@tabular.Cols::new(1, 3))
 
 // Extract a segment (rows x columns intersection)
 table.extract_segment(
   @tabular.Rows::new(1, 3),
-  @tabular.Columns::new(0, 2),
+  @tabular.Cols::new(0, 2),
 )
 
 // Remove rows
 table.remove_rows(@tabular.Rows::first())
 
 // Remove columns
-table.remove_columns(@tabular.Columns::new(0, 2))
+table.remove_cols(@tabular.Cols::new(0, 2))
 
 // Remove column by header name
-table.remove_by_column_name(@tabular.ByColumnName::new("Age"))
+table.remove_by_col_name(@tabular.ByColName::new("Age"))
 ```
 
 ## Split
 
 ```moonbit nocheck
 // Split table at column 2 (zip mode by default)
-table.apply_split(@tabular.Split::column(2))
+table.split(@tabular.Split::col(2))
 
 // Split and concatenate instead of zip
-table.apply_split(@tabular.Split::column(2).concat())
+table.split(@tabular.Split::col(2).concat())
 
 // Split at row 1, retain all cells (no cleanup)
-table.apply_split(@tabular.Split::row(1).retain())
+table.split(@tabular.Split::row(1).retain())
 
 // Split with clean mode (default: removes empty rows/columns)
-table.apply_split(@tabular.Split::column(2).clean())
+table.split(@tabular.Split::col(2).clean())
 ```
 
 ## Border Correction
@@ -573,8 +573,8 @@ table.apply_split(@tabular.Split::column(2).clean())
 Fix border junction characters after applying spans:
 
 ```moonbit nocheck
-table.modify_cell(@tabular.Cell::new(0, 0), @tabular.Span::column(2))
-table.apply_border_correction()
+table.modify_cell(@tabular.Cell::new(0, 0), @tabular.Span::col(2))
+table.correct_borders()
 ```
 
 ## API Differences from Rust `tabled`
@@ -589,7 +589,7 @@ This MoonBit port maintains close API parity with the upstream Rust library, wit
 | `Rows::first() + 1` | `Rows::first_offset(1)` | MoonBit does not support operator overloading on custom types in the same way |
 | `#[derive(Tabled)]` | `Builder::from_rows(...)` | MoonBit has no derive macros; use Builder for runtime table construction |
 | `Disable::row(...)` | `table.remove_rows(...)` | Simplified API using direct method calls |
-| `Disable::column(...)` | `table.remove_columns(...)` | Simplified API using direct method calls |
+| `Disable::column(...)` | `table.remove_cols(...)` | Simplified API using direct method calls |
 | ANSI color support | Not implemented | Deferred; no ANSI color infrastructure yet |
 | `Colorization` | Not implemented | Requires ANSI support |
 | `ColumnNames` / `RowNames` | Not implemented | Complex line-text overlay, niche feature |
