@@ -159,8 +159,8 @@ pub fn Rows::not(self : Rows, other : Rows) -> Rows {
     end_: self.end_,
     skip_n: self.skip_n,
     step_n: self.step_n,
-    exclude_start: other.start,
-    exclude_end: other.end_,
+    exclude_start: 0,
+    exclude_end: 0,
     exclude: Some(other),
     predicate: self.predicate,
   }
@@ -303,8 +303,8 @@ pub fn Cols::not(self : Cols, other : Cols) -> Cols {
     end_: self.end_,
     skip_n: self.skip_n,
     step_n: self.step_n,
-    exclude_start: other.start,
-    exclude_end: other.end_,
+    exclude_start: 0,
+    exclude_end: 0,
     exclude: Some(other),
     predicate: self.predicate,
   }

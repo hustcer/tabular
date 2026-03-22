@@ -6865,3 +6865,89 @@ test "rows inverse" {
   inspect(s.contains("<a>"), content="true")
   inspect(s.contains("<b>"), content="true")
 }
+
+///|
+test "table width truncate with wide chars" {
+  let table = @tabular.Table::from_rows([["标题"], ["中文测试数据"]])
+  table.apply(@tabular.Style::ascii()) |> ignore
+  table.modify_segment(
+    @tabular.Segment::all(),
+    @tabular.Setting::align(@tabular.Align::left()),
+  )
+  |> ignore
+  table.set_width(@tabular.Width::truncate(6, suffix="..")) |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|+--------+
+      #|| 标题   |
+      #|+--------+
+      #|| 中文.. |
+      #|+--------+
+    ),
+  )
+}
+
+///|
+test "table mixed ascii and wide char column width" {
+  let table = @tabular.Table::from_rows([
+    ["Name", "国家"],
+    ["hustcer", "中国"],
+  ])
+  table.apply(@tabular.Style::ascii()) |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|+---------+------+
+      #||  Name   | 国家 |
+      #|+---------+------+
+      #|| hustcer | 中国 |
+      #|+---------+------+
+    ),
+  )
+}
+
+///|
+test "extract rows not with step_by excludes only stepped rows" {
+  let table = @tabular.Table::from_rows([
+    ["h1", "h2"],
+    ["a", "b"],
+    ["c", "d"],
+    ["e", "f"],
+    ["g", "h"],
+  ])
+  let extracted = table.extract_rows(
+    @tabular.Rows::new(0, 4).not(@tabular.Rows::new(0, 4).step_by(2)),
+  )
+  inspect(
+    extracted.to_string(),
+    content=(
+      #|+---+---+
+      #|| a | b |
+      #|+---+---+
+      #|| e | f |
+      #|+---+---+
+    ),
+  )
+}
+
+///|
+test "extract cols not with step_by excludes only stepped cols" {
+  let table = @tabular.Table::from_rows([
+    ["c0", "c1", "c2", "c3"],
+    ["a", "b", "c", "d"],
+  ])
+  let extracted = table.extract_cols(
+    @tabular.Cols::new(0, 4).not(@tabular.Cols::new(0, 4).step_by(2)),
+  )
+  inspect(
+    extracted.to_string(),
+    content=(
+      #|+----+----+
+      #|| c1 | c3 |
+      #|+----+----+
+      #|| b  | d  |
+      #|+----+----+
+    ),
+  )
+}

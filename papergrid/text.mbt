@@ -53,17 +53,26 @@ pub fn split_lines(content : String) -> Array[String] {
 }
 
 ///|
+/// Zero-width characters: combining marks, joiners, variation selectors, etc.
 fn is_zero_width_char(ch : Char) -> Bool {
   let code = ch.to_int()
-  (code >= 0x0300 && code <= 0x036F) ||
-  (code >= 0x1AB0 && code <= 0x1AFF) ||
-  (code >= 0x1DC0 && code <= 0x1DFF) ||
-  (code >= 0x20D0 && code <= 0x20FF) ||
-  (code >= 0xFE00 && code <= 0xFE0F) ||
-  (code >= 0xFE20 && code <= 0xFE2F)
+  code == 0x00AD || // Soft Hyphen
+  code == 0x200B || // Zero Width Space
+  code == 0x200C || // Zero Width Non-Joiner
+  code == 0x200D || // Zero Width Joiner (Emoji ZWJ sequences)
+  code == 0x2060 || // Word Joiner
+  code == 0xFEFF || // BOM / Zero Width No-Break Space
+  (code >= 0x0300 && code <= 0x036F) || // Combining Diacritical Marks
+  (code >= 0x1AB0 && code <= 0x1AFF) || // Combining Diacritical Marks Extended
+  (code >= 0x1DC0 && code <= 0x1DFF) || // Combining Diacritical Marks Supplement
+  (code >= 0x20D0 && code <= 0x20FF) || // Combining Diacritical Marks for Symbols
+  (code >= 0xFE00 && code <= 0xFE0F) || // Variation Selectors
+  (code >= 0xFE20 && code <= 0xFE2F) // Combining Half Marks
 }
 
 ///|
+/// East Asian Wide characters: CJK, Hangul, fullwidth forms, emoji, etc.
+/// Based on Unicode East Asian Width property (UAX #11).
 fn is_wide_char(ch : Char) -> Bool {
   let code = ch.to_int()
   (code >= 0x1100 && code <= 0x115F) ||

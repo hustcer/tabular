@@ -139,28 +139,48 @@ fn resolve_indexes(
 }
 
 ///|
+fn apply_skip_step(
+  indexes : Array[Int],
+  skip_n : Int,
+  step_n : Int,
+) -> Array[Int] {
+  let result = []
+  let mut seen = 0
+  indexes.each(index => {
+    if seen < skip_n {
+      seen = seen + 1
+    } else {
+      if step_n <= 1 || (seen - skip_n) % step_n == 0 {
+        result.push(index)
+      }
+      seen = seen + 1
+    }
+  })
+  result
+}
+
+///|
 fn resolve_rows(rows : Rows, count : Int) -> Array[Int] {
-  let mut indexes = resolve_indexes(
-    rows.start,
-    rows.end_,
-    count,
-    rows.exclude_start,
-    rows.exclude_end,
-    rows.skip_n,
-    rows.step_n,
-  )
-  match rows.exclude {
+  let indexes = match rows.exclude {
     Some(excluded_rows) => {
+      // Resolve base range without skip/step, so exclude applies first
+      let base = resolve_indexes(rows.start, rows.end_, count, 0, 0, 0, 1)
       let excluded = resolve_rows(excluded_rows, count)
       let filtered = []
-      indexes.each(index => {
-        if !excluded.contains(index) {
-          filtered.push(index)
-        }
-      })
-      indexes = filtered
+      base.each(index => if !excluded.contains(index) { filtered.push(index) })
+      // Apply skip/step after exclude
+      apply_skip_step(filtered, rows.skip_n, rows.step_n)
     }
-    None => ()
+    None =>
+      resolve_indexes(
+        rows.start,
+        rows.end_,
+        count,
+        rows.exclude_start,
+        rows.exclude_end,
+        rows.skip_n,
+        rows.step_n,
+      )
   }
   match rows.predicate {
     Some(predicate) => {
@@ -174,27 +194,26 @@ fn resolve_rows(rows : Rows, count : Int) -> Array[Int] {
 
 ///|
 fn resolve_cols(cols : Cols, count : Int) -> Array[Int] {
-  let mut indexes = resolve_indexes(
-    cols.start,
-    cols.end_,
-    count,
-    cols.exclude_start,
-    cols.exclude_end,
-    cols.skip_n,
-    cols.step_n,
-  )
-  match cols.exclude {
+  let indexes = match cols.exclude {
     Some(excluded_cols) => {
+      // Resolve base range without skip/step, so exclude applies first
+      let base = resolve_indexes(cols.start, cols.end_, count, 0, 0, 0, 1)
       let excluded = resolve_cols(excluded_cols, count)
       let filtered = []
-      indexes.each(index => {
-        if !excluded.contains(index) {
-          filtered.push(index)
-        }
-      })
-      indexes = filtered
+      base.each(index => if !excluded.contains(index) { filtered.push(index) })
+      // Apply skip/step after exclude
+      apply_skip_step(filtered, cols.skip_n, cols.step_n)
     }
-    None => ()
+    None =>
+      resolve_indexes(
+        cols.start,
+        cols.end_,
+        count,
+        cols.exclude_start,
+        cols.exclude_end,
+        cols.skip_n,
+        cols.step_n,
+      )
   }
   match cols.predicate {
     Some(predicate) => {
