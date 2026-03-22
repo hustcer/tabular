@@ -150,8 +150,10 @@ fn is_wide_char(ch : Char) -> Bool {
   code == 0x2B1C ||
   code == 0x2B50 ||
   code == 0x2B55 ||
-  // CJK Radicals through Yi (main CJK block)
-  (code >= 0x2E80 && code <= 0xA4CF) ||
+  // CJK Radicals through CJK Unified Ideographs Extension A
+  (code >= 0x2E80 && code <= 0x4DBF) ||
+  // CJK Unified Ideographs and Yi (skip Yijing Hexagram Symbols 0x4DC0-0x4DFF)
+  (code >= 0x4E00 && code <= 0xA4CF) ||
   // Hangul Syllables
   (code >= 0xAC00 && code <= 0xD7A3) ||
   // CJK Compatibility Ideographs
@@ -202,10 +204,7 @@ fn take_prefix_by_width(line : String, width : Int) -> String {
   let mut used = 0
   for ch in line {
     let ch_width = char_display_width(ch)
-    if used + ch_width > width && used > 0 {
-      break
-    }
-    if ch_width > width && used == 0 {
+    if used + ch_width > width {
       break
     }
     sb.write_char(ch)

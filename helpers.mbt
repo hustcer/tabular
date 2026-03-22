@@ -222,20 +222,11 @@ fn resolve_cols_by_name(
 
 ///|
 fn unique_cells(cells : Array[(Int, Int)]) -> Array[(Int, Int)] {
-  let seen : Map[Int, @hashset.HashSet[Int]] = {}
+  let seen : @hashset.HashSet[(Int, Int)] = @hashset.new()
   let result = []
   cells.each(cell => {
-    let (row, col) = cell
-    let cols = match seen.get(row) {
-      Some(cols) => cols
-      None => {
-        let cols = @hashset.new()
-        seen[row] = cols
-        cols
-      }
-    }
-    if !cols.contains(col) {
-      cols.add(col)
+    if !seen.contains(cell) {
+      seen.add(cell)
       result.push(cell)
     }
   })
@@ -258,16 +249,8 @@ fn unique_indexes(indexes : Array[Int]) -> Array[Int] {
 ///|
 fn sort_indexes_desc(indexes : Array[Int]) -> Array[Int] {
   let result = indexes.copy()
-  for i in 0..<result.length() {
-    for j = i + 1; j < result.length(); j = j + 1 {
-      if result[j] > result[i] {
-        let current = result[i]
-        result[i] = result[j]
-        result[j] = current
-      }
-    }
-  }
-  result
+  result.sort()
+  result.rev()
 }
 
 ///|
@@ -294,7 +277,7 @@ fn build_extract_map(count : Int, indexes : Array[Int]) -> Array[Int] {
 
 ///|
 fn build_remove_map(count : Int, indexes : Array[Int]) -> Array[Int] {
-  let removed = @hashset.from_array(unique_indexes(indexes)[:])
+  let removed = @hashset.from_array(indexes[:])
   let result = Array::make(count, -1)
   let mut next = 0
   for index in 0..<count {
@@ -418,7 +401,7 @@ fn resolve_segment_cells(
       return apply_skip_step(cells, skip_n, step_n)
     }
     InverseRows(rows) => {
-      let excluded = resolve_rows(rows, row_count)
+      let excluded = @hashset.from_array(resolve_rows(rows, row_count)[:])
       let cells = []
       for row in 0..<row_count {
         if excluded.contains(row) {
@@ -431,7 +414,7 @@ fn resolve_segment_cells(
       return apply_skip_step(cells, skip_n, step_n)
     }
     InverseCols(cols) => {
-      let excluded = resolve_cols(cols, col_count)
+      let excluded = @hashset.from_array(resolve_cols(cols, col_count)[:])
       let cells = []
       for row in 0..<row_count {
         for col in 0..<col_count {
@@ -466,9 +449,11 @@ fn resolve_segment_cells(
     }
     Diff2(lhs, rhs) => {
       let lhs_cells = resolve_segment_cells(lhs, row_count, col_count)
-      let rhs_cells = resolve_segment_cells(rhs, row_count, col_count)
+      let rhs_set = @hashset.from_array(
+        resolve_segment_cells(rhs, row_count, col_count)[:],
+      )
       let cells = []
-      lhs_cells.each(cell => if !rhs_cells.contains(cell) { cells.push(cell) })
+      lhs_cells.each(cell => if !rhs_set.contains(cell) { cells.push(cell) })
       return apply_skip_step(unique_cells(cells), skip_n, step_n)
     }
   }
