@@ -19,7 +19,8 @@ fn convert_valign(align : VAlign) -> @papergrid.VAlign {
 ///|
 fn convert_width(width : Width) -> @papergrid.WidthMode {
   match width {
-    Wrap(size) => @papergrid.WidthMode::wrap(size)
+    Wrap(size, placeholder) =>
+      @papergrid.WidthMode::wrap_with(size, placeholder)
     Truncate(size, suffix) => @papergrid.WidthMode::truncate(size, suffix)
   }
 }
@@ -101,15 +102,7 @@ fn clamp_end(value : Int, limit : Int) -> Int {
 }
 
 ///|
-fn resolve_indexes(
-  start : Int,
-  end_ : Int,
-  count : Int,
-  exclude_start : Int,
-  exclude_end : Int,
-  skip_n : Int,
-  step_n : Int,
-) -> Array[Int] {
+fn resolve_indexes(start : Int, end_ : Int, count : Int) -> Array[Int] {
   let result = []
   if start <= -2 && end_ == 0 {
     let offset = -start - 2
@@ -121,37 +114,22 @@ fn resolve_indexes(
   }
   let start_index = clamp_start(start)
   let end_index = clamp_end(end_, count)
-  let mut seen = 0
   for index = start_index; index < end_index; index = index + 1 {
-    if index >= exclude_start && index < exclude_end {
-      continue
-    }
-    if seen < skip_n {
-      seen = seen + 1
-      continue
-    }
-    if step_n <= 1 || (seen - skip_n) % step_n == 0 {
-      result.push(index)
-    }
-    seen = seen + 1
+    result.push(index)
   }
   result
 }
 
 ///|
-fn apply_skip_step(
-  indexes : Array[Int],
-  skip_n : Int,
-  step_n : Int,
-) -> Array[Int] {
+fn[T] apply_skip_step(items : Array[T], skip_n : Int, step_n : Int) -> Array[T] {
   let result = []
   let mut seen = 0
-  indexes.each(index => {
+  items.each(item => {
     if seen < skip_n {
       seen = seen + 1
     } else {
       if step_n <= 1 || (seen - skip_n) % step_n == 0 {
-        result.push(index)
+        result.push(item)
       }
       seen = seen + 1
     }
@@ -161,67 +139,67 @@ fn apply_skip_step(
 
 ///|
 fn resolve_rows(rows : Rows, count : Int) -> Array[Int] {
-  let indexes = match rows.exclude {
+  let base = resolve_indexes(rows.start, rows.end_, count)
+  let after_exclude = match rows.exclude {
     Some(excluded_rows) => {
-      // Resolve base range without skip/step, so exclude applies first
-      let base = resolve_indexes(rows.start, rows.end_, count, 0, 0, 0, 1)
-      let excluded = resolve_rows(excluded_rows, count)
-      let filtered = []
-      base.each(index => if !excluded.contains(index) { filtered.push(index) })
-      // Apply skip/step after exclude
-      apply_skip_step(filtered, rows.skip_n, rows.step_n)
-    }
-    None =>
-      resolve_indexes(
-        rows.start,
-        rows.end_,
-        count,
-        rows.exclude_start,
-        rows.exclude_end,
-        rows.skip_n,
-        rows.step_n,
+      let excluded_set = @hashset.from_array(
+        resolve_rows(excluded_rows, count)[:],
       )
+      let filtered = []
+      base.each(index => {
+        if !excluded_set.contains(index) {
+          filtered.push(index)
+        }
+      })
+      filtered
+    }
+    None => base
   }
+  let after_skip_step = apply_skip_step(after_exclude, rows.skip_n, rows.step_n)
   match rows.predicate {
     Some(predicate) => {
       let filtered = []
-      indexes.each(index => if predicate(Row(index)) { filtered.push(index) })
+      after_skip_step.each(index => {
+        if predicate(Row(index)) {
+          filtered.push(index)
+        }
+      })
       filtered
     }
-    None => indexes
+    None => after_skip_step
   }
 }
 
 ///|
 fn resolve_cols(cols : Cols, count : Int) -> Array[Int] {
-  let indexes = match cols.exclude {
+  let base = resolve_indexes(cols.start, cols.end_, count)
+  let after_exclude = match cols.exclude {
     Some(excluded_cols) => {
-      // Resolve base range without skip/step, so exclude applies first
-      let base = resolve_indexes(cols.start, cols.end_, count, 0, 0, 0, 1)
-      let excluded = resolve_cols(excluded_cols, count)
-      let filtered = []
-      base.each(index => if !excluded.contains(index) { filtered.push(index) })
-      // Apply skip/step after exclude
-      apply_skip_step(filtered, cols.skip_n, cols.step_n)
-    }
-    None =>
-      resolve_indexes(
-        cols.start,
-        cols.end_,
-        count,
-        cols.exclude_start,
-        cols.exclude_end,
-        cols.skip_n,
-        cols.step_n,
+      let excluded_set = @hashset.from_array(
+        resolve_cols(excluded_cols, count)[:],
       )
+      let filtered = []
+      base.each(index => {
+        if !excluded_set.contains(index) {
+          filtered.push(index)
+        }
+      })
+      filtered
+    }
+    None => base
   }
+  let after_skip_step = apply_skip_step(after_exclude, cols.skip_n, cols.step_n)
   match cols.predicate {
     Some(predicate) => {
       let filtered = []
-      indexes.each(index => if predicate(Col(index)) { filtered.push(index) })
+      after_skip_step.each(index => {
+        if predicate(Col(index)) {
+          filtered.push(index)
+        }
+      })
       filtered
     }
-    None => indexes
+    None => after_skip_step
   }
 }
 
@@ -243,37 +221,37 @@ fn resolve_cols_by_name(
 }
 
 ///|
-fn apply_skip_step_to_cells(
-  cells : Array[(Int, Int)],
-  skip_n : Int,
-  step_n : Int,
-) -> Array[(Int, Int)] {
+fn unique_cells(cells : Array[(Int, Int)]) -> Array[(Int, Int)] {
+  let seen : Map[Int, @hashset.HashSet[Int]] = {}
   let result = []
-  let mut seen = 0
   cells.each(cell => {
-    if seen < skip_n {
-      seen = seen + 1
-    } else {
-      if step_n <= 1 || (seen - skip_n) % step_n == 0 {
-        result.push(cell)
+    let (row, col) = cell
+    let cols = match seen.get(row) {
+      Some(cols) => cols
+      None => {
+        let cols = @hashset.new()
+        seen[row] = cols
+        cols
       }
-      seen = seen + 1
+    }
+    if !cols.contains(col) {
+      cols.add(col)
+      result.push(cell)
     }
   })
   result
 }
 
 ///|
-fn unique_cells(cells : Array[(Int, Int)]) -> Array[(Int, Int)] {
-  let result = []
-  cells.each(cell => if !result.contains(cell) { result.push(cell) })
-  result
-}
-
-///|
 fn unique_indexes(indexes : Array[Int]) -> Array[Int] {
+  let seen = @hashset.new()
   let result = []
-  indexes.each(index => if !result.contains(index) { result.push(index) })
+  indexes.each(index => {
+    if !seen.contains(index) {
+      seen.add(index)
+      result.push(index)
+    }
+  })
   result
 }
 
@@ -316,7 +294,7 @@ fn build_extract_map(count : Int, indexes : Array[Int]) -> Array[Int] {
 
 ///|
 fn build_remove_map(count : Int, indexes : Array[Int]) -> Array[Int] {
-  let removed = unique_indexes(indexes)
+  let removed = @hashset.from_array(unique_indexes(indexes)[:])
   let result = Array::make(count, -1)
   let mut next = 0
   for index in 0..<count {
@@ -411,7 +389,7 @@ fn resolve_segment_cells(
           cells.push((row, col))
         }
       })
-      return apply_skip_step_to_cells(cells, skip_n, step_n)
+      return apply_skip_step(cells, skip_n, step_n)
     }
     ColsOnly(cols) => {
       let col_indexes = resolve_cols(cols, col_count)
@@ -419,7 +397,7 @@ fn resolve_segment_cells(
       for row in 0..<row_count {
         col_indexes.each(col => cells.push((row, col)))
       }
-      return apply_skip_step_to_cells(cells, skip_n, step_n)
+      return apply_skip_step(cells, skip_n, step_n)
     }
     CellOnly(cell) => {
       let cells = if cell.row >= 0 &&
@@ -430,14 +408,14 @@ fn resolve_segment_cells(
       } else {
         []
       }
-      return apply_skip_step_to_cells(cells, skip_n, step_n)
+      return apply_skip_step(cells, skip_n, step_n)
     }
     Cross(rows, cols) => {
       let row_indexes = resolve_rows(rows, row_count)
       let col_indexes = resolve_cols(cols, col_count)
       let cells = []
       row_indexes.each(row => col_indexes.each(col => cells.push((row, col))))
-      return apply_skip_step_to_cells(cells, skip_n, step_n)
+      return apply_skip_step(cells, skip_n, step_n)
     }
     InverseRows(rows) => {
       let excluded = resolve_rows(rows, row_count)
@@ -450,7 +428,7 @@ fn resolve_segment_cells(
           cells.push((row, col))
         }
       }
-      return apply_skip_step_to_cells(cells, skip_n, step_n)
+      return apply_skip_step(cells, skip_n, step_n)
     }
     InverseCols(cols) => {
       let excluded = resolve_cols(cols, col_count)
@@ -463,7 +441,7 @@ fn resolve_segment_cells(
           cells.push((row, col))
         }
       }
-      return apply_skip_step_to_cells(cells, skip_n, step_n)
+      return apply_skip_step(cells, skip_n, step_n)
     }
     InverseCell(cell) => {
       let cells = []
@@ -475,12 +453,12 @@ fn resolve_segment_cells(
           cells.push((row, col))
         }
       }
-      return apply_skip_step_to_cells(cells, skip_n, step_n)
+      return apply_skip_step(cells, skip_n, step_n)
     }
     Union2(lhs, rhs) => {
       let lhs_cells = resolve_segment_cells(lhs, row_count, col_count)
       let rhs_cells = resolve_segment_cells(rhs, row_count, col_count)
-      return apply_skip_step_to_cells(
+      return apply_skip_step(
         unique_cells(lhs_cells + rhs_cells),
         skip_n,
         step_n,
@@ -491,23 +469,15 @@ fn resolve_segment_cells(
       let rhs_cells = resolve_segment_cells(rhs, row_count, col_count)
       let cells = []
       lhs_cells.each(cell => if !rhs_cells.contains(cell) { cells.push(cell) })
-      return apply_skip_step_to_cells(unique_cells(cells), skip_n, step_n)
+      return apply_skip_step(unique_cells(cells), skip_n, step_n)
     }
   }
-  let mut seen = 0
   for row = row_start; row < row_end; row = row + 1 {
     for col = col_start; col < col_end; col = col + 1 {
-      if seen < skip_n {
-        seen = seen + 1
-        continue
-      }
-      if step_n <= 1 || (seen - skip_n) % step_n == 0 {
-        result.push((row, col))
-      }
-      seen = seen + 1
+      result.push((row, col))
     }
   }
-  result
+  apply_skip_step(result, skip_n, step_n)
 }
 
 ///|

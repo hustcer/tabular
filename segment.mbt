@@ -30,7 +30,12 @@ pub fn VAlign::center() -> VAlign {
 
 ///|
 pub fn Width::wrap(width : Int) -> Width {
-  Wrap(width)
+  Wrap(width, ".")
+}
+
+///|
+pub fn Width::wrap_with(width : Int, placeholder : String) -> Width {
+  Wrap(width, placeholder)
 }
 
 ///|
@@ -80,16 +85,7 @@ pub fn Format::multiline(self : Format) -> Format {
 
 ///|
 pub fn Rows::new(start : Int, end_ : Int) -> Rows {
-  {
-    start,
-    end_,
-    skip_n: 0,
-    step_n: 1,
-    exclude_start: 0,
-    exclude_end: 0,
-    exclude: None,
-    predicate: None,
-  }
+  { start, end_, skip_n: 0, step_n: 1, exclude: None, predicate: None }
 }
 
 ///|
@@ -159,8 +155,6 @@ pub fn Rows::not(self : Rows, other : Rows) -> Rows {
     end_: self.end_,
     skip_n: self.skip_n,
     step_n: self.step_n,
-    exclude_start: 0,
-    exclude_end: 0,
     exclude: Some(other),
     predicate: self.predicate,
   }
@@ -183,8 +177,6 @@ pub fn Rows::skip(self : Rows, count : Int) -> Rows {
     end_: self.end_,
     skip_n: count,
     step_n: self.step_n,
-    exclude_start: self.exclude_start,
-    exclude_end: self.exclude_end,
     exclude: self.exclude,
     predicate: self.predicate,
   }
@@ -201,8 +193,6 @@ pub fn Rows::step_by(self : Rows, step : Int) -> Rows {
     } else {
       step
     },
-    exclude_start: self.exclude_start,
-    exclude_end: self.exclude_end,
     exclude: self.exclude,
     predicate: self.predicate,
   }
@@ -215,8 +205,6 @@ pub fn Rows::filter(self : Rows, predicate : (Entity) -> Bool) -> Rows {
     end_: self.end_,
     skip_n: self.skip_n,
     step_n: self.step_n,
-    exclude_start: self.exclude_start,
-    exclude_end: self.exclude_end,
     exclude: self.exclude,
     predicate: Some(predicate),
   }
@@ -224,16 +212,7 @@ pub fn Rows::filter(self : Rows, predicate : (Entity) -> Bool) -> Rows {
 
 ///|
 pub fn Cols::new(start : Int, end_ : Int) -> Cols {
-  {
-    start,
-    end_,
-    skip_n: 0,
-    step_n: 1,
-    exclude_start: 0,
-    exclude_end: 0,
-    exclude: None,
-    predicate: None,
-  }
+  { start, end_, skip_n: 0, step_n: 1, exclude: None, predicate: None }
 }
 
 ///|
@@ -303,8 +282,6 @@ pub fn Cols::not(self : Cols, other : Cols) -> Cols {
     end_: self.end_,
     skip_n: self.skip_n,
     step_n: self.step_n,
-    exclude_start: 0,
-    exclude_end: 0,
     exclude: Some(other),
     predicate: self.predicate,
   }
@@ -327,8 +304,6 @@ pub fn Cols::skip(self : Cols, count : Int) -> Cols {
     end_: self.end_,
     skip_n: count,
     step_n: self.step_n,
-    exclude_start: self.exclude_start,
-    exclude_end: self.exclude_end,
     exclude: self.exclude,
     predicate: self.predicate,
   }
@@ -345,8 +320,6 @@ pub fn Cols::step_by(self : Cols, step : Int) -> Cols {
     } else {
       step
     },
-    exclude_start: self.exclude_start,
-    exclude_end: self.exclude_end,
     exclude: self.exclude,
     predicate: self.predicate,
   }
@@ -359,8 +332,6 @@ pub fn Cols::filter(self : Cols, predicate : (Entity) -> Bool) -> Cols {
     end_: self.end_,
     skip_n: self.skip_n,
     step_n: self.step_n,
-    exclude_start: self.exclude_start,
-    exclude_end: self.exclude_end,
     exclude: self.exclude,
     predicate: Some(predicate),
   }

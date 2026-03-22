@@ -232,6 +232,36 @@ test "table width wrap with wide chars" {
 }
 
 ///|
+test "table width wrap with wide chars uses default placeholder when width is too small" {
+  let table = @tabular.Table::from_rows([["中"]])
+  table.apply(@tabular.Style::ascii()) |> ignore
+  table.set_width(@tabular.Width::wrap(1)) |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|+---+
+      #|| . |
+      #|+---+
+    ),
+  )
+}
+
+///|
+test "table width wrap with wide chars supports custom placeholder" {
+  let table = @tabular.Table::from_rows([["中"]])
+  table.apply(@tabular.Style::ascii()) |> ignore
+  table.set_width(@tabular.Width::wrap_with(1, "?")) |> ignore
+  inspect(
+    table.to_string(),
+    content=(
+      #|+---+
+      #|| ? |
+      #|+---+
+    ),
+  )
+}
+
+///|
 test "table width truncate" {
   let table = @tabular.Table::from_rows([["text"], ["abcdef"]])
   table.modify_segment(

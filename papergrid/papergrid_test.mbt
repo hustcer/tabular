@@ -259,6 +259,28 @@ test "col span collision two spans different widths" {
 }
 
 ///|
+test "wrap uses default placeholder when wide char exceeds width" {
+  assert_eq(apply_width("中", WidthMode::wrap(1)), ["."])
+}
+
+///|
+test "wrap supports custom placeholder when wide char exceeds width" {
+  assert_eq(apply_width("中", WidthMode::wrap_with(1, "?")), ["?"])
+}
+
+///|
+test "combining marks do not increase display width wrapping" {
+  assert_eq(apply_width("a\u{0301}", WidthMode::wrap(1)), ["a\u{0301}"])
+}
+
+///|
+test "bidi controls do not affect display width wrapping" {
+  assert_eq(apply_width("\u{2066}ab\u{2069}", WidthMode::wrap(2)), [
+    "\u{2066}ab\u{2069}",
+  ])
+}
+
+///|
 test "col span all rows spanned" {
   let cfg = SpannedConfig::default()
   cfg.set_borders(Borders::ascii())

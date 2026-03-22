@@ -21,7 +21,7 @@ pub enum VAlign {
 
 ///|
 pub enum Width {
-  Wrap(Int)
+  Wrap(Int, String)
   Truncate(Int, String)
 }
 
@@ -45,8 +45,6 @@ pub struct Rows {
   end_ : Int
   skip_n : Int
   step_n : Int
-  exclude_start : Int
-  exclude_end : Int
   exclude : Rows?
   predicate : ((Entity) -> Bool)?
 }
@@ -57,8 +55,6 @@ pub struct Cols {
   end_ : Int
   skip_n : Int
   step_n : Int
-  exclude_start : Int
-  exclude_end : Int
   exclude : Cols?
   predicate : ((Entity) -> Bool)?
 }

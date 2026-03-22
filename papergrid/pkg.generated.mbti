@@ -268,12 +268,13 @@ pub fn VAlign::top() -> Self
 
 pub enum WidthMode {
   None
-  Wrap(Int)
+  Wrap(Int, String)
   Truncate(Int, String)
 }
 pub fn WidthMode::none() -> Self
 pub fn WidthMode::truncate(Int, String) -> Self
 pub fn WidthMode::wrap(Int) -> Self
+pub fn WidthMode::wrap_with(Int, String) -> Self
 
 // Type aliases
 

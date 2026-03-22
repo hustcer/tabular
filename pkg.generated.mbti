@@ -60,8 +60,6 @@ pub struct Cols {
   end_ : Int
   skip_n : Int
   step_n : Int
-  exclude_start : Int
-  exclude_end : Int
   exclude : Cols?
   predicate : ((Entity) -> Bool)?
 }
@@ -184,8 +182,6 @@ pub struct Rows {
   end_ : Int
   skip_n : Int
   step_n : Int
-  exclude_start : Int
-  exclude_end : Int
   exclude : Rows?
   predicate : ((Entity) -> Bool)?
 }
@@ -372,11 +368,12 @@ pub fn VAlign::center() -> Self
 pub fn VAlign::top() -> Self
 
 pub enum Width {
-  Wrap(Int)
+  Wrap(Int, String)
   Truncate(Int, String)
 }
 pub fn Width::truncate(Int, suffix? : String) -> Self
 pub fn Width::wrap(Int) -> Self
+pub fn Width::wrap_with(Int, String) -> Self
 
 // Type aliases
 
