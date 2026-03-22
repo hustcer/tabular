@@ -121,8 +121,8 @@ test "iter grid combined row and column span multiline output" {
   cfg.set_borders(Borders::ascii())
   cfg.set_row_span(1, 1, 2)
   cfg.set_column_span(1, 1, 2)
-  cfg.set_alignment_for_cell(1, 1, AlignmentHorizontal::center())
-  cfg.set_vertical_alignment_for_cell(1, 1, AlignmentVertical::center())
+  cfg.set_align_for_cell(1, 1, HAlign::center())
+  cfg.set_valign_for_cell(1, 1, VAlign::center())
   let records = IterRecords::new([
     ["0-0", "0-1", "0-2", "0-3"],
     ["1-0", "123\n345\n555\n333", "1-2", "1-3"],
@@ -150,12 +150,12 @@ test "iter grid combined row and column span multiline output" {
 }
 
 ///|
-test "iter grid row span boundary content with centered vertical alignment" {
+test "iter grid row span boundary content with centered vertical align" {
   let cfg = SpannedConfig::default()
   cfg.set_borders(Borders::ascii())
   cfg.set_row_span(0, 0, 2)
   cfg.set_row_span(0, 1, 2)
-  cfg.set_vertical_alignment_for_all(AlignmentVertical::center())
+  cfg.set_valign_for_all(VAlign::center())
   let records = IterRecords::new([["1as\nd\n", "a"], ["as\ndasdds\na", "asd"]])
   let dims = IterGridDimension::default()
   dims.estimate(records, cfg)
@@ -173,12 +173,12 @@ test "iter grid row span boundary content with centered vertical alignment" {
 }
 
 ///|
-test "iter grid row span boundary content with bottom vertical alignment" {
+test "iter grid row span boundary content with bottom vertical align" {
   let cfg = SpannedConfig::default()
   cfg.set_borders(Borders::ascii())
   cfg.set_row_span(0, 0, 2)
   cfg.set_row_span(0, 1, 2)
-  cfg.set_vertical_alignment_for_all(AlignmentVertical::bottom())
+  cfg.set_valign_for_all(VAlign::bottom())
   let records = IterRecords::new([["1a\ns\nd", "a"], ["as\ndasdds\na", "asd"]])
   let dims = IterGridDimension::default()
   dims.estimate(records, cfg)
@@ -319,7 +319,7 @@ test "column span with different length data" {
 test "column span no split style" {
   let cfg = SpannedConfig::default()
   cfg.set_column_span(0, 0, 2)
-  cfg.set_alignment_for_cell(0, 0, AlignmentHorizontal::center())
+  cfg.set_align_for_cell(0, 0, HAlign::center())
   let records = IterRecords::new([["0-0", ""], ["1-0", "1-1"]])
   let dims = IterGridDimension::default()
   dims.estimate(records, cfg)
@@ -420,7 +420,7 @@ test "row span all columns spanned" {
 test "row span no split style" {
   let cfg = SpannedConfig::default()
   cfg.set_row_span(0, 0, 2)
-  cfg.set_vertical_alignment_for_cell(0, 0, AlignmentVertical::center())
+  cfg.set_valign_for_cell(0, 0, VAlign::center())
   let records = IterRecords::new([["1", "0-1"], ["2", "1-1"], ["3", "2-1"]])
   let dims = IterGridDimension::default()
   dims.estimate(records, cfg)
@@ -481,8 +481,8 @@ test "combined row and column span at top left corner" {
   cfg.set_borders(Borders::ascii())
   cfg.set_row_span(0, 0, 2)
   cfg.set_column_span(0, 0, 2)
-  cfg.set_alignment_for_cell(0, 0, AlignmentHorizontal::center())
-  cfg.set_vertical_alignment_for_cell(0, 0, AlignmentVertical::center())
+  cfg.set_align_for_cell(0, 0, HAlign::center())
+  cfg.set_valign_for_cell(0, 0, VAlign::center())
   let records = IterRecords::new([
     ["123\n345\n555\n333", "0-1", "0-2", "0-3"],
     ["1-0", "1-1", "1-2", "1-3"],
@@ -515,8 +515,8 @@ test "combined row and column span at bottom right corner" {
   cfg.set_borders(Borders::ascii())
   cfg.set_row_span(2, 2, 2)
   cfg.set_column_span(2, 2, 2)
-  cfg.set_alignment_for_cell(2, 2, AlignmentHorizontal::center())
-  cfg.set_vertical_alignment_for_cell(2, 2, AlignmentVertical::center())
+  cfg.set_align_for_cell(2, 2, HAlign::center())
+  cfg.set_valign_for_cell(2, 2, VAlign::center())
   let records = IterRecords::new([
     ["0-0", "0-1", "0-2", "0-3"],
     ["1-0", "1-1", "1-2", "1-3"],
@@ -549,8 +549,8 @@ test "combined row and column span large center block" {
   cfg.set_borders(Borders::ascii())
   cfg.set_row_span(1, 1, 3)
   cfg.set_column_span(1, 1, 3)
-  cfg.set_alignment_for_cell(1, 1, AlignmentHorizontal::center())
-  cfg.set_vertical_alignment_for_cell(1, 1, AlignmentVertical::center())
+  cfg.set_align_for_cell(1, 1, HAlign::center())
+  cfg.set_valign_for_cell(1, 1, VAlign::center())
   let records = IterRecords::new([
     ["0-0", "0-1", "0-2", "0-3"],
     ["1-0", "123\n345\n555\n333", "1-2", "1-3"],

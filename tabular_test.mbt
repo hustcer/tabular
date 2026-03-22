@@ -143,13 +143,13 @@ test "builder clean empty columns" {
 }
 
 ///|
-test "table right alignment" {
+test "table right align" {
   let table = @tabular.Table::from_rows([
     ["N", "column 0"],
     ["0", "0-0"],
     ["1", "1-0"],
   ])
-  table.set_alignment(@tabular.Alignment::right()) |> ignore
+  table.set_align(@tabular.Align::right()) |> ignore
   inspect(
     table.to_string(),
     content=(
@@ -169,7 +169,7 @@ test "table custom padding" {
   let table = @tabular.Table::from_rows([["N", "column 0"], ["0", "0-0"]])
   table.modify_segment(
     @tabular.Segment::all(),
-    @tabular.Setting::alignment(@tabular.Alignment::left()),
+    @tabular.Setting::align(@tabular.Align::left()),
   )
   |> ignore
   table.set_padding(@tabular.Padding::new(1, 1, 1, 1)) |> ignore
@@ -194,7 +194,7 @@ test "table width wrap" {
   let table = @tabular.Table::from_rows([["text"], ["abcdef"]])
   table.modify_segment(
     @tabular.Segment::all(),
-    @tabular.Setting::alignment(@tabular.Alignment::left()),
+    @tabular.Setting::align(@tabular.Align::left()),
   )
   |> ignore
   table.set_width(@tabular.Width::wrap(2)) |> ignore
@@ -218,7 +218,7 @@ test "table width truncate" {
   let table = @tabular.Table::from_rows([["text"], ["abcdef"]])
   table.modify_segment(
     @tabular.Segment::all(),
-    @tabular.Setting::alignment(@tabular.Alignment::left()),
+    @tabular.Setting::align(@tabular.Align::left()),
   )
   |> ignore
   table.set_width(@tabular.Width::truncate(4, suffix="..")) |> ignore
@@ -239,7 +239,7 @@ test "table height increase" {
   let table = @tabular.Table::from_rows([["text"], ["a"]])
   table.modify_segment(
     @tabular.Segment::all(),
-    @tabular.Setting::alignment(@tabular.Alignment::left()),
+    @tabular.Setting::align(@tabular.Align::left()),
   )
   |> ignore
   table.set_height(@tabular.Height::increase(2)) |> ignore
@@ -262,7 +262,7 @@ test "table height limit" {
   let table = @tabular.Table::from_rows([["text"], ["a\nb\nc"]])
   table.modify_segment(
     @tabular.Segment::all(),
-    @tabular.Setting::alignment(@tabular.Alignment::left()),
+    @tabular.Setting::align(@tabular.Align::left()),
   )
   |> ignore
   table.set_height(@tabular.Height::limit(2)) |> ignore
@@ -312,7 +312,7 @@ test "modify segment width wrap" {
   ])
   table.modify_segment(
     @tabular.Segment::all(),
-    @tabular.Setting::alignment(@tabular.Alignment::left()),
+    @tabular.Setting::align(@tabular.Align::left()),
   )
   |> ignore
   table.modify_columns(
@@ -344,7 +344,7 @@ test "modify rows height increase" {
   let table = @tabular.Table::from_rows([["N", "text"], ["0", "a"], ["1", "b"]])
   table.modify_segment(
     @tabular.Segment::all(),
-    @tabular.Setting::alignment(@tabular.Alignment::left()),
+    @tabular.Setting::align(@tabular.Align::left()),
   )
   |> ignore
   table.modify_rows(
@@ -378,7 +378,7 @@ test "modify cell column span" {
   table.apply(@tabular.Style::psql()) |> ignore
   table.modify_segment(
     @tabular.Segment::all(),
-    @tabular.Setting::alignment(@tabular.Alignment::left()),
+    @tabular.Setting::align(@tabular.Align::left()),
   )
   |> ignore
   table.modify_cell(@tabular.Cell::new(1, 1), @tabular.Span::column(2))
@@ -404,7 +404,7 @@ test "modify column span for a whole column selection" {
   table.apply(@tabular.Style::psql()) |> ignore
   table.modify_segment(
     @tabular.Segment::all(),
-    @tabular.Setting::alignment(@tabular.Alignment::left()),
+    @tabular.Setting::align(@tabular.Align::left()),
   )
   |> ignore
   table.modify_segment(
@@ -433,7 +433,7 @@ test "column span survives extract columns remap" {
   table.apply(@tabular.Style::psql()) |> ignore
   table.modify_segment(
     @tabular.Segment::all(),
-    @tabular.Setting::alignment(@tabular.Alignment::left()),
+    @tabular.Setting::align(@tabular.Align::left()),
   )
   |> ignore
   table.modify_cell(@tabular.Cell::new(1, 1), @tabular.Span::column(2))
@@ -460,7 +460,7 @@ test "column span can be removed without losing hidden cell values" {
   table.apply(@tabular.Style::psql()) |> ignore
   table.modify_segment(
     @tabular.Segment::all(),
-    @tabular.Setting::alignment(@tabular.Alignment::left()),
+    @tabular.Setting::align(@tabular.Align::left()),
   )
   |> ignore
   table.modify_cell(@tabular.Cell::new(1, 1), @tabular.Span::column(2))
@@ -488,7 +488,7 @@ test "modify cell row span" {
   table.apply(@tabular.Style::psql()) |> ignore
   table.modify_segment(
     @tabular.Segment::all(),
-    @tabular.Setting::alignment(@tabular.Alignment::left()),
+    @tabular.Setting::align(@tabular.Align::left()),
   )
   |> ignore
   table.modify_cell(@tabular.Cell::new(1, 1), @tabular.Span::row(2)) |> ignore
@@ -513,7 +513,7 @@ test "modify first-column row span" {
   table.apply(@tabular.Style::psql()) |> ignore
   table.modify_segment(
     @tabular.Segment::all(),
-    @tabular.Setting::alignment(@tabular.Alignment::left()),
+    @tabular.Setting::align(@tabular.Align::left()),
   )
   |> ignore
   table.modify_cell(@tabular.Cell::new(1, 0), @tabular.Span::row(2)) |> ignore
@@ -538,7 +538,7 @@ test "row span can be removed without losing hidden cell values" {
   table.apply(@tabular.Style::psql()) |> ignore
   table.modify_segment(
     @tabular.Segment::all(),
-    @tabular.Setting::alignment(@tabular.Alignment::left()),
+    @tabular.Setting::align(@tabular.Align::left()),
   )
   |> ignore
   table.modify_cell(@tabular.Cell::new(1, 1), @tabular.Span::row(2)) |> ignore
@@ -565,7 +565,7 @@ test "row span survives extract rows remap" {
   table.apply(@tabular.Style::psql()) |> ignore
   table.modify_segment(
     @tabular.Segment::all(),
-    @tabular.Setting::alignment(@tabular.Alignment::left()),
+    @tabular.Setting::align(@tabular.Align::left()),
   )
   |> ignore
   table.modify_cell(@tabular.Cell::new(1, 1), @tabular.Span::row(2)) |> ignore
@@ -614,7 +614,7 @@ test "row span on header row under psql" {
   table.apply(@tabular.Style::psql()) |> ignore
   table.modify_segment(
     @tabular.Segment::all(),
-    @tabular.Setting::alignment(@tabular.Alignment::left()),
+    @tabular.Setting::align(@tabular.Align::left()),
   )
   |> ignore
   table.modify_rows(@tabular.Rows::one(0), @tabular.Span::row(2)) |> ignore
@@ -638,7 +638,7 @@ test "combined row and column span on one cell" {
   table.apply(@tabular.Style::ascii()) |> ignore
   table.modify_segment(
     @tabular.Segment::all(),
-    @tabular.Setting::alignment(@tabular.Alignment::left()),
+    @tabular.Setting::align(@tabular.Align::left()),
   )
   |> ignore
   table.modify_cell(@tabular.Cell::new(1, 1), @tabular.Span::column(2))
@@ -690,7 +690,7 @@ test "column span negative extends left" {
   table.apply(@tabular.Style::ascii()) |> ignore
   table.modify_segment(
     @tabular.Segment::all(),
-    @tabular.Setting::alignment(@tabular.Alignment::left()),
+    @tabular.Setting::align(@tabular.Align::left()),
   )
   |> ignore
   table.modify_cell(@tabular.Cell::new(0, 1), @tabular.Span::column(-1))
@@ -713,7 +713,7 @@ test "column span zero extends to full row width and can be removed" {
   table.apply(@tabular.Style::ascii()) |> ignore
   table.modify_segment(
     @tabular.Segment::all(),
-    @tabular.Setting::alignment(@tabular.Alignment::left()),
+    @tabular.Setting::align(@tabular.Align::left()),
   )
   |> ignore
   table.modify_cell(@tabular.Cell::new(1, 2), @tabular.Span::column(0))
@@ -748,7 +748,7 @@ test "row span negative extends upward" {
   table.apply(@tabular.Style::ascii()) |> ignore
   table.modify_segment(
     @tabular.Segment::all(),
-    @tabular.Setting::alignment(@tabular.Alignment::left()),
+    @tabular.Setting::align(@tabular.Align::left()),
   )
   |> ignore
   table.modify_cell(@tabular.Cell::new(1, 0), @tabular.Span::row(-1)) |> ignore
@@ -772,7 +772,7 @@ test "row span zero extends to full column height and can be removed" {
   table.apply(@tabular.Style::ascii()) |> ignore
   table.modify_segment(
     @tabular.Segment::all(),
-    @tabular.Setting::alignment(@tabular.Alignment::left()),
+    @tabular.Setting::align(@tabular.Align::left()),
   )
   |> ignore
   table.modify_cell(@tabular.Cell::new(2, 1), @tabular.Span::row(0)) |> ignore
@@ -812,7 +812,7 @@ test "column span negative survives extract columns when anchor column is remove
   table.apply(@tabular.Style::ascii()) |> ignore
   table.modify_segment(
     @tabular.Segment::all(),
-    @tabular.Setting::alignment(@tabular.Alignment::left()),
+    @tabular.Setting::align(@tabular.Align::left()),
   )
   |> ignore
   table.modify_cell(@tabular.Cell::new(1, 3), @tabular.Span::column(-2))
@@ -841,7 +841,7 @@ test "row span zero survives extract rows when anchor row is removed" {
   table.apply(@tabular.Style::ascii()) |> ignore
   table.modify_segment(
     @tabular.Segment::all(),
-    @tabular.Setting::alignment(@tabular.Alignment::left()),
+    @tabular.Setting::align(@tabular.Align::left()),
   )
   |> ignore
   table.modify_cell(@tabular.Cell::new(3, 1), @tabular.Span::row(0)) |> ignore
@@ -869,7 +869,7 @@ test "column span zero survives remove first columns" {
   table.apply(@tabular.Style::ascii()) |> ignore
   table.modify_segment(
     @tabular.Segment::all(),
-    @tabular.Setting::alignment(@tabular.Alignment::left()),
+    @tabular.Setting::align(@tabular.Align::left()),
   )
   |> ignore
   table.modify_cell(@tabular.Cell::new(1, 3), @tabular.Span::column(0))
@@ -898,7 +898,7 @@ test "row span negative survives remove first row" {
   table.apply(@tabular.Style::ascii()) |> ignore
   table.modify_segment(
     @tabular.Segment::all(),
-    @tabular.Setting::alignment(@tabular.Alignment::left()),
+    @tabular.Setting::align(@tabular.Align::left()),
   )
   |> ignore
   table.modify_cell(@tabular.Cell::new(2, 1), @tabular.Span::row(-1)) |> ignore
@@ -926,7 +926,7 @@ test "modify cell height limit" {
   ])
   table.modify_segment(
     @tabular.Segment::all(),
-    @tabular.Setting::alignment(@tabular.Alignment::left()),
+    @tabular.Setting::align(@tabular.Align::left()),
   )
   |> ignore
   table.modify_cell(
@@ -950,17 +950,17 @@ test "modify cell height limit" {
 }
 
 ///|
-test "table vertical alignment center" {
+test "table vertical align center" {
   let table = @tabular.Table::from_rows([
     ["left\ncell", "right one"],
     ["the second column", "and\nhere\nsee\na"],
   ])
   table.modify_segment(
     @tabular.Segment::all(),
-    @tabular.Setting::alignment(@tabular.Alignment::left()),
+    @tabular.Setting::align(@tabular.Align::left()),
   )
   |> ignore
-  table.set_vertical_alignment(@tabular.VerticalAlignment::center()) |> ignore
+  table.set_valign(@tabular.VAlign::center()) |> ignore
   inspect(
     table.to_string(),
     content=(
@@ -1309,7 +1309,7 @@ test "style remove vertical from full custom frame" {
 }
 
 ///|
-test "modify segment alignment left" {
+test "modify segment align left" {
   let table = @tabular.Table::from_rows([
     ["N", "column 0", "column 1"],
     ["0", "0-0", "0-1"],
@@ -1318,7 +1318,7 @@ test "modify segment alignment left" {
   table.apply(@tabular.Style::psql()) |> ignore
   table.modify_segment(
     @tabular.Segment::all(),
-    @tabular.Setting::alignment(@tabular.Alignment::left()),
+    @tabular.Setting::align(@tabular.Align::left()),
   )
   |> ignore
   inspect(
@@ -1333,7 +1333,7 @@ test "modify segment alignment left" {
 }
 
 ///|
-test "modify rows alignment" {
+test "modify rows align" {
   let table = @tabular.Table::from_rows([
     ["N", "column 0", "column 1"],
     ["0", "0-0", "0-1"],
@@ -1341,12 +1341,12 @@ test "modify rows alignment" {
   ])
   table.modify_rows(
     @tabular.Rows::first(),
-    @tabular.Setting::alignment(@tabular.Alignment::left()),
+    @tabular.Setting::align(@tabular.Align::left()),
   )
   |> ignore
   table.modify_rows(
     @tabular.Rows::new(1, 3),
-    @tabular.Setting::alignment(@tabular.Alignment::right()),
+    @tabular.Setting::align(@tabular.Align::right()),
   )
   |> ignore
   inspect(
@@ -1364,7 +1364,7 @@ test "modify rows alignment" {
 }
 
 ///|
-test "modify columns vertical alignment" {
+test "modify columns vertical align" {
   let table = @tabular.Table::from_rows([
     ["N", "column 0", "column 1"],
     ["0", "E\nnde\navou\nros", "0-1"],
@@ -1373,7 +1373,7 @@ test "modify columns vertical alignment" {
   table.apply(@tabular.Style::psql()) |> ignore
   table.modify_columns(
     @tabular.Columns::new(1, 3),
-    @tabular.Setting::vertical_alignment(@tabular.VerticalAlignment::bottom()),
+    @tabular.Setting::valign(@tabular.VAlign::bottom()),
   )
   |> ignore
   inspect(
@@ -1405,7 +1405,7 @@ test "modify rows padding" {
   table.apply(@tabular.Style::psql()) |> ignore
   table.modify_segment(
     @tabular.Segment::all(),
-    @tabular.Setting::alignment(@tabular.Alignment::left()),
+    @tabular.Setting::align(@tabular.Align::left()),
   )
   |> ignore
   table.modify_rows(
@@ -1439,7 +1439,7 @@ test "modify columns skip and not first" {
   table.apply(@tabular.Style::psql()) |> ignore
   table.modify_columns(
     @tabular.Columns::all().not(@tabular.Columns::first()).skip(2),
-    @tabular.Setting::alignment(@tabular.Alignment::right()),
+    @tabular.Setting::align(@tabular.Align::right()),
   )
   |> ignore
   inspect(
@@ -1465,7 +1465,7 @@ test "modify columns step by" {
   table.apply(@tabular.Style::psql()) |> ignore
   table.modify_columns(
     @tabular.Columns::all().step_by(3),
-    @tabular.Setting::alignment(@tabular.Alignment::right()),
+    @tabular.Setting::align(@tabular.Align::right()),
   )
   |> ignore
   inspect(
@@ -1496,7 +1496,7 @@ test "modify columns filter" {
         _ => false
       }
     }),
-    @tabular.Setting::alignment(@tabular.Alignment::right()),
+    @tabular.Setting::align(@tabular.Align::right()),
   )
   |> ignore
   inspect(
@@ -1522,7 +1522,7 @@ test "modify segment skip one cell" {
   table.apply(@tabular.Style::psql()) |> ignore
   table.modify_segment(
     @tabular.Segment::all().skip(1),
-    @tabular.Setting::alignment(@tabular.Alignment::right()),
+    @tabular.Setting::align(@tabular.Align::right()),
   )
   |> ignore
   inspect(
@@ -1547,12 +1547,12 @@ test "modify rows step by" {
   ])
   table.modify_segment(
     @tabular.Segment::all(),
-    @tabular.Setting::alignment(@tabular.Alignment::left()),
+    @tabular.Setting::align(@tabular.Align::left()),
   )
   |> ignore
   table.modify_rows(
     @tabular.Rows::all().skip(1).step_by(2),
-    @tabular.Setting::alignment(@tabular.Alignment::right()),
+    @tabular.Setting::align(@tabular.Align::right()),
   )
   |> ignore
   inspect(
@@ -1581,7 +1581,7 @@ test "modify segment range" {
   table.apply(@tabular.Style::psql()) |> ignore
   table.modify_segment(
     @tabular.Segment::new(1, 3, 1, 3),
-    @tabular.Setting::alignment(@tabular.Alignment::right()),
+    @tabular.Setting::align(@tabular.Align::right()),
   )
   |> ignore
   inspect(
@@ -1604,12 +1604,12 @@ test "modify single row with one" {
   ])
   table.modify_segment(
     @tabular.Segment::all(),
-    @tabular.Setting::alignment(@tabular.Alignment::left()),
+    @tabular.Setting::align(@tabular.Align::left()),
   )
   |> ignore
   table.modify_rows(
     @tabular.Rows::one(2),
-    @tabular.Setting::alignment(@tabular.Alignment::right()),
+    @tabular.Setting::align(@tabular.Align::right()),
   )
   |> ignore
   inspect(
@@ -1636,7 +1636,7 @@ test "modify single column with one" {
   table.apply(@tabular.Style::psql()) |> ignore
   table.modify_columns(
     @tabular.Columns::one(0),
-    @tabular.Setting::alignment(@tabular.Alignment::right()),
+    @tabular.Setting::align(@tabular.Align::right()),
   )
   |> ignore
   inspect(
@@ -1651,7 +1651,7 @@ test "modify single column with one" {
 }
 
 ///|
-test "modify cell alignment" {
+test "modify cell align" {
   let table = @tabular.Table::from_rows([
     ["N", "column 0", "column 1"],
     ["0", "0-0", "0-1"],
@@ -1660,7 +1660,7 @@ test "modify cell alignment" {
   table.apply(@tabular.Style::psql()) |> ignore
   table.modify_cell(
     @tabular.Cell::new(1, 1),
-    @tabular.Setting::alignment(@tabular.Alignment::right()),
+    @tabular.Setting::align(@tabular.Align::right()),
   )
   |> ignore
   inspect(
@@ -1675,7 +1675,7 @@ test "modify cell alignment" {
 }
 
 ///|
-test "modify last row alignment" {
+test "modify last row align" {
   let table = @tabular.Table::from_rows([
     ["N", "column 0", "column 1"],
     ["0", "0-0", "0-1"],
@@ -1684,12 +1684,12 @@ test "modify last row alignment" {
   ])
   table.modify_segment(
     @tabular.Segment::all(),
-    @tabular.Setting::alignment(@tabular.Alignment::left()),
+    @tabular.Setting::align(@tabular.Align::left()),
   )
   |> ignore
   table.modify_rows(
     @tabular.Rows::last(),
-    @tabular.Setting::alignment(@tabular.Alignment::right()),
+    @tabular.Setting::align(@tabular.Align::right()),
   )
   |> ignore
   inspect(
@@ -1709,7 +1709,7 @@ test "modify last row alignment" {
 }
 
 ///|
-test "modify last column alignment" {
+test "modify last column align" {
   let table = @tabular.Table::from_rows([
     ["N", "column 0", "column 1"],
     ["0", "0-0", "0-1"],
@@ -1718,7 +1718,7 @@ test "modify last column alignment" {
   table.apply(@tabular.Style::psql()) |> ignore
   table.modify_columns(
     @tabular.Columns::last(),
-    @tabular.Setting::alignment(@tabular.Alignment::right()),
+    @tabular.Setting::align(@tabular.Align::right()),
   )
   |> ignore
   inspect(
@@ -1742,12 +1742,12 @@ test "modify row by last offset" {
   ])
   table.modify_segment(
     @tabular.Segment::all(),
-    @tabular.Setting::alignment(@tabular.Alignment::left()),
+    @tabular.Setting::align(@tabular.Align::left()),
   )
   |> ignore
   table.modify_rows(
     @tabular.Rows::last_offset(1),
-    @tabular.Setting::alignment(@tabular.Alignment::right()),
+    @tabular.Setting::align(@tabular.Align::right()),
   )
   |> ignore
   inspect(
@@ -1776,7 +1776,7 @@ test "modify column by last offset" {
   table.apply(@tabular.Style::psql()) |> ignore
   table.modify_columns(
     @tabular.Columns::last_offset(1),
-    @tabular.Setting::alignment(@tabular.Alignment::right()),
+    @tabular.Setting::align(@tabular.Align::right()),
   )
   |> ignore
   inspect(
@@ -1801,7 +1801,7 @@ test "modify intersect rows and columns" {
   table.apply(@tabular.Style::psql()) |> ignore
   table.modify_segment(
     @tabular.Columns::new(1, 3).intersect(@tabular.Rows::new(1, 3)),
-    @tabular.Setting::alignment(@tabular.Alignment::right()),
+    @tabular.Setting::align(@tabular.Align::right()),
   )
   |> ignore
   inspect(
@@ -1827,7 +1827,7 @@ test "modify intersect rows and columns with skip" {
   table.apply(@tabular.Style::psql()) |> ignore
   table.modify_segment(
     @tabular.Rows::new(1, 3).intersect(@tabular.Columns::new(1, 4)).skip(2),
-    @tabular.Setting::alignment(@tabular.Alignment::right()),
+    @tabular.Setting::align(@tabular.Align::right()),
   )
   |> ignore
   inspect(
@@ -1852,7 +1852,7 @@ test "modify inverse columns" {
   table.apply(@tabular.Style::psql()) |> ignore
   table.modify_segment(
     @tabular.Columns::one(0).inverse(),
-    @tabular.Setting::alignment(@tabular.Alignment::right()),
+    @tabular.Setting::align(@tabular.Align::right()),
   )
   |> ignore
   inspect(
@@ -1876,7 +1876,7 @@ test "modify inverse cell" {
   table.apply(@tabular.Style::psql()) |> ignore
   table.modify_segment(
     @tabular.Cell::new(0, 0).inverse(),
-    @tabular.Setting::alignment(@tabular.Alignment::right()),
+    @tabular.Setting::align(@tabular.Align::right()),
   )
   |> ignore
   inspect(
@@ -1900,12 +1900,12 @@ test "modify union of row and column segments" {
   table.apply(@tabular.Style::psql()) |> ignore
   table.modify_segment(
     @tabular.Segment::all(),
-    @tabular.Setting::alignment(@tabular.Alignment::left()),
+    @tabular.Setting::align(@tabular.Align::left()),
   )
   |> ignore
   table.modify_segment(
     @tabular.Rows::one(1).and_columns(@tabular.Columns::one(2)),
-    @tabular.Setting::alignment(@tabular.Alignment::right()),
+    @tabular.Setting::align(@tabular.Align::right()),
   )
   |> ignore
   inspect(
@@ -1930,12 +1930,12 @@ test "modify union of row selectors" {
   table.apply(@tabular.Style::psql()) |> ignore
   table.modify_segment(
     @tabular.Segment::all(),
-    @tabular.Setting::alignment(@tabular.Alignment::left()),
+    @tabular.Setting::align(@tabular.Align::left()),
   )
   |> ignore
   table.modify_segment(
     @tabular.Rows::one(1).and_(@tabular.Rows::one(3)),
-    @tabular.Setting::alignment(@tabular.Alignment::right()),
+    @tabular.Setting::align(@tabular.Align::right()),
   )
   |> ignore
   inspect(
@@ -1960,12 +1960,12 @@ test "modify row not column with ergonomic helper" {
   table.apply(@tabular.Style::psql()) |> ignore
   table.modify_segment(
     @tabular.Segment::all(),
-    @tabular.Setting::alignment(@tabular.Alignment::left()),
+    @tabular.Setting::align(@tabular.Align::left()),
   )
   |> ignore
   table.modify_segment(
     @tabular.Rows::one(1).not_columns(@tabular.Columns::one(1)),
-    @tabular.Setting::alignment(@tabular.Alignment::right()),
+    @tabular.Setting::align(@tabular.Align::right()),
   )
   |> ignore
   inspect(
@@ -1989,12 +1989,12 @@ test "modify column not row with ergonomic helper" {
   table.apply(@tabular.Style::psql()) |> ignore
   table.modify_segment(
     @tabular.Segment::all(),
-    @tabular.Setting::alignment(@tabular.Alignment::left()),
+    @tabular.Setting::align(@tabular.Align::left()),
   )
   |> ignore
   table.modify_segment(
     @tabular.Columns::one(2).not_rows(@tabular.Rows::first()),
-    @tabular.Setting::alignment(@tabular.Alignment::right()),
+    @tabular.Setting::align(@tabular.Align::right()),
   )
   |> ignore
   inspect(
@@ -2018,7 +2018,7 @@ test "modify segment difference by cell" {
   table.apply(@tabular.Style::psql()) |> ignore
   table.modify_segment(
     @tabular.Segment::all(),
-    @tabular.Setting::alignment(@tabular.Alignment::left()),
+    @tabular.Setting::align(@tabular.Align::left()),
   )
   |> ignore
   table.modify_segment(
@@ -2026,7 +2026,7 @@ test "modify segment difference by cell" {
     .as_segment()
     .and_(@tabular.Columns::one(2).as_segment())
     .not_(@tabular.Cell::new(1, 2).as_segment()),
-    @tabular.Setting::alignment(@tabular.Alignment::right()),
+    @tabular.Setting::align(@tabular.Align::right()),
   )
   |> ignore
   inspect(
@@ -2327,7 +2327,7 @@ test "format union and difference content" {
 }
 
 ///|
-test "format content keeps padding and alignment" {
+test "format content keeps padding and align" {
   let table = @tabular.Table::from_rows([
     ["N", "column 0", "column 1"],
     ["0", "0-0", "0-1"],
@@ -2335,7 +2335,7 @@ test "format content keeps padding and alignment" {
   ])
   table.modify_segment(
     @tabular.Segment::all(),
-    @tabular.Setting::alignment(@tabular.Alignment::left()),
+    @tabular.Setting::align(@tabular.Align::left()),
   )
   |> ignore
   table.modify_segment(
@@ -2369,7 +2369,7 @@ test "format content then width truncate" {
   let table = @tabular.Table::from_rows([["name"], ["alphabet"]])
   table.modify_segment(
     @tabular.Segment::all(),
-    @tabular.Setting::alignment(@tabular.Alignment::left()),
+    @tabular.Setting::align(@tabular.Align::left()),
   )
   |> ignore
   table.modify_segment(
@@ -2397,7 +2397,7 @@ test "format content then width wrap" {
   let table = @tabular.Table::from_rows([["name"], ["alphabet"]])
   table.modify_segment(
     @tabular.Segment::all(),
-    @tabular.Setting::alignment(@tabular.Alignment::left()),
+    @tabular.Setting::align(@tabular.Align::left()),
   )
   |> ignore
   table.modify_segment(
@@ -2428,7 +2428,7 @@ test "format multiline then height limit" {
   let table = @tabular.Table::from_rows([["text"], ["a\nb\nc"]])
   table.modify_segment(
     @tabular.Segment::all(),
-    @tabular.Setting::alignment(@tabular.Alignment::left()),
+    @tabular.Setting::align(@tabular.Align::left()),
   )
   |> ignore
   table.modify_segment(
@@ -2461,7 +2461,7 @@ test "extract segment keeps scoped width" {
   ])
   table.modify_segment(
     @tabular.Segment::all(),
-    @tabular.Setting::alignment(@tabular.Alignment::left()),
+    @tabular.Setting::align(@tabular.Align::left()),
   )
   |> ignore
   table.modify_columns(
@@ -2499,7 +2499,7 @@ test "remove columns with scoped width on remaining column" {
   ])
   table.modify_segment(
     @tabular.Segment::all(),
-    @tabular.Setting::alignment(@tabular.Alignment::left()),
+    @tabular.Setting::align(@tabular.Align::left()),
   )
   |> ignore
   table.modify_columns(
@@ -2527,7 +2527,7 @@ test "one column mixed height layout" {
   let table = @tabular.Table::from_rows([["head"], ["a\nb"], ["c"]])
   table.modify_segment(
     @tabular.Segment::all(),
-    @tabular.Setting::alignment(@tabular.Alignment::left()),
+    @tabular.Setting::align(@tabular.Align::left()),
   )
   |> ignore
   inspect(
@@ -2550,7 +2550,7 @@ test "one row width wrap layout" {
   let table = @tabular.Table::from_rows([["abcdef", "ghijkl"]])
   table.modify_segment(
     @tabular.Segment::all(),
-    @tabular.Setting::alignment(@tabular.Alignment::left()),
+    @tabular.Setting::align(@tabular.Align::left()),
   )
   |> ignore
   table.modify_segment(
@@ -2584,7 +2584,7 @@ test "padding by column name" {
   |> ignore
   table.modify_segment(
     @tabular.Segment::all(),
-    @tabular.Setting::alignment(@tabular.Alignment::center()),
+    @tabular.Setting::align(@tabular.Align::center()),
   )
   |> ignore
   inspect(
@@ -2613,7 +2613,7 @@ test "padding by column name not first row" {
   |> ignore
   table.modify_segment(
     @tabular.Segment::all(),
-    @tabular.Setting::alignment(@tabular.Alignment::center()),
+    @tabular.Setting::align(@tabular.Align::center()),
   )
   |> ignore
   inspect(
@@ -2642,7 +2642,7 @@ test "padding by column name not existing" {
   |> ignore
   table.modify_segment(
     @tabular.Segment::all(),
-    @tabular.Setting::alignment(@tabular.Alignment::center()),
+    @tabular.Setting::align(@tabular.Align::center()),
   )
   |> ignore
   inspect(
@@ -2754,7 +2754,7 @@ test "extract segment full" {
   ])
   table.modify_segment(
     @tabular.Segment::all(),
-    @tabular.Setting::alignment(@tabular.Alignment::left()),
+    @tabular.Setting::align(@tabular.Align::left()),
   )
   |> ignore
   table.modify_segment(
@@ -2891,7 +2891,7 @@ test "cell column span at header row col 0" {
   table.apply(@tabular.Style::psql()) |> ignore
   table.modify_segment(
     @tabular.Segment::all(),
-    @tabular.Setting::alignment(@tabular.Alignment::left()),
+    @tabular.Setting::align(@tabular.Align::left()),
   )
   |> ignore
   table.modify_cell(@tabular.Cell::new(0, 0), @tabular.Span::column(2))
@@ -2919,7 +2919,7 @@ test "cell column span at data row 0 col 0" {
   table.apply(@tabular.Style::psql()) |> ignore
   table.modify_segment(
     @tabular.Segment::all(),
-    @tabular.Setting::alignment(@tabular.Alignment::left()),
+    @tabular.Setting::align(@tabular.Align::left()),
   )
   |> ignore
   table.modify_cell(@tabular.Cell::new(1, 0), @tabular.Span::column(2))
@@ -2970,7 +2970,7 @@ test "cell column span at data row 2 col 0" {
   table.apply(@tabular.Style::psql()) |> ignore
   table.modify_segment(
     @tabular.Segment::all(),
-    @tabular.Setting::alignment(@tabular.Alignment::left()),
+    @tabular.Setting::align(@tabular.Align::left()),
   )
   |> ignore
   table.modify_cell(@tabular.Cell::new(3, 0), @tabular.Span::column(2))
@@ -2998,7 +2998,7 @@ test "cell column span at header row col 1" {
   table.apply(@tabular.Style::psql()) |> ignore
   table.modify_segment(
     @tabular.Segment::all(),
-    @tabular.Setting::alignment(@tabular.Alignment::left()),
+    @tabular.Setting::align(@tabular.Align::left()),
   )
   |> ignore
   table.modify_cell(@tabular.Cell::new(0, 1), @tabular.Span::column(2))
@@ -3026,7 +3026,7 @@ test "cell column span at data row 1 col 1" {
   table.apply(@tabular.Style::psql()) |> ignore
   table.modify_segment(
     @tabular.Segment::all(),
-    @tabular.Setting::alignment(@tabular.Alignment::left()),
+    @tabular.Setting::align(@tabular.Align::left()),
   )
   |> ignore
   table.modify_cell(@tabular.Cell::new(2, 1), @tabular.Span::column(2))
@@ -3054,7 +3054,7 @@ test "cell column span at data row 2 col 1" {
   table.apply(@tabular.Style::psql()) |> ignore
   table.modify_segment(
     @tabular.Segment::all(),
-    @tabular.Setting::alignment(@tabular.Alignment::left()),
+    @tabular.Setting::align(@tabular.Align::left()),
   )
   |> ignore
   table.modify_cell(@tabular.Cell::new(3, 1), @tabular.Span::column(2))
@@ -3174,7 +3174,7 @@ test "column span on whole column col 0" {
   table.apply(@tabular.Style::psql()) |> ignore
   table.modify_segment(
     @tabular.Segment::all(),
-    @tabular.Setting::alignment(@tabular.Alignment::left()),
+    @tabular.Setting::align(@tabular.Align::left()),
   )
   |> ignore
   table.modify_columns(@tabular.Columns::one(0), @tabular.Span::column(2))
@@ -3202,7 +3202,7 @@ test "column span on column range 1" {
   table.apply(@tabular.Style::psql()) |> ignore
   table.modify_segment(
     @tabular.Segment::all(),
-    @tabular.Setting::alignment(@tabular.Alignment::left()),
+    @tabular.Setting::align(@tabular.Align::left()),
   )
   |> ignore
   table.modify_columns(@tabular.Columns::new(1, 2), @tabular.Span::column(2))
@@ -3230,7 +3230,7 @@ test "column span covers full row" {
   table.apply(@tabular.Style::psql()) |> ignore
   table.modify_segment(
     @tabular.Segment::all(),
-    @tabular.Setting::alignment(@tabular.Alignment::left()),
+    @tabular.Setting::align(@tabular.Align::left()),
   )
   |> ignore
   table.modify_columns(@tabular.Columns::one(0), @tabular.Span::column(4))
@@ -3317,7 +3317,7 @@ test "padding works in spanned columns" {
   |> ignore
   table.modify_segment(
     @tabular.Segment::all(),
-    @tabular.Setting::alignment(@tabular.Alignment::left()),
+    @tabular.Setting::align(@tabular.Align::left()),
   )
   |> ignore
   table.modify_cell(@tabular.Cell::new(1, 1), @tabular.Span::column(3))
@@ -3411,7 +3411,7 @@ test "cell row span (0,0) psql" {
   table.apply(@tabular.Style::psql()) |> ignore
   table.modify_segment(
     @tabular.Segment::all(),
-    @tabular.Setting::alignment(@tabular.Alignment::left()),
+    @tabular.Setting::align(@tabular.Align::left()),
   )
   |> ignore
   table.modify_cell(@tabular.Cell::new(0, 0), @tabular.Span::row(2)) |> ignore
@@ -3438,7 +3438,7 @@ test "cell row span (1,0) psql" {
   table.apply(@tabular.Style::psql()) |> ignore
   table.modify_segment(
     @tabular.Segment::all(),
-    @tabular.Setting::alignment(@tabular.Alignment::left()),
+    @tabular.Setting::align(@tabular.Align::left()),
   )
   |> ignore
   table.modify_cell(@tabular.Cell::new(1, 0), @tabular.Span::row(2)) |> ignore
@@ -3487,7 +3487,7 @@ test "cell row span (0,1) psql" {
   table.apply(@tabular.Style::psql()) |> ignore
   table.modify_segment(
     @tabular.Segment::all(),
-    @tabular.Setting::alignment(@tabular.Alignment::left()),
+    @tabular.Setting::align(@tabular.Align::left()),
   )
   |> ignore
   table.modify_cell(@tabular.Cell::new(0, 1), @tabular.Span::row(2)) |> ignore
@@ -3514,7 +3514,7 @@ test "cell row span (0,2) psql" {
   table.apply(@tabular.Style::psql()) |> ignore
   table.modify_segment(
     @tabular.Segment::all(),
-    @tabular.Setting::alignment(@tabular.Alignment::left()),
+    @tabular.Setting::align(@tabular.Align::left()),
   )
   |> ignore
   table.modify_cell(@tabular.Cell::new(0, 2), @tabular.Span::row(2)) |> ignore
@@ -3563,7 +3563,7 @@ test "cell row span (1,1) psql" {
   table.apply(@tabular.Style::psql()) |> ignore
   table.modify_segment(
     @tabular.Segment::all(),
-    @tabular.Setting::alignment(@tabular.Alignment::left()),
+    @tabular.Setting::align(@tabular.Align::left()),
   )
   |> ignore
   table.modify_cell(@tabular.Cell::new(1, 1), @tabular.Span::row(2)) |> ignore
@@ -3590,7 +3590,7 @@ test "cell row span (2,1) psql" {
   table.apply(@tabular.Style::psql()) |> ignore
   table.modify_segment(
     @tabular.Segment::all(),
-    @tabular.Setting::alignment(@tabular.Alignment::left()),
+    @tabular.Setting::align(@tabular.Align::left()),
   )
   |> ignore
   table.modify_cell(@tabular.Cell::new(2, 1), @tabular.Span::row(2)) |> ignore
@@ -3617,7 +3617,7 @@ test "cell row span (1,2) psql" {
   table.apply(@tabular.Style::psql()) |> ignore
   table.modify_segment(
     @tabular.Segment::all(),
-    @tabular.Setting::alignment(@tabular.Alignment::left()),
+    @tabular.Setting::align(@tabular.Align::left()),
   )
   |> ignore
   table.modify_cell(@tabular.Cell::new(1, 2), @tabular.Span::row(2)) |> ignore
@@ -3644,7 +3644,7 @@ test "cell row span (2,2) psql" {
   table.apply(@tabular.Style::psql()) |> ignore
   table.modify_segment(
     @tabular.Segment::all(),
-    @tabular.Setting::alignment(@tabular.Alignment::left()),
+    @tabular.Setting::align(@tabular.Align::left()),
   )
   |> ignore
   table.modify_cell(@tabular.Cell::new(2, 2), @tabular.Span::row(2)) |> ignore
@@ -3671,7 +3671,7 @@ test "cell row span (1,3) psql" {
   table.apply(@tabular.Style::psql()) |> ignore
   table.modify_segment(
     @tabular.Segment::all(),
-    @tabular.Setting::alignment(@tabular.Alignment::left()),
+    @tabular.Setting::align(@tabular.Align::left()),
   )
   |> ignore
   table.modify_cell(@tabular.Cell::new(1, 3), @tabular.Span::row(2)) |> ignore
@@ -3698,7 +3698,7 @@ test "cell row span (2,3) psql" {
   table.apply(@tabular.Style::psql()) |> ignore
   table.modify_segment(
     @tabular.Segment::all(),
-    @tabular.Setting::alignment(@tabular.Alignment::left()),
+    @tabular.Setting::align(@tabular.Align::left()),
   )
   |> ignore
   table.modify_cell(@tabular.Cell::new(2, 3), @tabular.Span::row(2)) |> ignore
@@ -3729,7 +3729,7 @@ test "whole row span header row ascii" {
   table.apply(@tabular.Style::ascii()) |> ignore
   table.modify_segment(
     @tabular.Segment::all(),
-    @tabular.Setting::alignment(@tabular.Alignment::left()),
+    @tabular.Setting::align(@tabular.Align::left()),
   )
   |> ignore
   table.modify_rows(@tabular.Rows::one(0), @tabular.Span::row(2)) |> ignore
@@ -3758,7 +3758,7 @@ test "whole row span header row psql" {
   table.apply(@tabular.Style::psql()) |> ignore
   table.modify_segment(
     @tabular.Segment::all(),
-    @tabular.Setting::alignment(@tabular.Alignment::left()),
+    @tabular.Setting::align(@tabular.Align::left()),
   )
   |> ignore
   table.modify_rows(@tabular.Rows::one(0), @tabular.Span::row(2)) |> ignore
@@ -3783,7 +3783,7 @@ test "whole row span data row 1 psql" {
   table.apply(@tabular.Style::psql()) |> ignore
   table.modify_segment(
     @tabular.Segment::all(),
-    @tabular.Setting::alignment(@tabular.Alignment::left()),
+    @tabular.Setting::align(@tabular.Align::left()),
   )
   |> ignore
   table.modify_rows(@tabular.Rows::new(1, 2), @tabular.Span::row(2)) |> ignore
@@ -3809,7 +3809,7 @@ test "whole row span full table psql" {
   table.apply(@tabular.Style::psql()) |> ignore
   table.modify_segment(
     @tabular.Segment::all(),
-    @tabular.Setting::alignment(@tabular.Alignment::left()),
+    @tabular.Setting::align(@tabular.Align::left()),
   )
   |> ignore
   table.modify_rows(@tabular.Rows::one(0), @tabular.Span::row(4)) |> ignore
@@ -3870,7 +3870,7 @@ test "padding works in spanned columns psql" {
   |> ignore
   table.modify_segment(
     @tabular.Segment::all(),
-    @tabular.Setting::alignment(@tabular.Alignment::left()),
+    @tabular.Setting::align(@tabular.Align::left()),
   )
   |> ignore
   table.modify_cell(@tabular.Cell::new(1, 1), @tabular.Span::column(3))
@@ -4186,8 +4186,7 @@ fn matrix33() -> @tabular.Table {
 ///|
 test "panel_has_no_style_by_default" {
   let table = matrix33()
-  table.apply_panel(@tabular.Panel::horizontal(0, "Linux Distributions"))
-  |> ignore
+  table.panel(@tabular.Panel::horizontal(0, "Linux Distributions")) |> ignore
   table.apply(@tabular.Style::psql()) |> ignore
   inspect(
     table.to_string(),
@@ -4205,11 +4204,10 @@ test "panel_has_no_style_by_default" {
 ///|
 test "top_panel" {
   let table = matrix33()
-  table.apply_panel(@tabular.Panel::horizontal(0, "Linux Distributions"))
-  |> ignore
+  table.panel(@tabular.Panel::horizontal(0, "Linux Distributions")) |> ignore
   table.modify_segment(
     @tabular.Segment::all(),
-    @tabular.Setting::alignment(@tabular.Alignment::center()),
+    @tabular.Setting::align(@tabular.Align::center()),
   )
   |> ignore
   table.apply(@tabular.Style::psql()) |> ignore
@@ -4229,11 +4227,10 @@ test "top_panel" {
 ///|
 test "bottom_panel" {
   let table = matrix33()
-  table.apply_panel(@tabular.Panel::horizontal(4, "Linux Distributions"))
-  |> ignore
+  table.panel(@tabular.Panel::horizontal(4, "Linux Distributions")) |> ignore
   table.modify_segment(
     @tabular.Segment::all(),
-    @tabular.Setting::alignment(@tabular.Alignment::center()),
+    @tabular.Setting::align(@tabular.Align::center()),
   )
   |> ignore
   table.apply(@tabular.Style::psql()) |> ignore
@@ -4253,11 +4250,10 @@ test "bottom_panel" {
 ///|
 test "inner_panel" {
   let table = matrix33()
-  table.apply_panel(@tabular.Panel::horizontal(2, "Linux Distributions"))
-  |> ignore
+  table.panel(@tabular.Panel::horizontal(2, "Linux Distributions")) |> ignore
   table.modify_rows(
     @tabular.Rows::new(2, -1),
-    @tabular.Setting::alignment(@tabular.Alignment::center()),
+    @tabular.Setting::align(@tabular.Align::center()),
   )
   |> ignore
   table.apply(@tabular.Style::psql()) |> ignore
@@ -4277,11 +4273,11 @@ test "inner_panel" {
 ///|
 test "panel_header" {
   let table = matrix33()
-  table.apply_panel(@tabular.Panel::header("Linux Distributions")) |> ignore
+  table.panel(@tabular.Panel::header("Linux Distributions")) |> ignore
   table.apply(@tabular.Style::psql()) |> ignore
   table.modify_rows(
     @tabular.Rows::new(0, 1),
-    @tabular.Setting::alignment(@tabular.Alignment::center()),
+    @tabular.Setting::align(@tabular.Align::center()),
   )
   |> ignore
   inspect(
@@ -4300,18 +4296,18 @@ test "panel_header" {
 ///|
 test "panel_footer" {
   let table = matrix33()
-  table.apply_panel(@tabular.Panel::header("Linux Distributions")) |> ignore
-  table.apply_panel(@tabular.Panel::footer("The end")) |> ignore
+  table.panel(@tabular.Panel::header("Linux Distributions")) |> ignore
+  table.panel(@tabular.Panel::footer("The end")) |> ignore
   table.apply(@tabular.Style::psql()) |> ignore
   // Center first and last rows
   table.modify_rows(
     @tabular.Rows::one(0),
-    @tabular.Setting::alignment(@tabular.Alignment::center()),
+    @tabular.Setting::align(@tabular.Align::center()),
   )
   |> ignore
   table.modify_rows(
     @tabular.Rows::last(),
-    @tabular.Setting::alignment(@tabular.Alignment::center()),
+    @tabular.Setting::align(@tabular.Align::center()),
   )
   |> ignore
   inspect(
@@ -4331,7 +4327,7 @@ test "panel_footer" {
 ///|
 test "panel_style_uses_most_left_and_right_cell_styles" {
   let table = @tabular.Table::from_rows([["i32", "i32"], ["0", "1"]])
-  table.apply_panel(@tabular.Panel::horizontal(0, "Numbers")) |> ignore
+  table.panel(@tabular.Panel::horizontal(0, "Numbers")) |> ignore
   table.apply(@tabular.Style::modern()) |> ignore
   inspect(
     table.to_string(),
@@ -4350,7 +4346,7 @@ test "panel_style_uses_most_left_and_right_cell_styles" {
 ///|
 test "panel_in_single_column" {
   let table = @tabular.Table::from_rows([["i32"], ["0"]])
-  table.apply_panel(@tabular.Panel::horizontal(0, "Numbers")) |> ignore
+  table.panel(@tabular.Panel::horizontal(0, "Numbers")) |> ignore
   table.apply(@tabular.Style::modern()) |> ignore
   inspect(
     table.to_string(),
@@ -4370,8 +4366,7 @@ test "panel_in_single_column" {
 test "panel_vertical_0" {
   let table = matrix33()
   table.apply(@tabular.Style::psql()) |> ignore
-  table.apply_panel(@tabular.Panel::vertical(0, "Linux Distributions"))
-  |> ignore
+  table.panel(@tabular.Panel::vertical(0, "Linux Distributions")) |> ignore
   inspect(
     table.to_string(),
     content=(
@@ -4388,8 +4383,7 @@ test "panel_vertical_0" {
 test "panel_vertical_1" {
   let table = matrix33()
   table.apply(@tabular.Style::psql()) |> ignore
-  table.apply_panel(@tabular.Panel::vertical(1, "Linux Distributions"))
-  |> ignore
+  table.panel(@tabular.Panel::vertical(1, "Linux Distributions")) |> ignore
   inspect(
     table.to_string(),
     content=(
@@ -4406,8 +4400,7 @@ test "panel_vertical_1" {
 test "panel_vertical_2" {
   let table = matrix33()
   table.apply(@tabular.Style::psql()) |> ignore
-  table.apply_panel(@tabular.Panel::vertical(4, "Linux Distributions"))
-  |> ignore
+  table.panel(@tabular.Panel::vertical(4, "Linux Distributions")) |> ignore
   inspect(
     table.to_string(),
     content=(
@@ -4424,9 +4417,8 @@ test "panel_vertical_2" {
 test "panel_horizontal_set_0" {
   let table = matrix33()
   table.apply(@tabular.Style::psql()) |> ignore
-  table.apply_panel(@tabular.Panel::horizontal(0, "Linux Distributions"))
-  |> ignore
-  table.apply_panel(@tabular.Panel::vertical(0, "asd")) |> ignore
+  table.panel(@tabular.Panel::horizontal(0, "Linux Distributions")) |> ignore
+  table.panel(@tabular.Panel::vertical(0, "asd")) |> ignore
   inspect(
     table.to_string(),
     content=(
@@ -4444,10 +4436,9 @@ test "panel_horizontal_set_0" {
 test "panel_horizontal_set_1" {
   let table = matrix33()
   table.apply(@tabular.Style::psql()) |> ignore
-  table.apply_panel(@tabular.Panel::horizontal(0, "Linux Distributions"))
-  |> ignore
-  table.apply_panel(@tabular.Panel::vertical(0, "asd")) |> ignore
-  table.apply_panel(@tabular.Panel::vertical(5, "asd")) |> ignore
+  table.panel(@tabular.Panel::horizontal(0, "Linux Distributions")) |> ignore
+  table.panel(@tabular.Panel::vertical(0, "asd")) |> ignore
+  table.panel(@tabular.Panel::vertical(5, "asd")) |> ignore
   inspect(
     table.to_string(),
     content=(
@@ -4473,7 +4464,7 @@ test "merge_horizontal" {
     ["1", "1", "2"],
     ["1", "1", "1"],
   ])
-  table.apply_merge(@tabular.Merge::horizontal()) |> ignore
+  table.merge(@tabular.Merge::horizontal()) |> ignore
   inspect(
     table.to_string(),
     content=(
@@ -4498,7 +4489,7 @@ test "merge_horizontal_with_no_duplicates" {
     ["0", "1", "2"],
     ["0", "1", "2"],
   ])
-  table.apply_merge(@tabular.Merge::horizontal()) |> ignore
+  table.merge(@tabular.Merge::horizontal()) |> ignore
   inspect(
     table.to_string(),
     content=(
@@ -4518,7 +4509,7 @@ test "merge_horizontal_with_no_duplicates" {
 ///|
 test "merge_horizontal_empty" {
   let table = @tabular.Table::from_rows([])
-  table.apply_merge(@tabular.Merge::horizontal()) |> ignore
+  table.merge(@tabular.Merge::horizontal()) |> ignore
   inspect(table.to_string(), content="")
 }
 
@@ -4530,7 +4521,7 @@ test "merge_vertical_0" {
     ["0", "3", "3"],
     ["0", "2", "3"],
   ])
-  table.apply_merge(@tabular.Merge::vertical()) |> ignore
+  table.merge(@tabular.Merge::vertical()) |> ignore
   inspect(
     table.to_string(),
     content=(
@@ -4554,7 +4545,7 @@ test "merge_vertical_1" {
     ["0", "3", "3"],
     ["0", "2", "3"],
   ])
-  table.apply_merge(@tabular.Merge::vertical()) |> ignore
+  table.merge(@tabular.Merge::vertical()) |> ignore
   inspect(
     table.to_string(),
     content=(
@@ -4577,7 +4568,7 @@ test "merge_vertical_with_no_duplicates" {
     ["15", "15", "15"],
     ["115", "115", "115"],
   ])
-  table.apply_merge(@tabular.Merge::vertical()) |> ignore
+  table.merge(@tabular.Merge::vertical()) |> ignore
   inspect(
     table.to_string(),
     content=(
@@ -4597,7 +4588,7 @@ test "merge_vertical_with_no_duplicates" {
 ///|
 test "merge_vertical_empty" {
   let table = @tabular.Table::from_rows([])
-  table.apply_merge(@tabular.Merge::vertical()) |> ignore
+  table.merge(@tabular.Merge::vertical()) |> ignore
   inspect(table.to_string(), content="")
 }
 
@@ -4609,8 +4600,8 @@ test "merge_horizontal_and_vertical_0" {
     ["3", "7", "8"],
     ["9", "10", "11"],
   ])
-  table.apply_merge(@tabular.Merge::horizontal()) |> ignore
-  table.apply_merge(@tabular.Merge::vertical()) |> ignore
+  table.merge(@tabular.Merge::horizontal()) |> ignore
+  table.merge(@tabular.Merge::vertical()) |> ignore
   inspect(
     table.to_string(),
     content=(
@@ -4635,8 +4626,8 @@ test "merge_horizontal_and_vertical_1" {
     ["1", "1", "2"],
     ["1", "1", "1"],
   ])
-  table.apply_merge(@tabular.Merge::horizontal()) |> ignore
-  table.apply_merge(@tabular.Merge::vertical()) |> ignore
+  table.merge(@tabular.Merge::horizontal()) |> ignore
+  table.merge(@tabular.Merge::vertical()) |> ignore
   inspect(
     table.to_string(),
     content=(
@@ -4661,8 +4652,8 @@ test "merge_horizontal_and_vertical_7" {
     ["0", "0", "1"],
     ["2", "0", "0"],
   ])
-  table.apply_merge(@tabular.Merge::horizontal()) |> ignore
-  table.apply_merge(@tabular.Merge::vertical()) |> ignore
+  table.merge(@tabular.Merge::horizontal()) |> ignore
+  table.merge(@tabular.Merge::vertical()) |> ignore
   inspect(
     table.to_string(),
     content=(
@@ -4687,8 +4678,8 @@ test "merge_vertical_then_horizontal_3" {
     ["3", "3", "8"],
     ["3", "10", "11"],
   ])
-  table.apply_merge(@tabular.Merge::vertical()) |> ignore
-  table.apply_merge(@tabular.Merge::horizontal()) |> ignore
+  table.merge(@tabular.Merge::vertical()) |> ignore
+  table.merge(@tabular.Merge::horizontal()) |> ignore
   inspect(
     table.to_string(),
     content=(
@@ -4713,8 +4704,8 @@ test "merge_vertical_then_horizontal_4" {
     ["4", "4", "8"],
     ["3", "4", "11"],
   ])
-  table.apply_merge(@tabular.Merge::vertical()) |> ignore
-  table.apply_merge(@tabular.Merge::horizontal()) |> ignore
+  table.merge(@tabular.Merge::vertical()) |> ignore
+  table.merge(@tabular.Merge::horizontal()) |> ignore
   inspect(
     table.to_string(),
     content=(
@@ -4753,7 +4744,7 @@ fn matrix_n_cols(rows : Int, cols : Int) -> @tabular.Table {
 test "highlingt_object_exceeds_boundaries" {
   let table = matrix33()
   table.apply(@tabular.Style::modern()) |> ignore
-  table.apply_highlight(
+  table.highlight(
     @tabular.Highlight::outline_cell(@tabular.Cell::new(1000, 0), '+'),
   )
   |> ignore
@@ -4776,7 +4767,7 @@ test "highlingt_object_exceeds_boundaries" {
 ///|
 test "highlingt_empty_table" {
   let table = @tabular.Table::from_rows([])
-  table.apply_highlight(
+  table.highlight(
     @tabular.Highlight::outline_segment(@tabular.Segment::all(), '+'),
   )
   |> ignore
@@ -4787,11 +4778,11 @@ test "highlingt_empty_table" {
 test "highlingt_cell" {
   let table = matrix33()
   table.apply(@tabular.Style::modern()) |> ignore
-  table.apply_highlight(
+  table.highlight(
     @tabular.Highlight::outline_cell(@tabular.Cell::new(0, 0), '+'),
   )
   |> ignore
-  table.apply_highlight(
+  table.highlight(
     @tabular.Highlight::outline_cell(@tabular.Cell::new(1, 1), '*'),
   )
   |> ignore
@@ -4815,13 +4806,9 @@ test "highlingt_cell" {
 test "highlingt_row" {
   let table = matrix33()
   table.apply(@tabular.Style::modern()) |> ignore
-  table.apply_highlight(
-    @tabular.Highlight::outline_rows(@tabular.Rows::one(0), '+'),
-  )
+  table.highlight(@tabular.Highlight::outline_rows(@tabular.Rows::one(0), '+'))
   |> ignore
-  table.apply_highlight(
-    @tabular.Highlight::outline_rows(@tabular.Rows::one(3), '*'),
-  )
+  table.highlight(@tabular.Highlight::outline_rows(@tabular.Rows::one(3), '*'))
   |> ignore
   inspect(
     table.to_string(),
@@ -4843,13 +4830,13 @@ test "highlingt_row" {
 test "highlingt_column" {
   let table = matrix33()
   table.apply(@tabular.Style::modern()) |> ignore
-  table.apply_highlight(
+  table.highlight(
     @tabular.Highlight::new_columns(@tabular.Columns::one(0)).with_border(
       @papergrid.CellBorder::filled('+'),
     ),
   )
   |> ignore
-  table.apply_highlight(
+  table.highlight(
     @tabular.Highlight::new_columns(@tabular.Columns::one(2)).with_border(
       @papergrid.CellBorder::filled('*'),
     ),
@@ -4875,7 +4862,7 @@ test "highlingt_column" {
 test "highlingt_row_range" {
   let table = matrix33()
   table.apply(@tabular.Style::modern()) |> ignore
-  table.apply_highlight(
+  table.highlight(
     @tabular.Highlight::outline_rows(@tabular.Rows::new(1, 3), '+'),
   )
   |> ignore
@@ -4899,7 +4886,7 @@ test "highlingt_row_range" {
 test "highlingt_column_range" {
   let table = matrix33()
   table.apply(@tabular.Style::modern()) |> ignore
-  table.apply_highlight(
+  table.highlight(
     @tabular.Highlight::outline_columns(@tabular.Columns::new(0, 2), '+'),
   )
   |> ignore
@@ -4933,7 +4920,7 @@ test "highlingt_frame" {
   }
   let table = matrix33()
   table.apply(@tabular.Style::modern()) |> ignore
-  table.apply_highlight(
+  table.highlight(
     @tabular.Highlight::outline_segment(@tabular.Segment::all(), '+').with_border(
       border,
     ),
@@ -4959,7 +4946,7 @@ test "highlingt_frame" {
 test "highlingt_single_column" {
   let table = matrix_n_cols(3, 0)
   table.apply(@tabular.Style::modern()) |> ignore
-  table.apply_highlight(
+  table.highlight(
     @tabular.Highlight::new_cell(@tabular.Cell::new(0, 0)).with_border({
       ..@papergrid.CellBorder::empty(),
       left: Some('*'),
@@ -4967,7 +4954,7 @@ test "highlingt_single_column" {
     }),
   )
   |> ignore
-  table.apply_highlight(
+  table.highlight(
     @tabular.Highlight::new_rows(@tabular.Rows::new(1, 3)).with_border({
       ..@papergrid.CellBorder::empty(),
       left: Some('n'),
@@ -4994,15 +4981,15 @@ test "highlingt_single_column" {
 test "highlingt_several_times" {
   let table = matrix33()
   table.apply(@tabular.Style::modern()) |> ignore
-  table.apply_highlight(
+  table.highlight(
     @tabular.Highlight::outline_segment(@tabular.Segment::all(), '*'),
   )
   |> ignore
-  table.apply_highlight(
+  table.highlight(
     @tabular.Highlight::outline_cell(@tabular.Cell::new(1, 1), '#'),
   )
   |> ignore
-  table.apply_highlight(
+  table.highlight(
     @tabular.Highlight::outline_columns(@tabular.Columns::one(3), 'x'),
   )
   |> ignore
@@ -5036,7 +5023,7 @@ test "highlingt_complex_figures_corners" {
   }
   let table = matrix33()
   table.apply(@tabular.Style::modern()) |> ignore
-  table.apply_highlight(
+  table.highlight(
     @tabular.Highlight::outline_segment(
       @tabular.Cell::new(0, 0)
       .as_segment()
@@ -5077,13 +5064,13 @@ test "highlingt_complex_rows_and_columns" {
   }
   let table1 = matrix33()
   table1.apply(@tabular.Style::modern()) |> ignore
-  table1.apply_highlight(
+  table1.highlight(
     @tabular.Highlight::outline_rows(@tabular.Rows::one(0), '+').with_border(
       border,
     ),
   )
   |> ignore
-  table1.apply_highlight(
+  table1.highlight(
     @tabular.Highlight::outline_rows(@tabular.Rows::one(3), '+').with_border(
       border,
     ),
@@ -5105,13 +5092,13 @@ test "highlingt_complex_rows_and_columns" {
   )
   let table2 = matrix33()
   table2.apply(@tabular.Style::modern()) |> ignore
-  table2.apply_highlight(
+  table2.highlight(
     @tabular.Highlight::outline_columns(@tabular.Columns::one(0), '+').with_border(
       border,
     ),
   )
   |> ignore
-  table2.apply_highlight(
+  table2.highlight(
     @tabular.Highlight::outline_columns(@tabular.Columns::one(3), '+').with_border(
       border,
     ),
@@ -5146,7 +5133,7 @@ fn shadow_matrix() -> @tabular.Table {
 test "shadow_bottom_right" {
   let table = shadow_matrix()
   table.apply(@tabular.Style::psql()) |> ignore
-  table.apply_shadow(@tabular.Shadow::new(1)) |> ignore
+  table.shadow(@tabular.Shadow::new(1)) |> ignore
   inspect(
     table.to_string(),
     content=(
@@ -5163,7 +5150,7 @@ test "shadow_bottom_right" {
 test "shadow_bottom_left" {
   let table = shadow_matrix()
   table.apply(@tabular.Style::psql()) |> ignore
-  table.apply_shadow(@tabular.Shadow::new(1).set_left()) |> ignore
+  table.shadow(@tabular.Shadow::new(1).set_left()) |> ignore
   inspect(
     table.to_string(),
     content=(
@@ -5180,7 +5167,7 @@ test "shadow_bottom_left" {
 test "shadow_top_right" {
   let table = shadow_matrix()
   table.apply(@tabular.Style::psql()) |> ignore
-  table.apply_shadow(@tabular.Shadow::new(1).set_top()) |> ignore
+  table.shadow(@tabular.Shadow::new(1).set_top()) |> ignore
   inspect(
     table.to_string(),
     content=(
@@ -5197,7 +5184,7 @@ test "shadow_top_right" {
 test "shadow_top_left" {
   let table = shadow_matrix()
   table.apply(@tabular.Style::psql()) |> ignore
-  table.apply_shadow(@tabular.Shadow::new(1).set_top().set_left()) |> ignore
+  table.shadow(@tabular.Shadow::new(1).set_top().set_left()) |> ignore
   inspect(
     table.to_string(),
     content=(
@@ -5214,7 +5201,7 @@ test "shadow_top_left" {
 test "shadow_set_fill" {
   let table = shadow_matrix()
   table.apply(@tabular.Style::ascii()) |> ignore
-  table.apply_shadow(@tabular.Shadow::new(1).set_fill('#')) |> ignore
+  table.shadow(@tabular.Shadow::new(1).set_fill('#')) |> ignore
   inspect(
     table.to_string(),
     content=(
@@ -5234,7 +5221,7 @@ test "shadow_set_fill" {
 test "shadow_size_2" {
   let table = shadow_matrix()
   table.apply(@tabular.Style::ascii()) |> ignore
-  table.apply_shadow(@tabular.Shadow::new(2).set_fill('#')) |> ignore
+  table.shadow(@tabular.Shadow::new(2).set_fill('#')) |> ignore
   inspect(
     table.to_string(),
     content=(
@@ -5255,8 +5242,7 @@ test "shadow_size_2" {
 test "shadow_set_offset" {
   let table = shadow_matrix()
   table.apply(@tabular.Style::ascii()) |> ignore
-  table.apply_shadow(@tabular.Shadow::new(2).set_fill('#').set_offset(3))
-  |> ignore
+  table.shadow(@tabular.Shadow::new(2).set_fill('#').set_offset(3)) |> ignore
   inspect(
     table.to_string(),
     content=(
@@ -5288,7 +5274,7 @@ fn matrix64() -> @tabular.Table {
   ])
   table.modify_segment(
     @tabular.Segment::all(),
-    @tabular.Setting::alignment(@tabular.Alignment::center()),
+    @tabular.Setting::align(@tabular.Align::center()),
   )
   |> ignore
   table
@@ -5298,10 +5284,10 @@ fn matrix64() -> @tabular.Table {
 test "border_correction_column_span_with_panel" {
   let table = @tabular.Table::from_rows([["0", "1", "2"], ["1", "2", "3"]])
   table.apply(@tabular.Style::ascii()) |> ignore
-  table.apply_panel(@tabular.Panel::header("Tabled Releases")) |> ignore
+  table.panel(@tabular.Panel::header("Tabled Releases")) |> ignore
   table.modify_cell(@tabular.Cell::new(1, 0), @tabular.Span::column(2))
   |> ignore
-  table.apply_border_correction() |> ignore
+  table.correct_borders() |> ignore
   inspect(
     table.to_string(),
     content=(
@@ -5324,10 +5310,10 @@ test "border_correction_column_span_with_panel_2" {
     ["4", "5", "6"],
   ])
   table.apply(@tabular.Style::ascii()) |> ignore
-  table.apply_panel(@tabular.Panel::header("Tabled Releases")) |> ignore
+  table.panel(@tabular.Panel::header("Tabled Releases")) |> ignore
   table.modify_cell(@tabular.Cell::new(2, 0), @tabular.Span::column(2))
   |> ignore
-  table.apply_border_correction() |> ignore
+  table.correct_borders() |> ignore
   inspect(
     table.to_string(),
     content=(
@@ -5352,12 +5338,12 @@ test "border_correction_column_span_with_panel_3" {
     ["4", "5", "6"],
   ])
   table.apply(@tabular.Style::ascii()) |> ignore
-  table.apply_panel(@tabular.Panel::header("Tabled Releases")) |> ignore
+  table.panel(@tabular.Panel::header("Tabled Releases")) |> ignore
   table.modify_cell(@tabular.Cell::new(1, 0), @tabular.Span::column(2))
   |> ignore
   table.modify_cell(@tabular.Cell::new(2, 0), @tabular.Span::column(2))
   |> ignore
-  table.apply_border_correction() |> ignore
+  table.correct_borders() |> ignore
   inspect(
     table.to_string(),
     content=(
@@ -5379,7 +5365,7 @@ test "border_correction_row_span" {
   let table = @tabular.Table::from_rows([["0", "1", "2"], ["1", "2", "3"]])
   table.apply(@tabular.Style::ascii()) |> ignore
   table.modify_cell(@tabular.Cell::new(0, 0), @tabular.Span::row(2)) |> ignore
-  table.apply_border_correction() |> ignore
+  table.correct_borders() |> ignore
   inspect(
     table.to_string(),
     content=(
@@ -5402,7 +5388,7 @@ test "border_correction_row_span_multi" {
   table.apply(@tabular.Style::ascii()) |> ignore
   table.modify_cell(@tabular.Cell::new(1, 0), @tabular.Span::row(2)) |> ignore
   table.modify_cell(@tabular.Cell::new(0, 2), @tabular.Span::row(3)) |> ignore
-  table.apply_border_correction() |> ignore
+  table.correct_borders() |> ignore
   inspect(
     table.to_string(),
     content=(
@@ -5424,7 +5410,7 @@ test "border_correction_right_bottom_corner_0" {
   table.modify_cell(@tabular.Cell::new(1, 1), @tabular.Span::column(3))
   |> ignore
   table.modify_cell(@tabular.Cell::new(1, 1), @tabular.Span::row(3)) |> ignore
-  table.apply_border_correction() |> ignore
+  table.correct_borders() |> ignore
   inspect(
     table.to_string(),
     content=(
@@ -5448,7 +5434,7 @@ test "border_correction_right_bottom_corner_1" {
   table.modify_cell(@tabular.Cell::new(2, 2), @tabular.Span::column(2))
   |> ignore
   table.modify_cell(@tabular.Cell::new(2, 2), @tabular.Span::row(2)) |> ignore
-  table.apply_border_correction() |> ignore
+  table.correct_borders() |> ignore
   inspect(
     table.to_string(),
     content=(
@@ -5485,7 +5471,7 @@ test "span_correct_test_0" {
   |> ignore
   table.modify_cell(@tabular.Cell::new(6, 0), @tabular.Span::column(5))
   |> ignore
-  table.apply_border_correction() |> ignore
+  table.correct_borders() |> ignore
   inspect(
     table.to_string(),
     content=(
@@ -5528,7 +5514,7 @@ test "span_correct_test_1" {
   |> ignore
   table.modify_cell(@tabular.Cell::new(6, 0), @tabular.Span::column(5))
   |> ignore
-  table.apply_border_correction() |> ignore
+  table.correct_borders() |> ignore
   inspect(
     table.to_string(),
     content=(
@@ -5565,7 +5551,7 @@ fn alpha_table() -> @tabular.Table {
 test "split_column_test" {
   let table = alpha_table()
   table.apply(@tabular.Style::ascii()) |> ignore
-  table.apply_split(@tabular.Split::column(12)) |> ignore
+  table.split(@tabular.Split::column(12)) |> ignore
   inspect(
     table.to_string(),
     content=(
@@ -5584,8 +5570,8 @@ test "split_column_test" {
 test "split_column_2_test" {
   let table = alpha_table()
   table.apply(@tabular.Style::ascii()) |> ignore
-  table.apply_split(@tabular.Split::column(12)) |> ignore
-  table.apply_split(@tabular.Split::column(4)) |> ignore
+  table.split(@tabular.Split::column(12)) |> ignore
+  table.split(@tabular.Split::column(4)) |> ignore
   inspect(
     table.to_string(),
     content=(
@@ -5612,8 +5598,8 @@ test "split_column_2_test" {
 test "split_column_retain_test" {
   let table = alpha_table()
   table.apply(@tabular.Style::ascii()) |> ignore
-  table.apply_split(@tabular.Split::column(12)) |> ignore
-  table.apply_split(@tabular.Split::column(4).retain()) |> ignore
+  table.split(@tabular.Split::column(12)) |> ignore
+  table.split(@tabular.Split::column(4).retain()) |> ignore
   inspect(
     table.to_string(),
     content=(
@@ -5644,9 +5630,9 @@ test "split_column_retain_test" {
 test "split_row_test" {
   let table = alpha_table()
   table.apply(@tabular.Style::ascii()) |> ignore
-  table.apply_split(@tabular.Split::column(12)) |> ignore
-  table.apply_split(@tabular.Split::column(4)) |> ignore
-  table.apply_split(@tabular.Split::row(1).concat()) |> ignore
+  table.split(@tabular.Split::column(12)) |> ignore
+  table.split(@tabular.Split::column(4)) |> ignore
+  table.split(@tabular.Split::row(1).concat()) |> ignore
   inspect(
     table.to_string(),
     content=(
@@ -5661,9 +5647,9 @@ test "split_row_test" {
 test "split_row_2_test" {
   let table = alpha_table()
   table.apply(@tabular.Style::ascii()) |> ignore
-  table.apply_split(@tabular.Split::column(12)) |> ignore
-  table.apply_split(@tabular.Split::column(4)) |> ignore
-  table.apply_split(@tabular.Split::row(2).concat()) |> ignore
+  table.split(@tabular.Split::column(12)) |> ignore
+  table.split(@tabular.Split::column(4)) |> ignore
+  table.split(@tabular.Split::row(2).concat()) |> ignore
   inspect(
     table.to_string(),
     content=(
@@ -5680,7 +5666,7 @@ test "split_row_2_test" {
 test "split_column_index_beyond_size_test" {
   let table = alpha_table()
   table.apply(@tabular.Style::ascii()) |> ignore
-  table.apply_split(@tabular.Split::column(10000)) |> ignore
+  table.split(@tabular.Split::column(10000)) |> ignore
   inspect(
     table.to_string(),
     content=(
@@ -5695,7 +5681,7 @@ test "split_column_index_beyond_size_test" {
 test "split_row_index_beyond_size_test" {
   let table = alpha_table()
   table.apply(@tabular.Style::ascii()) |> ignore
-  table.apply_split(@tabular.Split::row(10000)) |> ignore
+  table.split(@tabular.Split::row(10000)) |> ignore
   inspect(
     table.to_string(),
     content=(
@@ -5710,7 +5696,7 @@ test "split_row_index_beyond_size_test" {
 test "split_empty_table_test" {
   let table = @tabular.Table::from_rows([])
   table.apply(@tabular.Style::ascii()) |> ignore
-  table.apply_split(@tabular.Split::column(10000)) |> ignore
+  table.split(@tabular.Split::column(10000)) |> ignore
   inspect(table.to_string(), content="")
 }
 
@@ -5718,7 +5704,7 @@ test "split_empty_table_test" {
 test "split_column_zero_argument_test" {
   let table = alpha_table()
   table.apply(@tabular.Style::ascii()) |> ignore
-  table.apply_split(@tabular.Split::column(0)) |> ignore
+  table.split(@tabular.Split::column(0)) |> ignore
   inspect(
     table.to_string(),
     content=(
@@ -5733,7 +5719,7 @@ test "split_column_zero_argument_test" {
 test "split_row_zero_argument_test" {
   let table = alpha_table()
   table.apply(@tabular.Style::ascii()) |> ignore
-  table.apply_split(@tabular.Split::row(0)) |> ignore
+  table.split(@tabular.Split::row(0)) |> ignore
   inspect(
     table.to_string(),
     content=(
@@ -5749,7 +5735,7 @@ test "split_blank_table_test" {
   let row : Array[String] = Array::make(26, "")
   let table = @tabular.Table::from_rows([row])
   table.apply(@tabular.Style::ascii()) |> ignore
-  table.apply_split(@tabular.Split::column(12)) |> ignore
+  table.split(@tabular.Split::column(12)) |> ignore
   inspect(
     table.to_string(),
     content=(
@@ -5765,7 +5751,7 @@ test "split_blank_table_2_test" {
   let row : Array[String] = Array::make(26, "")
   let table = @tabular.Table::from_rows([row])
   table.apply(@tabular.Style::ascii()) |> ignore
-  table.apply_split(@tabular.Split::column(12).retain()) |> ignore
+  table.split(@tabular.Split::column(12).retain()) |> ignore
   inspect(
     table.to_string(),
     content=(
@@ -5784,8 +5770,8 @@ test "split_blank_table_2_test" {
 test "split_zip_test" {
   let table = alpha_table()
   table.apply(@tabular.Style::ascii()) |> ignore
-  table.apply_split(@tabular.Split::column(6)) |> ignore
-  table.apply_split(@tabular.Split::row(2)) |> ignore
+  table.split(@tabular.Split::column(6)) |> ignore
+  table.split(@tabular.Split::row(2)) |> ignore
   inspect(
     table.to_string(),
     content=(
@@ -5802,8 +5788,8 @@ test "split_zip_test" {
 test "split_concat_test" {
   let table = alpha_table()
   table.apply(@tabular.Style::ascii()) |> ignore
-  table.apply_split(@tabular.Split::column(6)) |> ignore
-  table.apply_split(@tabular.Split::row(2).concat()) |> ignore
+  table.split(@tabular.Split::column(6)) |> ignore
+  table.split(@tabular.Split::row(2).concat()) |> ignore
   inspect(
     table.to_string(),
     content=(
@@ -5820,8 +5806,8 @@ test "split_concat_test" {
 test "split_clean_test" {
   let table = alpha_table()
   table.apply(@tabular.Style::ascii()) |> ignore
-  table.apply_split(@tabular.Split::column(12)) |> ignore
-  table.apply_split(@tabular.Split::row(2)) |> ignore
+  table.split(@tabular.Split::column(12)) |> ignore
+  table.split(@tabular.Split::row(2)) |> ignore
   inspect(
     table.to_string(),
     content=(
@@ -5838,8 +5824,8 @@ test "split_clean_test" {
 test "split_retain_test" {
   let table = alpha_table()
   table.apply(@tabular.Style::ascii()) |> ignore
-  table.apply_split(@tabular.Split::column(12)) |> ignore
-  table.apply_split(@tabular.Split::row(2).retain()) |> ignore
+  table.split(@tabular.Split::column(12)) |> ignore
+  table.split(@tabular.Split::row(2).retain()) |> ignore
   inspect(
     table.to_string(),
     content=(
@@ -5858,8 +5844,8 @@ test "split_mostly_blank_test" {
   row.push("A")
   let table = @tabular.Table::from_rows([row])
   table.apply(@tabular.Style::ascii()) |> ignore
-  table.apply_split(@tabular.Split::column(5)) |> ignore
-  table.apply_split(@tabular.Split::row(2)) |> ignore
+  table.split(@tabular.Split::column(5)) |> ignore
+  table.split(@tabular.Split::row(2)) |> ignore
   inspect(
     table.to_string(),
     content=(
@@ -5880,7 +5866,7 @@ test "split_scattered_values_test" {
   row.push("A")
   let table = @tabular.Table::from_rows([row])
   table.apply(@tabular.Style::ascii()) |> ignore
-  table.apply_split(@tabular.Split::column(5)) |> ignore
+  table.split(@tabular.Split::column(5)) |> ignore
   inspect(
     table.to_string(),
     content=(
@@ -5905,7 +5891,7 @@ test "extract middle section" {
   ])
   table.modify_segment(
     @tabular.Segment::all(),
-    @tabular.Setting::alignment(@tabular.Alignment::left()),
+    @tabular.Setting::align(@tabular.Align::left()),
   )
   |> ignore
   table.modify_segment(
@@ -6030,7 +6016,7 @@ test "extract columns partial" {
   ])
   table.modify_segment(
     @tabular.Segment::all(),
-    @tabular.Setting::alignment(@tabular.Alignment::left()),
+    @tabular.Setting::align(@tabular.Align::left()),
   )
   |> ignore
   table.modify_segment(
@@ -6195,7 +6181,7 @@ test "remove header then restyle with modern" {
   ])
   table.modify_segment(
     @tabular.Segment::all(),
-    @tabular.Setting::alignment(@tabular.Alignment::left()),
+    @tabular.Setting::align(@tabular.Align::left()),
   )
   |> ignore
   table.remove_rows(@tabular.Rows::new(0, 1)) |> ignore

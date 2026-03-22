@@ -45,18 +45,18 @@ fn main {
   table.apply(@tabular.Style::rounded()) |> ignore
   println(table.to_string())
 
-  // 3. Alignment and padding
-  println("\n== Alignment & Padding ==\n")
+  // 3. Align and padding
+  println("\n== Align & Padding ==\n")
   let table = @tabular.Table::from_rows(data)
   table.apply(@tabular.Style::modern()) |> ignore
   table.modify_rows(
     @tabular.Rows::first(),
-    @tabular.Setting::alignment(@tabular.Alignment::center()),
+    @tabular.Setting::align(@tabular.Align::center()),
   )
   |> ignore
   table.modify_columns(
     @tabular.Columns::last(),
-    @tabular.Setting::alignment(@tabular.Alignment::right()),
+    @tabular.Setting::align(@tabular.Align::right()),
   )
   |> ignore
   table.modify_rows(
@@ -90,8 +90,7 @@ fn main {
   println("\n== Panel ==\n")
   let table = @tabular.Table::from_rows(data)
   table.apply(@tabular.Style::modern()) |> ignore
-  table.apply_panel(@tabular.Panel::header("JavaScript Runtime Comparison"))
-  |> ignore
+  table.panel(@tabular.Panel::header("JavaScript Runtime Comparison")) |> ignore
   println(table.to_string())
 
   // 6. Shadow
@@ -99,7 +98,7 @@ fn main {
   let table = @tabular.Table::from_rows([["A", "B"], ["1", "2"], ["3", "4"]])
   table.apply(@tabular.Style::rounded()) |> ignore
   let shadow = @tabular.Shadow::new(1)
-  table.apply_shadow(shadow) |> ignore
+  table.shadow(shadow) |> ignore
   println(table.to_string())
 
   // 7. Extract
@@ -117,7 +116,7 @@ fn main {
     ["Python", "interpreted", "dynamic"],
   ])
   table.apply(@tabular.Style::modern()) |> ignore
-  table.apply_merge(@tabular.Merge::horizontal()) |> ignore
+  table.merge(@tabular.Merge::horizontal()) |> ignore
   println(table.to_string())
 
   // 9. Split
@@ -128,6 +127,6 @@ fn main {
     ["5", "6", "7", "8"],
   ])
   table.apply(@tabular.Style::ascii()) |> ignore
-  table.apply_split(@tabular.Split::column(2)) |> ignore
+  table.split(@tabular.Split::column(2)) |> ignore
   println(table.to_string())
 }

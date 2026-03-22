@@ -1,12 +1,12 @@
 ///|
-pub enum AlignmentHorizontal {
+pub enum HAlign {
   Left
   Right
   Center
 }
 
 ///|
-pub enum AlignmentVertical {
+pub enum VAlign {
   Top
   Bottom
   Center
@@ -28,32 +28,32 @@ pub struct HorizontalLine {
 }
 
 ///|
-pub fn AlignmentHorizontal::left() -> AlignmentHorizontal {
+pub fn HAlign::left() -> HAlign {
   Left
 }
 
 ///|
-pub fn AlignmentHorizontal::right() -> AlignmentHorizontal {
+pub fn HAlign::right() -> HAlign {
   Right
 }
 
 ///|
-pub fn AlignmentHorizontal::center() -> AlignmentHorizontal {
+pub fn HAlign::center() -> HAlign {
   Center
 }
 
 ///|
-pub fn AlignmentVertical::top() -> AlignmentVertical {
+pub fn VAlign::top() -> VAlign {
   Top
 }
 
 ///|
-pub fn AlignmentVertical::bottom() -> AlignmentVertical {
+pub fn VAlign::bottom() -> VAlign {
   Bottom
 }
 
 ///|
-pub fn AlignmentVertical::center() -> AlignmentVertical {
+pub fn VAlign::center() -> VAlign {
   Center
 }
 
@@ -178,16 +178,16 @@ pub struct SpannedConfig {
   mut padding_right : Int
   mut padding_top : Int
   mut padding_bottom : Int
-  mut alignment : AlignmentHorizontal
-  mut vertical_alignment : AlignmentVertical
+  mut align : HAlign
+  mut valign : VAlign
   mut width_mode : WidthMode
   mut height_mode : HeightMode
   mut horizontal_lines : HorizontalLines
   custom_horizontal_lines : Array[(Int, HorizontalLine)]
   width_rules : Array[(Int, Int, Int, WidthMode)]
   height_rules : Array[(Int, Int, Int, HeightMode)]
-  alignment_rules : Array[(Int, Int, Int, AlignmentHorizontal)]
-  vertical_alignment_rules : Array[(Int, Int, Int, AlignmentVertical)]
+  align_rules : Array[(Int, Int, Int, HAlign)]
+  valign_rules : Array[(Int, Int, Int, VAlign)]
   padding_rules : Array[(Int, Int, Int, Int, Int, Int, Int)]
   column_spans : Array[(Int, Int, Int)]
   row_spans : Array[(Int, Int, Int)]
@@ -222,16 +222,16 @@ pub fn SpannedConfig::default() -> SpannedConfig {
     padding_right: 1,
     padding_top: 0,
     padding_bottom: 0,
-    alignment: AlignmentHorizontal::center(),
-    vertical_alignment: AlignmentVertical::top(),
+    align: HAlign::center(),
+    valign: VAlign::top(),
     width_mode: WidthMode::none(),
     height_mode: HeightMode::none(),
     horizontal_lines: HorizontalLines::all(),
     custom_horizontal_lines: [],
     width_rules: [],
     height_rules: [],
-    alignment_rules: [],
-    vertical_alignment_rules: [],
+    align_rules: [],
+    valign_rules: [],
     padding_rules: [],
     column_spans: [],
     row_spans: [],
@@ -302,31 +302,23 @@ pub fn SpannedConfig::padding_bottom(self : SpannedConfig) -> Int {
 }
 
 ///|
-pub fn SpannedConfig::set_alignment(
-  self : SpannedConfig,
-  alignment : AlignmentHorizontal,
-) -> Unit {
-  self.alignment = alignment
+pub fn SpannedConfig::set_align(self : SpannedConfig, align : HAlign) -> Unit {
+  self.align = align
 }
 
 ///|
-pub fn SpannedConfig::alignment(self : SpannedConfig) -> AlignmentHorizontal {
-  self.alignment
+pub fn SpannedConfig::align(self : SpannedConfig) -> HAlign {
+  self.align
 }
 
 ///|
-pub fn SpannedConfig::set_vertical_alignment(
-  self : SpannedConfig,
-  alignment : AlignmentVertical,
-) -> Unit {
-  self.vertical_alignment = alignment
+pub fn SpannedConfig::set_valign(self : SpannedConfig, align : VAlign) -> Unit {
+  self.valign = align
 }
 
 ///|
-pub fn SpannedConfig::vertical_alignment(
-  self : SpannedConfig,
-) -> AlignmentVertical {
-  self.vertical_alignment
+pub fn SpannedConfig::valign(self : SpannedConfig) -> VAlign {
+  self.valign
 }
 
 ///|
@@ -519,51 +511,51 @@ fn scope_matches(
 }
 
 ///|
-pub fn SpannedConfig::set_alignment_for_rows(
+pub fn SpannedConfig::set_align_for_rows(
   self : SpannedConfig,
   start : Int,
   end : Int,
-  alignment : AlignmentHorizontal,
+  align : HAlign,
 ) -> Unit {
-  self.alignment_rules.push((0, start, end, alignment))
+  self.align_rules.push((0, start, end, align))
 }
 
 ///|
-pub fn SpannedConfig::set_alignment_for_columns(
+pub fn SpannedConfig::set_align_for_columns(
   self : SpannedConfig,
   start : Int,
   end : Int,
-  alignment : AlignmentHorizontal,
+  align : HAlign,
 ) -> Unit {
-  self.alignment_rules.push((1, start, end, alignment))
+  self.align_rules.push((1, start, end, align))
 }
 
 ///|
-pub fn SpannedConfig::set_alignment_for_all(
+pub fn SpannedConfig::set_align_for_all(
   self : SpannedConfig,
-  alignment : AlignmentHorizontal,
+  align : HAlign,
 ) -> Unit {
-  self.alignment_rules.push((2, 0, 0, alignment))
+  self.align_rules.push((2, 0, 0, align))
 }
 
 ///|
-pub fn SpannedConfig::set_alignment_for_cell(
-  self : SpannedConfig,
-  row : Int,
-  column : Int,
-  alignment : AlignmentHorizontal,
-) -> Unit {
-  self.alignment_rules.push((3, row, column, alignment))
-}
-
-///|
-pub fn SpannedConfig::alignment_at(
+pub fn SpannedConfig::set_align_for_cell(
   self : SpannedConfig,
   row : Int,
   column : Int,
-) -> AlignmentHorizontal {
-  let mut value = self.alignment
-  self.alignment_rules.each(rule => {
+  align : HAlign,
+) -> Unit {
+  self.align_rules.push((3, row, column, align))
+}
+
+///|
+pub fn SpannedConfig::align_at(
+  self : SpannedConfig,
+  row : Int,
+  column : Int,
+) -> HAlign {
+  let mut value = self.align
+  self.align_rules.each(rule => {
     if scope_matches(rule.0, rule.1, rule.2, row, column) {
       value = rule.3
     }
@@ -572,51 +564,51 @@ pub fn SpannedConfig::alignment_at(
 }
 
 ///|
-pub fn SpannedConfig::set_vertical_alignment_for_rows(
+pub fn SpannedConfig::set_valign_for_rows(
   self : SpannedConfig,
   start : Int,
   end : Int,
-  alignment : AlignmentVertical,
+  align : VAlign,
 ) -> Unit {
-  self.vertical_alignment_rules.push((0, start, end, alignment))
+  self.valign_rules.push((0, start, end, align))
 }
 
 ///|
-pub fn SpannedConfig::set_vertical_alignment_for_columns(
+pub fn SpannedConfig::set_valign_for_columns(
   self : SpannedConfig,
   start : Int,
   end : Int,
-  alignment : AlignmentVertical,
+  align : VAlign,
 ) -> Unit {
-  self.vertical_alignment_rules.push((1, start, end, alignment))
+  self.valign_rules.push((1, start, end, align))
 }
 
 ///|
-pub fn SpannedConfig::set_vertical_alignment_for_all(
+pub fn SpannedConfig::set_valign_for_all(
   self : SpannedConfig,
-  alignment : AlignmentVertical,
+  align : VAlign,
 ) -> Unit {
-  self.vertical_alignment_rules.push((2, 0, 0, alignment))
+  self.valign_rules.push((2, 0, 0, align))
 }
 
 ///|
-pub fn SpannedConfig::set_vertical_alignment_for_cell(
-  self : SpannedConfig,
-  row : Int,
-  column : Int,
-  alignment : AlignmentVertical,
-) -> Unit {
-  self.vertical_alignment_rules.push((3, row, column, alignment))
-}
-
-///|
-pub fn SpannedConfig::vertical_alignment_at(
+pub fn SpannedConfig::set_valign_for_cell(
   self : SpannedConfig,
   row : Int,
   column : Int,
-) -> AlignmentVertical {
-  let mut value = self.vertical_alignment
-  self.vertical_alignment_rules.each(rule => {
+  align : VAlign,
+) -> Unit {
+  self.valign_rules.push((3, row, column, align))
+}
+
+///|
+pub fn SpannedConfig::valign_at(
+  self : SpannedConfig,
+  row : Int,
+  column : Int,
+) -> VAlign {
+  let mut value = self.valign
+  self.valign_rules.each(rule => {
     if scope_matches(rule.0, rule.1, rule.2, row, column) {
       value = rule.3
     }
@@ -787,7 +779,7 @@ pub fn SpannedConfig::clear_spans_and_overrides(self : SpannedConfig) -> Unit {
 }
 
 ///|
-pub fn SpannedConfig::clear_span_source_if_unused(
+pub fn SpannedConfig::clear_unused_span_source(
   self : SpannedConfig,
   anchor_row : Int,
   anchor_column : Int,
@@ -1350,53 +1342,51 @@ pub fn SpannedConfig::remap(
   let previous_column_spans = self.column_spans.copy()
   let previous_row_spans = self.row_spans.copy()
 
-  let next_alignment_rules = []
-  self.alignment_rules.each(rule => {
+  let next_align_rules = []
+  self.align_rules.each(rule => {
     if rule.0 == 0 {
       mapped_runs(row_map, rule.1, rule.2).each(run => {
-        next_alignment_rules.push((0, run.0, run.1, rule.3))
+        next_align_rules.push((0, run.0, run.1, rule.3))
       })
     } else if rule.0 == 1 {
       mapped_runs(column_map, rule.1, rule.2).each(run => {
-        next_alignment_rules.push((1, run.0, run.1, rule.3))
+        next_align_rules.push((1, run.0, run.1, rule.3))
       })
     } else if rule.0 == 2 {
-      next_alignment_rules.push(rule)
+      next_align_rules.push(rule)
     } else {
       let row = map_index(row_map, rule.1)
       let column = map_index(column_map, rule.2)
       if row >= 0 && column >= 0 {
-        next_alignment_rules.push((3, row, column, rule.3))
+        next_align_rules.push((3, row, column, rule.3))
       }
     }
   })
-  self.alignment_rules.clear()
-  next_alignment_rules.each(rule => self.alignment_rules.push(rule))
+  self.align_rules.clear()
+  next_align_rules.each(rule => self.align_rules.push(rule))
 
-  let next_vertical_alignment_rules = []
-  self.vertical_alignment_rules.each(rule => {
+  let next_valign_rules = []
+  self.valign_rules.each(rule => {
     if rule.0 == 0 {
       mapped_runs(row_map, rule.1, rule.2).each(run => {
-        next_vertical_alignment_rules.push((0, run.0, run.1, rule.3))
+        next_valign_rules.push((0, run.0, run.1, rule.3))
       })
     } else if rule.0 == 1 {
       mapped_runs(column_map, rule.1, rule.2).each(run => {
-        next_vertical_alignment_rules.push((1, run.0, run.1, rule.3))
+        next_valign_rules.push((1, run.0, run.1, rule.3))
       })
     } else if rule.0 == 2 {
-      next_vertical_alignment_rules.push(rule)
+      next_valign_rules.push(rule)
     } else {
       let row = map_index(row_map, rule.1)
       let column = map_index(column_map, rule.2)
       if row >= 0 && column >= 0 {
-        next_vertical_alignment_rules.push((3, row, column, rule.3))
+        next_valign_rules.push((3, row, column, rule.3))
       }
     }
   })
-  self.vertical_alignment_rules.clear()
-  next_vertical_alignment_rules.each(rule => {
-    self.vertical_alignment_rules.push(rule)
-  })
+  self.valign_rules.clear()
+  next_valign_rules.each(rule => self.valign_rules.push(rule))
 
   let next_padding_rules = []
   self.padding_rules.each(rule => {
@@ -1617,7 +1607,7 @@ pub fn SpannedConfig::shift_row_spans_down(
 ///|
 /// Shift all spans whose column >= target_col rightward by 1.
 /// Used when inserting a vertical panel column.
-pub fn SpannedConfig::shift_column_spans_right(
+pub fn SpannedConfig::shift_col_spans_right(
   self : SpannedConfig,
   target_col : Int,
 ) -> Unit {

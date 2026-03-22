@@ -30,11 +30,11 @@ fn render_cell(
   width : Int,
   padding_left : Int,
   padding_right : Int,
-  alignment : AlignmentHorizontal,
+  align : HAlign,
 ) -> String {
   let available = width - padding_left - padding_right
   let gap = available - content.length()
-  let (left_fill, right_fill) = match alignment {
+  let (left_fill, right_fill) = match align {
     Left => (0, gap)
     Right => (gap, 0)
     Center => (gap / 2, gap - gap / 2)
@@ -324,8 +324,8 @@ fn cell_content_for_row(
       config.height_mode_at(source.0, source.1),
     )
     let missing = row_heights[row] - lines.length()
-    let vertical_alignment = config.vertical_alignment_at(source.0, source.1)
-    let top_fill = match vertical_alignment {
+    let valign = config.valign_at(source.0, source.1)
+    let top_fill = match valign {
       Top => 0
       Bottom => missing
       Center => missing / 2
@@ -350,8 +350,8 @@ fn cell_content_for_row(
     config.height_mode_at(source.0, source.1),
   )
   let missing = total_height - lines.length()
-  let vertical_alignment = config.vertical_alignment_at(source.0, source.1)
-  let top_fill = match vertical_alignment {
+  let valign = config.valign_at(source.0, source.1)
+  let top_fill = match valign {
     Top => 0
     Bottom => missing
     Center => missing / 2
@@ -398,8 +398,8 @@ fn cell_content_for_boundary(
     config.height_mode_at(source.0, source.1),
   )
   let missing = total_height - lines.length()
-  let vertical_alignment = config.vertical_alignment_at(source.0, source.1)
-  let top_fill = match vertical_alignment {
+  let valign = config.valign_at(source.0, source.1)
+  let top_fill = match valign {
     Top => 0
     Bottom => missing
     Center => missing / 2
@@ -466,7 +466,7 @@ fn render_split_line(
             source.0,
             source.1,
           )
-          let alignment = config.alignment_at(source.0, source.1)
+          let align = config.align_at(source.0, source.1)
           let colspan = config.column_span_at(anchor.0, anchor.1)
           column = column + colspan
           render_cell(
@@ -480,7 +480,7 @@ fn render_split_line(
             span_width(widths, borders, anchor.1, colspan),
             padding_left,
             padding_right,
-            alignment,
+            align,
           )
         } else {
           column = column + 1
@@ -596,7 +596,7 @@ fn render_row_line(
       anchor.0,
       anchor.1,
     )
-    let alignment = config.alignment_at(anchor.0, anchor.1)
+    let align = config.align_at(anchor.0, anchor.1)
     let colspan = config.column_span_at(anchor.0, anchor.1)
     out = out +
       render_cell(
@@ -604,7 +604,7 @@ fn render_row_line(
         span_width(widths, borders, anchor.1, colspan),
         padding_left,
         padding_right,
-        alignment,
+        align,
       )
     column = column + colspan
     if column < count_columns {

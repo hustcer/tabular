@@ -13,24 +13,6 @@ pub fn split_lines(String) -> Array[String]
 // Errors
 
 // Types and methods
-pub enum AlignmentHorizontal {
-  Left
-  Right
-  Center
-}
-pub fn AlignmentHorizontal::center() -> Self
-pub fn AlignmentHorizontal::left() -> Self
-pub fn AlignmentHorizontal::right() -> Self
-
-pub enum AlignmentVertical {
-  Top
-  Bottom
-  Center
-}
-pub fn AlignmentVertical::bottom() -> Self
-pub fn AlignmentVertical::center() -> Self
-pub fn AlignmentVertical::top() -> Self
-
 pub struct Borders {
   top : Char?
   top_left : Char?
@@ -92,6 +74,15 @@ pub(all) struct CellBorder {
 }
 pub fn CellBorder::empty() -> Self
 pub fn CellBorder::filled(Char) -> Self
+
+pub enum HAlign {
+  Left
+  Right
+  Center
+}
+pub fn HAlign::center() -> Self
+pub fn HAlign::left() -> Self
+pub fn HAlign::right() -> Self
 
 pub enum HeightMode {
   None
@@ -156,16 +147,16 @@ pub struct SpannedConfig {
   mut padding_right : Int
   mut padding_top : Int
   mut padding_bottom : Int
-  mut alignment : AlignmentHorizontal
-  mut vertical_alignment : AlignmentVertical
+  mut align : HAlign
+  mut valign : VAlign
   mut width_mode : WidthMode
   mut height_mode : HeightMode
   mut horizontal_lines : HorizontalLines
   custom_horizontal_lines : Array[(Int, HorizontalLine)]
   width_rules : Array[(Int, Int, Int, WidthMode)]
   height_rules : Array[(Int, Int, Int, HeightMode)]
-  alignment_rules : Array[(Int, Int, Int, AlignmentHorizontal)]
-  vertical_alignment_rules : Array[(Int, Int, Int, AlignmentVertical)]
+  align_rules : Array[(Int, Int, Int, HAlign)]
+  valign_rules : Array[(Int, Int, Int, VAlign)]
   padding_rules : Array[(Int, Int, Int, Int, Int, Int, Int)]
   column_spans : Array[(Int, Int, Int)]
   row_spans : Array[(Int, Int, Int)]
@@ -186,12 +177,12 @@ pub struct SpannedConfig {
   mut margin_offset_left : Int
   mut margin_offset_right : Int
 }
-pub fn SpannedConfig::alignment(Self) -> AlignmentHorizontal
-pub fn SpannedConfig::alignment_at(Self, Int, Int) -> AlignmentHorizontal
+pub fn SpannedConfig::align(Self) -> HAlign
+pub fn SpannedConfig::align_at(Self, Int, Int) -> HAlign
 pub fn SpannedConfig::borders(Self) -> Borders
 pub fn SpannedConfig::clear_span_source(Self, Int, Int) -> Unit
-pub fn SpannedConfig::clear_span_source_if_unused(Self, Int, Int) -> Unit
 pub fn SpannedConfig::clear_spans_and_overrides(Self) -> Unit
+pub fn SpannedConfig::clear_unused_span_source(Self, Int, Int) -> Unit
 pub fn SpannedConfig::column_span_at(Self, Int, Int) -> Int
 pub fn SpannedConfig::custom_horizontal_line(Self, Int) -> HorizontalLine?
 pub fn SpannedConfig::default() -> Self
@@ -220,11 +211,11 @@ pub fn SpannedConfig::padding_right(Self) -> Int
 pub fn SpannedConfig::padding_top(Self) -> Int
 pub fn SpannedConfig::remap(Self, Array[Int], Array[Int]) -> Unit
 pub fn SpannedConfig::row_span_at(Self, Int, Int) -> Int
-pub fn SpannedConfig::set_alignment(Self, AlignmentHorizontal) -> Unit
-pub fn SpannedConfig::set_alignment_for_all(Self, AlignmentHorizontal) -> Unit
-pub fn SpannedConfig::set_alignment_for_cell(Self, Int, Int, AlignmentHorizontal) -> Unit
-pub fn SpannedConfig::set_alignment_for_columns(Self, Int, Int, AlignmentHorizontal) -> Unit
-pub fn SpannedConfig::set_alignment_for_rows(Self, Int, Int, AlignmentHorizontal) -> Unit
+pub fn SpannedConfig::set_align(Self, HAlign) -> Unit
+pub fn SpannedConfig::set_align_for_all(Self, HAlign) -> Unit
+pub fn SpannedConfig::set_align_for_cell(Self, Int, Int, HAlign) -> Unit
+pub fn SpannedConfig::set_align_for_columns(Self, Int, Int, HAlign) -> Unit
+pub fn SpannedConfig::set_align_for_rows(Self, Int, Int, HAlign) -> Unit
 pub fn SpannedConfig::set_borders(Self, Borders) -> Unit
 pub fn SpannedConfig::set_cell_border(Self, Int, Int, CellBorder) -> Unit
 pub fn SpannedConfig::set_column_span(Self, Int, Int, Int) -> Unit
@@ -244,25 +235,34 @@ pub fn SpannedConfig::set_padding_for_columns(Self, Int, Int, Int, Int, Int, Int
 pub fn SpannedConfig::set_padding_for_rows(Self, Int, Int, Int, Int, Int, Int) -> Unit
 pub fn SpannedConfig::set_row_span(Self, Int, Int, Int) -> Unit
 pub fn SpannedConfig::set_span_source(Self, Int, Int, Int, Int) -> Unit
-pub fn SpannedConfig::set_vertical_alignment(Self, AlignmentVertical) -> Unit
-pub fn SpannedConfig::set_vertical_alignment_for_all(Self, AlignmentVertical) -> Unit
-pub fn SpannedConfig::set_vertical_alignment_for_cell(Self, Int, Int, AlignmentVertical) -> Unit
-pub fn SpannedConfig::set_vertical_alignment_for_columns(Self, Int, Int, AlignmentVertical) -> Unit
-pub fn SpannedConfig::set_vertical_alignment_for_rows(Self, Int, Int, AlignmentVertical) -> Unit
+pub fn SpannedConfig::set_valign(Self, VAlign) -> Unit
+pub fn SpannedConfig::set_valign_for_all(Self, VAlign) -> Unit
+pub fn SpannedConfig::set_valign_for_cell(Self, Int, Int, VAlign) -> Unit
+pub fn SpannedConfig::set_valign_for_columns(Self, Int, Int, VAlign) -> Unit
+pub fn SpannedConfig::set_valign_for_rows(Self, Int, Int, VAlign) -> Unit
 pub fn SpannedConfig::set_width_mode(Self, WidthMode) -> Unit
 pub fn SpannedConfig::set_width_mode_for_all(Self, WidthMode) -> Unit
 pub fn SpannedConfig::set_width_mode_for_cell(Self, Int, Int, WidthMode) -> Unit
 pub fn SpannedConfig::set_width_mode_for_columns(Self, Int, Int, WidthMode) -> Unit
 pub fn SpannedConfig::set_width_mode_for_rows(Self, Int, Int, WidthMode) -> Unit
-pub fn SpannedConfig::shift_column_spans_right(Self, Int) -> Unit
+pub fn SpannedConfig::shift_col_spans_right(Self, Int) -> Unit
 pub fn SpannedConfig::shift_row_spans_down(Self, Int) -> Unit
 pub fn SpannedConfig::span_anchor_for_source(Self, Int, Int) -> (Int, Int)?
 pub fn SpannedConfig::span_source_at(Self, Int, Int) -> (Int, Int)
-pub fn SpannedConfig::vertical_alignment(Self) -> AlignmentVertical
-pub fn SpannedConfig::vertical_alignment_at(Self, Int, Int) -> AlignmentVertical
+pub fn SpannedConfig::valign(Self) -> VAlign
+pub fn SpannedConfig::valign_at(Self, Int, Int) -> VAlign
 pub fn SpannedConfig::vertical_override_at(Self, Int, Int) -> Char?
 pub fn SpannedConfig::width_mode(Self) -> WidthMode
 pub fn SpannedConfig::width_mode_at(Self, Int, Int) -> WidthMode
+
+pub enum VAlign {
+  Top
+  Bottom
+  Center
+}
+pub fn VAlign::bottom() -> Self
+pub fn VAlign::center() -> Self
+pub fn VAlign::top() -> Self
 
 pub enum WidthMode {
   None

@@ -10,14 +10,14 @@ import {
 // Errors
 
 // Types and methods
-pub enum Alignment {
+pub enum Align {
   Left
   Right
   Center
 }
-pub fn Alignment::center() -> Self
-pub fn Alignment::left() -> Self
-pub fn Alignment::right() -> Self
+pub fn Align::center() -> Self
+pub fn Align::left() -> Self
+pub fn Align::right() -> Self
 
 pub struct Builder {
   rows : Array[Array[String]]
@@ -231,8 +231,8 @@ pub fn Segment::skip(Self, Int) -> Self
 pub fn Segment::step_by(Self, Int) -> Self
 
 pub enum Setting {
-  Align(Alignment)
-  VAlign(VerticalAlignment)
+  Align(Align)
+  VAlign(VAlign)
   Pad(Padding)
   W(Width)
   H(Height)
@@ -240,11 +240,11 @@ pub enum Setting {
   SpanColumn(Int)
   SpanRow(Int)
 }
-pub fn Setting::alignment(Alignment) -> Self
+pub fn Setting::align(Align) -> Self
 pub fn Setting::format(Format) -> Self
 pub fn Setting::height(Height) -> Self
 pub fn Setting::padding(Padding) -> Self
-pub fn Setting::vertical_alignment(VerticalAlignment) -> Self
+pub fn Setting::valign(VAlign) -> Self
 pub fn Setting::width(Width) -> Self
 
 pub struct Shadow {
@@ -327,39 +327,39 @@ pub struct Table {
   config : @papergrid.SpannedConfig
 }
 pub fn Table::apply(Self, Style) -> Self
-pub fn Table::apply_border_correction(Self) -> Self
-pub fn Table::apply_highlight(Self, Highlight) -> Self
-pub fn Table::apply_merge(Self, Merge) -> Self
-pub fn Table::apply_panel(Self, (Int, String, Bool)) -> Self
-pub fn Table::apply_shadow(Self, Shadow) -> Self
-pub fn Table::apply_split(Self, Split) -> Self
+pub fn Table::correct_borders(Self) -> Self
 pub fn Table::extract_columns(Self, Columns) -> Self
 pub fn Table::extract_rows(Self, Rows) -> Self
 pub fn Table::extract_segment(Self, Rows, Columns) -> Self
 pub fn Table::from_rows(Array[Array[String]]) -> Self
+pub fn Table::highlight(Self, Highlight) -> Self
+pub fn Table::merge(Self, Merge) -> Self
 pub fn Table::modify_by_column_name(Self, ByColumnName, Setting) -> Self
 pub fn Table::modify_cell(Self, Cell, Setting) -> Self
 pub fn Table::modify_columns(Self, Columns, Setting) -> Self
 pub fn Table::modify_rows(Self, Rows, Setting) -> Self
 pub fn Table::modify_segment(Self, Segment, Setting) -> Self
+pub fn Table::panel(Self, (Int, String, Bool)) -> Self
 pub fn Table::remove_by_column_name(Self, ByColumnName) -> Self
 pub fn Table::remove_columns(Self, Columns) -> Self
 pub fn Table::remove_rows(Self, Rows) -> Self
-pub fn Table::set_alignment(Self, Alignment) -> Self
+pub fn Table::set_align(Self, Align) -> Self
 pub fn Table::set_height(Self, Height) -> Self
 pub fn Table::set_padding(Self, Padding) -> Self
-pub fn Table::set_vertical_alignment(Self, VerticalAlignment) -> Self
+pub fn Table::set_valign(Self, VAlign) -> Self
 pub fn Table::set_width(Self, Width) -> Self
+pub fn Table::shadow(Self, Shadow) -> Self
+pub fn Table::split(Self, Split) -> Self
 pub fn Table::to_string(Self) -> String
 
-pub enum VerticalAlignment {
+pub enum VAlign {
   Top
   Bottom
   Center
 }
-pub fn VerticalAlignment::bottom() -> Self
-pub fn VerticalAlignment::center() -> Self
-pub fn VerticalAlignment::top() -> Self
+pub fn VAlign::bottom() -> Self
+pub fn VAlign::center() -> Self
+pub fn VAlign::top() -> Self
 
 pub enum Width {
   Wrap(Int)

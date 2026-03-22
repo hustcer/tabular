@@ -6,14 +6,14 @@ pub struct Style {
 }
 
 ///|
-pub enum Alignment {
+pub enum Align {
   Left
   Right
   Center
 }
 
 ///|
-pub enum VerticalAlignment {
+pub enum VAlign {
   Top
   Bottom
   Center
@@ -95,8 +95,8 @@ pub enum Segment {
 
 ///|
 pub enum Setting {
-  Align(Alignment)
-  VAlign(VerticalAlignment)
+  Align(Align)
+  VAlign(VAlign)
   Pad(Padding)
   W(Width)
   H(Height)
@@ -152,7 +152,7 @@ pub fn Panel::vertical(col : Int, text : String) -> (Int, String, Bool) {
 
 ///|
 /// Apply a horizontal or vertical panel to the table.
-pub fn Table::apply_panel(self : Table, panel : (Int, String, Bool)) -> Table {
+pub fn Table::panel(self : Table, panel : (Int, String, Bool)) -> Table {
   let (index, text, is_horizontal) = panel
   if is_horizontal {
     self.apply_horizontal_panel(index, text)
@@ -212,7 +212,7 @@ fn Table::apply_vertical_panel(self : Table, col : Int, text : String) -> Unit {
   // Insert an empty column at target_col in each row
   self.rows.each(row => row.insert(col, ""))
   // Shift span metadata
-  self.config.shift_column_spans_right(col)
+  self.config.shift_col_spans_right(col)
   // Set the panel text in the first row
   if count_rows > 0 {
     self.rows[0][col] = text
@@ -274,7 +274,7 @@ pub fn Merge::vertical() -> Merge {
 
 ///|
 /// Apply merge to the table, combining adjacent duplicate cells using spans.
-pub fn Table::apply_merge(self : Table, merge : Merge) -> Table {
+pub fn Table::merge(self : Table, merge : Merge) -> Table {
   let count_rows = self.rows.length()
   if count_rows == 0 {
     return self
@@ -407,7 +407,7 @@ fn merge_vertical(
 
 ///|
 /// Correct border junctions at span boundaries so merged cells display proper corners.
-pub fn Table::apply_border_correction(self : Table) -> Table {
+pub fn Table::correct_borders(self : Table) -> Table {
   let count_rows = self.rows.length()
   if count_rows == 0 {
     return self
@@ -844,7 +844,7 @@ fn build_highlight_cell_border(
 }
 
 ///|
-pub fn Table::apply_highlight(self : Table, highlight : Highlight) -> Table {
+pub fn Table::highlight(self : Table, highlight : Highlight) -> Table {
   let count_rows = self.rows.length()
   if count_rows == 0 {
     return self
@@ -927,7 +927,7 @@ pub fn Shadow::set_right(self : Shadow) -> Shadow {
 }
 
 ///|
-pub fn Table::apply_shadow(self : Table, shadow : Shadow) -> Table {
+pub fn Table::shadow(self : Table, shadow : Shadow) -> Table {
   let fill = shadow.fill
   let top_size = if shadow.top { shadow.size } else { 0 }
   let bottom_size = if shadow.bottom { shadow.size } else { 0 }
@@ -1262,32 +1262,32 @@ pub fn Style::horizontals(
 }
 
 ///|
-pub fn Alignment::left() -> Alignment {
+pub fn Align::left() -> Align {
   Left
 }
 
 ///|
-pub fn Alignment::right() -> Alignment {
+pub fn Align::right() -> Align {
   Right
 }
 
 ///|
-pub fn Alignment::center() -> Alignment {
+pub fn Align::center() -> Align {
   Center
 }
 
 ///|
-pub fn VerticalAlignment::top() -> VerticalAlignment {
+pub fn VAlign::top() -> VAlign {
   Top
 }
 
 ///|
-pub fn VerticalAlignment::bottom() -> VerticalAlignment {
+pub fn VAlign::bottom() -> VAlign {
   Bottom
 }
 
 ///|
-pub fn VerticalAlignment::center() -> VerticalAlignment {
+pub fn VAlign::center() -> VAlign {
   Center
 }
 
@@ -1738,13 +1738,13 @@ pub fn Segment::step_by(self : Segment, step : Int) -> Segment {
 }
 
 ///|
-pub fn Setting::alignment(alignment : Alignment) -> Setting {
-  Align(alignment)
+pub fn Setting::align(align : Align) -> Setting {
+  Align(align)
 }
 
 ///|
-pub fn Setting::vertical_alignment(alignment : VerticalAlignment) -> Setting {
-  VAlign(alignment)
+pub fn Setting::valign(align : VAlign) -> Setting {
+  VAlign(align)
 }
 
 ///|
@@ -1788,22 +1788,20 @@ pub fn Padding::new(
 }
 
 ///|
-fn convert_alignment(alignment : Alignment) -> @papergrid.AlignmentHorizontal {
-  match alignment {
-    Left => @papergrid.AlignmentHorizontal::left()
-    Right => @papergrid.AlignmentHorizontal::right()
-    Center => @papergrid.AlignmentHorizontal::center()
+fn convert_align(align : Align) -> @papergrid.HAlign {
+  match align {
+    Left => @papergrid.HAlign::left()
+    Right => @papergrid.HAlign::right()
+    Center => @papergrid.HAlign::center()
   }
 }
 
 ///|
-fn convert_vertical_alignment(
-  alignment : VerticalAlignment,
-) -> @papergrid.AlignmentVertical {
-  match alignment {
-    Top => @papergrid.AlignmentVertical::top()
-    Bottom => @papergrid.AlignmentVertical::bottom()
-    Center => @papergrid.AlignmentVertical::center()
+fn convert_valign(align : VAlign) -> @papergrid.VAlign {
+  match align {
+    Top => @papergrid.VAlign::top()
+    Bottom => @papergrid.VAlign::bottom()
+    Center => @papergrid.VAlign::center()
   }
 }
 
@@ -2268,14 +2266,10 @@ fn apply_setting_to_row(
   setting : Setting,
 ) -> Unit {
   match setting {
-    Align(alignment) =>
-      config.set_alignment_for_rows(row, row + 1, convert_alignment(alignment))
-    VAlign(alignment) =>
-      config.set_vertical_alignment_for_rows(
-        row,
-        row + 1,
-        convert_vertical_alignment(alignment),
-      )
+    Align(align) =>
+      config.set_align_for_rows(row, row + 1, convert_align(align))
+    VAlign(align) =>
+      config.set_valign_for_rows(row, row + 1, convert_valign(align))
     Pad(padding) =>
       config.set_padding_for_rows(
         row,
@@ -2302,18 +2296,10 @@ fn apply_setting_to_column(
   setting : Setting,
 ) -> Unit {
   match setting {
-    Align(alignment) =>
-      config.set_alignment_for_columns(
-        column,
-        column + 1,
-        convert_alignment(alignment),
-      )
-    VAlign(alignment) =>
-      config.set_vertical_alignment_for_columns(
-        column,
-        column + 1,
-        convert_vertical_alignment(alignment),
-      )
+    Align(align) =>
+      config.set_align_for_columns(column, column + 1, convert_align(align))
+    VAlign(align) =>
+      config.set_valign_for_columns(column, column + 1, convert_valign(align))
     Pad(padding) =>
       config.set_padding_for_columns(
         column,
@@ -2349,14 +2335,9 @@ fn apply_setting_to_cell(
   setting : Setting,
 ) -> Unit {
   match setting {
-    Align(alignment) =>
-      config.set_alignment_for_cell(row, column, convert_alignment(alignment))
-    VAlign(alignment) =>
-      config.set_vertical_alignment_for_cell(
-        row,
-        column,
-        convert_vertical_alignment(alignment),
-      )
+    Align(align) => config.set_align_for_cell(row, column, convert_align(align))
+    VAlign(align) =>
+      config.set_valign_for_cell(row, column, convert_valign(align))
     Pad(padding) =>
       config.set_padding_for_cell(
         row,
@@ -2442,11 +2423,11 @@ fn apply_column_span(
   }
   if size == 1 {
     config.set_column_span(current_anchor.0, current_anchor.1, 1)
-    config.clear_span_source_if_unused(current_anchor.0, current_anchor.1)
+    config.clear_unused_span_source(current_anchor.0, current_anchor.1)
     return
   }
   config.set_column_span(current_anchor.0, current_anchor.1, 1)
-  config.clear_span_source_if_unused(current_anchor.0, current_anchor.1)
+  config.clear_unused_span_source(current_anchor.0, current_anchor.1)
 
   let start = if size > 1 {
     column
@@ -2500,11 +2481,11 @@ fn apply_row_span(
   }
   if size == 1 {
     config.set_row_span(current_anchor.0, current_anchor.1, 1)
-    config.clear_span_source_if_unused(current_anchor.0, current_anchor.1)
+    config.clear_unused_span_source(current_anchor.0, current_anchor.1)
     return
   }
   config.set_row_span(current_anchor.0, current_anchor.1, 1)
-  config.clear_span_source_if_unused(current_anchor.0, current_anchor.1)
+  config.clear_unused_span_source(current_anchor.0, current_anchor.1)
 
   let start = if size > 1 {
     row
@@ -2953,17 +2934,14 @@ pub fn Table::apply(self : Table, style : Style) -> Table {
 }
 
 ///|
-pub fn Table::set_alignment(self : Table, alignment : Alignment) -> Table {
-  self.config.set_alignment(convert_alignment(alignment))
+pub fn Table::set_align(self : Table, align : Align) -> Table {
+  self.config.set_align(convert_align(align))
   self
 }
 
 ///|
-pub fn Table::set_vertical_alignment(
-  self : Table,
-  alignment : VerticalAlignment,
-) -> Table {
-  self.config.set_vertical_alignment(convert_vertical_alignment(alignment))
+pub fn Table::set_valign(self : Table, align : VAlign) -> Table {
+  self.config.set_valign(convert_valign(align))
   self
 }
 
@@ -3066,12 +3044,8 @@ pub fn Table::modify_segment(
   match segment {
     All(0, 1) =>
       match setting {
-        Align(alignment) =>
-          self.config.set_alignment_for_all(convert_alignment(alignment))
-        VAlign(alignment) =>
-          self.config.set_vertical_alignment_for_all(
-            convert_vertical_alignment(alignment),
-          )
+        Align(align) => self.config.set_align_for_all(convert_align(align))
+        VAlign(align) => self.config.set_valign_for_all(convert_valign(align))
         Pad(padding) =>
           self.config.set_padding_for_all(
             padding.left,
@@ -3301,7 +3275,7 @@ fn split_ceil_div(x : Int, y : Int) -> Int {
 ///|
 /// Apply a Split setting to reshape the table.
 /// This resets config (spans, borders) since Split fundamentally changes the table shape.
-pub fn Table::apply_split(self : Table, split : Split) -> Table {
+pub fn Table::split(self : Table, split : Split) -> Table {
   let section_length = split.index
   let count_rows = self.rows.length()
   let count_cols = if count_rows > 0 { self.rows[0].length() } else { 0 }
