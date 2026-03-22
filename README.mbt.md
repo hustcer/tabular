@@ -67,6 +67,7 @@ table.apply(@tabular.Style::psql())
 ### All Style Examples
 
 **ascii**
+
 ```
 +----------+------+
 | language | year |
@@ -78,6 +79,7 @@ table.apply(@tabular.Style::psql())
 ```
 
 **modern**
+
 ```
 ┌──────────┬──────┐
 │ language │ year │
@@ -89,6 +91,7 @@ table.apply(@tabular.Style::psql())
 ```
 
 **rounded**
+
 ```
 ╭──────────┬──────╮
 │ language │ year │
@@ -100,6 +103,7 @@ table.apply(@tabular.Style::psql())
 ```
 
 **markdown**
+
 ```
 | language | year |
 |----------|------|
@@ -108,6 +112,7 @@ table.apply(@tabular.Style::psql())
 ```
 
 **psql**
+
 ```
  language | year
 ----------+------
@@ -116,13 +121,64 @@ table.apply(@tabular.Style::psql())
 ```
 
 **dots**
+
 ```
-.................
+:.................:
 : language : year :
-:..........:.....:
+:..........:......:
 :   Rust   : 2010 :
-:  MoonBit : 2022 :
-:..........:.....:.
+:..........:......:
+: MoonBit  : 2022 :
+:.................:
+```
+
+**extended**
+
+```
+╔══════════╦══════╗
+║ language ║ year ║
+╠══════════╬══════╣
+║   Rust   ║ 2010 ║
+╠══════════╬══════╣
+║ MoonBit  ║ 2022 ║
+╚══════════╩══════╝
+```
+
+**empty**
+
+```
+ language  year
+   Rust    2010
+ MoonBit   2022
+```
+
+**blank**
+
+```
+ language  year
+   Rust    2010
+ MoonBit   2022
+```
+
+**re_structured_text**
+
+```
+========== ======
+ language   year
+========== ======
+   Rust     2010
+ MoonBit    2022
+========== ======
+```
+
+**ascii_rounded**
+
+```
+.-----------------.
+| language | year |
+|   Rust   | 2010 |
+| MoonBit  | 2022 |
+'-----------------'
 ```
 
 ### Custom Borders
