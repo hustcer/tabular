@@ -1117,9 +1117,9 @@ pub fn SpannedConfig::intersection_override_at(
 
 ///|
 pub fn SpannedConfig::has_cell_borders(self : SpannedConfig) -> Bool {
-  not(self.border_horizontal.is_empty()) ||
-  not(self.border_vertical.is_empty()) ||
-  not(self.border_intersection.is_empty())
+  !self.border_horizontal.is_empty() ||
+  !self.border_vertical.is_empty() ||
+  !self.border_intersection.is_empty()
 }
 
 ///|
@@ -1261,9 +1261,9 @@ pub fn SpannedConfig::has_left_border(
     return false
   }
   let border = self.get_cell_border(row, col, count_rows, count_cols)
-  not(border.left is None) ||
-  not(border.left_top_corner is None) ||
-  not(border.left_bottom_corner is None)
+  !(border.left is None) ||
+  !(border.left_top_corner is None) ||
+  !(border.left_bottom_corner is None)
 }
 
 ///|
@@ -1281,9 +1281,9 @@ pub fn SpannedConfig::has_top_border(
     return false
   }
   let border = self.get_cell_border(row, col, count_rows, count_cols)
-  not(border.top is None) ||
-  not(border.left_top_corner is None) ||
-  not(border.right_top_corner is None)
+  !(border.top is None) ||
+  !(border.left_top_corner is None) ||
+  !(border.right_top_corner is None)
 }
 
 ///|

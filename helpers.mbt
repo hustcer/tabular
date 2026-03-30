@@ -881,7 +881,7 @@ pub fn IndexBuilder::build(self : IndexBuilder) -> Table {
   if row_count == 0 || col_count == 0 {
     return Table::from_rows(norm)
   }
-  if not(self.show_index) {
+  if !self.show_index {
     return Table::from_rows(norm)
   }
   match self.index_col {

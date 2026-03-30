@@ -33,8 +33,8 @@ fn merge_horizontal(
       }
       let is_cell_visible = config.is_cell_visible(row, col)
       let is_col_span_cell = config.get_row_span(row, col) is Some(_)
-      if not(repeat_is_set) {
-        if not(is_cell_visible) {
+      if !repeat_is_set {
+        if !is_cell_visible {
           continue
         }
         if is_col_span_cell {
@@ -50,7 +50,7 @@ fn merge_horizontal(
         last_is_col_span = true
         continue
       }
-      if not(is_cell_visible) {
+      if !is_cell_visible {
         repeat_is_set = false
         continue
       }
@@ -90,8 +90,8 @@ fn merge_vertical(
       }
       let is_cell_visible = config.is_cell_visible(row, col)
       let is_row_span_cell = config.get_col_span(row, col) is Some(_)
-      if not(repeat_is_set) {
-        if not(is_cell_visible) {
+      if !repeat_is_set {
+        if !is_cell_visible {
           continue
         }
         if is_row_span_cell {
@@ -107,7 +107,7 @@ fn merge_vertical(
         last_is_row_span = true
         continue
       }
-      if not(is_cell_visible) {
+      if !is_cell_visible {
         repeat_is_set = false
         continue
       }

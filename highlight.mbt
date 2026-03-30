@@ -32,8 +32,8 @@ pub fn Table::correct_borders(self : Table) -> Table {
           cfg.has_left_border(row + 1, c, count_rows, count_cols)
         let border = cfg.get_cell_border(row, c, count_rows, count_cols)
         // Fix top-left corner
-        let has_top_border = not(border.left_top_corner is None) &&
-          not(border.top is None)
+        let has_top_border = !(border.left_top_corner is None) &&
+          !(border.top is None)
         let new_ltc = if has_top_border {
           if has_up && is_first {
             borders.intersection
@@ -48,8 +48,8 @@ pub fn Table::correct_borders(self : Table) -> Table {
           None
         }
         // Fix bottom-left corner
-        let has_bottom_border = not(border.left_bottom_corner is None) &&
-          not(border.bottom is None)
+        let has_bottom_border = !(border.left_bottom_corner is None) &&
+          !(border.bottom is None)
         let new_lbc = if has_bottom_border {
           if has_down && is_first {
             borders.intersection
@@ -90,7 +90,7 @@ pub fn Table::correct_borders(self : Table) -> Table {
       for r = row + 1; r < row + span && r < count_rows; r = r + 1 {
         let border = cfg.get_cell_border(r, col, count_rows, count_cols)
         // Fix left-top corner (left junction)
-        let new_ltc = if not(border.left_top_corner is None) {
+        let new_ltc = if !(border.left_top_corner is None) {
           let has_left = col > 0 &&
             cfg.has_top_border(r, col - 1, count_rows, count_cols)
           if has_left {
@@ -102,7 +102,7 @@ pub fn Table::correct_borders(self : Table) -> Table {
           None
         }
         // Fix right-top corner (right junction)
-        let new_rtc = if not(border.right_top_corner is None) {
+        let new_rtc = if !(border.right_top_corner is None) {
           let has_right = col + 1 < count_cols &&
             cfg.has_top_border(r, col + 1, count_rows, count_cols)
           if has_right {
@@ -130,7 +130,7 @@ pub fn Table::correct_borders(self : Table) -> Table {
   // Phase 3: Fix cells covered by both row and col spans
   for row in 0..<count_rows {
     for col in 0..<count_cols {
-      if not(cfg.is_cell_covered_by_both_spans(row, col)) {
+      if !cfg.is_cell_covered_by_both_spans(row, col) {
         continue
       }
       if row == 0 {
@@ -144,16 +144,16 @@ pub fn Table::correct_borders(self : Table) -> Table {
         cfg.has_left_border(row + 1, col, count_rows, count_cols)
       let mut new_rtc : Char? = None
       let mut new_lbc : Char? = None
-      if has_up && not(has_right) {
+      if has_up && !has_right {
         new_rtc = borders.right_intersection
       }
-      if not(has_up) && has_right {
+      if !has_up && has_right {
         new_rtc = borders.left_intersection
       }
       if has_down {
         new_lbc = borders.top_intersection
       }
-      if not(has_down) && not(has_up) && not(has_right) {
+      if !has_down && !has_up && !has_right {
         new_rtc = borders.vertical
         new_lbc = border.bottom
       }
@@ -329,7 +329,7 @@ fn split_segments(cells : Array[(Int, Int)]) -> Array[Array[(Int, Int)]] {
   })
   // Merge segments that are connected to each other
   let result : Array[Array[(Int, Int)]] = []
-  while not(segments.is_empty()) {
+  while !segments.is_empty() {
     let segment = segments.remove(0)
     let mut i = 0
     while i < segments.length() {
@@ -378,69 +378,69 @@ fn build_highlight_cell_border(
   let has_rb = sector_contains(sector, (p.0 + 1, p.1 + 1))
   let mut b = @papergrid.CellBorder::empty()
   // Top side
-  if not(has_top) {
+  if !has_top {
     b = { ..b, top: border.top }
-    if has_right && not(has_rt) {
+    if has_right && !has_rt {
       b = { ..b, right_top_corner: border.top }
     }
   }
   // Bottom side
-  if not(has_bottom) {
+  if !has_bottom {
     b = { ..b, bottom: border.bottom }
-    if has_right && not(has_rb) {
+    if has_right && !has_rb {
       b = { ..b, right_bottom_corner: border.bottom }
     }
   }
   // Left side
-  if not(has_left) {
+  if !has_left {
     b = { ..b, left: border.left }
-    if has_bottom && not(has_lb) {
+    if has_bottom && !has_lb {
       b = { ..b, left_bottom_corner: border.left }
     }
   }
   // Right side
-  if not(has_right) {
+  if !has_right {
     b = { ..b, right: border.right }
-    if has_bottom && not(has_rb) {
+    if has_bottom && !has_rb {
       b = { ..b, right_bottom_corner: border.right }
     }
   }
   // Corners (only when no neighbor in both directions)
-  if not(has_left) && not(has_top) {
+  if !has_left && !has_top {
     b = { ..b, left_top_corner: border.left_top_corner }
   }
-  if not(has_left) && not(has_bottom) {
+  if !has_left && !has_bottom {
     b = { ..b, left_bottom_corner: border.left_bottom_corner }
   }
-  if not(has_right) && not(has_top) {
+  if !has_right && !has_top {
     b = { ..b, right_top_corner: border.right_top_corner }
   }
-  if not(has_right) && not(has_bottom) {
+  if !has_right && !has_bottom {
     b = { ..b, right_bottom_corner: border.right_bottom_corner }
   }
   // Diagonal rules for L-shaped segments
-  if not(has_bottom) {
-    if not(has_left) && has_lt {
+  if !has_bottom {
+    if !has_left && has_lt {
       b = { ..b, left_top_corner: border.right_top_corner }
     }
     if has_left && has_lb {
       b = { ..b, left_bottom_corner: border.left_top_corner }
     }
-    if not(has_right) && has_rt {
+    if !has_right && has_rt {
       b = { ..b, right_top_corner: border.left_top_corner }
     }
     if has_right && has_rb {
       b = { ..b, right_bottom_corner: border.right_top_corner }
     }
   }
-  if not(has_top) {
-    if not(has_left) && has_lb {
+  if !has_top {
+    if !has_left && has_lb {
       b = { ..b, left_bottom_corner: border.right_bottom_corner }
     }
     if has_left && has_lt {
       b = { ..b, left_top_corner: border.left_bottom_corner }
     }
-    if not(has_right) && has_rb {
+    if !has_right && has_rb {
       b = { ..b, right_bottom_corner: border.left_bottom_corner }
     }
     if has_right && has_rt {
