@@ -1,5 +1,7 @@
 ///|
 test "style exposes borders" {
   let style = Style::modern()
-  inspect(style.borders().top_left, content="Some('┌')")
+  guard style.borders().top_left is Some('┌') else {
+    fail("expected modern style to expose top-left border")
+  }
 }

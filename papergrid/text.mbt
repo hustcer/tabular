@@ -49,7 +49,7 @@ pub fn HeightMode::limit(size : Int) -> HeightMode {
 
 ///|
 pub fn split_lines(content : String) -> Array[String] {
-  let lines = content.split("\n").map(StringView::to_string).collect()
+  let lines = content.split("\n").map(StringView::to_owned).collect()
   if lines.is_empty() {
     [""]
   } else {
@@ -308,7 +308,7 @@ pub fn apply_height(lines : Array[String], mode : HeightMode) -> Array[String] {
       } else if lines.length() <= size {
         lines
       } else {
-        lines[:size].to_array()
+        lines[:size].to_owned()
       }
   }
 }
