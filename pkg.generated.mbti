@@ -3,6 +3,7 @@ package "hustcer/tabular"
 
 import {
   "hustcer/tabular/papergrid",
+  "moonbitlang/core/debug",
 }
 
 // Values
@@ -54,6 +55,7 @@ pub fn Cell::as_segment(Self) -> Segment
 pub fn Cell::inverse(Self) -> Segment
 pub fn Cell::new(Int, Int) -> Self
 pub fn Cell::not(Self, Self) -> Segment
+pub impl Object for Cell
 
 pub struct Cols {
   start : Int
@@ -82,6 +84,19 @@ pub fn Cols::not_rows(Self, Rows) -> Segment
 pub fn Cols::one(Int) -> Self
 pub fn Cols::skip(Self, Int) -> Self
 pub fn Cols::step_by(Self, Int) -> Self
+pub impl Object for Cols
+
+pub struct Concat {
+  // private fields
+}
+pub fn Concat::default_cell(Self, String) -> Self
+pub fn Concat::horizontal(Table) -> Self
+pub fn Concat::vertical(Table) -> Self
+
+pub struct Dup {
+  // private fields
+}
+pub fn Dup::new(&Object, &Object) -> Self
 
 pub enum Entity {
   Row(Int)
@@ -159,6 +174,11 @@ pub enum Merge {
 pub fn Merge::horizontal() -> Self
 pub fn Merge::vertical() -> Self
 
+pub(all) enum Offset {
+  Start(Int)
+  End(Int)
+} derive(Eq, @debug.Debug)
+
 pub struct Padding {
   left : Int
   right : Int
@@ -176,6 +196,20 @@ pub fn Panel::vertical(Int, String) -> PanelConfig
 pub fn Panel::vertical_with_width(Int, String, Int) -> PanelConfig
 
 type PanelConfig
+
+pub struct Reverse {
+  // private fields
+}
+pub fn Reverse::columns(Int) -> Self
+pub fn Reverse::limit(Self, Offset) -> Self
+pub fn Reverse::rows(Int) -> Self
+
+pub(all) enum Rotate {
+  Left
+  Right
+  Top
+  Bottom
+} derive(Eq, @debug.Debug)
 
 pub struct Rows {
   start : Int
@@ -204,6 +238,7 @@ pub fn Rows::not_cols(Self, Cols) -> Segment
 pub fn Rows::one(Int) -> Self
 pub fn Rows::skip(Self, Int) -> Self
 pub fn Rows::step_by(Self, Int) -> Self
+pub impl Object for Rows
 
 pub struct Segment {
   kind : SegmentKind
@@ -221,6 +256,7 @@ pub fn Segment::not_(Self, Self) -> Self
 pub fn Segment::not_cell(Self, Cell) -> Self
 pub fn Segment::skip(Self, Int) -> Self
 pub fn Segment::step_by(Self, Int) -> Self
+pub impl Object for Segment
 
 pub enum SegmentKind {
   All
@@ -333,7 +369,9 @@ pub struct Table {
   config : @papergrid.SpannedConfig
 }
 pub fn Table::apply(Self, Style) -> Self
+pub fn Table::concat(Self, Concat) -> Self
 pub fn Table::correct_borders(Self) -> Self
+pub fn Table::duplicate(Self, Dup) -> Self
 pub fn Table::extract_cols(Self, Cols) -> Self
 pub fn Table::extract_rows(Self, Rows) -> Self
 pub fn Table::extract_segment(Self, Rows, Cols) -> Self
@@ -349,6 +387,8 @@ pub fn Table::panel(Self, PanelConfig) -> Self
 pub fn Table::remove_by_col_name(Self, ByColName) -> Self
 pub fn Table::remove_cols(Self, Cols) -> Self
 pub fn Table::remove_rows(Self, Rows) -> Self
+pub fn Table::reverse(Self, Reverse) -> Self
+pub fn Table::rotate(Self, Rotate) -> Self
 pub fn Table::set_align(Self, Align) -> Self
 pub fn Table::set_height(Self, Height) -> Self
 pub fn Table::set_padding(Self, Padding) -> Self
@@ -378,3 +418,6 @@ pub fn Width::wrap_with(Int, String) -> Self
 // Type aliases
 
 // Traits
+pub(open) trait Object {
+  fn cells(Self, Int, Int) -> Array[Array[(Int, Int)]]
+}
