@@ -6,12 +6,12 @@ pub struct Builder {
 
 ///|
 pub fn Builder::default() -> Builder {
-  { rows: [], empty_cell: "" }
+  { rows: [], empty_cell: "", }
 }
 
 ///|
 pub fn Builder::from_rows(rows : Array[Array[String]]) -> Builder {
-  { rows, empty_cell: "" }
+  { rows, empty_cell: "", }
 }
 
 ///|
@@ -20,7 +20,7 @@ pub fn Builder::push_record(self : Builder, row : Array[String]) -> Unit {
 }
 
 ///|
-pub fn Builder::extend(self : Builder, row : Array[String]) -> Unit {
+pub fn Builder::extend_(self : Builder, row : Array[String]) -> Unit {
   self.push_record(row)
 }
 

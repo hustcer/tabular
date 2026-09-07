@@ -26,12 +26,12 @@ pub struct Split {
 
 ///|
 pub fn Split::col(index : Int) -> Split {
-  { direction: SplitCol, behavior: SplitZip, display: SplitClean, index }
+  { direction: SplitCol, behavior: SplitZip, display: SplitClean, index, }
 }
 
 ///|
 pub fn Split::row(index : Int) -> Split {
-  { direction: SplitRow, behavior: SplitZip, display: SplitClean, index }
+  { direction: SplitRow, behavior: SplitZip, display: SplitClean, index, }
 }
 
 ///|

@@ -8,7 +8,7 @@ pub struct IterRecords {
 pub fn IterRecords::new(rows : Array[Array[String]]) -> IterRecords {
   let mut count_cols = 0
   rows.each(row => if row.length() > count_cols { count_cols = row.length() })
-  { rows, count_cols }
+  { rows, count_cols, }
 }
 
 ///|

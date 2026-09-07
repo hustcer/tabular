@@ -82,7 +82,7 @@ pub fn HorizontalLines::none() -> HorizontalLines {
 
 ///|
 pub fn HorizontalLine::new(ch : Char) -> HorizontalLine {
-  { main: Some(ch), left: None, intersection: None, right: None }
+  { main: Some(ch), left: None, intersection: None, right: None, }
 }
 
 ///|
@@ -112,7 +112,7 @@ pub fn HorizontalLine::from_chars(
   intersection : Char?,
   right : Char?,
 ) -> HorizontalLine {
-  { main, left, intersection, right }
+  { main, left, intersection, right, }
 }
 
 ///|
@@ -120,7 +120,7 @@ pub fn HorizontalLine::with_left(
   self : HorizontalLine,
   ch : Char,
 ) -> HorizontalLine {
-  { ..self, left: Some(ch) }
+  { ..self, left: Some(ch), }
 }
 
 ///|
@@ -128,7 +128,7 @@ pub fn HorizontalLine::with_intersection(
   self : HorizontalLine,
   ch : Char,
 ) -> HorizontalLine {
-  { ..self, intersection: Some(ch) }
+  { ..self, intersection: Some(ch), }
 }
 
 ///|
@@ -136,7 +136,7 @@ pub fn HorizontalLine::with_right(
   self : HorizontalLine,
   ch : Char,
 ) -> HorizontalLine {
-  { ..self, right: Some(ch) }
+  { ..self, right: Some(ch), }
 }
 
 ///|

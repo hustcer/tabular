@@ -54,7 +54,7 @@ test "table rounded style" {
 test "builder insert row and col" {
   let builder = @tabular.Builder::default()
   builder.push_record(["0", "0", "0"])
-  builder.push_record(["1", "2", "3"])
+  builder.extend_(["1", "2", "3"])
   builder.push_record(["2", "4", "6"])
   builder.insert_record(0, ["0", "1", "2"])
   builder.insert_col(0, ["", "0", "1", "2"])

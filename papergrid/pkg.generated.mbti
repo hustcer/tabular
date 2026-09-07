@@ -279,4 +279,3 @@ pub fn WidthMode::wrap_with(Int, String) -> Self
 // Type aliases
 
 // Traits
-

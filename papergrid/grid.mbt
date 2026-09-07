@@ -11,7 +11,7 @@ pub fn IterGrid::new(
   config : SpannedConfig,
   dimension : IterGridDimension,
 ) -> IterGrid {
-  { records, config, dimension }
+  { records, config, dimension, }
 }
 
 ///|

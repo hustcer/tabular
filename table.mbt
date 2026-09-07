@@ -6,7 +6,7 @@ pub struct Table {
 
 ///|
 pub fn Table::from_rows(rows : Array[Array[String]]) -> Table {
-  { rows, config: @papergrid.SpannedConfig::default() }
+  { rows, config: @papergrid.SpannedConfig::default(), }
 }
 
 ///|

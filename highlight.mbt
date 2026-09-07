@@ -203,42 +203,42 @@ pub struct Highlight {
 
 ///|
 pub fn Highlight::outline_cell(cell : Cell, ch : Char) -> Highlight {
-  { target: HCell(cell), border: @papergrid.CellBorder::filled(ch) }
+  { target: HCell(cell), border: @papergrid.CellBorder::filled(ch), }
 }
 
 ///|
 pub fn Highlight::outline_rows(rows : Rows, ch : Char) -> Highlight {
-  { target: HRows(rows), border: @papergrid.CellBorder::filled(ch) }
+  { target: HRows(rows), border: @papergrid.CellBorder::filled(ch), }
 }
 
 ///|
 pub fn Highlight::outline_cols(cols : Cols, ch : Char) -> Highlight {
-  { target: HCols(cols), border: @papergrid.CellBorder::filled(ch) }
+  { target: HCols(cols), border: @papergrid.CellBorder::filled(ch), }
 }
 
 ///|
 pub fn Highlight::outline_segment(segment : Segment, ch : Char) -> Highlight {
-  { target: HSegment(segment), border: @papergrid.CellBorder::filled(ch) }
+  { target: HSegment(segment), border: @papergrid.CellBorder::filled(ch), }
 }
 
 ///|
 pub fn Highlight::new_cell(cell : Cell) -> Highlight {
-  { target: HCell(cell), border: @papergrid.CellBorder::empty() }
+  { target: HCell(cell), border: @papergrid.CellBorder::empty(), }
 }
 
 ///|
 pub fn Highlight::new_rows(rows : Rows) -> Highlight {
-  { target: HRows(rows), border: @papergrid.CellBorder::empty() }
+  { target: HRows(rows), border: @papergrid.CellBorder::empty(), }
 }
 
 ///|
 pub fn Highlight::new_cols(cols : Cols) -> Highlight {
-  { target: HCols(cols), border: @papergrid.CellBorder::empty() }
+  { target: HCols(cols), border: @papergrid.CellBorder::empty(), }
 }
 
 ///|
 pub fn Highlight::new_segment(segment : Segment) -> Highlight {
-  { target: HSegment(segment), border: @papergrid.CellBorder::empty() }
+  { target: HSegment(segment), border: @papergrid.CellBorder::empty(), }
 }
 
 ///|
@@ -379,72 +379,72 @@ fn build_highlight_cell_border(
   let mut b = @papergrid.CellBorder::empty()
   // Top side
   if !has_top {
-    b = { ..b, top: border.top }
+    b = { ..b, top: border.top, }
     if has_right && !has_rt {
-      b = { ..b, right_top_corner: border.top }
+      b = { ..b, right_top_corner: border.top, }
     }
   }
   // Bottom side
   if !has_bottom {
-    b = { ..b, bottom: border.bottom }
+    b = { ..b, bottom: border.bottom, }
     if has_right && !has_rb {
-      b = { ..b, right_bottom_corner: border.bottom }
+      b = { ..b, right_bottom_corner: border.bottom, }
     }
   }
   // Left side
   if !has_left {
-    b = { ..b, left: border.left }
+    b = { ..b, left: border.left, }
     if has_bottom && !has_lb {
-      b = { ..b, left_bottom_corner: border.left }
+      b = { ..b, left_bottom_corner: border.left, }
     }
   }
   // Right side
   if !has_right {
-    b = { ..b, right: border.right }
+    b = { ..b, right: border.right, }
     if has_bottom && !has_rb {
-      b = { ..b, right_bottom_corner: border.right }
+      b = { ..b, right_bottom_corner: border.right, }
     }
   }
   // Corners (only when no neighbor in both directions)
   if !has_left && !has_top {
-    b = { ..b, left_top_corner: border.left_top_corner }
+    b = { ..b, left_top_corner: border.left_top_corner, }
   }
   if !has_left && !has_bottom {
-    b = { ..b, left_bottom_corner: border.left_bottom_corner }
+    b = { ..b, left_bottom_corner: border.left_bottom_corner, }
   }
   if !has_right && !has_top {
-    b = { ..b, right_top_corner: border.right_top_corner }
+    b = { ..b, right_top_corner: border.right_top_corner, }
   }
   if !has_right && !has_bottom {
-    b = { ..b, right_bottom_corner: border.right_bottom_corner }
+    b = { ..b, right_bottom_corner: border.right_bottom_corner, }
   }
   // Diagonal rules for L-shaped segments
   if !has_bottom {
     if !has_left && has_lt {
-      b = { ..b, left_top_corner: border.right_top_corner }
+      b = { ..b, left_top_corner: border.right_top_corner, }
     }
     if has_left && has_lb {
-      b = { ..b, left_bottom_corner: border.left_top_corner }
+      b = { ..b, left_bottom_corner: border.left_top_corner, }
     }
     if !has_right && has_rt {
-      b = { ..b, right_top_corner: border.left_top_corner }
+      b = { ..b, right_top_corner: border.left_top_corner, }
     }
     if has_right && has_rb {
-      b = { ..b, right_bottom_corner: border.right_top_corner }
+      b = { ..b, right_bottom_corner: border.right_top_corner, }
     }
   }
   if !has_top {
     if !has_left && has_lb {
-      b = { ..b, left_bottom_corner: border.right_bottom_corner }
+      b = { ..b, left_bottom_corner: border.right_bottom_corner, }
     }
     if has_left && has_lt {
-      b = { ..b, left_top_corner: border.left_bottom_corner }
+      b = { ..b, left_top_corner: border.left_bottom_corner, }
     }
     if !has_right && has_rb {
-      b = { ..b, right_bottom_corner: border.left_bottom_corner }
+      b = { ..b, right_bottom_corner: border.left_bottom_corner, }
     }
     if has_right && has_rt {
-      b = { ..b, right_top_corner: border.right_bottom_corner }
+      b = { ..b, right_top_corner: border.right_bottom_corner, }
     }
   }
   b
@@ -491,7 +491,7 @@ pub struct Shadow {
 
 ///|
 pub fn Shadow::set_fill(self : Shadow, c : Char) -> Shadow {
-  { ..self, fill: c }
+  { ..self, fill: c, }
 }
 
 ///|
@@ -501,22 +501,22 @@ pub fn Shadow::set_offset(self : Shadow, offset : Int) -> Shadow {
 
 ///|
 pub fn Shadow::set_top(self : Shadow) -> Shadow {
-  { ..self, top: true, bottom: false }
+  { ..self, top: true, bottom: false, }
 }
 
 ///|
 pub fn Shadow::set_bottom(self : Shadow) -> Shadow {
-  { ..self, top: false, bottom: true }
+  { ..self, top: false, bottom: true, }
 }
 
 ///|
 pub fn Shadow::set_left(self : Shadow) -> Shadow {
-  { ..self, left: true, right: false }
+  { ..self, left: true, right: false, }
 }
 
 ///|
 pub fn Shadow::set_right(self : Shadow) -> Shadow {
-  { ..self, left: false, right: true }
+  { ..self, left: false, right: true, }
 }
 
 ///|

@@ -200,7 +200,7 @@ fn take_prefix_by_width(line : String, width : Int) -> String {
   if width <= 0 {
     return ""
   }
-  let sb = StringBuilder::new()
+  let sb = StringBuilder()
   let mut used = 0
   for ch in line {
     let ch_width = char_display_width(ch)
@@ -229,13 +229,13 @@ fn chunk_line(
     return [line]
   }
   let parts = []
-  let mut current = StringBuilder::new()
+  let mut current = StringBuilder()
   let mut current_width = 0
   for ch in line {
     let ch_width = char_display_width(ch)
     if current_width > 0 && current_width + ch_width > width {
       parts.push(current.to_string())
-      current = StringBuilder::new()
+      current = StringBuilder()
       current_width = 0
     }
     if current_width == 0 && ch_width > width {

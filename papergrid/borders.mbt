@@ -215,22 +215,22 @@ fn first_char(chars : Array[Char?]) -> Char? {
 
 ///|
 pub fn Borders::with_top(self : Borders, ch : Char) -> Borders {
-  { ..self, top: Some(ch) }
+  { ..self, top: Some(ch), }
 }
 
 ///|
 pub fn Borders::with_bottom(self : Borders, ch : Char) -> Borders {
-  { ..self, bottom: Some(ch) }
+  { ..self, bottom: Some(ch), }
 }
 
 ///|
 pub fn Borders::with_left(self : Borders, ch : Char) -> Borders {
-  { ..self, left: Some(ch), top_left: Some(ch), bottom_left: Some(ch) }
+  { ..self, left: Some(ch), top_left: Some(ch), bottom_left: Some(ch), }
 }
 
 ///|
 pub fn Borders::with_right(self : Borders, ch : Char) -> Borders {
-  { ..self, right: Some(ch), top_right: Some(ch), bottom_right: Some(ch) }
+  { ..self, right: Some(ch), top_right: Some(ch), bottom_right: Some(ch), }
 }
 
 ///|
@@ -257,52 +257,58 @@ pub fn Borders::with_vertical(self : Borders, ch : Char) -> Borders {
 
 ///|
 pub fn Borders::with_top_left(self : Borders, ch : Char) -> Borders {
-  { ..self, top_left: Some(ch) }
+  { ..self, top_left: Some(ch), }
 }
 
 ///|
 pub fn Borders::with_top_right(self : Borders, ch : Char) -> Borders {
-  { ..self, top_right: Some(ch) }
+  { ..self, top_right: Some(ch), }
 }
 
 ///|
 pub fn Borders::with_bottom_left(self : Borders, ch : Char) -> Borders {
-  { ..self, bottom_left: Some(ch) }
+  { ..self, bottom_left: Some(ch), }
 }
 
 ///|
 pub fn Borders::with_bottom_right(self : Borders, ch : Char) -> Borders {
-  { ..self, bottom_right: Some(ch) }
+  { ..self, bottom_right: Some(ch), }
 }
 
 ///|
 pub fn Borders::with_top_intersection(self : Borders, ch : Char) -> Borders {
-  { ..self, top_intersection: Some(ch) }
+  { ..self, top_intersection: Some(ch), }
 }
 
 ///|
 pub fn Borders::with_bottom_intersection(self : Borders, ch : Char) -> Borders {
-  { ..self, bottom_intersection: Some(ch) }
+  { ..self, bottom_intersection: Some(ch), }
 }
 
 ///|
 pub fn Borders::with_left_intersection(self : Borders, ch : Char) -> Borders {
-  { ..self, left_intersection: Some(ch) }
+  { ..self, left_intersection: Some(ch), }
 }
 
 ///|
 pub fn Borders::with_right_intersection(self : Borders, ch : Char) -> Borders {
-  { ..self, right_intersection: Some(ch) }
+  { ..self, right_intersection: Some(ch), }
 }
 
 ///|
 pub fn Borders::with_intersection(self : Borders, ch : Char) -> Borders {
-  { ..self, intersection: Some(ch) }
+  { ..self, intersection: Some(ch), }
 }
 
 ///|
 pub fn Borders::remove_top(self : Borders) -> Borders {
-  { ..self, top: None, top_left: None, top_right: None, top_intersection: None }
+  {
+    ..self,
+    top: None,
+    top_left: None,
+    top_right: None,
+    top_intersection: None,
+  }
 }
 
 ///|
@@ -318,12 +324,12 @@ pub fn Borders::remove_bottom(self : Borders) -> Borders {
 
 ///|
 pub fn Borders::remove_left(self : Borders) -> Borders {
-  { ..self, left: None, top_left: None, bottom_left: None }
+  { ..self, left: None, top_left: None, bottom_left: None, }
 }
 
 ///|
 pub fn Borders::remove_right(self : Borders) -> Borders {
-  { ..self, right: None, top_right: None, bottom_right: None }
+  { ..self, right: None, top_right: None, bottom_right: None, }
 }
 
 ///|

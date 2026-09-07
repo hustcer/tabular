@@ -5,5 +5,5 @@ import {
 }
 
 import {
-  "hustcer/tabular" @tabular,
+  "hustcer/tabular",
 } for "test"

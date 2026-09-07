@@ -35,7 +35,7 @@ fn convert_height(height : Height) -> @papergrid.HeightMode {
 
 ///|
 fn join_lines(lines : Array[String]) -> String {
-  let sb = StringBuilder::new()
+  let sb = StringBuilder()
   for i, line in lines {
     if i > 0 {
       sb.write_char('\n')
@@ -222,7 +222,7 @@ fn resolve_cols_by_name(
 
 ///|
 fn unique_cells(cells : Array[(Int, Int)]) -> Array[(Int, Int)] {
-  let seen : @hashset.HashSet[(Int, Int)] = @hashset.new()
+  let seen : @hashset.HashSet[(Int, Int)] = @hashset.HashSet([])
   let result = []
   cells.each(cell => {
     if !seen.contains(cell) {
@@ -235,7 +235,7 @@ fn unique_cells(cells : Array[(Int, Int)]) -> Array[(Int, Int)] {
 
 ///|
 fn unique_indexes(indexes : Array[Int]) -> Array[Int] {
-  let seen = @hashset.new()
+  let seen = @hashset.HashSet([])
   let result = []
   indexes.each(index => {
     if !seen.contains(index) {

@@ -5,7 +5,7 @@ pub struct IterGridDimension {
 
 ///|
 pub fn IterGridDimension::default() -> IterGridDimension {
-  { widths: [] }
+  { widths: [], }
 }
 
 ///|

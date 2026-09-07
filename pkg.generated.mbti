@@ -29,7 +29,7 @@ pub fn Builder::clear(Self) -> Unit
 pub fn Builder::count_cols(Self) -> Int
 pub fn Builder::count_records(Self) -> Int
 pub fn Builder::default() -> Self
-pub fn Builder::extend(Self, Array[String]) -> Unit
+pub fn Builder::extend_(Self, Array[String]) -> Unit
 pub fn Builder::from_rows(Array[Array[String]]) -> Self
 pub fn Builder::index(Self) -> IndexBuilder
 pub fn Builder::insert_col(Self, Int, Array[String]) -> Unit
@@ -378,4 +378,3 @@ pub fn Width::wrap_with(Int, String) -> Self
 // Type aliases
 
 // Traits
-

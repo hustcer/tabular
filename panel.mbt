@@ -9,26 +9,26 @@ struct PanelConfig {
 /// Insert a horizontal panel at the given row index.
 /// The panel text spans all cols.
 pub fn Panel::horizontal(row : Int, text : String) -> PanelConfig {
-  { index: row, text, is_horizontal: true }
+  { index: row, text, is_horizontal: true, }
 }
 
 ///|
 /// Insert a header panel at row 0.
 pub fn Panel::header(text : String) -> PanelConfig {
-  { index: 0, text, is_horizontal: true }
+  { index: 0, text, is_horizontal: true, }
 }
 
 ///|
 /// Insert a footer panel after the last row.
 pub fn Panel::footer(text : String) -> PanelConfig {
-  { index: -1, text, is_horizontal: true }
+  { index: -1, text, is_horizontal: true, }
 }
 
 ///|
 /// Insert a vertical panel at the given col index.
 /// The panel text spans all rows.
 pub fn Panel::vertical(col : Int, text : String) -> PanelConfig {
-  { index: col, text, is_horizontal: false }
+  { index: col, text, is_horizontal: false, }
 }
 
 ///|
@@ -49,7 +49,7 @@ fn split_string_by_width(s : String, width : Int) -> String {
     return ""
   }
   let lines = @papergrid.apply_width(s, @papergrid.WidthMode::wrap(width))
-  let buf = StringBuilder::new()
+  let buf = StringBuilder()
   for i, line in lines {
     if i > 0 {
       buf.write_char('\n')
@@ -67,7 +67,7 @@ pub fn Panel::vertical_with_width(
   width : Int,
 ) -> PanelConfig {
   let split_text = split_string_by_width(text, width)
-  { index: col, text: split_text, is_horizontal: false }
+  { index: col, text: split_text, is_horizontal: false, }
 }
 
 ///|

@@ -1,7 +1,5 @@
 import {
-  "hustcer/tabular" @tabular,
+  "hustcer/tabular",
 }
 
-options(
-  "is-main": true,
-)
+pkgtype(kind: "executable")

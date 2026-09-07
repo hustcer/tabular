@@ -85,7 +85,7 @@ pub fn Format::multiline(self : Format) -> Format {
 
 ///|
 pub fn Rows::new(start : Int, end_ : Int) -> Rows {
-  { start, end_, skip_n: 0, step_n: 1, exclude: None, predicate: None }
+  { start, end_, skip_n: 0, step_n: 1, exclude: None, predicate: None, }
 }
 
 ///|
@@ -120,7 +120,7 @@ pub fn Rows::all() -> Rows {
 
 ///|
 pub fn Rows::intersect(self : Rows, cols : Cols) -> Segment {
-  { kind: Cross(self, cols), skip_n: 0, step_n: 1 }
+  { kind: Cross(self, cols), skip_n: 0, step_n: 1, }
 }
 
 ///|
@@ -140,12 +140,12 @@ pub fn Rows::and_cell(self : Rows, cell : Cell) -> Segment {
 
 ///|
 pub fn Rows::as_segment(self : Rows) -> Segment {
-  { kind: RowsOnly(self), skip_n: 0, step_n: 1 }
+  { kind: RowsOnly(self), skip_n: 0, step_n: 1, }
 }
 
 ///|
 pub fn Rows::inverse(self : Rows) -> Segment {
-  { kind: InverseRows(self), skip_n: 0, step_n: 1 }
+  { kind: InverseRows(self), skip_n: 0, step_n: 1, }
 }
 
 ///|
@@ -212,7 +212,7 @@ pub fn Rows::filter(self : Rows, predicate : (Entity) -> Bool) -> Rows {
 
 ///|
 pub fn Cols::new(start : Int, end_ : Int) -> Cols {
-  { start, end_, skip_n: 0, step_n: 1, exclude: None, predicate: None }
+  { start, end_, skip_n: 0, step_n: 1, exclude: None, predicate: None, }
 }
 
 ///|
@@ -247,7 +247,7 @@ pub fn Cols::all() -> Cols {
 
 ///|
 pub fn Cols::intersect(self : Cols, rows : Rows) -> Segment {
-  { kind: Cross(rows, self), skip_n: 0, step_n: 1 }
+  { kind: Cross(rows, self), skip_n: 0, step_n: 1, }
 }
 
 ///|
@@ -267,12 +267,12 @@ pub fn Cols::and_cell(self : Cols, cell : Cell) -> Segment {
 
 ///|
 pub fn Cols::as_segment(self : Cols) -> Segment {
-  { kind: ColsOnly(self), skip_n: 0, step_n: 1 }
+  { kind: ColsOnly(self), skip_n: 0, step_n: 1, }
 }
 
 ///|
 pub fn Cols::inverse(self : Cols) -> Segment {
-  { kind: InverseCols(self), skip_n: 0, step_n: 1 }
+  { kind: InverseCols(self), skip_n: 0, step_n: 1, }
 }
 
 ///|
@@ -339,12 +339,12 @@ pub fn Cols::filter(self : Cols, predicate : (Entity) -> Bool) -> Cols {
 
 ///|
 pub fn Segment::all() -> Segment {
-  { kind: All, skip_n: 0, step_n: 1 }
+  { kind: All, skip_n: 0, step_n: 1, }
 }
 
 ///|
 pub fn Cell::new(row : Int, col : Int) -> Cell {
-  { row, col }
+  { row, col, }
 }
 
 ///|
@@ -354,7 +354,7 @@ pub fn ByColName::new(name : String) -> ByColName {
 
 ///|
 pub fn Cell::as_segment(self : Cell) -> Segment {
-  { kind: CellOnly(self), skip_n: 0, step_n: 1 }
+  { kind: CellOnly(self), skip_n: 0, step_n: 1, }
 }
 
 ///|
@@ -369,7 +369,7 @@ pub fn Cell::not(self : Cell, other : Cell) -> Segment {
 
 ///|
 pub fn Cell::inverse(self : Cell) -> Segment {
-  { kind: InverseCell(self), skip_n: 0, step_n: 1 }
+  { kind: InverseCell(self), skip_n: 0, step_n: 1, }
 }
 
 ///|
@@ -379,12 +379,12 @@ pub fn Segment::new(
   col_start : Int,
   col_end : Int,
 ) -> Segment {
-  { kind: Range(row_start, row_end, col_start, col_end), skip_n: 0, step_n: 1 }
+  { kind: Range(row_start, row_end, col_start, col_end), skip_n: 0, step_n: 1, }
 }
 
 ///|
 pub fn Segment::and_(self : Segment, other : Segment) -> Segment {
-  { kind: Union2(self, other), skip_n: 0, step_n: 1 }
+  { kind: Union2(self, other), skip_n: 0, step_n: 1, }
 }
 
 ///|
@@ -404,7 +404,7 @@ pub fn Segment::and_cell(self : Segment, cell : Cell) -> Segment {
 
 ///|
 pub fn Segment::not_(self : Segment, other : Segment) -> Segment {
-  { kind: Diff2(self, other), skip_n: 0, step_n: 1 }
+  { kind: Diff2(self, other), skip_n: 0, step_n: 1, }
 }
 
 ///|
@@ -419,12 +419,12 @@ pub fn Segment::not_cell(self : Segment, cell : Cell) -> Segment {
 
 ///|
 pub fn Segment::skip(self : Segment, count : Int) -> Segment {
-  { ..self, skip_n: count }
+  { ..self, skip_n: count, }
 }
 
 ///|
 pub fn Segment::step_by(self : Segment, step : Int) -> Segment {
-  { ..self, step_n: if step <= 0 { 1 } else { step } }
+  { ..self, step_n: if step <= 0 { 1 } else { step }, }
 }
 
 ///|
@@ -474,5 +474,5 @@ pub fn Padding::new(
   top : Int,
   bottom : Int,
 ) -> Padding {
-  { left, right, top, bottom }
+  { left, right, top, bottom, }
 }
