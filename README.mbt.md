@@ -11,6 +11,9 @@ A MoonBit library for pretty-printing tables in the terminal. Inspired by the Ru
 - Column span and row span
 - Panel, merge, highlight, shadow, split, extract, remove, and border correction
 - Builder helpers with index and transpose support
+- Rotate, reverse, concatenate, and duplicate selected records
+
+See [tabled parity status](docs/tabled-parity.md) for the upstream test mapping and remaining work.
 
 ## Installation
 
@@ -313,6 +316,28 @@ table.shadow(@tabular.Shadow::new(1)) |> ignore
 table.extract_rows(@tabular.Rows::new(0, 2)) |> ignore
 table.remove_cols(@tabular.Cols::one(0)) |> ignore
 table.split(@tabular.Split::col(2).concat()) |> ignore
+```
+
+## Data Transforms
+
+```mbt check
+///|
+test {
+  let table = @tabular.Table::from_rows([["a", "b"], ["c", "d"]])
+  table.rotate(@tabular.Rotate::Left) |> ignore
+  assert_eq(table.rows, [["b", "d"], ["a", "c"]])
+
+  table.reverse(@tabular.Reverse::rows(0)) |> ignore
+  table.concat(
+    @tabular.Concat::horizontal(@tabular.Table::from_rows([["e"], ["f"]])),
+  )
+  |> ignore
+  table.duplicate(
+    @tabular.Dup::new(@tabular.Rows::one(1), @tabular.Rows::one(0)),
+  )
+  |> ignore
+  assert_eq(table.rows, [["a", "c", "e"], ["a", "c", "e"]])
+}
 ```
 
 ## Validation
