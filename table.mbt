@@ -6,7 +6,10 @@ pub struct Table {
 
 ///|
 pub fn Table::from_rows(rows : Array[Array[String]]) -> Table {
-  { rows, config: @papergrid.SpannedConfig::default(), }
+  let config = @papergrid.SpannedConfig::default()
+  config.set_borders(@papergrid.Borders::ascii())
+  config.set_padding(1, 1, 0, 0)
+  { rows, config, }
 }
 
 ///|

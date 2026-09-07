@@ -17,6 +17,16 @@ pub fn split_lines(String) -> Array[String]
 // Errors
 
 // Types and methods
+pub(all) struct ANSIBuf {
+  prefix : String
+  suffix : String
+} derive(Eq, @debug.Debug)
+pub fn ANSIBuf::empty() -> Self
+pub fn ANSIBuf::get_prefix(Self) -> String
+pub fn ANSIBuf::get_suffix(Self) -> String
+pub fn ANSIBuf::is_empty(Self) -> Bool
+pub fn ANSIBuf::new(String, String) -> Self
+
 pub struct Borders {
   top : Char?
   top_left : Char?
@@ -87,6 +97,14 @@ pub(all) enum Entity {
   Cell(Int, Int)
 } derive(Eq, @debug.Debug)
 pub fn Entity::iter(Self, Int, Int) -> Iter[(Int, Int)]
+
+pub(all) struct Formatting {
+  horizontal_trim : Bool
+  vertical_trim : Bool
+  allow_lines_alignment : Bool
+} derive(Eq, @debug.Debug)
+pub fn Formatting::default() -> Self
+pub fn Formatting::new(Bool, Bool, Bool) -> Self
 
 pub enum HAlign {
   Left
@@ -191,6 +209,7 @@ pub struct SpannedConfig {
   mut margin_offset_bottom : Int
   mut margin_offset_left : Int
   mut margin_offset_right : Int
+  // private fields
 }
 pub fn SpannedConfig::align(Self) -> HAlign
 pub fn SpannedConfig::align_at(Self, Int, Int) -> HAlign
@@ -203,6 +222,10 @@ pub fn SpannedConfig::custom_horizontal_line(Self, Int) -> HorizontalLine?
 pub fn SpannedConfig::default() -> Self
 pub fn SpannedConfig::get_cell_border(Self, Int, Int, Int, Int) -> CellBorder
 pub fn SpannedConfig::get_col_span(Self, Int, Int) -> Int?
+pub fn SpannedConfig::get_color(Self, Int, Int) -> ANSIBuf?
+pub fn SpannedConfig::get_formatting(Self, Int, Int) -> Formatting
+pub fn SpannedConfig::get_justification(Self, Int, Int) -> Char
+pub fn SpannedConfig::get_justification_color(Self, Int, Int) -> ANSIBuf?
 pub fn SpannedConfig::get_row_span(Self, Int, Int) -> Int?
 pub fn SpannedConfig::has_cell_borders(Self) -> Bool
 pub fn SpannedConfig::has_col_spans(Self) -> Bool
@@ -234,13 +257,17 @@ pub fn SpannedConfig::set_align_for_rows(Self, Int, Int, HAlign) -> Unit
 pub fn SpannedConfig::set_borders(Self, Borders) -> Unit
 pub fn SpannedConfig::set_cell_border(Self, Int, Int, CellBorder) -> Unit
 pub fn SpannedConfig::set_col_span(Self, Int, Int, Int) -> Unit
+pub fn SpannedConfig::set_color(Self, Entity, ANSIBuf?) -> Unit
 pub fn SpannedConfig::set_custom_horizontal_lines(Self, Array[(Int, HorizontalLine)]) -> Unit
+pub fn SpannedConfig::set_formatting(Self, Entity, Formatting) -> Unit
 pub fn SpannedConfig::set_height_mode(Self, HeightMode) -> Unit
 pub fn SpannedConfig::set_height_mode_for_all(Self, HeightMode) -> Unit
 pub fn SpannedConfig::set_height_mode_for_cell(Self, Int, Int, HeightMode) -> Unit
 pub fn SpannedConfig::set_height_mode_for_cols(Self, Int, Int, HeightMode) -> Unit
 pub fn SpannedConfig::set_height_mode_for_rows(Self, Int, Int, HeightMode) -> Unit
 pub fn SpannedConfig::set_horizontal_lines(Self, HorizontalLines) -> Unit
+pub fn SpannedConfig::set_justification(Self, Entity, Char, color? : ANSIBuf) -> Unit
+pub fn SpannedConfig::set_line_alignment(Self, Entity, Bool) -> Unit
 pub fn SpannedConfig::set_margin(Self, Int, Int, Int, Int, Char, Char, Char, Char) -> Unit
 pub fn SpannedConfig::set_margin_offset(Self, Int, Int, Int, Int) -> Unit
 pub fn SpannedConfig::set_padding(Self, Int, Int, Int, Int) -> Unit
@@ -250,6 +277,8 @@ pub fn SpannedConfig::set_padding_for_cols(Self, Int, Int, Int, Int, Int, Int) -
 pub fn SpannedConfig::set_padding_for_rows(Self, Int, Int, Int, Int, Int, Int) -> Unit
 pub fn SpannedConfig::set_row_span(Self, Int, Int, Int) -> Unit
 pub fn SpannedConfig::set_span_source(Self, Int, Int, Int, Int) -> Unit
+pub fn SpannedConfig::set_trim_horizontal(Self, Entity, Bool) -> Unit
+pub fn SpannedConfig::set_trim_vertical(Self, Entity, Bool) -> Unit
 pub fn SpannedConfig::set_valign(Self, VAlign) -> Unit
 pub fn SpannedConfig::set_valign_for_all(Self, VAlign) -> Unit
 pub fn SpannedConfig::set_valign_for_cell(Self, Int, Int, VAlign) -> Unit

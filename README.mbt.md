@@ -364,6 +364,34 @@ test {
 }
 ```
 
+## Text Formatting
+
+Tables default to left alignment. Multiline text is aligned as a block;
+`AlignmentStrategy::PerLine` aligns its lines independently. `TrimStrategy`
+trims displayed whitespace while preserving records and layout dimensions.
+`Charset` changes records to remove control characters or expand tabs.
+
+```mbt check
+///|
+test {
+  let table = @tabular.Table::from_rows([["hello"], ["a\nbc"]]).with_(
+    (
+      @tabular.Alignment::right(),
+      @tabular.AlignmentStrategy::PerLine,
+      @tabular.Justification::new('.'),
+    ),
+  )
+  assert_eq(
+    table.to_string(),
+    "+-------+\n| hello |\n+-------+\n| ....a |\n| ...bc |\n+-------+",
+  )
+}
+```
+
+`Color::fg_red()` and other color constructors work as table or cell options.
+`Justification::color` colors only the alignment fill. ANSI sequences embedded
+in record strings still require further parity work; see the status document.
+
 ## Validation
 
 The current repository test suite passes:

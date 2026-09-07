@@ -30,6 +30,12 @@ fn upstream_int_table(values : Array[Array[Int]]) -> @tabular.Table {
 }
 
 ///|
+// Equivalent to Table::new over strings, with its Tabled header and defaults.
+fn upstream_string_table(values : Array[String]) -> @tabular.Table {
+  @tabular.Table::from_rows([["&str"]] + values.map(value => [value]))
+}
+
+///|
 fn upstream_top_border() -> @tabular.Highlight {
   @tabular.Highlight::new_rows(@tabular.Rows::one(0)).with_border({
     ..@papergrid.CellBorder::empty(),

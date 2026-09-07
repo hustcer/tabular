@@ -39,6 +39,13 @@ pub fn Alignment::top() -> Self
 pub impl CellOption for Alignment
 pub impl TableOption for Alignment
 
+pub(all) enum AlignmentStrategy {
+  PerCell
+  PerLine
+} derive(Eq, @debug.Debug)
+pub impl CellOption for AlignmentStrategy
+pub impl TableOption for AlignmentStrategy
+
 pub struct Builder {
   rows : Array[Array[String]]
   mut empty_cell : String
@@ -76,6 +83,78 @@ pub fn Cell::inverse(Self) -> Segment
 pub fn Cell::new(Int, Int) -> Self
 pub fn Cell::not(Self, Self) -> Segment
 pub impl Object for Cell
+
+pub struct Charset {
+  // private fields
+}
+pub fn Charset::charset_clean(String) -> String
+pub fn Charset::clean(Self) -> Self
+pub fn Charset::default() -> Self
+pub fn Charset::new() -> Self
+pub fn Charset::tab_size(Self, Int) -> Self
+pub impl CellOption for Charset
+pub impl TableOption for Charset
+
+pub struct Color {
+  // private fields
+} derive(Eq, @debug.Debug)
+pub fn Color::as_ansi_str(Self) -> @papergrid.ANSIBuf?
+pub fn Color::bg_black() -> Self
+pub fn Color::bg_blue() -> Self
+pub fn Color::bg_bright_black() -> Self
+pub fn Color::bg_bright_blue() -> Self
+pub fn Color::bg_bright_cyan() -> Self
+pub fn Color::bg_bright_green() -> Self
+pub fn Color::bg_bright_magenta() -> Self
+pub fn Color::bg_bright_red() -> Self
+pub fn Color::bg_bright_white() -> Self
+pub fn Color::bg_bright_yellow() -> Self
+pub fn Color::bg_cyan() -> Self
+pub fn Color::bg_green() -> Self
+pub fn Color::bg_magenta() -> Self
+pub fn Color::bg_red() -> Self
+pub fn Color::bg_white() -> Self
+pub fn Color::bg_yellow() -> Self
+pub fn Color::bitor(Self, Self) -> Self
+pub fn Color::blink() -> Self
+pub fn Color::bold() -> Self
+pub fn Color::colorize(Self, String) -> String
+pub fn Color::default() -> Self
+pub fn Color::dimmed() -> Self
+pub fn Color::empty() -> Self
+pub fn Color::fg_black() -> Self
+pub fn Color::fg_blue() -> Self
+pub fn Color::fg_bright_black() -> Self
+pub fn Color::fg_bright_blue() -> Self
+pub fn Color::fg_bright_cyan() -> Self
+pub fn Color::fg_bright_green() -> Self
+pub fn Color::fg_bright_magenta() -> Self
+pub fn Color::fg_bright_red() -> Self
+pub fn Color::fg_bright_white() -> Self
+pub fn Color::fg_bright_yellow() -> Self
+pub fn Color::fg_cyan() -> Self
+pub fn Color::fg_green() -> Self
+pub fn Color::fg_magenta() -> Self
+pub fn Color::fg_red() -> Self
+pub fn Color::fg_white() -> Self
+pub fn Color::fg_yellow() -> Self
+pub fn Color::from_ansi_buf(@papergrid.ANSIBuf) -> Self
+pub fn Color::get_prefix(Self) -> String
+pub fn Color::get_suffix(Self) -> String
+pub fn Color::hidden() -> Self
+pub fn Color::invert() -> Self
+pub fn Color::is_empty(Self) -> Bool
+pub fn Color::italic() -> Self
+pub fn Color::new(String, String) -> Self
+pub fn Color::reset() -> Self
+pub fn Color::rgb_bg(Byte, Byte, Byte) -> Self
+pub fn Color::rgb_fg(Byte, Byte, Byte) -> Self
+pub fn Color::strikethrough() -> Self
+pub fn Color::to_ansi_buf(Self) -> @papergrid.ANSIBuf
+pub fn Color::underline() -> Self
+pub impl CellOption for Color
+pub impl TableOption for Color
+pub impl BitOr for Color
 
 pub struct Cols {
   start : Int
@@ -194,6 +273,16 @@ pub fn IndexBuilder::col(Self, Int) -> Self
 pub fn IndexBuilder::hide(Self) -> Self
 pub fn IndexBuilder::name(Self, String?) -> Self
 pub fn IndexBuilder::transpose(Self) -> Self
+
+pub struct Justification {
+  // private fields
+}
+pub fn Justification::color(Self, Color) -> Self
+pub fn Justification::colored(Char, Color) -> Self
+pub fn Justification::default() -> Self
+pub fn Justification::new(Char) -> Self
+pub impl CellOption for Justification
+pub impl TableOption for Justification
 
 pub enum Merge {
   Horizontal
@@ -466,6 +555,15 @@ pub fn Table::shape(Self) -> (Int, Int)
 pub fn Table::split(Self, Split) -> Self
 pub fn Table::to_string(Self) -> String
 pub fn[T : TableOption] Table::with_(Self, T) -> Self
+
+pub(all) enum TrimStrategy {
+  Vertical
+  Horizontal
+  Both
+  None
+} derive(Eq, @debug.Debug)
+pub impl CellOption for TrimStrategy
+pub impl TableOption for TrimStrategy
 
 pub enum VAlign {
   Top

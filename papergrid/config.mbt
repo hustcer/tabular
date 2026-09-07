@@ -197,6 +197,7 @@ pub struct SpannedConfig {
   align_rules : Array[(Scope, HAlign)]
   valign_rules : Array[(Scope, VAlign)]
   padding_rules : Array[(Scope, Int, Int, Int, Int)]
+  priv formatting_rules : Array[(Scope, FormatChange)]
   col_spans : Array[(Int, Int, Int)]
   row_spans : Array[(Int, Int, Int)]
   span_sources : Array[(Int, Int, Int, Int)]
@@ -225,12 +226,12 @@ pub struct SpannedConfig {
 ///|
 pub fn SpannedConfig::default() -> SpannedConfig {
   {
-    borders: Borders::ascii(),
-    padding_left: 1,
-    padding_right: 1,
+    borders: Borders::empty(),
+    padding_left: 0,
+    padding_right: 0,
     padding_top: 0,
     padding_bottom: 0,
-    align: HAlign::center(),
+    align: HAlign::left(),
     valign: VAlign::top(),
     width_mode: WidthMode::none(),
     height_mode: HeightMode::none(),
@@ -241,6 +242,7 @@ pub fn SpannedConfig::default() -> SpannedConfig {
     align_rules: [],
     valign_rules: [],
     padding_rules: [],
+    formatting_rules: [],
     col_spans: [],
     row_spans: [],
     span_sources: [],
@@ -1336,6 +1338,7 @@ pub fn SpannedConfig::remap(
   row_map : Array[Int],
   col_map : Array[Int],
 ) -> Unit {
+  self.remap_formatting(row_map, col_map)
   let previous_col_spans = self.col_spans.copy()
   let previous_row_spans = self.row_spans.copy()
 

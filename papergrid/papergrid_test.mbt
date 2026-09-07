@@ -1,7 +1,7 @@
 ///|
 test "iter grid ascii output" {
   let borders = Borders::ascii()
-  let cfg = SpannedConfig::default()
+  let cfg = centered_grid_config()
   cfg.set_borders(borders)
   let records = IterRecords::new([["Hello", "World"], ["Hi", "MoonBit"]])
   let dims = IterGridDimension::default()
@@ -21,7 +21,7 @@ test "iter grid ascii output" {
 
 ///|
 test "iter grid multiline output" {
-  let cfg = SpannedConfig::default()
+  let cfg = centered_grid_config()
   cfg.set_borders(Borders::ascii())
   let records = IterRecords::new([
     ["left\ncell", "right one"],
@@ -46,7 +46,7 @@ test "iter grid multiline output" {
 
 ///|
 test "iter grid col span output" {
-  let cfg = SpannedConfig::default()
+  let cfg = centered_grid_config()
   cfg.set_borders(Borders::ascii())
   cfg.set_col_span(0, 0, 2)
   let records = IterRecords::new([["0-0", ""], ["1-0", "1-1"]])
@@ -67,7 +67,7 @@ test "iter grid col span output" {
 
 ///|
 test "iter grid row span output" {
-  let cfg = SpannedConfig::default()
+  let cfg = centered_grid_config()
   cfg.set_borders(Borders::ascii())
   cfg.set_row_span(0, 0, 2)
   let records = IterRecords::new([["0-0", "0-1"], ["1-0", "1-1"]])
@@ -88,7 +88,7 @@ test "iter grid row span output" {
 
 ///|
 test "iter grid row span collision multiline output" {
-  let cfg = SpannedConfig::default()
+  let cfg = centered_grid_config()
   cfg.set_borders(Borders::ascii())
   cfg.set_row_span(0, 0, 2)
   cfg.set_row_span(1, 1, 2)
@@ -117,7 +117,7 @@ test "iter grid row span collision multiline output" {
 
 ///|
 test "iter grid combined row and col span multiline output" {
-  let cfg = SpannedConfig::default()
+  let cfg = centered_grid_config()
   cfg.set_borders(Borders::ascii())
   cfg.set_row_span(1, 1, 2)
   cfg.set_col_span(1, 1, 2)
@@ -151,7 +151,7 @@ test "iter grid combined row and col span multiline output" {
 
 ///|
 test "iter grid row span boundary content with centered vertical align" {
-  let cfg = SpannedConfig::default()
+  let cfg = centered_grid_config()
   cfg.set_borders(Borders::ascii())
   cfg.set_row_span(0, 0, 2)
   cfg.set_row_span(0, 1, 2)
@@ -174,7 +174,7 @@ test "iter grid row span boundary content with centered vertical align" {
 
 ///|
 test "iter grid row span boundary content with bottom vertical align" {
-  let cfg = SpannedConfig::default()
+  let cfg = centered_grid_config()
   cfg.set_borders(Borders::ascii())
   cfg.set_row_span(0, 0, 2)
   cfg.set_row_span(0, 1, 2)
@@ -201,7 +201,7 @@ test "iter grid row span boundary content with bottom vertical align" {
 
 ///|
 test "col span multilane with custom data" {
-  let cfg = SpannedConfig::default()
+  let cfg = centered_grid_config()
   cfg.set_borders(Borders::ascii())
   cfg.set_col_span(0, 0, 2)
   cfg.set_col_span(3, 0, 3)
@@ -232,7 +232,7 @@ test "col span multilane with custom data" {
 
 ///|
 test "col span collision two spans different widths" {
-  let cfg = SpannedConfig::default()
+  let cfg = centered_grid_config()
   cfg.set_borders(Borders::ascii())
   cfg.set_col_span(0, 0, 2)
   cfg.set_col_span(1, 1, 2)
@@ -282,7 +282,7 @@ test "bidi controls do not affect display width wrapping" {
 
 ///|
 test "col span all rows spanned" {
-  let cfg = SpannedConfig::default()
+  let cfg = centered_grid_config()
   cfg.set_borders(Borders::ascii())
   cfg.set_col_span(0, 0, 2)
   cfg.set_col_span(1, 0, 2)
@@ -311,7 +311,7 @@ test "col span all rows spanned" {
 
 ///|
 test "col span with different length data" {
-  let cfg = SpannedConfig::default()
+  let cfg = centered_grid_config()
   cfg.set_borders(Borders::ascii())
   cfg.set_col_span(0, 0, 2)
   cfg.set_col_span(2, 0, 2)
@@ -339,7 +339,7 @@ test "col span with different length data" {
 
 ///|
 test "col span no split style" {
-  let cfg = SpannedConfig::default()
+  let cfg = centered_grid_config()
   cfg.set_col_span(0, 0, 2)
   cfg.set_align_for_cell(0, 0, HAlign::center())
   let records = IterRecords::new([["0-0", ""], ["1-0", "1-1"]])
@@ -364,7 +364,7 @@ test "col span no split style" {
 
 ///|
 test "row span collision with multiline content" {
-  let cfg = SpannedConfig::default()
+  let cfg = centered_grid_config()
   cfg.set_borders(Borders::ascii())
   cfg.set_row_span(0, 0, 2)
   cfg.set_row_span(1, 1, 2)
@@ -392,7 +392,7 @@ test "row span collision with multiline content" {
 
 ///|
 test "row span 3x3 render with multiple row spans" {
-  let cfg = SpannedConfig::default()
+  let cfg = centered_grid_config()
   cfg.set_borders(Borders::ascii())
   cfg.set_row_span(0, 0, 3)
   cfg.set_row_span(0, 1, 2)
@@ -419,7 +419,7 @@ test "row span 3x3 render with multiple row spans" {
 
 ///|
 test "row span all cols spanned" {
-  let cfg = SpannedConfig::default()
+  let cfg = centered_grid_config()
   cfg.set_borders(Borders::ascii())
   cfg.set_row_span(0, 0, 2)
   cfg.set_row_span(0, 1, 2)
@@ -440,7 +440,7 @@ test "row span all cols spanned" {
 
 ///|
 test "row span no split style" {
-  let cfg = SpannedConfig::default()
+  let cfg = centered_grid_config()
   cfg.set_row_span(0, 0, 2)
   cfg.set_valign_for_cell(0, 0, VAlign::center())
   let records = IterRecords::new([["1", "0-1"], ["2", "1-1"], ["3", "2-1"]])
@@ -463,7 +463,7 @@ test "row span no split style" {
 
 ///|
 test "row span with vertical padding" {
-  let cfg = SpannedConfig::default()
+  let cfg = centered_grid_config()
   cfg.set_borders(Borders::ascii())
   cfg.set_row_span(0, 0, 2)
   cfg.set_padding_for_cell(0, 0, 0, 0, 4, 4)
@@ -499,7 +499,7 @@ test "row span with vertical padding" {
 
 ///|
 test "combined row and col span at top left corner" {
-  let cfg = SpannedConfig::default()
+  let cfg = centered_grid_config()
   cfg.set_borders(Borders::ascii())
   cfg.set_row_span(0, 0, 2)
   cfg.set_col_span(0, 0, 2)
@@ -533,7 +533,7 @@ test "combined row and col span at top left corner" {
 
 ///|
 test "combined row and col span at bottom right corner" {
-  let cfg = SpannedConfig::default()
+  let cfg = centered_grid_config()
   cfg.set_borders(Borders::ascii())
   cfg.set_row_span(2, 2, 2)
   cfg.set_col_span(2, 2, 2)
@@ -567,7 +567,7 @@ test "combined row and col span at bottom right corner" {
 
 ///|
 test "combined row and col span large center block" {
-  let cfg = SpannedConfig::default()
+  let cfg = centered_grid_config()
   cfg.set_borders(Borders::ascii())
   cfg.set_row_span(1, 1, 3)
   cfg.set_col_span(1, 1, 3)
@@ -600,7 +600,7 @@ test "combined row and col span large center block" {
 
 ///|
 test "mixed row and col spans complex layout" {
-  let cfg = SpannedConfig::default()
+  let cfg = centered_grid_config()
   cfg.set_borders(Borders::ascii())
   cfg.set_col_span(1, 1, 2)
   cfg.set_col_span(3, 0, 3)
@@ -636,7 +636,7 @@ test "mixed row and col spans complex layout" {
 
 ///|
 test "zero span in col dimension is ignored" {
-  let cfg = SpannedConfig::default()
+  let cfg = centered_grid_config()
   cfg.set_borders(Borders::ascii())
   cfg.set_col_span(0, 1, 0)
   let records = IterRecords::new([["0-0", "0-1"], ["1-0", "1-1"]])
@@ -657,7 +657,7 @@ test "zero span in col dimension is ignored" {
 
 ///|
 test "zero span grid all rows and cols spanned" {
-  let cfg = SpannedConfig::default()
+  let cfg = centered_grid_config()
   cfg.set_borders(Borders::ascii())
   cfg.set_row_span(0, 0, 2)
   cfg.set_row_span(0, 1, 2)
@@ -677,7 +677,7 @@ test "zero span grid all rows and cols spanned" {
 
 ///|
 test "5x2 row span spanning 4 rows" {
-  let cfg = SpannedConfig::default()
+  let cfg = centered_grid_config()
   cfg.set_borders(Borders::ascii())
   cfg.set_row_span(1, 1, 4)
   let records = IterRecords::new([

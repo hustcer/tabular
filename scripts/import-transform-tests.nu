@@ -1,6 +1,8 @@
 #!/usr/bin/env nu
-# Port the four upstream data-transform test suites. Requires Nushell 0.115+.
+# Port selected upstream settings test suites. Requires Nushell 0.115+.
 # The expected text comes only from upstream, never from MoonBit render output.
+
+use upstream-literals.nu expected-lines
 
 def translate [expression: string]: nothing -> string {
   $expression
@@ -23,10 +25,19 @@ def translate [expression: string]: nothing -> string {
   | str replace --all '.with(Concat::' '.concat(Concat::'
   | str replace --all '.with(Dup::' '.duplicate(Dup::'
   | str replace --all '.with(Style::' '.apply(Style::'
+  | str replace --all '.with(' '.with_('
+  | str replace --all --regex 'Modify::new\(\((\d+),\s*(\d+)\)\)' 'Modify::new(Cell::new($1, $2))'
+  | str replace --all 'Table::new(' 'upstream_string_table('
   | str replace --all 'Columns::' 'Cols::'
+  | str replace --all 'ByColumnName::' 'ByColName::'
+  | str replace --all 'Cols::new(1..)' 'Cols::new(1, -1)'
+  | str replace --all --regex 'Color::[A-Z][A-Z_0-9]*' {
+      let name = $in
+      'Color::' + ($name | str replace 'Color::' '' | str lowercase) + '()'
+    }
   | str replace --all 'Rows::new(1..3)' 'Rows::new(1, 3)'
   | str replace --all 'Rows::new(1..)' 'Rows::new(1, -1)'
-  | str replace --all --regex '(?<![\w.])(Rotate|Reverse|Offset|Concat|Dup|Style|Rows|Cols|Segment)::' '@tabular.$1::'
+  | str replace --all --regex '(?<![\w.])(Rotate|Reverse|Offset|Concat|Dup|Style|Rows|Cols|Segment|Alignment|Modify|Padding|Charset|Justification|Color|TrimStrategy|AlignmentStrategy|Settings|ByColName)::' '@tabular.$1::'
   | str replace --all --regex '(?<![\w.])Cell::' '@tabular.Cell::'
   | str replace --all 'let mut ' 'let '
   | str replace --all --regex '(?m)^(\s*table\d\.[^;]+);' '$1 |> ignore'
@@ -38,16 +49,7 @@ def expected-value [source: string]: nothing -> string {
   if ($source | str starts-with 'Matrix::') {
     '(' + (translate $source) + ').to_string()'
   } else {
-    let parts = ($source
-      | parse --regex '(?<text>"(?:\\.|[^"\\])*")'
-      | get text
-      | each { from json })
-    let text = ($parts | str join (char nl))
-    if $text == '' {
-      '""'
-    } else {
-      "(\n" + ($text | split row (char nl) | each {|line| '    #|' + $line } | str join (char nl)) + "\n  )"
-    }
+    expected-lines $source
   }
 }
 
@@ -59,7 +61,7 @@ def main [upstream: path, --output: path] {
   let commit = (^git -C $source_root rev-parse HEAD | complete)
   if $commit.exit_code != 0 { error make {msg: $commit.stderr} }
   let pattern = '(?s)test_table!\(\s*(?<name>\w+),\s*(?<expression>.*?)\s*,\s*(?<expected>(?:"(?:\\.|[^"\\])*"\s*)+|Matrix::new\(\d+,\s*\d+\),?)\s*\);'
-  for suite in [rotate reverse concat duplicate] {
+  for suite in [rotate reverse concat duplicate alignment formatting color] {
     let relative = $'tabled/tests/settings/($suite)_test.rs'
     let source = (open --raw ($source_root | path join $relative))
     let cases = ($source | parse --regex $pattern)

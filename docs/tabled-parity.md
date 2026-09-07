@@ -26,7 +26,7 @@ moon test --filter 'upstream*'
 
 生成器不会读取 MoonBit 实际输出来制造预期结果，也不会静默跳过无法识别的 `test_table!`。它只写入带有自身生成标记的目标文件。
 
-[`upstream-test-inventory.json`](upstream-test-inventory.json) 当前列出 90 个源文件中的 1,387 个命名测试候选，48 个带有明确的 MoonBit 源引用。它包括条件编译测试，但不包括文档测试和未展开的匿名宏测试；既有测试缺少源引用也会标为未映射。重新生成清单：
+[`upstream-test-inventory.json`](upstream-test-inventory.json) 当前列出 90 个源文件中的 1,387 个命名测试候选，71 个带有明确的 MoonBit 源引用。它包括条件编译测试，但不包括文档测试和未展开的匿名宏测试；既有测试缺少源引用也会标为未映射。重新生成清单：
 
 ```sh
 nu --no-config-file scripts/audit-upstream-tests.nu /path/to/tabled --output docs/upstream-test-inventory.json
@@ -41,14 +41,31 @@ nu --no-config-file scripts/audit-upstream-tests.nu /path/to/tabled --output doc
 
 ## 仍需完成的功能与验证
 
+本轮还补齐了通用配置接口和以下格式能力：
+
+- `TableOption`、`CellOption`、`Settings`、`Modify`，支持元组、数组、自定义选项和基于内容的列选择；保留上游执行顺序与 `hint_change` 差异。
+- `Alignment`、`AlignmentStrategy`、`TrimStrategy`、`Justification`、`Charset`；基础 `Color` 构造、组合、逐行着色和单元格颜色配置。
+- `Table` 默认左对齐，`papergrid` 默认无边框/无填充；多行文本默认 `PerCell`。既有居中/逐行对齐测试改为显式配置，保留原来的预期文字。
+- 保留 `alignment_test.rs` 的 9 例、`formatting_test.rs` 的 7 例、`color_test.rs` 的 2 例与颜色组合的源码测试。
+- 保留 `papergrid/tests/grid/format_configuration.rs` 全部 4 个测试函数的场景，展开为 33 个用例（27 组组合、4 个单格案例、空尺寸循环、Tab 场景）。
+
+格式测试也由 `import-transform-tests.nu` 生成；底层格式测试和转义字面量验证使用：
+
+```sh
+nu --no-config-file scripts/import-grid-format-tests.nu /path/to/tabled
+nu --no-config-file scripts/upstream-literals_test.nu
+```
+
+上游 `render_settings.rs` 中的组合渲染用例、文本内嵌 ANSI 的测量/裁剪以及 Color 解析尚未完成，不能将这些已通过的格式测试视为整个 ANSI 功能已经对齐。
+
 | 范围 | 当前证据 / 待办 |
 | --- | --- |
 | Builder / IndexBuilder | 已有实现和部分测试，需逐个核对方法、泛型数据入口、异常边界 |
 | Table 核心 API | 已补齐 TableOption / CellOption / Settings / Modify、统一 Alignment 和尺寸查询；Tabled 数据模型和其他查询接口仍需核对 |
-| 格式 | 缺少 AlignmentStrategy、TrimStrategy、Justification、Charset；现有默认对齐也需要和上游默认值逐项核对 |
+| 格式 | 已实现四种格式选项并纠正默认值；继续核对 render_settings、内嵌 ANSI、Span/Width/Height 组合与其他渲染器 |
 | 宽高 | 现有 Wrap/Truncate/Increase/Limit 只是部分能力，需核对表级与单元格级语义、测量、优先级、列表、最小宽度 |
 | Padding / Margin | 需补齐填充字符、PaddingExpand、Margin 及相关偏移和颜色 |
-| 颜色 / ANSI | 缺少 Color、边框/填充/边距颜色、Colorization 和完整 ANSI 宽度处理 |
+| 颜色 / ANSI | 已有基础 Color 与内容/对齐填充颜色；仍缺解析、边框/填充/边距颜色、Colorization 和完整 ANSI 宽度处理 |
 | Style / Theme | 缺少完整 VerticalLine、LineChar、LineText、Theme、Layout、ColumnNames/RowNames 等 |
 | Object / Location | 已有部分对象集合，仍需 Frame、完整组合顺序/迭代器及 ByContent/ByCondition/ByValue |
 | Span / Panel / Merge / Highlight / Split | 已有实现，尚需上游全部原始测试的逐项映射与行为审计 |
@@ -60,4 +77,4 @@ nu --no-config-file scripts/audit-upstream-tests.nu /path/to/tabled --output doc
 
 ## 当前验证
 
-2026-09-08：`moon info`、`moon fmt`、`moon check`、`moon build`、`moon test` 均成功，379/379 测试通过，无 Warning。此结果对应本次数据变换补全，不表示上表的未完成项目已对齐。
+2026-09-08：`moon info`、`moon fmt`、`moon check`、`moon build`、`moon test` 均成功，456/456 测试通过，无 Warning。此结果对应已完成的数据变换、通用配置与当前格式能力，不表示上表的未完成项目已对齐。

@@ -5,7 +5,7 @@ fn to_upper(text : String) -> String {
 
 ///|
 test "table ascii style" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["language", "year"],
     ["Rust", "2010"],
     ["MoonBit", "2022"],
@@ -27,7 +27,7 @@ test "table ascii style" {
 
 ///|
 test "table rounded style" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["0", "1", "2"],
     ["0", "0", "0"],
     ["1", "2", "3"],
@@ -58,7 +58,9 @@ test "builder insert row and col" {
   builder.push_record(["2", "4", "6"])
   builder.insert_record(0, ["0", "1", "2"])
   builder.insert_col(0, ["", "0", "1", "2"])
-  let table = builder.build()
+  let table = builder
+    .build()
+    .with_((@tabular.Alignment::center(), @tabular.AlignmentStrategy::PerLine))
   table.apply(@tabular.Style::modern()) |> ignore
   inspect(
     table.to_string(),
@@ -84,7 +86,9 @@ test "builder remove record and col" {
   builder.push_record(["d", "e", "f"])
   builder.remove_record(1)
   builder.remove_col(2)
-  let table = builder.build()
+  let table = builder
+    .build()
+    .with_((@tabular.Alignment::center(), @tabular.AlignmentStrategy::PerLine))
   inspect(
     table.to_string(),
     content=(
@@ -104,7 +108,9 @@ test "builder fill empty cells" {
   builder.set_empty("NaN")
   builder.push_record(["a", "b", "c"])
   builder.push_record(["d"])
-  let table = builder.build()
+  let table = builder
+    .build()
+    .with_((@tabular.Alignment::center(), @tabular.AlignmentStrategy::PerLine))
   inspect(
     table.to_string(),
     content=(
@@ -127,7 +133,9 @@ test "builder clean empty cols" {
     ["", "e", "f"],
   ])
   builder.clean()
-  let table = builder.build()
+  let table = builder
+    .build()
+    .with_((@tabular.Alignment::center(), @tabular.AlignmentStrategy::PerLine))
   inspect(
     table.to_string(),
     content=(
@@ -144,11 +152,7 @@ test "builder clean empty cols" {
 
 ///|
 test "table right align" {
-  let table = @tabular.Table::from_rows([
-    ["N", "col 0"],
-    ["0", "0-0"],
-    ["1", "1-0"],
-  ])
+  let table = centered_table([["N", "col 0"], ["0", "0-0"], ["1", "1-0"]])
   table.set_align(@tabular.Align::right()) |> ignore
   inspect(
     table.to_string(),
@@ -166,7 +170,7 @@ test "table right align" {
 
 ///|
 test "table custom padding" {
-  let table = @tabular.Table::from_rows([["N", "col 0"], ["0", "0-0"]])
+  let table = centered_table([["N", "col 0"], ["0", "0-0"]])
   table.modify_segment(
     @tabular.Segment::all(),
     @tabular.Setting::align(@tabular.Align::left()),
@@ -191,7 +195,7 @@ test "table custom padding" {
 
 ///|
 test "table width wrap" {
-  let table = @tabular.Table::from_rows([["text"], ["abcdef"]])
+  let table = centered_table([["text"], ["abcdef"]])
   table.modify_segment(
     @tabular.Segment::all(),
     @tabular.Setting::align(@tabular.Align::left()),
@@ -215,7 +219,7 @@ test "table width wrap" {
 
 ///|
 test "table width wrap with wide chars" {
-  let table = @tabular.Table::from_rows([["词条"], ["中中中"]])
+  let table = centered_table([["词条"], ["中中中"]])
   table.apply(@tabular.Style::ascii()) |> ignore
   table.set_width(@tabular.Width::wrap(4)) |> ignore
   inspect(
@@ -233,7 +237,7 @@ test "table width wrap with wide chars" {
 
 ///|
 test "table width wrap with wide chars uses default placeholder when width is too small" {
-  let table = @tabular.Table::from_rows([["中"]])
+  let table = centered_table([["中"]])
   table.apply(@tabular.Style::ascii()) |> ignore
   table.set_width(@tabular.Width::wrap(1)) |> ignore
   inspect(
@@ -248,7 +252,7 @@ test "table width wrap with wide chars uses default placeholder when width is to
 
 ///|
 test "table width wrap with wide chars supports custom placeholder" {
-  let table = @tabular.Table::from_rows([["中"]])
+  let table = centered_table([["中"]])
   table.apply(@tabular.Style::ascii()) |> ignore
   table.set_width(@tabular.Width::wrap_with(1, "?")) |> ignore
   inspect(
@@ -263,7 +267,7 @@ test "table width wrap with wide chars supports custom placeholder" {
 
 ///|
 test "table width truncate" {
-  let table = @tabular.Table::from_rows([["text"], ["abcdef"]])
+  let table = centered_table([["text"], ["abcdef"]])
   table.modify_segment(
     @tabular.Segment::all(),
     @tabular.Setting::align(@tabular.Align::left()),
@@ -284,7 +288,7 @@ test "table width truncate" {
 
 ///|
 test "table height increase" {
-  let table = @tabular.Table::from_rows([["text"], ["a"]])
+  let table = centered_table([["text"], ["a"]])
   table.modify_segment(
     @tabular.Segment::all(),
     @tabular.Setting::align(@tabular.Align::left()),
@@ -307,7 +311,7 @@ test "table height increase" {
 
 ///|
 test "table height limit" {
-  let table = @tabular.Table::from_rows([["text"], ["a\nb\nc"]])
+  let table = centered_table([["text"], ["a\nb\nc"]])
   table.modify_segment(
     @tabular.Segment::all(),
     @tabular.Setting::align(@tabular.Align::left()),
@@ -329,7 +333,7 @@ test "table height limit" {
 
 ///|
 test "modify cols width truncate with row exclusion" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["N", "col 0", "col 1"],
     ["0", "abcdef", "ghijkl"],
     ["1", "mnopqr", "stuvwx"],
@@ -353,11 +357,7 @@ test "modify cols width truncate with row exclusion" {
 
 ///|
 test "modify segment width wrap" {
-  let table = @tabular.Table::from_rows([
-    ["N", "text"],
-    ["0", "abcdef"],
-    ["1", "ghijkl"],
-  ])
+  let table = centered_table([["N", "text"], ["0", "abcdef"], ["1", "ghijkl"]])
   table.modify_segment(
     @tabular.Segment::all(),
     @tabular.Setting::align(@tabular.Align::left()),
@@ -389,7 +389,7 @@ test "modify segment width wrap" {
 
 ///|
 test "modify rows height increase" {
-  let table = @tabular.Table::from_rows([["N", "text"], ["0", "a"], ["1", "b"]])
+  let table = centered_table([["N", "text"], ["0", "a"], ["1", "b"]])
   table.modify_segment(
     @tabular.Segment::all(),
     @tabular.Setting::align(@tabular.Align::left()),
@@ -418,7 +418,7 @@ test "modify rows height increase" {
 
 ///|
 test "modify cell col span" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["N", "col 0", "col 1", "col 2"],
     ["0", "0-0", "0-1", "0-2"],
     ["1", "1-0", "1-1", "1-2"],
@@ -443,7 +443,7 @@ test "modify cell col span" {
 
 ///|
 test "modify col span for a whole col selection" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["N", "col 0", "col 1", "col 2"],
     ["0", "0-0", "0-1", "0-2"],
     ["1", "1-0", "1-1", "1-2"],
@@ -472,7 +472,7 @@ test "modify col span for a whole col selection" {
 
 ///|
 test "col span survives extract cols remap" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["N", "col 0", "col 1", "col 2"],
     ["0", "0-0", "0-1", "0-2"],
     ["1", "1-0", "1-1", "1-2"],
@@ -498,7 +498,7 @@ test "col span survives extract cols remap" {
 
 ///|
 test "col span can be removed without losing hidden cell values" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["N", "col 0", "col 1", "col 2"],
     ["0", "0-0", "0-1", "0-2"],
     ["1", "1-0", "1-1", "1-2"],
@@ -524,7 +524,7 @@ test "col span can be removed without losing hidden cell values" {
 
 ///|
 test "modify cell row span" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["N", "col 0", "col 1"],
     ["0", "0-0", "0-1"],
     ["1", "1-0", "1-1"],
@@ -549,7 +549,7 @@ test "modify cell row span" {
 
 ///|
 test "modify first-col row span" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["N", "col 0", "col 1"],
     ["0", "0-0", "0-1"],
     ["1", "1-0", "1-1"],
@@ -574,7 +574,7 @@ test "modify first-col row span" {
 
 ///|
 test "row span can be removed without losing hidden cell values" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["N", "col 0", "col 1"],
     ["0", "0-0", "0-1"],
     ["1", "1-0", "1-1"],
@@ -600,7 +600,7 @@ test "row span can be removed without losing hidden cell values" {
 
 ///|
 test "row span survives extract rows remap" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["N", "col 0", "col 1"],
     ["0", "0-0", "0-1"],
     ["1", "1-0", "1-1"],
@@ -627,7 +627,7 @@ test "row span survives extract rows remap" {
 
 ///|
 test "row span bigger than max clamps to table height" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["N", "col 0", "col 1"],
     ["0", "0-0", "0-1"],
     ["1", "1-0", "1-1"],
@@ -650,7 +650,7 @@ test "row span bigger than max clamps to table height" {
 
 ///|
 test "row span on header row under psql" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["N", "col 0", "col 1"],
     ["0", "0-0", "0-1"],
     ["1", "1-0", "1-1"],
@@ -673,7 +673,7 @@ test "row span on header row under psql" {
 
 ///|
 test "combined row and col span on one cell" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["N", "col 0", "col 1", "col 2"],
     ["0", "0-0", "0-1", "0-2"],
     ["1", "1-0", "1-1", "1-2"],
@@ -705,7 +705,7 @@ test "combined row and col span on one cell" {
 
 ///|
 test "row span invalid position is a no-op" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["N", "col 0", "col 1"],
     ["0", "0-0", "0-1"],
     ["1", "1-0", "1-1"],
@@ -729,7 +729,7 @@ test "row span invalid position is a no-op" {
 
 ///|
 test "col span negative extends left" {
-  let table = @tabular.Table::from_rows([["a", "b", "c"], ["d", "e", "f"]])
+  let table = centered_table([["a", "b", "c"], ["d", "e", "f"]])
   table.apply(@tabular.Style::ascii()) |> ignore
   table.modify_segment(
     @tabular.Segment::all(),
@@ -751,7 +751,7 @@ test "col span negative extends left" {
 
 ///|
 test "col span zero extends to full row width and can be removed" {
-  let table = @tabular.Table::from_rows([["a", "b", "c"], ["d", "e", "f"]])
+  let table = centered_table([["a", "b", "c"], ["d", "e", "f"]])
   table.apply(@tabular.Style::ascii()) |> ignore
   table.modify_segment(
     @tabular.Segment::all(),
@@ -784,7 +784,7 @@ test "col span zero extends to full row width and can be removed" {
 
 ///|
 test "row span negative extends upward" {
-  let table = @tabular.Table::from_rows([["a", "b"], ["c", "d"], ["e", "f"]])
+  let table = centered_table([["a", "b"], ["c", "d"], ["e", "f"]])
   table.apply(@tabular.Style::ascii()) |> ignore
   table.modify_segment(
     @tabular.Segment::all(),
@@ -808,7 +808,7 @@ test "row span negative extends upward" {
 
 ///|
 test "row span zero extends to full col height and can be removed" {
-  let table = @tabular.Table::from_rows([["a", "b"], ["c", "d"], ["e", "f"]])
+  let table = centered_table([["a", "b"], ["c", "d"], ["e", "f"]])
   table.apply(@tabular.Style::ascii()) |> ignore
   table.modify_segment(
     @tabular.Segment::all(),
@@ -845,7 +845,7 @@ test "row span zero extends to full col height and can be removed" {
 
 ///|
 test "col span negative survives extract cols when anchor col is removed" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["a", "b", "c", "d", "e"],
     ["f", "g", "h", "i", "j"],
   ])
@@ -871,12 +871,7 @@ test "col span negative survives extract cols when anchor col is removed" {
 
 ///|
 test "row span zero survives extract rows when anchor row is removed" {
-  let table = @tabular.Table::from_rows([
-    ["a", "b"],
-    ["c", "d"],
-    ["e", "f"],
-    ["g", "h"],
-  ])
+  let table = centered_table([["a", "b"], ["c", "d"], ["e", "f"], ["g", "h"]])
   table.apply(@tabular.Style::ascii()) |> ignore
   table.modify_segment(
     @tabular.Segment::all(),
@@ -901,10 +896,7 @@ test "row span zero survives extract rows when anchor row is removed" {
 
 ///|
 test "col span zero survives remove first cols" {
-  let table = @tabular.Table::from_rows([
-    ["a", "b", "c", "d"],
-    ["e", "f", "g", "h"],
-  ])
+  let table = centered_table([["a", "b", "c", "d"], ["e", "f", "g", "h"]])
   table.apply(@tabular.Style::ascii()) |> ignore
   table.modify_segment(
     @tabular.Segment::all(),
@@ -927,12 +919,7 @@ test "col span zero survives remove first cols" {
 
 ///|
 test "row span negative survives remove first row" {
-  let table = @tabular.Table::from_rows([
-    ["a", "b"],
-    ["c", "d"],
-    ["e", "f"],
-    ["g", "h"],
-  ])
+  let table = centered_table([["a", "b"], ["c", "d"], ["e", "f"], ["g", "h"]])
   table.apply(@tabular.Style::ascii()) |> ignore
   table.modify_segment(
     @tabular.Segment::all(),
@@ -957,11 +944,7 @@ test "row span negative survives remove first row" {
 
 ///|
 test "modify cell height limit" {
-  let table = @tabular.Table::from_rows([
-    ["N", "text"],
-    ["0", "a\nb\nc"],
-    ["1", "x"],
-  ])
+  let table = centered_table([["N", "text"], ["0", "a\nb\nc"], ["1", "x"]])
   table.modify_segment(
     @tabular.Segment::all(),
     @tabular.Setting::align(@tabular.Align::left()),
@@ -989,7 +972,7 @@ test "modify cell height limit" {
 
 ///|
 test "table vertical align center" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["left\ncell", "right one"],
     ["the second col", "and\nhere\nsee\na"],
   ])
@@ -1017,7 +1000,7 @@ test "table vertical align center" {
 
 ///|
 test "table markdown style" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["N", "col 0", "col 1"],
     ["0", "0-0", "0-1"],
     ["1", "1-0", "1-1"],
@@ -1036,7 +1019,7 @@ test "table markdown style" {
 
 ///|
 test "table psql style" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["N", "col 0", "col 1"],
     ["0", "0-0", "0-1"],
     ["1", "1-0", "1-1"],
@@ -1055,7 +1038,7 @@ test "table psql style" {
 
 ///|
 test "style blank" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["N", "col 0", "col 1"],
     ["0", "0-0", "0-1"],
     ["1", "1-0", "1-1"],
@@ -1073,7 +1056,7 @@ test "style blank" {
 
 ///|
 test "style extended" {
-  let table = @tabular.Table::from_rows([["N", "col 0"], ["0", "0-0"]])
+  let table = centered_table([["N", "col 0"], ["0", "0-0"]])
   table.apply(@tabular.Style::extended()) |> ignore
   inspect(
     table.to_string(),
@@ -1089,7 +1072,7 @@ test "style extended" {
 
 ///|
 test "style dots" {
-  let table = @tabular.Table::from_rows([["N", "col 0"], ["0", "0-0"]])
+  let table = centered_table([["N", "col 0"], ["0", "0-0"]])
   table.apply(@tabular.Style::dots()) |> ignore
   inspect(
     table.to_string(),
@@ -1105,7 +1088,7 @@ test "style dots" {
 
 ///|
 test "style re structured text" {
-  let table = @tabular.Table::from_rows([["N", "col 0"], ["0", "0-0"]])
+  let table = centered_table([["N", "col 0"], ["0", "0-0"]])
   table.apply(@tabular.Style::re_structured_text()) |> ignore
   let expected = "=== =======\n N   col 0 \n=== =======\n 0    0-0  \n=== ======="
   assert_eq(table.to_string(), expected)
@@ -1113,7 +1096,7 @@ test "style re structured text" {
 
 ///|
 test "style ascii rounded" {
-  let table = @tabular.Table::from_rows([["N", "col 0"], ["0", "0-0"]])
+  let table = centered_table([["N", "col 0"], ["0", "0-0"]])
   table.apply(@tabular.Style::ascii_rounded()) |> ignore
   inspect(
     table.to_string(),
@@ -1128,7 +1111,7 @@ test "style ascii rounded" {
 
 ///|
 test "style remove horizontal with custom middle line" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["N", "col 0", "col 1"],
     ["0", "0-0", "0-1"],
     ["1", "1-0", "1-1"],
@@ -1162,7 +1145,7 @@ test "style remove horizontal with custom middle line" {
 
 ///|
 test "horizontal line from style modern" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["N", "col 0", "col 1"],
     ["0", "0-0", "0-1"],
     ["1", "1-0", "1-1"],
@@ -1190,7 +1173,7 @@ test "horizontal line from style modern" {
 
 ///|
 test "style remove horizontal preserves custom lines" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["N", "col 0", "col 1"],
     ["0", "0-0", "0-1"],
     ["1", "1-0", "1-1"],
@@ -1218,7 +1201,7 @@ test "style remove horizontal preserves custom lines" {
 
 ///|
 test "style remove horizontals clears custom lines" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["N", "col 0", "col 1"],
     ["0", "0-0", "0-1"],
     ["1", "1-0", "1-1"],
@@ -1245,7 +1228,7 @@ test "style remove horizontals clears custom lines" {
 
 ///|
 test "style frame changes" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["N", "col 0", "col 1"],
     ["0", "0-0", "0-1"],
     ["1", "1-0", "1-1"],
@@ -1266,7 +1249,7 @@ test "style frame changes" {
 
 ///|
 test "style empty top" {
-  let table = @tabular.Table::from_rows([["N", "col 0"], ["0", "0-0"]])
+  let table = centered_table([["N", "col 0"], ["0", "0-0"]])
   table.apply(@tabular.Style::empty().top('-')) |> ignore
   let expected = "-----------\n N  col 0 \n 0   0-0  "
   assert_eq(table.to_string(), expected)
@@ -1274,7 +1257,7 @@ test "style empty top" {
 
 ///|
 test "style empty left right vertical horizontal" {
-  let table = @tabular.Table::from_rows([["N", "col 0"], ["0", "0-0"]])
+  let table = centered_table([["N", "col 0"], ["0", "0-0"]])
   table.apply(
     @tabular.Style::empty().left('|').right('*').vertical('#').horizontal('='),
   )
@@ -1291,7 +1274,7 @@ test "style empty left right vertical horizontal" {
 
 ///|
 test "style empty custom horizontal only" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["N", "col 0", "col 1"],
     ["0", "0-0", "0-1"],
     ["1", "1-0", "1-1"],
@@ -1313,7 +1296,7 @@ test "style empty custom horizontal only" {
 
 ///|
 test "style remove vertical from full custom frame" {
-  let table = @tabular.Table::from_rows([["N", "col 0"], ["0", "0-0"]])
+  let table = centered_table([["N", "col 0"], ["0", "0-0"]])
   table.apply(
     @tabular.Style::empty()
     .top('-')
@@ -1348,7 +1331,7 @@ test "style remove vertical from full custom frame" {
 
 ///|
 test "modify segment align left" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["N", "col 0", "col 1"],
     ["0", "0-0", "0-1"],
     ["1", "1-0", "1-1"],
@@ -1372,7 +1355,7 @@ test "modify segment align left" {
 
 ///|
 test "modify rows align" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["N", "col 0", "col 1"],
     ["0", "0-0", "0-1"],
     ["1", "1-0", "1-1"],
@@ -1403,7 +1386,7 @@ test "modify rows align" {
 
 ///|
 test "modify cols vertical align" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["N", "col 0", "col 1"],
     ["0", "E\nnde\navou\nros", "0-1"],
     ["1", "Red\nHat", "https://\nwww\n.\nredhat\n.com\n/en"],
@@ -1435,11 +1418,7 @@ test "modify cols vertical align" {
 
 ///|
 test "modify rows padding" {
-  let table = @tabular.Table::from_rows([
-    ["N", "col 0"],
-    ["0", "0-0"],
-    ["1", "1-0"],
-  ])
+  let table = centered_table([["N", "col 0"], ["0", "0-0"], ["1", "1-0"]])
   table.apply(@tabular.Style::psql()) |> ignore
   table.modify_segment(
     @tabular.Segment::all(),
@@ -1468,7 +1447,7 @@ test "modify rows padding" {
 
 ///|
 test "modify cols skip and not first" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["N", "col 0", "col 1", "col 2"],
     ["0", "0-0", "0-1", "0-2"],
     ["1", "1-0", "1-1", "1-2"],
@@ -1494,7 +1473,7 @@ test "modify cols skip and not first" {
 
 ///|
 test "modify cols step by" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["N", "col 0", "col 1", "col 2"],
     ["0", "0-0", "0-1", "0-2"],
     ["1", "1-0", "1-1", "1-2"],
@@ -1520,7 +1499,7 @@ test "modify cols step by" {
 
 ///|
 test "modify cols filter" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["N", "col 0", "col 1", "col 2"],
     ["0", "0-0", "0-1", "0-2"],
     ["1", "1-0", "1-1", "1-2"],
@@ -1551,7 +1530,7 @@ test "modify cols filter" {
 
 ///|
 test "modify segment skip one cell" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["N", "col 0", "col 1", "col 2"],
     ["0", "0-0", "0-1", "0-2"],
     ["1", "1-0", "1-1", "1-2"],
@@ -1577,7 +1556,7 @@ test "modify segment skip one cell" {
 
 ///|
 test "modify rows step by" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["N", "col 0", "col 1"],
     ["0", "0-0", "0-1"],
     ["1", "1-0", "1-1"],
@@ -1611,7 +1590,7 @@ test "modify rows step by" {
 
 ///|
 test "modify segment range" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["N", "col 0", "col 1"],
     ["0", "0-0", "0-1"],
     ["1", "1-0", "1-1"],
@@ -1635,7 +1614,7 @@ test "modify segment range" {
 
 ///|
 test "modify single row with one" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["N", "col 0", "col 1"],
     ["0", "0-0", "0-1"],
     ["1", "1-0", "1-1"],
@@ -1666,7 +1645,7 @@ test "modify single row with one" {
 
 ///|
 test "modify single col with one" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["N", "col 0", "col 1"],
     ["0", "0-0", "0-1"],
     ["1", "1-0", "1-1"],
@@ -1690,7 +1669,7 @@ test "modify single col with one" {
 
 ///|
 test "modify cell align" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["N", "col 0", "col 1"],
     ["0", "0-0", "0-1"],
     ["1", "1-0", "1-1"],
@@ -1714,7 +1693,7 @@ test "modify cell align" {
 
 ///|
 test "modify last row align" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["N", "col 0", "col 1"],
     ["0", "0-0", "0-1"],
     ["1", "1-0", "1-1"],
@@ -1748,7 +1727,7 @@ test "modify last row align" {
 
 ///|
 test "modify last col align" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["N", "col 0", "col 1"],
     ["0", "0-0", "0-1"],
     ["1", "1-0", "1-1"],
@@ -1772,7 +1751,7 @@ test "modify last col align" {
 
 ///|
 test "modify row by last offset" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["N", "col 0"],
     ["0", "0-0"],
     ["1", "1-0"],
@@ -1806,7 +1785,7 @@ test "modify row by last offset" {
 
 ///|
 test "modify col by last offset" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["N", "col 0", "col 1", "col 2"],
     ["0", "0-0", "0-1", "0-2"],
     ["1", "1-0", "1-1", "1-2"],
@@ -1830,7 +1809,7 @@ test "modify col by last offset" {
 
 ///|
 test "modify intersect rows and cols" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["N", "col 0", "col 1", "col 2"],
     ["0", "0-0", "0-1", "0-2"],
     ["1", "1-0", "1-1", "1-2"],
@@ -1856,7 +1835,7 @@ test "modify intersect rows and cols" {
 
 ///|
 test "modify intersect rows and cols with skip" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["N", "col 0", "col 1", "col 2"],
     ["0", "0-0", "0-1", "0-2"],
     ["1", "1-0", "1-1", "1-2"],
@@ -1882,7 +1861,7 @@ test "modify intersect rows and cols with skip" {
 
 ///|
 test "modify inverse cols" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["N", "col 0", "col 1", "col 2"],
     ["0", "0-0", "0-1", "0-2"],
     ["1", "1-0", "1-1", "1-2"],
@@ -1906,7 +1885,7 @@ test "modify inverse cols" {
 
 ///|
 test "modify inverse cell" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["N", "col 0", "col 1"],
     ["0", "0-0", "0-1"],
     ["1", "1-0", "1-1"],
@@ -1930,7 +1909,7 @@ test "modify inverse cell" {
 
 ///|
 test "modify union of row and col segments" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["N", "col 0", "col 1"],
     ["0", "0-0", "0-1"],
     ["1", "1-0", "1-1"],
@@ -1959,7 +1938,7 @@ test "modify union of row and col segments" {
 
 ///|
 test "modify union of row selectors" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["N", "col 0", "col 1"],
     ["0", "0-0", "0-1"],
     ["1", "1-0", "1-1"],
@@ -1990,7 +1969,7 @@ test "modify union of row selectors" {
 
 ///|
 test "modify row not col with ergonomic helper" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["N", "col 0", "col 1"],
     ["0", "0-0", "0-1"],
     ["1", "1-0", "1-1"],
@@ -2019,7 +1998,7 @@ test "modify row not col with ergonomic helper" {
 
 ///|
 test "modify col not row with ergonomic helper" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["N", "col 0", "col 1"],
     ["0", "0-0", "0-1"],
     ["1", "1-0", "1-1"],
@@ -2048,7 +2027,7 @@ test "modify col not row with ergonomic helper" {
 
 ///|
 test "modify segment difference by cell" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["N", "col 0", "col 1"],
     ["0", "0-0", "0-1"],
     ["1", "1-0", "1-1"],
@@ -2080,7 +2059,7 @@ test "modify segment difference by cell" {
 
 ///|
 test "format full segment surround" {
-  let table = @tabular.Table::from_rows([["N", "name"], ["0", "alice"]])
+  let table = centered_table([["N", "name"], ["0", "alice"]])
   table.modify_segment(
     @tabular.Segment::all(),
     @tabular.Setting::format(@tabular.Format::surround("[", "]")),
@@ -2100,7 +2079,7 @@ test "format full segment surround" {
 
 ///|
 test "format first row surround" {
-  let table = @tabular.Table::from_rows([["N", "name"], ["0", "alice"]])
+  let table = centered_table([["N", "name"], ["0", "alice"]])
   table.apply(@tabular.Style::markdown()) |> ignore
   table.modify_rows(
     @tabular.Rows::first(),
@@ -2119,11 +2098,7 @@ test "format first row surround" {
 
 ///|
 test "format first col surround" {
-  let table = @tabular.Table::from_rows([
-    ["N", "name"],
-    ["0", "alice"],
-    ["1", "bob"],
-  ])
+  let table = centered_table([["N", "name"], ["0", "alice"], ["1", "bob"]])
   table.apply(@tabular.Style::psql()) |> ignore
   table.modify_cols(
     @tabular.Cols::one(0),
@@ -2143,11 +2118,7 @@ test "format first col surround" {
 
 ///|
 test "format cell value" {
-  let table = @tabular.Table::from_rows([
-    ["N", "name"],
-    ["0", "alice"],
-    ["1", "bob"],
-  ])
+  let table = centered_table([["N", "name"], ["0", "alice"], ["1", "bob"]])
   table.apply(@tabular.Style::psql()) |> ignore
   table.modify_cell(
     @tabular.Cell::new(2, 1),
@@ -2167,7 +2138,7 @@ test "format cell value" {
 
 ///|
 test "format content full segment" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["N", "col 0", "col 1", "col 2"],
     ["0", "0-0", "0-1", "0-2"],
     ["1", "1-0", "1-1", "1-2"],
@@ -2198,7 +2169,7 @@ test "format content full segment" {
 
 ///|
 test "format content using function" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["N", "col 0", "col 1"],
     ["0", "0-0", "0-1"],
     ["1", "1-0", "1-1"],
@@ -2222,7 +2193,7 @@ test "format content using function" {
 
 ///|
 test "format positioned first row" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["N", "col 0", "col 1", "col 2"],
     ["0", "0-0", "0-1", "0-2"],
     ["1", "1-0", "1-1", "1-2"],
@@ -2254,7 +2225,7 @@ test "format positioned first row" {
 
 ///|
 test "format multiline content" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["N", "col 0", "col 1"],
     ["0", "0-0", "E\nnde\navou\nros"],
     ["1", "1-0", "https://\nwww\n.\nredhat\n.com\n/en"],
@@ -2288,7 +2259,7 @@ test "format multiline content" {
 
 ///|
 test "format intersection content" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["N", "col 0", "col 1", "col 2"],
     ["0", "0-0", "0-1", "0-2"],
     ["1", "1-0", "1-1", "1-2"],
@@ -2314,7 +2285,7 @@ test "format intersection content" {
 
 ///|
 test "format inverse cols content" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["N", "col 0", "col 1", "col 2"],
     ["0", "0-0", "0-1", "0-2"],
     ["1", "1-0", "1-1", "1-2"],
@@ -2338,7 +2309,7 @@ test "format inverse cols content" {
 
 ///|
 test "format union and difference content" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["N", "col 0", "col 1", "col 2"],
     ["0", "0-0", "0-1", "0-2"],
     ["1", "1-0", "1-1", "1-2"],
@@ -2366,7 +2337,7 @@ test "format union and difference content" {
 
 ///|
 test "format content keeps padding and align" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["N", "col 0", "col 1"],
     ["0", "0-0", "0-1"],
     ["1", "1-0", "1-1"],
@@ -2404,7 +2375,7 @@ test "format content keeps padding and align" {
 
 ///|
 test "format content then width truncate" {
-  let table = @tabular.Table::from_rows([["name"], ["alphabet"]])
+  let table = centered_table([["name"], ["alphabet"]])
   table.modify_segment(
     @tabular.Segment::all(),
     @tabular.Setting::align(@tabular.Align::left()),
@@ -2432,7 +2403,7 @@ test "format content then width truncate" {
 
 ///|
 test "format content then width wrap" {
-  let table = @tabular.Table::from_rows([["name"], ["alphabet"]])
+  let table = centered_table([["name"], ["alphabet"]])
   table.modify_segment(
     @tabular.Segment::all(),
     @tabular.Setting::align(@tabular.Align::left()),
@@ -2463,7 +2434,7 @@ test "format content then width wrap" {
 
 ///|
 test "format multiline then height limit" {
-  let table = @tabular.Table::from_rows([["text"], ["a\nb\nc"]])
+  let table = centered_table([["text"], ["a\nb\nc"]])
   table.modify_segment(
     @tabular.Segment::all(),
     @tabular.Setting::align(@tabular.Align::left()),
@@ -2492,7 +2463,7 @@ test "format multiline then height limit" {
 
 ///|
 test "extract segment keeps scoped width" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["N", "text", "more"],
     ["0", "abcdef", "ghijkl"],
     ["1", "mnopqr", "stuvwx"],
@@ -2530,7 +2501,7 @@ test "extract segment keeps scoped width" {
 
 ///|
 test "remove cols with scoped width on remaining col" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["N", "text", "drop"],
     ["0", "abcdef", "X"],
     ["1", "ghijkl", "Y"],
@@ -2562,7 +2533,7 @@ test "remove cols with scoped width on remaining col" {
 
 ///|
 test "one col mixed height layout" {
-  let table = @tabular.Table::from_rows([["head"], ["a\nb"], ["c"]])
+  let table = centered_table([["head"], ["a\nb"], ["c"]])
   table.modify_segment(
     @tabular.Segment::all(),
     @tabular.Setting::align(@tabular.Align::left()),
@@ -2585,7 +2556,7 @@ test "one col mixed height layout" {
 
 ///|
 test "one row width wrap layout" {
-  let table = @tabular.Table::from_rows([["abcdef", "ghijkl"]])
+  let table = centered_table([["abcdef", "ghijkl"]])
   table.modify_segment(
     @tabular.Segment::all(),
     @tabular.Setting::align(@tabular.Align::left()),
@@ -2609,7 +2580,7 @@ test "one row width wrap layout" {
 
 ///|
 test "padding by col name" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["N", "col 0", "col 1"],
     ["0", "0-0", "0-1"],
     ["1", "1-0", "1-1"],
@@ -2638,7 +2609,7 @@ test "padding by col name" {
 
 ///|
 test "padding by col name not first row" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["N", "col 0", "col 1"],
     ["0", "0-0", "0-1"],
     ["1", "1-0", "1-1"],
@@ -2667,7 +2638,7 @@ test "padding by col name not first row" {
 
 ///|
 test "padding by col name not existing" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["N", "col 0", "col 1"],
     ["0", "0-0", "0-1"],
     ["1", "1-0", "1-1"],
@@ -2696,7 +2667,7 @@ test "padding by col name not existing" {
 
 ///|
 test "remove rows" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["N", "col 0", "col 1"],
     ["0", "0-0", "0-1"],
     ["1", "1-0", "1-1"],
@@ -2717,7 +2688,7 @@ test "remove rows" {
 
 ///|
 test "remove header psql" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["N", "col 0", "col 1"],
     ["0", "0-0", "0-1"],
     ["1", "1-0", "1-1"],
@@ -2736,7 +2707,7 @@ test "remove header psql" {
 
 ///|
 test "remove first col psql" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["N", "col 0", "col 1"],
     ["0", "0-0", "0-1"],
     ["1", "1-0", "1-1"],
@@ -2756,7 +2727,7 @@ test "remove first col psql" {
 
 ///|
 test "remove col by name" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["N", "col 0", "col 1", "col 2"],
     ["0", "0-0", "0-1", "0-2"],
     ["1", "1-0", "1-1", "1-2"],
@@ -2777,7 +2748,7 @@ test "remove col by name" {
 
 ///|
 test "remove all cols yields empty" {
-  let table = @tabular.Table::from_rows([["N", "col 0"], ["0", "0-0"]])
+  let table = centered_table([["N", "col 0"], ["0", "0-0"]])
   table.apply(@tabular.Style::psql()) |> ignore
   table.remove_cols(@tabular.Cols::all()) |> ignore
   inspect(table.to_string(), content="")
@@ -2785,7 +2756,7 @@ test "remove all cols yields empty" {
 
 ///|
 test "extract segment full" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["N", "col 0", "col 1"],
     ["0", "0-0", "0-1"],
     ["1", "1-0", "1-1"],
@@ -2822,7 +2793,7 @@ test "extract segment full" {
 
 ///|
 test "extract segment skip top row" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["N", "col 0", "col 1"],
     ["0", "0-0", "0-1"],
     ["1", "1-0", "1-1"],
@@ -2846,7 +2817,7 @@ test "extract segment skip top row" {
 
 ///|
 test "extract segment skip first col" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["N", "col 0", "col 1"],
     ["0", "0-0", "0-1"],
     ["1", "1-0", "1-1"],
@@ -2869,7 +2840,7 @@ test "extract segment skip first col" {
 
 ///|
 test "extract bottom right square" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["N", "col 0", "col 1", "col 2"],
     ["0", "0-0", "0-1", "0-2"],
     ["1", "1-0", "1-1", "1-2"],
@@ -2891,7 +2862,7 @@ test "extract bottom right square" {
 
 ///|
 test "extract empty segment" {
-  let table = @tabular.Table::from_rows([["N", "col 0"], ["0", "0-0"]])
+  let table = centered_table([["N", "col 0"], ["0", "0-0"]])
   table.extract_segment(@tabular.Rows::new(1, 1), @tabular.Cols::new(1, 1))
   |> ignore
   inspect(table.to_string(), content="")
@@ -2899,7 +2870,7 @@ test "extract empty segment" {
 
 ///|
 test "extract after remove header" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["N", "col 0", "col 1", "col 2"],
     ["0", "0-0", "0-1", "0-2"],
     ["1", "1-0", "1-1", "1-2"],
@@ -2920,7 +2891,7 @@ test "extract after remove header" {
 
 ///|
 test "cell col span at header row col 0" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["N", "col 0", "col 1", "col 2"],
     ["0", "0-0", "0-1", "0-2"],
     ["1", "1-0", "1-1", "1-2"],
@@ -2947,7 +2918,7 @@ test "cell col span at header row col 0" {
 
 ///|
 test "cell col span at data row 0 col 0" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["N", "col 0", "col 1", "col 2"],
     ["0", "0-0", "0-1", "0-2"],
     ["1", "1-0", "1-1", "1-2"],
@@ -2974,7 +2945,7 @@ test "cell col span at data row 0 col 0" {
 
 ///|
 test "cell col span at data row 1 col 0 center" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["N", "col 0", "col 1", "col 2"],
     ["0", "0-0", "0-1", "0-2"],
     ["1", "1-0", "1-1", "1-2"],
@@ -2996,7 +2967,7 @@ test "cell col span at data row 1 col 0 center" {
 
 ///|
 test "cell col span at data row 2 col 0" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["N", "col 0", "col 1", "col 2"],
     ["0", "0-0", "0-1", "0-2"],
     ["1", "1-0", "1-1", "1-2"],
@@ -3023,7 +2994,7 @@ test "cell col span at data row 2 col 0" {
 
 ///|
 test "cell col span at header row col 1" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["N", "col 0", "col 1", "col 2"],
     ["0", "0-0", "0-1", "0-2"],
     ["1", "1-0", "1-1", "1-2"],
@@ -3050,7 +3021,7 @@ test "cell col span at header row col 1" {
 
 ///|
 test "cell col span at data row 1 col 1" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["N", "col 0", "col 1", "col 2"],
     ["0", "0-0", "0-1", "0-2"],
     ["1", "1-0", "1-1", "1-2"],
@@ -3077,7 +3048,7 @@ test "cell col span at data row 1 col 1" {
 
 ///|
 test "cell col span at data row 2 col 1" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["N", "col 0", "col 1", "col 2"],
     ["0", "0-0", "0-1", "0-2"],
     ["1", "1-0", "1-1", "1-2"],
@@ -3104,7 +3075,7 @@ test "cell col span at data row 2 col 1" {
 
 ///|
 test "cell col span at header row col 2 center" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["N", "col 0", "col 1", "col 2"],
     ["0", "0-0", "0-1", "0-2"],
     ["1", "1-0", "1-1", "1-2"],
@@ -3126,7 +3097,7 @@ test "cell col span at header row col 2 center" {
 
 ///|
 test "cell col span at data row 0 col 2 center" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["N", "col 0", "col 1", "col 2"],
     ["0", "0-0", "0-1", "0-2"],
     ["1", "1-0", "1-1", "1-2"],
@@ -3148,7 +3119,7 @@ test "cell col span at data row 0 col 2 center" {
 
 ///|
 test "cell col span at data row 1 col 2 center" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["N", "col 0", "col 1", "col 2"],
     ["0", "0-0", "0-1", "0-2"],
     ["1", "1-0", "1-1", "1-2"],
@@ -3170,7 +3141,7 @@ test "cell col span at data row 1 col 2 center" {
 
 ///|
 test "cell col span at data row 2 col 2 center" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["N", "col 0", "col 1", "col 2"],
     ["0", "0-0", "0-1", "0-2"],
     ["1", "1-0", "1-1", "1-2"],
@@ -3192,7 +3163,7 @@ test "cell col span at data row 2 col 2 center" {
 
 ///|
 test "col span on whole col col 0" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["N", "col 0", "col 1", "col 2"],
     ["0", "0-0", "0-1", "0-2"],
     ["1", "1-0", "1-1", "1-2"],
@@ -3219,7 +3190,7 @@ test "col span on whole col col 0" {
 
 ///|
 test "col span on col range 1" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["N", "col 0", "col 1", "col 2"],
     ["0", "0-0", "0-1", "0-2"],
     ["1", "1-0", "1-1", "1-2"],
@@ -3246,7 +3217,7 @@ test "col span on col range 1" {
 
 ///|
 test "col span covers full row" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["N", "col 0", "col 1", "col 2"],
     ["0", "0-0", "0-1", "0-2"],
     ["1", "1-0", "1-1", "1-2"],
@@ -3273,7 +3244,7 @@ test "col span covers full row" {
 
 ///|
 test "col span bigger than max" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["N", "col 0", "col 1", "col 2"],
     ["0", "0-0", "0-1", "0-2"],
     ["1", "1-0", "1-1", "1-2"],
@@ -3298,7 +3269,7 @@ test "col span bigger than max" {
 
 ///|
 test "col span multiline content" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["N", "col 0", "col 1", "col 2"],
     ["0", "0-0", "0-1", "0-2"],
     ["1", "1-0", "1-1", "1-2"],
@@ -3325,7 +3296,7 @@ test "col span multiline content" {
 
 ///|
 test "padding works in spanned cols" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["N", "col 0", "col 1", "col 2"],
     ["0", "0-0", "0-1", "0-2"],
     ["1", "1-0", "1-1", "1-2"],
@@ -3358,7 +3329,7 @@ test "padding works in spanned cols" {
 
 ///|
 test "col span multiple negatives" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["N", "col 0", "col 1", "col 2"],
     ["0", "0-0", "0-1", "0-2"],
     ["1", "1-0", "1-1", "1-2"],
@@ -3386,7 +3357,7 @@ test "col span multiple negatives" {
 
 ///|
 test "col span multiple zeros" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["N", "col 0", "col 1", "col 2"],
     ["0", "0-0", "0-1", "0-2"],
     ["1", "1-0", "1-1", "1-2"],
@@ -3417,7 +3388,7 @@ test "col span multiple zeros" {
 
 ///|
 test "cell row span (0,0) psql" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["N", "col 0", "col 1", "col 2"],
     ["0", "0-0", "0-1", "0-2"],
     ["1", "1-0", "1-1", "1-2"],
@@ -3444,7 +3415,7 @@ test "cell row span (0,0) psql" {
 
 ///|
 test "cell row span (1,0) psql" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["N", "col 0", "col 1", "col 2"],
     ["0", "0-0", "0-1", "0-2"],
     ["1", "1-0", "1-1", "1-2"],
@@ -3471,7 +3442,7 @@ test "cell row span (1,0) psql" {
 
 ///|
 test "cell row span (2,0) psql" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["N", "col 0", "col 1", "col 2"],
     ["0", "0-0", "0-1", "0-2"],
     ["1", "1-0", "1-1", "1-2"],
@@ -3493,7 +3464,7 @@ test "cell row span (2,0) psql" {
 
 ///|
 test "cell row span (0,1) psql" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["N", "col 0", "col 1", "col 2"],
     ["0", "0-0", "0-1", "0-2"],
     ["1", "1-0", "1-1", "1-2"],
@@ -3520,7 +3491,7 @@ test "cell row span (0,1) psql" {
 
 ///|
 test "cell row span (0,2) psql" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["N", "col 0", "col 1", "col 2"],
     ["0", "0-0", "0-1", "0-2"],
     ["1", "1-0", "1-1", "1-2"],
@@ -3547,7 +3518,7 @@ test "cell row span (0,2) psql" {
 
 ///|
 test "cell row span (0,3) psql" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["N", "col 0", "col 1", "col 2"],
     ["0", "0-0", "0-1", "0-2"],
     ["1", "1-0", "1-1", "1-2"],
@@ -3569,7 +3540,7 @@ test "cell row span (0,3) psql" {
 
 ///|
 test "cell row span (1,1) psql" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["N", "col 0", "col 1", "col 2"],
     ["0", "0-0", "0-1", "0-2"],
     ["1", "1-0", "1-1", "1-2"],
@@ -3596,7 +3567,7 @@ test "cell row span (1,1) psql" {
 
 ///|
 test "cell row span (2,1) psql" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["N", "col 0", "col 1", "col 2"],
     ["0", "0-0", "0-1", "0-2"],
     ["1", "1-0", "1-1", "1-2"],
@@ -3623,7 +3594,7 @@ test "cell row span (2,1) psql" {
 
 ///|
 test "cell row span (1,2) psql" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["N", "col 0", "col 1", "col 2"],
     ["0", "0-0", "0-1", "0-2"],
     ["1", "1-0", "1-1", "1-2"],
@@ -3650,7 +3621,7 @@ test "cell row span (1,2) psql" {
 
 ///|
 test "cell row span (2,2) psql" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["N", "col 0", "col 1", "col 2"],
     ["0", "0-0", "0-1", "0-2"],
     ["1", "1-0", "1-1", "1-2"],
@@ -3677,7 +3648,7 @@ test "cell row span (2,2) psql" {
 
 ///|
 test "cell row span (1,3) psql" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["N", "col 0", "col 1", "col 2"],
     ["0", "0-0", "0-1", "0-2"],
     ["1", "1-0", "1-1", "1-2"],
@@ -3704,7 +3675,7 @@ test "cell row span (1,3) psql" {
 
 ///|
 test "cell row span (2,3) psql" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["N", "col 0", "col 1", "col 2"],
     ["0", "0-0", "0-1", "0-2"],
     ["1", "1-0", "1-1", "1-2"],
@@ -3735,7 +3706,7 @@ test "cell row span (2,3) psql" {
 
 ///|
 test "whole row span header row ascii" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["N", "col 0", "col 1", "col 2"],
     ["0", "0-0", "0-1", "0-2"],
     ["1", "1-0", "1-1", "1-2"],
@@ -3764,7 +3735,7 @@ test "whole row span header row ascii" {
 
 ///|
 test "whole row span header row psql" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["N", "col 0", "col 1", "col 2"],
     ["0", "0-0", "0-1", "0-2"],
     ["1", "1-0", "1-1", "1-2"],
@@ -3789,7 +3760,7 @@ test "whole row span header row psql" {
 
 ///|
 test "whole row span data row 1 psql" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["N", "col 0", "col 1", "col 2"],
     ["0", "0-0", "0-1", "0-2"],
     ["1", "1-0", "1-1", "1-2"],
@@ -3815,7 +3786,7 @@ test "whole row span data row 1 psql" {
 
 ///|
 test "whole row span full table psql" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["N", "col 0", "col 1", "col 2"],
     ["0", "0-0", "0-1", "0-2"],
     ["1", "1-0", "1-1", "1-2"],
@@ -3843,7 +3814,7 @@ test "whole row span full table psql" {
 ///|
 test "span multiline content in col span" {
   // Upstream span_multiline: multiline content in spanned col
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["N", "col 0", "col 1", "col 2"],
     ["0", "0-0", "0-1", "0-2"],
     ["1", "1-0", "1-1", "1-2"],
@@ -3870,7 +3841,7 @@ test "span multiline content in col span" {
 
 ///|
 test "padding works in spanned cols psql" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["N", "col 0", "col 1", "col 2"],
     ["0", "0-0", "0-1", "0-2"],
     ["1", "1-0", "1-1", "1-2"],
@@ -3912,7 +3883,7 @@ test "spanned cols with collision modern" {
     ["just 1 col", "just 1 col", "just 1 col", "just 1 col", "just 1 col"],
     ["just 1 col", "just 1 col", "just 1 col", "just 1 col", "just 1 col"],
   ]
-  let table = @tabular.Table::from_rows(data)
+  let table = centered_table(data)
   table.apply(@tabular.Style::modern()) |> ignore
   // (0,0) span 5 cols with content override
   table.modify_cell(
@@ -3991,7 +3962,7 @@ test "spanned cols with collision modern" {
 
 ///|
 test "row span multiple negatives" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["N", "col 0", "col 1", "col 2"],
     ["0", "0-0", "0-1", "0-2"],
     ["1", "1-0", "1-1", "1-2"],
@@ -4019,7 +3990,7 @@ test "row span multiple negatives" {
 
 ///|
 test "row span multiple zeros" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["N", "col 0", "col 1", "col 2"],
     ["0", "0-0", "0-1", "0-2"],
     ["1", "1-0", "1-1", "1-2"],
@@ -4050,7 +4021,7 @@ test "row span multiple zeros" {
 
 ///|
 test "col span invalid position row" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["N", "col 0", "col 1", "col 2"],
     ["0", "0-0", "0-1", "0-2"],
     ["1", "1-0", "1-1", "1-2"],
@@ -4076,7 +4047,7 @@ test "col span invalid position row" {
 
 ///|
 test "col span invalid position col" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["N", "col 0", "col 1", "col 2"],
     ["0", "0-0", "0-1", "0-2"],
     ["1", "1-0", "1-1", "1-2"],
@@ -4102,7 +4073,7 @@ test "col span invalid position col" {
 
 ///|
 test "row span invalid position col" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["N", "col 0", "col 1", "col 2"],
     ["0", "0-0", "0-1", "0-2"],
     ["1", "1-0", "1-1", "1-2"],
@@ -4128,7 +4099,7 @@ test "row span invalid position col" {
 
 ///|
 test "row span invalid position both" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["N", "col 0", "col 1", "col 2"],
     ["0", "0-0", "0-1", "0-2"],
     ["1", "1-0", "1-1", "1-2"],
@@ -4158,7 +4129,7 @@ test "row span invalid position both" {
 
 ///|
 fn matrix33() -> @tabular.Table {
-  @tabular.Table::from_rows([
+  centered_table([
     ["N", "col 0", "col 1", "col 2"],
     ["0", "0-0", "0-1", "0-2"],
     ["1", "1-0", "1-1", "1-2"],
@@ -4309,7 +4280,7 @@ test "panel_footer" {
 
 ///|
 test "panel_style_uses_most_left_and_right_cell_styles" {
-  let table = @tabular.Table::from_rows([["i32", "i32"], ["0", "1"]])
+  let table = centered_table([["i32", "i32"], ["0", "1"]])
   table.panel(@tabular.Panel::horizontal(0, "Numbers")) |> ignore
   table.apply(@tabular.Style::modern()) |> ignore
   inspect(
@@ -4328,7 +4299,7 @@ test "panel_style_uses_most_left_and_right_cell_styles" {
 
 ///|
 test "panel_in_single_col" {
-  let table = @tabular.Table::from_rows([["i32"], ["0"]])
+  let table = centered_table([["i32"], ["0"]])
   table.panel(@tabular.Panel::horizontal(0, "Numbers")) |> ignore
   table.apply(@tabular.Style::modern()) |> ignore
   inspect(
@@ -4441,7 +4412,7 @@ test "panel_horizontal_set_1" {
 
 ///|
 test "merge_horizontal" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["0", "1", "2"],
     ["0", "1", "1"],
     ["1", "1", "2"],
@@ -4466,7 +4437,7 @@ test "merge_horizontal" {
 
 ///|
 test "merge_horizontal_with_no_duplicates" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["0", "1", "2"],
     ["0", "1", "2"],
     ["0", "1", "2"],
@@ -4491,14 +4462,14 @@ test "merge_horizontal_with_no_duplicates" {
 
 ///|
 test "merge_horizontal_empty" {
-  let table = @tabular.Table::from_rows([])
+  let table = centered_table([])
   table.merge(@tabular.Merge::horizontal()) |> ignore
   inspect(table.to_string(), content="")
 }
 
 ///|
 test "merge_vertical_0" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["0", "1", "2"],
     ["0", "3", "5"],
     ["0", "3", "3"],
@@ -4522,7 +4493,7 @@ test "merge_vertical_0" {
 
 ///|
 test "merge_vertical_1" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["0", "1", "2"],
     ["0", "3", "2"],
     ["0", "3", "3"],
@@ -4545,7 +4516,7 @@ test "merge_vertical_1" {
 
 ///|
 test "merge_vertical_with_no_duplicates" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["0", "1", "2"],
     ["5", "5", "5"],
     ["15", "15", "15"],
@@ -4570,14 +4541,14 @@ test "merge_vertical_with_no_duplicates" {
 
 ///|
 test "merge_vertical_empty" {
-  let table = @tabular.Table::from_rows([])
+  let table = centered_table([])
   table.merge(@tabular.Merge::vertical()) |> ignore
   inspect(table.to_string(), content="")
 }
 
 ///|
 test "merge_horizontal_and_vertical_0" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["0", "1", "2"],
     ["3", "3", "5"],
     ["3", "7", "8"],
@@ -4603,7 +4574,7 @@ test "merge_horizontal_and_vertical_0" {
 
 ///|
 test "merge_horizontal_and_vertical_1" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["0", "1", "2"],
     ["0", "1", "1"],
     ["1", "1", "2"],
@@ -4629,7 +4600,7 @@ test "merge_horizontal_and_vertical_1" {
 
 ///|
 test "merge_horizontal_and_vertical_7" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["0", "1", "2"],
     ["0", "0", "0"],
     ["0", "0", "1"],
@@ -4655,7 +4626,7 @@ test "merge_horizontal_and_vertical_7" {
 
 ///|
 test "merge_vertical_then_horizontal_3" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["0", "1", "2"],
     ["3", "4", "5"],
     ["3", "3", "8"],
@@ -4681,7 +4652,7 @@ test "merge_vertical_then_horizontal_3" {
 
 ///|
 test "merge_vertical_then_horizontal_4" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["0", "1", "2"],
     ["3", "4", "5"],
     ["4", "4", "8"],
@@ -4720,7 +4691,7 @@ fn matrix_n_cols(rows : Int, cols : Int) -> @tabular.Table {
     }
     data.push(row)
   }
-  @tabular.Table::from_rows(data)
+  centered_table(data)
 }
 
 ///|
@@ -4749,7 +4720,7 @@ test "highlingt_object_exceeds_boundaries" {
 
 ///|
 test "highlingt_empty_table" {
-  let table = @tabular.Table::from_rows([])
+  let table = centered_table([])
   table.highlight(
     @tabular.Highlight::outline_segment(@tabular.Segment::all(), '+'),
   )
@@ -5103,7 +5074,7 @@ test "highlingt_complex_rows_and_cols" {
 
 ///|
 fn shadow_matrix() -> @tabular.Table {
-  @tabular.Table::from_rows([
+  centered_table([
     ["i32", "i32", "i32"],
     ["123", "456", "789"],
     ["234", "567", "891"],
@@ -5244,7 +5215,7 @@ test "shadow_set_offset" {
 
 ///|
 fn matrix64() -> @tabular.Table {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["N", "col 0", "col 1", "col 2", "col 3"],
     ["0", "0-0", "0-1", "0-2", "0-3"],
     ["1", "1-0", "1-1", "1-2", "1-3"],
@@ -5263,7 +5234,7 @@ fn matrix64() -> @tabular.Table {
 
 ///|
 test "border_correction_col_span_with_panel" {
-  let table = @tabular.Table::from_rows([["0", "1", "2"], ["1", "2", "3"]])
+  let table = centered_table([["0", "1", "2"], ["1", "2", "3"]])
   table.apply(@tabular.Style::ascii()) |> ignore
   table.panel(@tabular.Panel::header("Tabled Releases")) |> ignore
   table.modify_cell(@tabular.Cell::new(1, 0), @tabular.Span::col(2)) |> ignore
@@ -5284,11 +5255,7 @@ test "border_correction_col_span_with_panel" {
 
 ///|
 test "border_correction_col_span_with_panel_2" {
-  let table = @tabular.Table::from_rows([
-    ["0", "1", "2"],
-    ["1", "2", "3"],
-    ["4", "5", "6"],
-  ])
+  let table = centered_table([["0", "1", "2"], ["1", "2", "3"], ["4", "5", "6"]])
   table.apply(@tabular.Style::ascii()) |> ignore
   table.panel(@tabular.Panel::header("Tabled Releases")) |> ignore
   table.modify_cell(@tabular.Cell::new(2, 0), @tabular.Span::col(2)) |> ignore
@@ -5311,11 +5278,7 @@ test "border_correction_col_span_with_panel_2" {
 
 ///|
 test "border_correction_col_span_with_panel_3" {
-  let table = @tabular.Table::from_rows([
-    ["0", "1", "2"],
-    ["1", "2", "3"],
-    ["4", "5", "6"],
-  ])
+  let table = centered_table([["0", "1", "2"], ["1", "2", "3"], ["4", "5", "6"]])
   table.apply(@tabular.Style::ascii()) |> ignore
   table.panel(@tabular.Panel::header("Tabled Releases")) |> ignore
   table.modify_cell(@tabular.Cell::new(1, 0), @tabular.Span::col(2)) |> ignore
@@ -5339,7 +5302,7 @@ test "border_correction_col_span_with_panel_3" {
 
 ///|
 test "border_correction_row_span" {
-  let table = @tabular.Table::from_rows([["0", "1", "2"], ["1", "2", "3"]])
+  let table = centered_table([["0", "1", "2"], ["1", "2", "3"]])
   table.apply(@tabular.Style::ascii()) |> ignore
   table.modify_cell(@tabular.Cell::new(0, 0), @tabular.Span::row(2)) |> ignore
   table.correct_borders() |> ignore
@@ -5357,11 +5320,7 @@ test "border_correction_row_span" {
 
 ///|
 test "border_correction_row_span_multi" {
-  let table = @tabular.Table::from_rows([
-    ["0", "1", "2"],
-    ["1", "2", "3"],
-    ["4", "5", "6"],
-  ])
+  let table = centered_table([["0", "1", "2"], ["1", "2", "3"], ["4", "5", "6"]])
   table.apply(@tabular.Style::ascii()) |> ignore
   table.modify_cell(@tabular.Cell::new(1, 0), @tabular.Span::row(2)) |> ignore
   table.modify_cell(@tabular.Cell::new(0, 2), @tabular.Span::row(3)) |> ignore
@@ -5503,7 +5462,7 @@ fn alpha_table() -> @tabular.Table {
     "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p",
     "q", "r", "s", "t", "u", "v", "w", "x", "y", "z",
   ]
-  @tabular.Table::from_rows([row])
+  centered_table([row])
 }
 
 ///|
@@ -5653,7 +5612,7 @@ test "split_row_index_beyond_size_test" {
 
 ///|
 test "split_empty_table_test" {
-  let table = @tabular.Table::from_rows([])
+  let table = centered_table([])
   table.apply(@tabular.Style::ascii()) |> ignore
   table.split(@tabular.Split::col(10000)) |> ignore
   inspect(table.to_string(), content="")
@@ -5692,7 +5651,7 @@ test "split_row_zero_argument_test" {
 ///|
 test "split_blank_table_test" {
   let row : Array[String] = Array::make(26, "")
-  let table = @tabular.Table::from_rows([row])
+  let table = centered_table([row])
   table.apply(@tabular.Style::ascii()) |> ignore
   table.split(@tabular.Split::col(12)) |> ignore
   inspect(
@@ -5708,7 +5667,7 @@ test "split_blank_table_test" {
 ///|
 test "split_blank_table_2_test" {
   let row : Array[String] = Array::make(26, "")
-  let table = @tabular.Table::from_rows([row])
+  let table = centered_table([row])
   table.apply(@tabular.Style::ascii()) |> ignore
   table.split(@tabular.Split::col(12).retain()) |> ignore
   inspect(
@@ -5801,7 +5760,7 @@ test "split_retain_test" {
 test "split_mostly_blank_test" {
   let row : Array[String] = Array::make(33, "")
   row.push("A")
-  let table = @tabular.Table::from_rows([row])
+  let table = centered_table([row])
   table.apply(@tabular.Style::ascii()) |> ignore
   table.split(@tabular.Split::col(5)) |> ignore
   table.split(@tabular.Split::row(2)) |> ignore
@@ -5823,7 +5782,7 @@ test "split_scattered_values_test" {
   row.push("g")
   Array::make(27, "").each(fn(s) { row.push(s) })
   row.push("A")
-  let table = @tabular.Table::from_rows([row])
+  let table = centered_table([row])
   table.apply(@tabular.Style::ascii()) |> ignore
   table.split(@tabular.Split::col(5)) |> ignore
   inspect(
@@ -5842,7 +5801,7 @@ test "split_scattered_values_test" {
 
 ///|
 test "extract middle section" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["N", "col 0", "col 1", "col 2"],
     ["0", "0-0", "0-1", "0-2"],
     ["1", "1-0", "1-1", "1-2"],
@@ -5879,7 +5838,7 @@ test "extract middle section" {
 
 ///|
 test "extract rows full" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["N", "col 0", "col 1"],
     ["0", "0-0", "0-1"],
     ["1", "1-0", "1-1"],
@@ -5904,18 +5863,14 @@ test "extract rows full" {
 
 ///|
 test "extract rows empty" {
-  let table = @tabular.Table::from_rows([
-    ["N", "col 0"],
-    ["0", "0-0"],
-    ["1", "1-0"],
-  ])
+  let table = centered_table([["N", "col 0"], ["0", "0-0"], ["1", "1-0"]])
   table.extract_rows(@tabular.Rows::new(0, 0)) |> ignore
   inspect(table.to_string(), content="")
 }
 
 ///|
 test "extract rows partial" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["N", "col 0", "col 1"],
     ["0", "0-0", "0-1"],
     ["1", "1-0", "1-1"],
@@ -5938,7 +5893,7 @@ test "extract rows partial" {
 
 ///|
 test "extract cols full" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["N", "col 0", "col 1"],
     ["0", "0-0", "0-1"],
     ["1", "1-0", "1-1"],
@@ -5960,14 +5915,14 @@ test "extract cols full" {
 
 ///|
 test "extract cols empty" {
-  let table = @tabular.Table::from_rows([["N", "col 0"], ["0", "0-0"]])
+  let table = centered_table([["N", "col 0"], ["0", "0-0"]])
   table.extract_cols(@tabular.Cols::new(0, 0)) |> ignore
   inspect(table.to_string(), content="")
 }
 
 ///|
 test "extract cols partial" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["N", "col 0", "col 1"],
     ["0", "0-0", "0-1"],
     ["1", "1-0", "1-1"],
@@ -6007,7 +5962,7 @@ test "extract cols partial" {
 
 ///|
 test "extract left after remove header" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["N", "col 0", "col 1", "col 2"],
     ["0", "0-0", "0-1", "0-2"],
     ["1", "1-0", "1-1", "1-2"],
@@ -6032,7 +5987,7 @@ test "extract left after remove header" {
 
 ///|
 test "extract right after remove header" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["N", "col 0", "col 1", "col 2"],
     ["0", "0-0", "0-1", "0-2"],
     ["1", "1-0", "1-1", "1-2"],
@@ -6057,7 +6012,7 @@ test "extract right after remove header" {
 
 ///|
 test "extract top after remove header" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["N", "col 0", "col 1", "col 2"],
     ["0", "0-0", "0-1", "0-2"],
     ["1", "1-0", "1-1", "1-2"],
@@ -6078,7 +6033,7 @@ test "extract top after remove header" {
 
 ///|
 test "extract bottom after remove header" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["N", "col 0", "col 1", "col 2"],
     ["0", "0-0", "0-1", "0-2"],
     ["1", "1-0", "1-1", "1-2"],
@@ -6099,7 +6054,7 @@ test "extract bottom after remove header" {
 
 ///|
 test "extract beyond size yields empty" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["N", "col 0", "col 1", "col 2"],
     ["0", "0-0", "0-1", "0-2"],
     ["1", "1-0", "1-1", "1-2"],
@@ -6113,14 +6068,14 @@ test "extract beyond size yields empty" {
 
 ///|
 test "extract empty table" {
-  let table = @tabular.Table::from_rows([])
+  let table = centered_table([])
   table.extract_segment(@tabular.Rows::all(), @tabular.Cols::all()) |> ignore
   inspect(table.to_string(), content="")
 }
 
 ///|
 test "remove all rows via rows" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["N", "col 0", "col 1"],
     ["0", "0-0", "0-1"],
     ["1", "1-0", "1-1"],
@@ -6132,7 +6087,7 @@ test "remove all rows via rows" {
 
 ///|
 test "remove header then restyle with modern" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["N", "col 0", "col 1"],
     ["0", "0-0", "0-1"],
     ["1", "1-0", "1-1"],
@@ -6161,7 +6116,7 @@ test "remove header then restyle with modern" {
 
 ///|
 test "extract with format preserves scoped formatting" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["N", "col 0", "col 1"],
     ["0", "0-0", "0-1"],
     ["1", "1-0", "1-1"],
@@ -6188,7 +6143,7 @@ test "extract with format preserves scoped formatting" {
 
 ///|
 test "remove cols then extract rows" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["N", "col 0", "col 1", "col 2"],
     ["0", "0-0", "0-1", "0-2"],
     ["1", "1-0", "1-1", "1-2"],
@@ -6214,7 +6169,9 @@ test "builder push_record basic" {
   b.push_record(["1", "2", "3"])
   b.push_record(["a", "b", "c"])
   b.push_record(["d", "e", "f"])
-  let table = b.build()
+  let table = b
+    .build()
+    .with_((@tabular.Alignment::center(), @tabular.AlignmentStrategy::PerLine))
   inspect(
     table.to_string(),
     content=(
@@ -6236,7 +6193,9 @@ test "builder remove_record header" {
   b.push_record(["a", "b", "c"])
   b.push_record(["d", "e", "f"])
   b.remove_record(0)
-  let table = b.build()
+  let table = b
+    .build()
+    .with_((@tabular.Alignment::center(), @tabular.AlignmentStrategy::PerLine))
   inspect(
     table.to_string(),
     content=(
@@ -6256,7 +6215,9 @@ test "builder remove_record middle with different col count" {
   b.push_record(["1", "2", "3", "4", "5"])
   b.push_record(["d", "e", "f"])
   b.remove_record(1)
-  let table = b.build()
+  let table = b
+    .build()
+    .with_((@tabular.Alignment::center(), @tabular.AlignmentStrategy::PerLine))
   inspect(
     table.to_string(),
     content=(
@@ -6276,7 +6237,9 @@ test "builder push_col basic" {
   b.push_record(["a", "b", "c"])
   b.push_record(["d", "e", "f"])
   b.push_col(["4", "g", "h"])
-  let table = b.build()
+  let table = b
+    .build()
+    .with_((@tabular.Alignment::center(), @tabular.AlignmentStrategy::PerLine))
   inspect(
     table.to_string(),
     content=(
@@ -6298,7 +6261,9 @@ test "builder push_col only" {
   b.push_col(["b", "e"])
   b.push_col(["c", "f"])
   b.push_col(["g", "h"])
-  let table = b.build()
+  let table = b
+    .build()
+    .with_((@tabular.Alignment::center(), @tabular.AlignmentStrategy::PerLine))
   inspect(
     table.to_string(),
     content=(
@@ -6317,7 +6282,9 @@ test "builder push_col with different lengths" {
   b.push_col(["4", "g", "h"])
   b.push_col(["5", "g", "h", "j"])
   b.push_col(["6"])
-  let table = b.build()
+  let table = b
+    .build()
+    .with_((@tabular.Alignment::center(), @tabular.AlignmentStrategy::PerLine))
   inspect(
     table.to_string(),
     content=(
@@ -6340,7 +6307,9 @@ test "builder insert_col" {
   b.push_record(["a", "b", "c"])
   b.push_record(["d", "e", "f"])
   b.insert_col(2, ["k", "n"])
-  let table = b.build()
+  let table = b
+    .build()
+    .with_((@tabular.Alignment::center(), @tabular.AlignmentStrategy::PerLine))
   inspect(
     table.to_string(),
     content=(
@@ -6359,7 +6328,9 @@ test "builder different col counts" {
   b.push_record(["1", "2"])
   b.push_record(["a", "b", "c"])
   b.push_record(["d"])
-  let table = b.build()
+  let table = b
+    .build()
+    .with_((@tabular.Alignment::center(), @tabular.AlignmentStrategy::PerLine))
   inspect(
     table.to_string(),
     content=(
@@ -6381,7 +6352,9 @@ test "builder set_empty fills missing cells" {
   b.set_empty("NaN")
   b.push_record(["a", "b", "c"])
   b.push_record(["d"])
-  let table = b.build()
+  let table = b
+    .build()
+    .with_((@tabular.Alignment::center(), @tabular.AlignmentStrategy::PerLine))
   inspect(
     table.to_string(),
     content=(
@@ -6402,14 +6375,18 @@ test "builder clear" {
   b.push_record(["1", "2", "3"])
   b.push_record(["a", "b", "c"])
   b.clear()
-  let table = b.build()
+  let table = b
+    .build()
+    .with_((@tabular.Alignment::center(), @tabular.AlignmentStrategy::PerLine))
   inspect(table.to_string(), content="")
 }
 
 ///|
 test "builder from_rows with empty rows" {
   let b = @tabular.Builder::from_rows([["1", "2", "3"], [], [], ["d", "e", "f"]])
-  let table = b.build()
+  let table = b
+    .build()
+    .with_((@tabular.Alignment::center(), @tabular.AlignmentStrategy::PerLine))
   inspect(
     table.to_string(),
     content=(
@@ -6434,7 +6411,9 @@ test "builder clean removes empty cols" {
     ["", "e", "f"],
   ])
   b.clean()
-  let table = b.build()
+  let table = b
+    .build()
+    .with_((@tabular.Alignment::center(), @tabular.AlignmentStrategy::PerLine))
   inspect(
     table.to_string(),
     content=(
@@ -6457,7 +6436,9 @@ test "builder clean removes empty middle col" {
     ["d", "", "f"],
   ])
   b.clean()
-  let table = b.build()
+  let table = b
+    .build()
+    .with_((@tabular.Alignment::center(), @tabular.AlignmentStrategy::PerLine))
   inspect(
     table.to_string(),
     content=(
@@ -6480,7 +6461,9 @@ test "builder clean removes empty rows" {
     ["d", "e", "f"],
   ])
   b.clean()
-  let table = b.build()
+  let table = b
+    .build()
+    .with_((@tabular.Alignment::center(), @tabular.AlignmentStrategy::PerLine))
   inspect(
     table.to_string(),
     content=(
@@ -6501,7 +6484,9 @@ test "builder clean removes empty middle row" {
     ["d", "e", "f"],
   ])
   b.clean()
-  let table = b.build()
+  let table = b
+    .build()
+    .with_((@tabular.Alignment::center(), @tabular.AlignmentStrategy::PerLine))
   inspect(
     table.to_string(),
     content=(
@@ -6522,7 +6507,9 @@ test "builder clean removes both empty rows and cols" {
     ["d", "", "f"],
   ])
   b.clean()
-  let table = b.build()
+  let table = b
+    .build()
+    .with_((@tabular.Alignment::center(), @tabular.AlignmentStrategy::PerLine))
   inspect(
     table.to_string(),
     content=(
@@ -6539,7 +6526,9 @@ test "builder clean removes both empty rows and cols" {
 test "builder clean all empty yields empty" {
   let b = @tabular.Builder::from_rows([["", "", ""], ["", "", ""], ["", "", ""]])
   b.clean()
-  let table = b.build()
+  let table = b
+    .build()
+    .with_((@tabular.Alignment::center(), @tabular.AlignmentStrategy::PerLine))
   inspect(table.to_string(), content="")
 }
 
@@ -6550,7 +6539,10 @@ test "builder index default" {
     ["0", "Dmitriy"],
     ["1", "Vladislav"],
   ])
-  let table = b.index().build()
+  let table = b
+    .index()
+    .build()
+    .with_((@tabular.Alignment::center(), @tabular.AlignmentStrategy::PerLine))
   inspect(
     table.to_string(),
     content=(
@@ -6572,7 +6564,11 @@ test "builder index hide" {
     ["0", "Dmitriy"],
     ["1", "Vladislav"],
   ])
-  let table = b.index().hide().build()
+  let table = b
+    .index()
+    .hide()
+    .build()
+    .with_((@tabular.Alignment::center(), @tabular.AlignmentStrategy::PerLine))
   inspect(
     table.to_string(),
     content=(
@@ -6594,7 +6590,11 @@ test "builder index set col" {
     ["0", "Dmitriy"],
     ["1", "Vladislav"],
   ])
-  let table = b.index().col(1).build()
+  let table = b
+    .index()
+    .col(1)
+    .build()
+    .with_((@tabular.Alignment::center(), @tabular.AlignmentStrategy::PerLine))
   inspect(
     table.to_string(),
     content=(
@@ -6618,7 +6618,12 @@ test "builder index col with custom name" {
     ["0", "Dmitriy"],
     ["1", "Vladislav"],
   ])
-  let table = b.index().col(1).name(Some("Hello")).build()
+  let table = b
+    .index()
+    .col(1)
+    .name(Some("Hello"))
+    .build()
+    .with_((@tabular.Alignment::center(), @tabular.AlignmentStrategy::PerLine))
   inspect(
     table.to_string(),
     content=(
@@ -6642,7 +6647,12 @@ test "builder index col name none" {
     ["0", "Dmitriy"],
     ["1", "Vladislav"],
   ])
-  let table = b.index().col(1).name(None).build()
+  let table = b
+    .index()
+    .col(1)
+    .name(None)
+    .build()
+    .with_((@tabular.Alignment::center(), @tabular.AlignmentStrategy::PerLine))
   inspect(
     table.to_string(),
     content=(
@@ -6664,7 +6674,12 @@ test "builder index col hide returns original table" {
     ["0", "Dmitriy"],
     ["1", "Vladislav"],
   ])
-  let table = b.index().col(1).hide().build()
+  let table = b
+    .index()
+    .col(1)
+    .hide()
+    .build()
+    .with_((@tabular.Alignment::center(), @tabular.AlignmentStrategy::PerLine))
   inspect(
     table.to_string(),
     content=(
@@ -6686,7 +6701,11 @@ test "builder index transpose" {
     ["0", "Dmitriy", "123"],
     ["1", "Vladislav", "123"],
   ])
-  let table = b.index().transpose().build()
+  let table = b
+    .index()
+    .transpose()
+    .build()
+    .with_((@tabular.Alignment::center(), @tabular.AlignmentStrategy::PerLine))
   inspect(
     table.to_string(),
     content=(
@@ -6711,7 +6730,10 @@ test "builder invalid negative indexes are no-op" {
   b.insert_col(-1, ["x", "y"])
   b.remove_col(-1)
   inspect(
-    b.build().to_string(),
+    b
+    .build()
+    .with_((@tabular.Alignment::center(), @tabular.AlignmentStrategy::PerLine))
+    .to_string(),
     content=(
       #|+---+---+
       #|| a | b |
@@ -6733,7 +6755,7 @@ test "builder count_records and count_cols" {
 
 ///|
 test "extract rows excluding all yields empty" {
-  let table = @tabular.Table::from_rows([["h1", "h2"], ["a", "b"]])
+  let table = centered_table([["h1", "h2"], ["a", "b"]])
   let extracted = table.extract_rows(
     @tabular.Rows::all().not(@tabular.Rows::all()),
   )
@@ -6742,7 +6764,7 @@ test "extract rows excluding all yields empty" {
 
 ///|
 test "extract cols excluding last keeps first cols only" {
-  let table = @tabular.Table::from_rows([["h1", "h2", "h3"], ["a", "b", "c"]])
+  let table = centered_table([["h1", "h2", "h3"], ["a", "b", "c"]])
   let extracted = table.extract_cols(
     @tabular.Cols::all().not(@tabular.Cols::last()),
   )
@@ -6761,7 +6783,7 @@ test "extract cols excluding last keeps first cols only" {
 ///|
 test "panel header" {
   let data = [["A", "B"], ["1", "2"], ["3", "4"]]
-  let table = @tabular.Table::from_rows(data)
+  let table = centered_table(data)
   table.apply(@tabular.Style::modern()) |> ignore
   table.panel(@tabular.Panel::header("Title")) |> ignore
   inspect(
@@ -6783,7 +6805,7 @@ test "panel header" {
 ///|
 test "panel footer" {
   let data = [["A", "B"], ["1", "2"]]
-  let table = @tabular.Table::from_rows(data)
+  let table = centered_table(data)
   table.apply(@tabular.Style::ascii()) |> ignore
   table.panel(@tabular.Panel::footer("End")) |> ignore
   inspect(
@@ -6802,7 +6824,7 @@ test "panel footer" {
 
 ///|
 test "shadow" {
-  let table = @tabular.Table::from_rows([["A", "B"], ["1", "2"]])
+  let table = centered_table([["A", "B"], ["1", "2"]])
   table.apply(@tabular.Style::rounded()) |> ignore
   table.shadow(@tabular.Shadow::new(1)) |> ignore
   let s = table.to_string()
@@ -6813,7 +6835,7 @@ test "shadow" {
 ///|
 test "merge horizontal" {
   let data = [["A", "A"], ["1", "2"]]
-  let table = @tabular.Table::from_rows(data)
+  let table = centered_table(data)
   table.apply(@tabular.Style::modern()) |> ignore
   table.merge(@tabular.Merge::horizontal()) |> ignore
   inspect(
@@ -6831,7 +6853,7 @@ test "merge horizontal" {
 ///|
 test "merge vertical" {
   let data = [["A", "B"], ["A", "C"]]
-  let table = @tabular.Table::from_rows(data)
+  let table = centered_table(data)
   table.apply(@tabular.Style::modern()) |> ignore
   table.merge(@tabular.Merge::vertical()) |> ignore
   inspect(
@@ -6849,7 +6871,7 @@ test "merge vertical" {
 ///|
 test "split col" {
   let data = [["A", "B", "C", "D"], ["1", "2", "3", "4"]]
-  let table = @tabular.Table::from_rows(data)
+  let table = centered_table(data)
   table.apply(@tabular.Style::ascii()) |> ignore
   table.split(@tabular.Split::col(2)) |> ignore
   let s = table.to_string()
@@ -6860,7 +6882,7 @@ test "split col" {
 ///|
 test "segment skip and step_by" {
   let data = [["H1", "H2"], ["a", "b"], ["c", "d"], ["e", "f"], ["g", "h"]]
-  let table = @tabular.Table::from_rows(data)
+  let table = centered_table(data)
   table.apply(@tabular.Style::ascii()) |> ignore
   // Apply format to every other row starting from row 1
   table.modify_segment(
@@ -6877,7 +6899,7 @@ test "segment skip and step_by" {
 ///|
 test "rows inverse" {
   let data = [["H"], ["a"], ["b"], ["c"]]
-  let table = @tabular.Table::from_rows(data)
+  let table = centered_table(data)
   table.apply(@tabular.Style::ascii()) |> ignore
   table.modify_segment(
     @tabular.Rows::first().inverse(),
@@ -6898,7 +6920,7 @@ test "rows inverse" {
 
 ///|
 test "table width truncate with wide chars" {
-  let table = @tabular.Table::from_rows([["标题"], ["中文测试数据"]])
+  let table = centered_table([["标题"], ["中文测试数据"]])
   table.apply(@tabular.Style::ascii()) |> ignore
   table.modify_segment(
     @tabular.Segment::all(),
@@ -6920,10 +6942,7 @@ test "table width truncate with wide chars" {
 
 ///|
 test "table mixed ascii and wide char column width" {
-  let table = @tabular.Table::from_rows([
-    ["Name", "国家"],
-    ["hustcer", "中国"],
-  ])
+  let table = centered_table([["Name", "国家"], ["hustcer", "中国"]])
   table.apply(@tabular.Style::ascii()) |> ignore
   inspect(
     table.to_string(),
@@ -6939,7 +6958,7 @@ test "table mixed ascii and wide char column width" {
 
 ///|
 test "extract rows not with step_by excludes only stepped rows" {
-  let table = @tabular.Table::from_rows([
+  let table = centered_table([
     ["h1", "h2"],
     ["a", "b"],
     ["c", "d"],
@@ -6963,10 +6982,7 @@ test "extract rows not with step_by excludes only stepped rows" {
 
 ///|
 test "extract cols not with step_by excludes only stepped cols" {
-  let table = @tabular.Table::from_rows([
-    ["c0", "c1", "c2", "c3"],
-    ["a", "b", "c", "d"],
-  ])
+  let table = centered_table([["c0", "c1", "c2", "c3"], ["a", "b", "c", "d"]])
   let extracted = table.extract_cols(
     @tabular.Cols::new(0, 4).not(@tabular.Cols::new(0, 4).step_by(2)),
   )

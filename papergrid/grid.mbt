@@ -26,24 +26,115 @@ fn render_padding(size : Int) -> String {
 
 ///|
 fn render_cell(
-  content : String,
+  line : CellLine,
   width : Int,
   padding_left : Int,
   padding_right : Int,
   align : HAlign,
+  records : IterRecords,
+  config : SpannedConfig,
+  source : (Int, Int),
 ) -> String {
+  let content = match line {
+    Content(content) => content
+    TopPadding => return render_padding(width)
+    BottomPadding => return render_padding(width)
+  }
+  let format = config.text_format_at(source.0, source.1)
+  let content = if format.formatting.horizontal_trim {
+    content.trim().to_owned()
+  } else {
+    content
+  }
   let available = width - padding_left - padding_right
-  let gap = available - string_display_width(content)
+  let line_width = string_display_width(content)
+  let cell_width = if format.formatting.allow_lines_alignment {
+    line_width
+  } else {
+    processed_lines(
+      records.get_cell(source.0, source.1),
+      config.width_mode_at(source.0, source.1),
+      config.height_mode_at(source.0, source.1),
+    ).fold(init=0, (width, line) => {
+      let line = if format.formatting.horizontal_trim {
+        line.trim().to_owned()
+      } else {
+        line
+      }
+      Int::max(width, string_display_width(line))
+    })
+  }
+  let gap = Int::max(0, available - cell_width)
   let (left_fill, right_fill) = match align {
     Left => (0, gap)
     Right => (gap, 0)
     Center => (gap / 2, gap - gap / 2)
   }
   render_padding(padding_left) +
-  render_padding(left_fill) +
-  content +
-  render_padding(right_fill) +
+  render_justification(format, left_fill) +
+  render_colored_text(content, format.color) +
+  render_justification(format, right_fill) +
+  render_justification(format, Int::max(0, cell_width - line_width)) +
   render_padding(padding_right)
+}
+
+///|
+fn render_colored_text(text : String, color : ANSIBuf?) -> String {
+  match color {
+    Some(color) => color.prefix + text + color.suffix
+    None => text
+  }
+}
+
+///|
+fn render_justification(format : TextFormat, count : Int) -> String {
+  if count <= 0 {
+    return ""
+  }
+  render_colored_text(
+    format.justification.to_string().repeat(count),
+    format.justification_color,
+  )
+}
+
+///|
+priv enum CellLine {
+  Content(String)
+  TopPadding
+  BottomPadding
+}
+
+///|
+fn CellLine::has_text(self : CellLine) -> Bool {
+  match self {
+    Content(text) => text != ""
+    _ => false
+  }
+}
+
+///|
+fn display_lines(
+  records : IterRecords,
+  config : SpannedConfig,
+  source : (Int, Int),
+) -> Array[String] {
+  let lines = processed_lines(
+    records.get_cell(source.0, source.1),
+    config.width_mode_at(source.0, source.1),
+    config.height_mode_at(source.0, source.1),
+  )
+  if !config.get_formatting(source.0, source.1).vertical_trim {
+    return lines
+  }
+  let mut start = 0
+  let mut end_ = lines.length()
+  while start < end_ && lines[start].trim().is_empty() {
+    start += 1
+  }
+  while end_ > start && lines[end_ - 1].trim().is_empty() {
+    end_ -= 1
+  }
+  lines[start:end_].to_owned()
 }
 
 ///|
@@ -69,10 +160,10 @@ fn span_width(
 }
 
 ///|
-fn blank_values(count_cols : Int) -> Array[String] {
+fn blank_values(count_cols : Int, kind : CellLine) -> Array[CellLine] {
   let values = []
   for _ in 0..<count_cols {
-    values.push("")
+    values.push(kind)
   }
   values
 }
@@ -307,18 +398,14 @@ fn cell_content_for_row(
   row : Int,
   col : Int,
   line_index : Int,
-) -> String {
+) -> CellLine {
   let anchor = match display_anchor_for(config, row, col) {
     Some(anchor) => anchor
-    None => return ""
+    None => return BottomPadding
   }
   let source = span_source_for_anchor(config, anchor.0, anchor.1)
   if anchor.0 == row && config.row_span_at(anchor.0, anchor.1) <= 1 {
-    let lines = processed_lines(
-      records.get_cell(source.0, source.1),
-      config.width_mode_at(source.0, source.1),
-      config.height_mode_at(source.0, source.1),
-    )
+    let lines = display_lines(records, config, source)
     let missing = row_heights[row] - lines.length()
     let valign = config.valign_at(source.0, source.1)
     let top_fill = match valign {
@@ -326,10 +413,13 @@ fn cell_content_for_row(
       Bottom => missing
       Center => missing / 2
     }
-    if line_index < top_fill || line_index >= top_fill + lines.length() {
-      return ""
+    if line_index < top_fill {
+      return TopPadding
     }
-    return lines[line_index - top_fill]
+    if line_index >= top_fill + lines.length() {
+      return BottomPadding
+    }
+    return Content(lines[line_index - top_fill])
   }
 
   let rowspan = config.row_span_at(anchor.0, anchor.1)
@@ -340,11 +430,7 @@ fn cell_content_for_row(
   }
   let total_height = sum_range(row_heights, anchor.0, end_) +
     count_range_boundaries(config, row_heights.length(), anchor.0, end_)
-  let lines = processed_lines(
-    records.get_cell(source.0, source.1),
-    config.width_mode_at(source.0, source.1),
-    config.height_mode_at(source.0, source.1),
-  )
+  let lines = display_lines(records, config, source)
   let missing = total_height - lines.length()
   let valign = config.valign_at(source.0, source.1)
   let top_fill = match valign {
@@ -360,10 +446,12 @@ fn cell_content_for_row(
     }
   }
   let absolute = offset + line_index
-  if absolute < top_fill || absolute >= top_fill + lines.length() {
-    ""
+  if absolute < top_fill {
+    TopPadding
+  } else if absolute >= top_fill + lines.length() {
+    BottomPadding
   } else {
-    lines[absolute - top_fill]
+    Content(lines[absolute - top_fill])
   }
 }
 
@@ -374,10 +462,10 @@ fn cell_content_for_boundary(
   row_heights : Array[Int],
   boundary_row : Int,
   col : Int,
-) -> String {
+) -> CellLine {
   let anchor = match row_span_boundary_anchor(config, boundary_row, col) {
     Some(anchor) => anchor
-    None => return ""
+    None => return BottomPadding
   }
   let source = span_source_for_anchor(config, anchor.0, anchor.1)
   let rowspan = config.row_span_at(anchor.0, anchor.1)
@@ -388,11 +476,7 @@ fn cell_content_for_boundary(
   }
   let total_height = sum_range(row_heights, anchor.0, end_) +
     count_range_boundaries(config, row_heights.length(), anchor.0, end_)
-  let lines = processed_lines(
-    records.get_cell(source.0, source.1),
-    config.width_mode_at(source.0, source.1),
-    config.height_mode_at(source.0, source.1),
-  )
+  let lines = display_lines(records, config, source)
   let missing = total_height - lines.length()
   let valign = config.valign_at(source.0, source.1)
   let top_fill = match valign {
@@ -408,10 +492,12 @@ fn cell_content_for_boundary(
       absolute += 1
     }
   }
-  if absolute < top_fill || absolute >= top_fill + lines.length() {
-    ""
+  if absolute < top_fill {
+    TopPadding
+  } else if absolute >= top_fill + lines.length() {
+    BottomPadding
   } else {
-    lines[absolute - top_fill]
+    Content(lines[absolute - top_fill])
   }
 }
 
@@ -432,8 +518,7 @@ fn render_split_line(
       has_uncovered = true
     }
     if !has_content &&
-      cell_content_for_boundary(records, config, row_heights, boundary_row, col) !=
-      "" {
+      cell_content_for_boundary(records, config, row_heights, boundary_row, col).has_text() {
       has_content = true
     }
   }
@@ -475,6 +560,9 @@ fn render_split_line(
             padding_left,
             padding_right,
             align,
+            records,
+            config,
+            source,
           )
         } else {
           col = col + 1
@@ -551,9 +639,10 @@ fn render_split_line(
 
 ///|
 fn render_row_line(
+  records : IterRecords,
   borders : Borders,
   widths : Array[Int],
-  values : Array[String],
+  values : Array[CellLine],
   row_index : Int,
   count_cols : Int,
   config : SpannedConfig,
@@ -585,7 +674,11 @@ fn render_row_line(
       col = col + 1
       continue
     }
-    let content = if col < values.length() { values[col] } else { "" }
+    let content = if col < values.length() {
+      values[col]
+    } else {
+      BottomPadding
+    }
     let (padding_left, padding_right, _, _) = config.padding_at(
       anchor.0,
       anchor.1,
@@ -599,6 +692,9 @@ fn render_row_line(
         padding_left,
         padding_right,
         align,
+        records,
+        config,
+        span_source_for_anchor(config, anchor.0, anchor.1),
       )
     col = col + colspan
     if col < count_cols {
@@ -650,9 +746,10 @@ fn render_row(
     ignore(i)
     lines.push(
       render_row_line(
+        records,
         borders,
         widths,
-        blank_values(count_cols),
+        blank_values(count_cols, TopPadding),
         row_index,
         count_cols,
         config,
@@ -671,16 +768,19 @@ fn render_row(
       )
     }
     lines.push(
-      render_row_line(borders, widths, values, row_index, count_cols, config),
+      render_row_line(
+        records, borders, widths, values, row_index, count_cols, config,
+      ),
     )
   }
   for i in 0..<row_bottom_paddings[row_index] {
     ignore(i)
     lines.push(
       render_row_line(
+        records,
         borders,
         widths,
-        blank_values(count_cols),
+        blank_values(count_cols, BottomPadding),
         row_index,
         count_cols,
         config,
