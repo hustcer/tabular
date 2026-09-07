@@ -19,6 +19,25 @@ pub enum Align {
 pub fn Align::center() -> Self
 pub fn Align::left() -> Self
 pub fn Align::right() -> Self
+pub impl CellOption for Align
+pub impl TableOption for Align
+
+pub enum Alignment {
+  Horizontal(Align)
+  Vertical(VAlign)
+}
+pub fn Alignment::as_horizontal(Self) -> Align?
+pub fn Alignment::as_vertical(Self) -> VAlign?
+pub fn Alignment::bottom() -> Self
+pub fn Alignment::center() -> Self
+pub fn Alignment::center_vertical() -> Self
+pub fn Alignment::from_horizontal(Align) -> Self
+pub fn Alignment::from_vertical(VAlign) -> Self
+pub fn Alignment::left() -> Self
+pub fn Alignment::right() -> Self
+pub fn Alignment::top() -> Self
+pub impl CellOption for Alignment
+pub impl TableOption for Alignment
 
 pub struct Builder {
   rows : Array[Array[String]]
@@ -45,6 +64,7 @@ pub struct ByColName {
   name : String
 }
 pub fn ByColName::new(String) -> Self
+pub impl Object for ByColName
 
 pub struct Cell {
   row : Int
@@ -63,14 +83,14 @@ pub struct Cols {
   skip_n : Int
   step_n : Int
   exclude : Cols?
-  predicate : ((Entity) -> Bool)?
+  predicate : ((@papergrid.Entity) -> Bool)?
 }
 pub fn Cols::all() -> Self
 pub fn Cols::and_(Self, Self) -> Segment
 pub fn Cols::and_cell(Self, Cell) -> Segment
 pub fn Cols::and_rows(Self, Rows) -> Segment
 pub fn Cols::as_segment(Self) -> Segment
-pub fn Cols::filter(Self, (Entity) -> Bool) -> Self
+pub fn Cols::filter(Self, (@papergrid.Entity) -> Bool) -> Self
 pub fn Cols::first() -> Self
 pub fn Cols::first_offset(Int) -> Self
 pub fn Cols::intersect(Self, Rows) -> Segment
@@ -92,16 +112,19 @@ pub struct Concat {
 pub fn Concat::default_cell(Self, String) -> Self
 pub fn Concat::horizontal(Table) -> Self
 pub fn Concat::vertical(Table) -> Self
+pub impl TableOption for Concat
 
 pub struct Dup {
   // private fields
 }
 pub fn Dup::new(&Object, &Object) -> Self
+pub impl TableOption for Dup
 
-pub enum Entity {
-  Row(Int)
-  Col(Int)
+pub struct EmptySettings {
 }
+pub fn EmptySettings::default() -> Self
+pub impl CellOption for EmptySettings
+pub impl TableOption for EmptySettings
 
 pub enum Format {
   Surround(String, String, Bool)
@@ -114,6 +137,8 @@ pub fn Format::multiline(Self) -> Self
 pub fn Format::positioned((String, Int, Int) -> String) -> Self
 pub fn Format::surround(String, String) -> Self
 pub fn Format::value(String) -> Self
+pub impl CellOption for Format
+pub impl TableOption for Format
 
 pub enum Height {
   Increase(Int)
@@ -121,6 +146,8 @@ pub enum Height {
 }
 pub fn Height::increase(Int) -> Self
 pub fn Height::limit(Int) -> Self
+pub impl CellOption for Height
+pub impl TableOption for Height
 
 pub struct Highlight {
   target : HighlightTarget
@@ -135,6 +162,7 @@ pub fn Highlight::outline_cols(Cols, Char) -> Self
 pub fn Highlight::outline_rows(Rows, Char) -> Self
 pub fn Highlight::outline_segment(Segment, Char) -> Self
 pub fn Highlight::with_border(Self, @papergrid.CellBorder) -> Self
+pub impl TableOption for Highlight
 
 pub enum HighlightTarget {
   HCell(Cell)
@@ -173,6 +201,20 @@ pub enum Merge {
 }
 pub fn Merge::horizontal() -> Self
 pub fn Merge::vertical() -> Self
+pub impl TableOption for Merge
+
+pub struct Modify[O] {
+  // private fields
+}
+pub fn[O, M] Modify::list(O, M) -> ModifyList[O, M]
+pub fn[O] Modify::new(O) -> Self[O]
+pub fn[O, M] Modify::with_(Self[O], M) -> ModifyList[O, M]
+
+pub struct ModifyList[O, M] {
+  // private fields
+}
+pub fn[O, A, B] ModifyList::with_(Self[O, A], B) -> Self[O, Settings[A, B]]
+pub impl[O : Object, M : CellOption] TableOption for ModifyList[O, M]
 
 pub(all) enum Offset {
   Start(Int)
@@ -186,6 +228,8 @@ pub struct Padding {
   bottom : Int
 }
 pub fn Padding::new(Int, Int, Int, Int) -> Self
+pub impl CellOption for Padding
+pub impl TableOption for Padding
 
 pub enum Panel {
 }
@@ -196,6 +240,7 @@ pub fn Panel::vertical(Int, String) -> PanelConfig
 pub fn Panel::vertical_with_width(Int, String, Int) -> PanelConfig
 
 type PanelConfig
+pub impl TableOption for PanelConfig
 
 pub struct Reverse {
   // private fields
@@ -203,6 +248,7 @@ pub struct Reverse {
 pub fn Reverse::columns(Int) -> Self
 pub fn Reverse::limit(Self, Offset) -> Self
 pub fn Reverse::rows(Int) -> Self
+pub impl TableOption for Reverse
 
 pub(all) enum Rotate {
   Left
@@ -210,6 +256,7 @@ pub(all) enum Rotate {
   Top
   Bottom
 } derive(Eq, @debug.Debug)
+pub impl TableOption for Rotate
 
 pub struct Rows {
   start : Int
@@ -217,14 +264,14 @@ pub struct Rows {
   skip_n : Int
   step_n : Int
   exclude : Rows?
-  predicate : ((Entity) -> Bool)?
+  predicate : ((@papergrid.Entity) -> Bool)?
 }
 pub fn Rows::all() -> Self
 pub fn Rows::and_(Self, Self) -> Segment
 pub fn Rows::and_cell(Self, Cell) -> Segment
 pub fn Rows::and_cols(Self, Cols) -> Segment
 pub fn Rows::as_segment(Self) -> Segment
-pub fn Rows::filter(Self, (Entity) -> Bool) -> Self
+pub fn Rows::filter(Self, (@papergrid.Entity) -> Bool) -> Self
 pub fn Rows::first() -> Self
 pub fn Rows::first_offset(Int) -> Self
 pub fn Rows::intersect(Self, Cols) -> Segment
@@ -288,6 +335,19 @@ pub fn Setting::height(Height) -> Self
 pub fn Setting::padding(Padding) -> Self
 pub fn Setting::valign(VAlign) -> Self
 pub fn Setting::width(Width) -> Self
+pub impl CellOption for Setting
+pub impl TableOption for Setting
+
+pub struct Settings[A, B] {
+  // private fields
+}
+pub fn Settings::default() -> Self[EmptySettings, EmptySettings]
+pub fn Settings::empty() -> Self[EmptySettings, EmptySettings]
+pub fn[A, B, O, M] Settings::modify(Self[A, B], O, M) -> Self[Self[A, B], ModifyList[O, M]]
+pub fn[A, B] Settings::new(A, B) -> Self[A, B]
+pub fn[A, B, C] Settings::with_(Self[A, B], C) -> Self[Self[A, B], C]
+pub impl[A : CellOption, B : CellOption] CellOption for Settings[A, B]
+pub impl[A : TableOption, B : TableOption] TableOption for Settings[A, B]
 
 pub struct Shadow {
   size : Int
@@ -305,6 +365,7 @@ pub fn Shadow::set_left(Self) -> Self
 pub fn Shadow::set_offset(Self, Int) -> Self
 pub fn Shadow::set_right(Self) -> Self
 pub fn Shadow::set_top(Self) -> Self
+pub impl TableOption for Shadow
 
 pub enum Span {
 }
@@ -320,6 +381,7 @@ pub fn Split::concat(Self) -> Self
 pub fn Split::retain(Self) -> Self
 pub fn Split::row(Int) -> Self
 pub fn Split::zip(Self) -> Self
+pub impl TableOption for Split
 
 pub struct Style {
   borders : @papergrid.Borders
@@ -363,6 +425,7 @@ pub fn Style::right(Self, Char) -> Self
 pub fn Style::rounded() -> Self
 pub fn Style::top(Self, Char) -> Self
 pub fn Style::vertical(Self, Char) -> Self
+pub impl TableOption for Style
 
 pub struct Table {
   mut rows : Array[Array[String]]
@@ -371,13 +434,17 @@ pub struct Table {
 pub fn Table::apply(Self, Style) -> Self
 pub fn Table::concat(Self, Concat) -> Self
 pub fn Table::correct_borders(Self) -> Self
+pub fn Table::count_columns(Self) -> Int
+pub fn Table::count_rows(Self) -> Int
 pub fn Table::duplicate(Self, Dup) -> Self
 pub fn Table::extract_cols(Self, Cols) -> Self
 pub fn Table::extract_rows(Self, Rows) -> Self
 pub fn Table::extract_segment(Self, Rows, Cols) -> Self
 pub fn Table::from_rows(Array[Array[String]]) -> Self
 pub fn Table::highlight(Self, Highlight) -> Self
+pub fn Table::is_empty(Self) -> Bool
 pub fn Table::merge(Self, Merge) -> Self
+pub fn[O : Object, M : CellOption] Table::modify(Self, O, M) -> Self
 pub fn Table::modify_by_col_name(Self, ByColName, Setting) -> Self
 pub fn Table::modify_cell(Self, Cell, Setting) -> Self
 pub fn Table::modify_cols(Self, Cols, Setting) -> Self
@@ -395,8 +462,10 @@ pub fn Table::set_padding(Self, Padding) -> Self
 pub fn Table::set_valign(Self, VAlign) -> Self
 pub fn Table::set_width(Self, Width) -> Self
 pub fn Table::shadow(Self, Shadow) -> Self
+pub fn Table::shape(Self) -> (Int, Int)
 pub fn Table::split(Self, Split) -> Self
 pub fn Table::to_string(Self) -> String
+pub fn[T : TableOption] Table::with_(Self, T) -> Self
 
 pub enum VAlign {
   Top
@@ -406,6 +475,8 @@ pub enum VAlign {
 pub fn VAlign::bottom() -> Self
 pub fn VAlign::center() -> Self
 pub fn VAlign::top() -> Self
+pub impl CellOption for VAlign
+pub impl TableOption for VAlign
 
 pub enum Width {
   Wrap(Int, String)
@@ -414,10 +485,45 @@ pub enum Width {
 pub fn Width::truncate(Int, suffix? : String) -> Self
 pub fn Width::wrap(Int) -> Self
 pub fn Width::wrap_with(Int, String) -> Self
+pub impl CellOption for Width
+pub impl TableOption for Width
 
 // Type aliases
+pub using @papergrid {type Entity}
 
 // Traits
-pub(open) trait Object {
-  fn cells(Self, Int, Int) -> Array[Array[(Int, Int)]]
+pub(open) trait CellOption {
+  fn change(Self, Table, @papergrid.Entity) -> Unit
+  fn hint_change(Self) -> @papergrid.Entity? = _
 }
+pub impl CellOption for String
+pub impl[T : CellOption] CellOption for Array[T]
+pub impl[T0 : CellOption, T1 : CellOption] CellOption for (T0, T1)
+pub impl[T0 : CellOption, T1 : CellOption, T2 : CellOption] CellOption for (T0, T1, T2)
+pub impl[T0 : CellOption, T1 : CellOption, T2 : CellOption, T3 : CellOption] CellOption for (T0, T1, T2, T3)
+pub impl[T0 : CellOption, T1 : CellOption, T2 : CellOption, T3 : CellOption, T4 : CellOption] CellOption for (T0, T1, T2, T3, T4)
+pub impl[T0 : CellOption, T1 : CellOption, T2 : CellOption, T3 : CellOption, T4 : CellOption, T5 : CellOption] CellOption for (T0, T1, T2, T3, T4, T5)
+pub impl[T0 : CellOption, T1 : CellOption, T2 : CellOption, T3 : CellOption, T4 : CellOption, T5 : CellOption, T6 : CellOption] CellOption for (T0, T1, T2, T3, T4, T5, T6)
+pub impl[T0 : CellOption, T1 : CellOption, T2 : CellOption, T3 : CellOption, T4 : CellOption, T5 : CellOption, T6 : CellOption, T7 : CellOption] CellOption for (T0, T1, T2, T3, T4, T5, T6, T7)
+pub impl[T0 : CellOption, T1 : CellOption, T2 : CellOption, T3 : CellOption, T4 : CellOption, T5 : CellOption, T6 : CellOption, T7 : CellOption, T8 : CellOption] CellOption for (T0, T1, T2, T3, T4, T5, T6, T7, T8)
+pub impl[T0 : CellOption, T1 : CellOption, T2 : CellOption, T3 : CellOption, T4 : CellOption, T5 : CellOption, T6 : CellOption, T7 : CellOption, T8 : CellOption, T9 : CellOption] CellOption for (T0, T1, T2, T3, T4, T5, T6, T7, T8, T9)
+
+pub(open) trait Object {
+  fn cells(Self, Table) -> Array[Array[(Int, Int)]]
+  fn entities(Self, Table) -> Array[@papergrid.Entity] = _
+}
+
+pub(open) trait TableOption {
+  fn change(Self, Table) -> Unit
+  fn hint_change(Self) -> @papergrid.Entity? = _
+}
+pub impl[T : TableOption] TableOption for Array[T]
+pub impl[T0 : TableOption, T1 : TableOption] TableOption for (T0, T1)
+pub impl[T0 : TableOption, T1 : TableOption, T2 : TableOption] TableOption for (T0, T1, T2)
+pub impl[T0 : TableOption, T1 : TableOption, T2 : TableOption, T3 : TableOption] TableOption for (T0, T1, T2, T3)
+pub impl[T0 : TableOption, T1 : TableOption, T2 : TableOption, T3 : TableOption, T4 : TableOption] TableOption for (T0, T1, T2, T3, T4)
+pub impl[T0 : TableOption, T1 : TableOption, T2 : TableOption, T3 : TableOption, T4 : TableOption, T5 : TableOption] TableOption for (T0, T1, T2, T3, T4, T5)
+pub impl[T0 : TableOption, T1 : TableOption, T2 : TableOption, T3 : TableOption, T4 : TableOption, T5 : TableOption, T6 : TableOption] TableOption for (T0, T1, T2, T3, T4, T5, T6)
+pub impl[T0 : TableOption, T1 : TableOption, T2 : TableOption, T3 : TableOption, T4 : TableOption, T5 : TableOption, T6 : TableOption, T7 : TableOption] TableOption for (T0, T1, T2, T3, T4, T5, T6, T7)
+pub impl[T0 : TableOption, T1 : TableOption, T2 : TableOption, T3 : TableOption, T4 : TableOption, T5 : TableOption, T6 : TableOption, T7 : TableOption, T8 : TableOption] TableOption for (T0, T1, T2, T3, T4, T5, T6, T7, T8)
+pub impl[T0 : TableOption, T1 : TableOption, T2 : TableOption, T3 : TableOption, T4 : TableOption, T5 : TableOption, T6 : TableOption, T7 : TableOption, T8 : TableOption, T9 : TableOption] TableOption for (T0, T1, T2, T3, T4, T5, T6, T7, T8, T9)

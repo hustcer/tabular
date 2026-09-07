@@ -10,6 +10,26 @@ pub fn Table::from_rows(rows : Array[Array[String]]) -> Table {
 }
 
 ///|
+pub fn Table::count_rows(self : Table) -> Int {
+  self.rows.length()
+}
+
+///|
+pub fn Table::count_columns(self : Table) -> Int {
+  @papergrid.IterRecords::new(self.rows).count_cols()
+}
+
+///|
+pub fn Table::shape(self : Table) -> (Int, Int) {
+  (self.count_rows(), self.count_columns())
+}
+
+///|
+pub fn Table::is_empty(self : Table) -> Bool {
+  self.count_rows() == 0 || self.count_columns() == 0
+}
+
+///|
 pub fn Table::apply(self : Table, style : Style) -> Table {
   self.config.set_borders(style.borders())
   self.config.set_horizontal_lines(style.horizontal_lines())
@@ -19,19 +39,19 @@ pub fn Table::apply(self : Table, style : Style) -> Table {
 
 ///|
 pub fn Table::set_align(self : Table, align : Align) -> Table {
-  self.config.set_align(convert_align(align))
+  self.config.set_align_for_all(convert_align(align))
   self
 }
 
 ///|
 pub fn Table::set_valign(self : Table, align : VAlign) -> Table {
-  self.config.set_valign(convert_valign(align))
+  self.config.set_valign_for_all(convert_valign(align))
   self
 }
 
 ///|
 pub fn Table::set_padding(self : Table, padding : Padding) -> Table {
-  self.config.set_padding(
+  self.config.set_padding_for_all(
     padding.left,
     padding.right,
     padding.top,

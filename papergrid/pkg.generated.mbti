@@ -1,6 +1,10 @@
 // Generated using `moon info`, DON'T EDIT IT
 package "hustcer/tabular/papergrid"
 
+import {
+  "moonbitlang/core/debug",
+}
+
 // Values
 pub fn apply_height(Array[String], HeightMode) -> Array[String]
 
@@ -74,6 +78,15 @@ pub(all) struct CellBorder {
 }
 pub fn CellBorder::empty() -> Self
 pub fn CellBorder::filled(Char) -> Self
+
+pub(all) enum Entity {
+  Global
+  Row(Int)
+  Column(Int)
+  Col(Int)
+  Cell(Int, Int)
+} derive(Eq, @debug.Debug)
+pub fn Entity::iter(Self, Int, Int) -> Iter[(Int, Int)]
 
 pub enum HAlign {
   Left

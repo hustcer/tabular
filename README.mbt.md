@@ -340,6 +340,30 @@ test {
 }
 ```
 
+## Composable Settings
+
+`Table::with_` accepts any `TableOption`; `Table::modify` applies a `CellOption`
+to an object. Options can be reused and combined with `Settings`, tuples, or
+arrays. The trailing underscore avoids MoonBit's `with` keyword.
+
+```mbt check
+///|
+test {
+  let settings = @tabular.Settings::default()
+    .with_(@tabular.Style::psql())
+    .with_(@tabular.Alignment::left())
+    .modify(@tabular.Rows::first(), @tabular.Alignment::center())
+  let table = @tabular.Table::from_rows([
+      ["Name", "Status"],
+      ["task", "pending"],
+    ])
+    .with_(settings)
+    .modify(@tabular.Cell::new(1, 1), "done")
+  assert_eq(table.shape(), (2, 2))
+  assert_eq(table.rows[1], ["task", "done"])
+}
+```
+
 ## Validation
 
 The current repository test suite passes:

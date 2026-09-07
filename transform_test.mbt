@@ -199,7 +199,7 @@ priv struct CustomSelection {
 }
 
 ///|
-impl @tabular.Object for CustomSelection with fn cells(self, _rows, _cols) {
+impl @tabular.Object for CustomSelection with fn cells(self, _table) {
   self.groups
 }
 

@@ -30,7 +30,7 @@ pub fn Table::duplicate(self : Table, dup : Dup) -> Table {
     cell.0 >= 0 && cell.0 < row_count && cell.1 >= 0 && cell.1 < col_count
   }
   let source : Array[String] = []
-  for group in dup.src.cells(row_count, col_count) {
+  for group in dup.src.cells(self) {
     for cell in group {
       if valid(cell) {
         source.push(records.get_cell(cell.0, cell.1))
@@ -38,7 +38,7 @@ pub fn Table::duplicate(self : Table, dup : Dup) -> Table {
     }
   }
   guard !source.is_empty() else { return self }
-  for group in dup.dst.cells(row_count, col_count) {
+  for group in dup.dst.cells(self) {
     let mut index = 0
     for cell in group {
       if valid(cell) {

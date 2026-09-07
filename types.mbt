@@ -71,10 +71,7 @@ pub struct ByColName {
 }
 
 ///|
-pub enum Entity {
-  Row(Int)
-  Col(Int)
-}
+pub using @papergrid {type Entity}
 
 ///|
 pub enum SegmentKind {

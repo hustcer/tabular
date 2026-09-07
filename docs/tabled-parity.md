@@ -44,7 +44,7 @@ nu --no-config-file scripts/audit-upstream-tests.nu /path/to/tabled --output doc
 | 范围 | 当前证据 / 待办 |
 | --- | --- |
 | Builder / IndexBuilder | 已有实现和部分测试，需逐个核对方法、泛型数据入口、异常边界 |
-| Table 核心 API | 缺少通用 TableOption / CellOption / Settings / Modify、Tabled 数据模型和完整查询接口 |
+| Table 核心 API | 已补齐 TableOption / CellOption / Settings / Modify、统一 Alignment 和尺寸查询；Tabled 数据模型和其他查询接口仍需核对 |
 | 格式 | 缺少 AlignmentStrategy、TrimStrategy、Justification、Charset；现有默认对齐也需要和上游默认值逐项核对 |
 | 宽高 | 现有 Wrap/Truncate/Increase/Limit 只是部分能力，需核对表级与单元格级语义、测量、优先级、列表、最小宽度 |
 | Padding / Margin | 需补齐填充字符、PaddingExpand、Margin 及相关偏移和颜色 |
