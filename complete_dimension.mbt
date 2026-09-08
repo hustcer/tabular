@@ -92,17 +92,21 @@ pub fn CompleteDimension::reastimate(
 }
 
 ///|
+/// Recompute missing axes or arrays too short for the current records.
+/// Longer arrays remain valid, matching explicit width and height lists.
 pub fn CompleteDimension::estimate(
   self : CompleteDimension,
   table : Table,
 ) -> Unit {
   let records = @papergrid.IterRecords::new(table.rows)
-  if self.width is None {
+  if self.width is None ||
+    (self.width is Some(widths) && widths.length() < records.count_cols()) {
     self.width = Some(
       @papergrid.PeekableGridDimension::width(records, table.config),
     )
   }
-  if self.height is None {
+  if self.height is None ||
+    (self.height is Some(heights) && heights.length() < records.count_rows()) {
     self.height = Some(
       @papergrid.PeekableGridDimension::height(records, table.config),
     )

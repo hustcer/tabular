@@ -1000,7 +1000,8 @@ pub fn IterGrid::to_string(self : IterGrid) -> String {
 
   // Apply margin if configured
   if self.config.has_margin() {
-    let total_width = if lines.is_empty() { 0 } else { lines[0].length() }
+    let total_width = widths.iter().take(count_cols).fold(init=0, Int::add) +
+      self.config.count_vertical(count_cols)
     let full_width = total_width +
       self.config.margin_left +
       self.config.margin_right

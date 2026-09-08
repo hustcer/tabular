@@ -77,10 +77,12 @@ pub fn Table::to_string(self : Table) -> String {
   let records = @papergrid.IterRecords::new(self.rows)
   let dims = @papergrid.IterGridDimension::default()
   dims.estimate(records, self.config)
-  if self.dimension.get_widths() is Some(widths) {
+  if self.dimension.get_widths() is Some(widths) &&
+    widths.length() >= records.count_cols() {
     dims.set_widths(widths[:records.count_cols()].to_owned())
   }
-  if self.dimension.get_heights() is Some(heights) {
+  if self.dimension.get_heights() is Some(heights) &&
+    heights.length() >= records.count_rows() {
     dims.set_heights(heights[:records.count_rows()].to_owned())
   }
   let grid = @papergrid.IterGrid::new(records, self.config, dims)
