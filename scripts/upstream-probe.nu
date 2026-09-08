@@ -25,8 +25,15 @@ export def build-upstream-probe [upstream: path, source: path, scratch: path]: n
     }
     patch: {crates-io: {papergrid: {path: ($root | path join papergrid)}}}
   } | to toml | save ($scratch | path join Cargo.toml)
-  let result = (^cargo build --locked --manifest-path ($scratch | path join Cargo.toml) | complete)
+  let result = (^cargo build --locked --manifest-path ($scratch | path join Cargo.toml) --target-dir ($scratch | path join target) --message-format json | complete)
   if $result.exit_code != 0 { error make {msg: $result.stderr} }
-  let executable = if $nu.os-info.name == 'windows' { 'tabular-upstream-probe.exe' } else { 'tabular-upstream-probe' }
-  $scratch | path join target/debug $executable
+  # Cargo may include a target triple in the output path. Read the actual binary
+  # artifact instead of assuming target/debug or a platform-specific suffix.
+  let executables = ($result.stdout | lines | each { from json } | where {|message|
+    $message.reason? == 'compiler-artifact' and $message.target.name? == 'tabular-upstream-probe' and $message.executable? != null
+  } | get executable)
+  if ($executables | length) != 1 {
+    error make {msg: 'Expected exactly one reference probe executable from Cargo'}
+  }
+  $executables | first
 }

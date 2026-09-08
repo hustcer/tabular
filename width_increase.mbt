@@ -78,14 +78,13 @@ pub impl[M : Measurement, P : Peaker] TableOption for MinWidth[M, P] with fn cha
     return
   }
   let target = Measurement::measure(self.width, table, Attribute::Width)
-  table.dimension.estimate(table)
-  let widths = table.dimension.get_widths().unwrap()
+  let widths = table.column_widths()
   let total = table_width(table, widths)
   for _ in total..<target {
     guard Peaker::peak(self.priority, [], widths) is Some(col) else { break }
     widths[col] += 1
   }
-  table.dimension.set_widths(widths)
+  table.set_column_widths(widths)
 }
 
 ///|

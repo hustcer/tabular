@@ -79,6 +79,29 @@ pub fn IterGridDimension::widths(self : IterGridDimension) -> Array[Int] {
 }
 
 ///|
+/// Measure the dimensions used by IterGrid, including render-time width and
+/// height modes. Explicit dimension overrides are applied by the caller.
+/// Unlike the static width/height helpers, this measures processed cell lines.
+///
+/// ```mbt check
+/// test {
+///   let records = IterRecords::new([["abcdef"]])
+///   let config = SpannedConfig::default()
+///   config.set_width_mode(WidthMode::wrap(2))
+///   config.set_height_mode(HeightMode::increase(5))
+///   assert_eq(IterGridDimension::rendered_dimension(records, config), ([2], [5]))
+/// }
+/// ```
+pub fn IterGridDimension::rendered_dimension(
+  records : IterRecords,
+  config : SpannedConfig,
+) -> (Array[Int], Array[Int]) {
+  let dims = IterGridDimension::default()
+  dims.estimate(records, config)
+  (dims.widths(), row_metrics(records, records.count_cols(), config))
+}
+
+///|
 pub fn IterGridDimension::set_widths(
   self : IterGridDimension,
   widths : Array[Int],

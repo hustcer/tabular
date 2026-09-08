@@ -1,9 +1,28 @@
 ///|
 fn table_width(table : Table, widths : Array[Int]) -> Int {
-  widths.fold(init=0, (sum, value) => sum + value) +
-  table.config.count_vertical(widths.length()) +
+  widths
+  .iter()
+  .take(table.count_columns())
+  .fold(init=0, (sum, value) => sum + value) +
+  table.config.count_vertical(table.count_columns()) +
   table.config.margin_left +
   table.config.margin_right
+}
+
+///|
+// Width lists retain surplus entries, but priorities must only see real columns.
+fn Table::column_widths(self : Table) -> Array[Int] {
+  self.dimension.estimate(self)
+  self.dimension.get_widths().unwrap()[:self.count_columns()].to_owned()
+}
+
+///|
+fn Table::set_column_widths(self : Table, widths : Array[Int]) -> Unit {
+  let cached = self.dimension.get_widths().unwrap()
+  for col, width in widths {
+    cached[col] = width
+  }
+  self.dimension.set_widths(cached)
 }
 
 ///|

@@ -74,6 +74,13 @@ moon test
 
 ANSI、尺寸、宽度、高度、填充/边距的五类编译探针统一使用 `scripts/upstream-probe.nu`：要求上述固定上游提交及干净的 tabled/papergrid 源码，并通过 `scripts/reference/Cargo.lock` 和 `cargo build --locked` 锁定传递依赖。2026-09-08 重新生成全部五类夹具后，格式化结果与提交中的期望值逐字一致。显式 `--probe` 用于调试，调用者自行负责该外部二进制的来源。
 
+探针构建显式将产物放入自身临时目录，并读取 Cargo JSON 中的实际可执行文件路径，
+避免 `CARGO_TARGET_DIR` 或显式主机目标导致路径错误。可运行以下集成验证（需要 Cargo）：
+
+```sh
+nu --no-config-file scripts/upstream-probe_test.nu /path/to/tabled
+```
+
 以上差分夹具是额外验证，不计入原始命名测试映射。原始宽度测试的覆盖范围见下节；其他渲染器和 ANSI 配置仍需继续核对。
 
 ## Unicode 宽度与文本工具
@@ -110,7 +117,8 @@ moon test
 
 - `Width` 改为选项工厂，返回 `Wrap`、`Truncate`、`MinWidth`、`Justify`、`WidthList`；支持通用测量和优先级。单元格选项直接修改记录，表级选项调整包含填充、边框、边距的总宽度。
 - 保留单词换行、截断后缀的 `Cut/Ignore/Replace`、逐行截断、后缀取色、单元格最小宽度填充、统一宽度、列宽列表均已接入。
-- `CompleteDimension` 和 `PeekableGridDimension` 保留上游缓存/测量语义；`with_` 在组合选项全部完成后按合并的 hint 清理缓存，读取渲染结果不会填入公共缓存。
+- `CompleteDimension` 保留缓存失效和显式列表优先规则，并与渲染共享处理后尺寸测量；`PeekableGridDimension` 保留上游原始记录测量语义。`with_` 在组合选项全部完成后按合并的 hint 清理缓存，读取渲染结果不会填入公共缓存。
+- 多余列宽条目继续保留，表级 wrap、truncate、increase 的总宽计算和优先级选择仅作用于实际列；兼容 setter 和 `Setting` 的渲染时宽高处理计入 `total_width/total_height`。
 - 保留 `width_test.rs` 全部 122 个 `test_table!` 和 7 个普通测试函数，包括原始 ANSI/OSC 期望值和额外宽度断言。普通测试的派生字段在测试辅助代码中显式表示；语言派生功能仍待实现。
 - 保留 `wrap.rs` 全部 18 个源码测试函数，其中 2 个早先已移植，新增剩余 16 个；包含前后缀、多样式文本、中文和宽字符边界。
 - 25 组 Rust 差分场景同时核对内容、输出、缓存、总宽高，覆盖元组与数组、百分比、测量、优先级、跨行、CRLF、列宽列表和显式行高。
@@ -182,3 +190,8 @@ moon test
 发布收尾审查还确认了三项在 `282cf50` 基线前已存在的预设差异：`rounded` 当前对每行加分隔线，上游只分隔表头；`blank` 当前与 `empty` 等同，上游多一个空格列分隔；`dots` 当前顶底线形式与上游不同。这些属于后续 Style 对齐范围，README Gallery 展示的是当前 MoonBit 行为。
 
 2026-09-08：`moon info`、`moon fmt` 以及全部四个后端的 `moon check/build/test --target all --deny-warn` 均成功，1322/1322 个运行测试分别通过，另保留上游原本忽略的 1 例，无 Warning。收尾新增缓存边界与无边框 ANSI/CJK Margin 的 4 个回归测试，以及 2 个可执行 README 示例；详见 [0.6.0 发布审计](release-0.6.0.md)。此结果对应已完成的数据变换、通用配置、当前格式、ANSI/Unicode 文本、尺寸测量、高级宽高和当前填充/边距能力，不表示上表的未完成项目已对齐。
+
+同日后续复核：扩大到 v0.5.2 基线后的新发现均已修复。新增 Builder 文档测试、5 个
+列宽/兼容尺寸回归测试和 1 个渲染尺寸 API 文档测试，四后端各 **1329/1329** 项通过，
+无 Warning；未修改旧快照或 Rust 参考期望。Cargo 探针在自定义输出目录和显式主机
+目标下均能构建并运行。完整证据见 [v0.5.2 后审查与修复](review-since-v0.5.2.md)。

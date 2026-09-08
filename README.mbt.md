@@ -13,15 +13,33 @@ A MoonBit library for pretty-printing tables in the terminal. Inspired by the Ru
 - Builder helpers with index and transpose support
 - Rotate, reverse, concatenate, and duplicate selected records
 - ANSI text colors, style parsing, and color-preserving width operations
+- Composable table and cell options with measurements and resizing priorities
+- Unicode 17 display width, colored padding, and margins
 
 See [tabled parity status](docs/tabled-parity.md) for the upstream test mapping and remaining work.
-For the breaking changes in 0.6.0, see the [migration guide](docs/migration-0.6.md).
+The examples below use the 0.6 API. For the breaking changes from 0.5.2,
+including `Builder::extend` becoming `Builder::extend_`, see the
+[migration guide](docs/migration-0.6.md).
 
 ## Installation
 
 ```bash
 moon add hustcer/tabular
 ```
+
+Add the package to the consuming directory's `moon.pkg`:
+
+```text
+import {
+  "hustcer/tabular",
+}
+```
+
+Examples that use `@papergrid` also need `"hustcer/tabular/papergrid"` in that
+import block. Use the documentation matching your installed package version;
+0.6.0 is currently marked unreleased in the [changelog](CHANGELOG.md).
+This source tree is validated with `moon 0.1.20260827` and uses `moon.mod`
+and `moon.pkg` manifests.
 
 ## Quick Start
 
@@ -226,15 +244,20 @@ table.apply(style) |> ignore
 
 ## Builder
 
-```moonbit nocheck
-let builder = @tabular.Builder::default()
-builder.push_record(["Name", "Age", "City"])
-builder.push_record(["Alice", "30", "NYC"])
-builder.push_record(["Bob", "25", "LA"])
-
-let table = builder.build()
-println(table.to_string())
+```mbt check
+///|
+test "README builder" {
+  let builder = @tabular.Builder::default()
+  builder.push_record(["Name", "Age", "City"])
+  builder.extend_(["Alice", "30", "NYC"])
+  builder.push_record(["Bob", "25", "LA"])
+  let table = builder.build()
+  assert_eq(table.shape(), (3, 3))
+  assert_eq(table.rows[1], ["Alice", "30", "NYC"])
+}
 ```
+
+`extend_` appends one record, just like `push_record`.
 
 ```moonbit nocheck
 ///|
@@ -255,6 +278,11 @@ let table3 = builder.index().hide().build()
 ```
 
 ## Common Edits
+
+These setters and `Setting` helpers remain compatibility entry points.
+Width and height setters act during rendering and preserve the stored text.
+For measurements, priorities, word wrapping, and other advanced options, use
+[`with_` and `modify`](#composable-settings).
 
 ```moonbit nocheck
 table.set_align(@tabular.Align::right()) |> ignore
@@ -472,11 +500,21 @@ test {
 Truncation supports `multiline`, `suffix_limit`, and `suffix_try_color`.
 `Width::justify` sets every cell's text width. `Width::list` directly sets column
 dimensions, including padding; it assumes the content already fits.
+Extra list entries remain cached, while table-level wrapping, truncation, and
+growth only measure and resize the actual columns.
 Later layout or content changes invalidate cached dimensions according to the
 option's hint. Rendering does not fill the public cache.
 
+`Table::from_rows` keeps the input arrays by reference. If you edit `table.rows`
+or `table.config` directly, clear cached dimensions with
+`table.get_dimension_mut().clear()` before running size-dependent operations.
+`get_dimension()` returns an independent copy; `get_dimension_mut()` exposes
+the live cache.
+
 The earlier `set_width` and `Setting::width` methods retain their render-time
 wrap/truncate behavior. Use `with_` or `modify` for the advanced options above.
+Dimension queries include these render-time width and height modes; explicit
+width and height lists take precedence over estimated dimensions.
 
 ## Height
 
@@ -521,11 +559,21 @@ test {
 
 ## Validation
 
-The current repository test suite passes:
+Run the same checks as CI, including the executable examples in this README:
 
 ```bash
-moon test
+moon fmt --check
+moon check --target all --deny-warn
+moon build --target all --deny-warn
+moon test --target all --deny-warn
+moon info
+git diff --exit-code -- '*.mbti'
 ```
+
+The targets are wasm, wasm-gc, JavaScript, and native. Passing these checks
+validates the covered behavior; it does not establish full Rust tabled parity.
+See the [review and fixes since v0.5.2](docs/review-since-v0.5.2.md) for the
+release checks and regression coverage.
 
 ## License
 

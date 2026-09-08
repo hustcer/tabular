@@ -10,6 +10,8 @@ in progress; see [the parity inventory](docs/tabled-parity.md) and
 
 ### Breaking Changes
 
+- Rename `Builder::extend(row)` to `Builder::extend_(row)` to avoid a MoonBit
+  reserved keyword; it still appends one record.
 - Default tables are left aligned, multiline text uses per-cell alignment, and
   bare `papergrid.SpannedConfig` starts without borders or padding.
 - `Width` and `Height` are option factories returning concrete option types.
@@ -38,6 +40,12 @@ in progress; see [the parity inventory](docs/tabled-parity.md) and
 
 ### Fixes And Validation
 
+- Limit table width resizing to actual columns while preserving surplus width
+  cache entries, preventing wrap/truncate panics and incorrect growth targets.
+- Share rendered dimension measurement with size queries so legacy width/height
+  setters and scoped settings are included; retain explicit cache precedence.
+- Resolve reference probe executables from Cargo artifacts and isolate their
+  output directory, supporting custom Cargo target directories and host targets.
 - Guard short dimension caches after public record growth or explicit cache edits.
 - Measure borderless table margins using grid width, including CJK and ANSI text.
 - Preserve original upstream expectations and track 278 of 1,387 named source

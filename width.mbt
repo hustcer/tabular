@@ -80,8 +80,7 @@ pub impl[M : Measurement, P : Peaker] TableOption for Wrap[M, P] with fn change(
     return
   }
   let target = Measurement::measure(self.width, table, Attribute::Width)
-  table.dimension.estimate(table)
-  let widths = table.dimension.get_widths().unwrap()
+  let widths = table.column_widths()
   let total = table_width(table, widths)
   if total <= target {
     return
@@ -97,7 +96,7 @@ pub impl[M : Measurement, P : Peaker] TableOption for Wrap[M, P] with fn change(
       placeholder=self.placeholder,
     )
   }
-  table.dimension.set_widths(widths)
+  table.set_column_widths(widths)
 }
 
 ///|

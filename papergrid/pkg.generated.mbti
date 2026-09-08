@@ -225,6 +225,7 @@ pub fn IterGridDimension::default() -> Self
 pub fn IterGridDimension::estimate(Self, IterRecords, SpannedConfig) -> Unit
 pub fn IterGridDimension::height(IterRecords, SpannedConfig) -> Array[Int]
 pub fn IterGridDimension::height_total(IterRecords, SpannedConfig) -> Int
+pub fn IterGridDimension::rendered_dimension(IterRecords, SpannedConfig) -> (Array[Int], Array[Int])
 pub fn IterGridDimension::set_heights(Self, Array[Int]) -> Unit
 pub fn IterGridDimension::set_widths(Self, Array[Int]) -> Unit
 pub fn IterGridDimension::width(IterRecords, SpannedConfig) -> Array[Int]

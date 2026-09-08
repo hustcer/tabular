@@ -25,6 +25,11 @@ table.set_width(@tabular.Width::wrap_with(10, ".")) |> ignore
 
 Unicode、跨行/跨列尺寸和垂直填充修正会改变部分旧快照。应核对输出含义后更新快照；居中设置不会恢复旧算法的错误尺寸。
 
+## Builder 方法改名
+
+`Builder::extend(row)` 改为 `Builder::extend_(row)`，避免使用 MoonBit 保留关键字。
+它仍然追加一条记录，与 `push_record(row)` 等价；旧调用需要改名。
+
 ## Width / Height 类型
 
 `Width`、`Height` 现在只作为工厂名称，不能继续作为工厂返回值的类型注解，也不能匹配旧的 `Wrap/Truncate/Increase/Limit` 枚举分支。
@@ -69,6 +74,12 @@ Unicode、跨行/跨列尺寸和垂直填充修正会改变部分旧快照。应
 `Table::from_rows` 保留输入数组引用，`rows`、`config` 和 `get_dimension_mut()` 是底层可变入口。绕过配置选项直接修改内容、边框或填充后，应调用 `table.get_dimension_mut().clear()`，再执行依赖尺寸的操作。
 
 读取 `to_string/total_width/total_height` 不会填充或改写公共缓存。缓存条目不足当前行列数时会安全重新估算该轴；条目足够时仍被视为显式尺寸，不会自动检查内容是否改变。`get_dimension()` 返回独立副本。
+
+`Width::list` 的多余条目继续保留，但表级 wrap、truncate、increase 只计算和调整实际列。
+`CompleteDimension::estimate` 与渲染复用 `papergrid.IterGridDimension::rendered_dimension`，
+因此 `total_width/total_height` 也会计入兼容 setter 和 `Setting` 的渲染时宽高处理；
+显式宽高列表仍优先。`PeekableGridDimension` 与静态 `IterGridDimension::width/height`
+保持原有上游测量规则，直接使用底层 API 时应按需要选择原始记录测量或渲染尺寸测量。
 
 ## 发布范围
 

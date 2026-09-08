@@ -76,7 +76,12 @@ pub fn[H : HeightOption] Table::set_height(self : Table, height : H) -> Table {
 pub fn Table::to_string(self : Table) -> String {
   let records = @papergrid.IterRecords::new(self.rows)
   let dims = @papergrid.IterGridDimension::default()
-  dims.estimate(records, self.config)
+  let (widths, heights) = @papergrid.IterGridDimension::rendered_dimension(
+    records,
+    self.config,
+  )
+  dims.set_widths(widths)
+  dims.set_heights(heights)
   if self.dimension.get_widths() is Some(widths) &&
     widths.length() >= records.count_cols() {
     dims.set_widths(widths[:records.count_cols()].to_owned())

@@ -99,17 +99,22 @@ pub fn CompleteDimension::estimate(
   table : Table,
 ) -> Unit {
   let records = @papergrid.IterRecords::new(table.rows)
-  if self.width is None ||
-    (self.width is Some(widths) && widths.length() < records.count_cols()) {
-    self.width = Some(
-      @papergrid.PeekableGridDimension::width(records, table.config),
-    )
+  let missing_width = self.width is None ||
+    (self.width is Some(widths) && widths.length() < records.count_cols())
+  let missing_height = self.height is None ||
+    (self.height is Some(heights) && heights.length() < records.count_rows())
+  if !missing_width && !missing_height {
+    return
   }
-  if self.height is None ||
-    (self.height is Some(heights) && heights.length() < records.count_rows()) {
-    self.height = Some(
-      @papergrid.PeekableGridDimension::height(records, table.config),
-    )
+  let (widths, heights) = @papergrid.IterGridDimension::rendered_dimension(
+    records,
+    table.config,
+  )
+  if missing_width {
+    self.width = Some(widths)
+  }
+  if missing_height {
+    self.height = Some(heights)
   }
 }
 
