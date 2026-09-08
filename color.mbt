@@ -27,6 +27,22 @@ pub fn Color::default() -> Color {
 }
 
 ///|
+/// Extract the style of the first text block; no text block produces Err.
+pub fn Color::try_from(text : String) -> Result[Color, Unit] {
+  @papergrid.ANSIBuf::try_from(text).map(Color::from_ansi_buf)
+}
+
+///|
+/// Parse a style, aborting on input without a text block. Use `try_from` when
+/// a missing text block must be handled explicitly.
+pub fn Color::parse(text : String) -> Color {
+  match Color::try_from(text) {
+    Ok(color) => color
+    Err(_) => abort("Color::parse requires a text block")
+  }
+}
+
+///|
 pub fn Color::is_empty(self : Color) -> Bool {
   self.ansi.is_empty()
 }
@@ -42,9 +58,9 @@ pub fn Color::get_suffix(self : Color) -> String {
 }
 
 ///|
-pub fn Color::as_ansi_str(self : Color) -> @papergrid.ANSIBuf? {
+pub fn Color::as_ansi_str(self : Color) -> @papergrid.ANSIStr? {
   if self.static_ {
-    Some(self.ansi)
+    Some(self.ansi.as_ref())
   } else {
     None
   }
@@ -58,6 +74,21 @@ pub fn Color::to_ansi_buf(self : Color) -> @papergrid.ANSIBuf {
 ///|
 pub fn Color::from_ansi_buf(ansi : @papergrid.ANSIBuf) -> Color {
   { ansi, static_: false, }
+}
+
+///|
+pub fn Color::from_ansi_str(ansi : @papergrid.ANSIStr) -> Color {
+  { ansi: @papergrid.ANSIBuf::from_ansi_str(ansi), static_: true, }
+}
+
+///|
+pub impl @papergrid.ANSIFmt for Color with fn fmt_ansi_prefix(self, out) {
+  out.write_string(self.ansi.prefix)
+}
+
+///|
+pub impl @papergrid.ANSIFmt for Color with fn fmt_ansi_suffix(self, out) {
+  out.write_string(self.ansi.suffix)
 }
 
 ///|

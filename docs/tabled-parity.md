@@ -26,7 +26,7 @@ moon test --filter 'upstream*'
 
 生成器不会读取 MoonBit 实际输出来制造预期结果，也不会静默跳过无法识别的 `test_table!`。它只写入带有自身生成标记的目标文件。
 
-[`upstream-test-inventory.json`](upstream-test-inventory.json) 当前列出 90 个源文件中的 1,387 个命名测试候选，71 个带有明确的 MoonBit 源引用。它包括条件编译测试，但不包括文档测试和未展开的匿名宏测试；既有测试缺少源引用也会标为未映射。重新生成清单：
+[`upstream-test-inventory.json`](upstream-test-inventory.json) 当前列出 90 个源文件中的 1,387 个命名测试候选，93 个带有明确的 MoonBit 源引用。它包括条件编译测试，但不包括文档测试和未展开的匿名宏测试；既有测试缺少源引用也会标为未映射。重新生成清单：
 
 ```sh
 nu --no-config-file scripts/audit-upstream-tests.nu /path/to/tabled --output docs/upstream-test-inventory.json
@@ -56,16 +56,32 @@ nu --no-config-file scripts/import-grid-format-tests.nu /path/to/tabled
 nu --no-config-file scripts/upstream-literals_test.nu
 ```
 
-上游 `render_settings.rs` 中的组合渲染用例、文本内嵌 ANSI 的测量/裁剪以及 Color 解析尚未完成，不能将这些已通过的格式测试视为整个 ANSI 功能已经对齐。
+## ANSI 文本与组合渲染
+
+- 保留 `render_settings.rs` 全部 12 例，包含多行文本、Tab、Span、内嵌颜色及两种对齐策略。
+- 补齐 `Color::try_from/parse/from_ansi_str`、`ANSIBuf/ANSIStr` 转换与 `ANSIFmt`；保留 Color 源码内剩余 4 个测试函数和 papergrid 文本工具的 6 个测试函数。
+- ANSI 扫描、SGR 状态及重置顺序对照上游依赖 `ansitok 0.3.0`、`ansi-str 0.9.0`；166 组输入逐项验证测量、去序列、修剪、分行与样式解析，共 830 项断言。
+- 新增保留样式的截断/换行与 OSC8 单链接重建；21 组输入在 7 种宽度下比较 Rust 的截断和换行结果，共 294 项断言。
+- 默认宽字符占位符改为上游的 `�`。旧点号测试通过显式 `wrap_with(1, ".")` 保留原预期；原测试字面量没有修改。
+
+参考值直接由本地上游 Rust 生成，独立于 MoonBit 输出。重新生成两组差分夹具（需要 Cargo）：
+
+```sh
+nu --no-config-file scripts/import-ansi-reference-tests.nu /path/to/tabled
+moon fmt
+moon test
+```
+
+以上差分夹具是额外验证，不计入 93 个原始命名测试映射。Unicode 字符/文本宽度仍使用部分规则，保留单词的换行、完整截断策略及更多 ANSI 边界尚待核对；不能视为整个 ANSI/宽度子系统已完成。
 
 | 范围 | 当前证据 / 待办 |
 | --- | --- |
 | Builder / IndexBuilder | 已有实现和部分测试，需逐个核对方法、泛型数据入口、异常边界 |
 | Table 核心 API | 已补齐 TableOption / CellOption / Settings / Modify、统一 Alignment 和尺寸查询；Tabled 数据模型和其他查询接口仍需核对 |
-| 格式 | 已实现四种格式选项并纠正默认值；继续核对 render_settings、内嵌 ANSI、Span/Width/Height 组合与其他渲染器 |
+| 格式 | 已保留全部 render_settings 组合案例；继续核对更多 Span/Width/Height 组合与其他渲染器 |
 | 宽高 | 现有 Wrap/Truncate/Increase/Limit 只是部分能力，需核对表级与单元格级语义、测量、优先级、列表、最小宽度 |
 | Padding / Margin | 需补齐填充字符、PaddingExpand、Margin 及相关偏移和颜色 |
-| 颜色 / ANSI | 已有基础 Color 与内容/对齐填充颜色；仍缺解析、边框/填充/边距颜色、Colorization 和完整 ANSI 宽度处理 |
+| 颜色 / ANSI | 已补齐样式解析、ANSI 文本测量/修剪及基本裁剪/换行；仍缺边框/填充/边距颜色、Colorization、完整 Unicode 测量与剩余 ANSI 边界 |
 | Style / Theme | 缺少完整 VerticalLine、LineChar、LineText、Theme、Layout、ColumnNames/RowNames 等 |
 | Object / Location | 已有部分对象集合，仍需 Frame、完整组合顺序/迭代器及 ByContent/ByCondition/ByValue |
 | Span / Panel / Merge / Highlight / Split | 已有实现，尚需上游全部原始测试的逐项映射与行为审计 |
@@ -77,4 +93,4 @@ nu --no-config-file scripts/upstream-literals_test.nu
 
 ## 当前验证
 
-2026-09-08：`moon info`、`moon fmt`、`moon check`、`moon build`、`moon test` 均成功，456/456 测试通过，无 Warning。此结果对应已完成的数据变换、通用配置与当前格式能力，不表示上表的未完成项目已对齐。
+2026-09-08：`moon info`、`moon fmt`、`moon check`、`moon build`、`moon test` 均成功，797/797 测试通过，无 Warning。此结果对应已完成的数据变换、通用配置、当前格式及 ANSI 能力，不表示上表的未完成项目已对齐。

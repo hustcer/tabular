@@ -10,9 +10,27 @@ pub fn apply_height(Array[String], HeightMode) -> Array[String]
 
 pub fn apply_width(String, WidthMode) -> Array[String]
 
+pub fn count_lines(String) -> Int
+
+pub fn cut_str(String, Int) -> String
+
+pub fn get_line_width(String) -> Int
+
+pub fn get_lines(String) -> Array[String]
+
+pub fn get_text_dimension(String) -> (Int, Int)
+
+pub fn get_text_width(String) -> Int
+
 pub fn processed_lines(String, WidthMode, HeightMode) -> Array[String]
 
 pub fn split_lines(String) -> Array[String]
+
+pub fn strip_ansi(String) -> String
+
+pub fn trim_ansi(String) -> String
+
+pub fn wrap_text(String, Int, placeholder? : String) -> String
 
 // Errors
 
@@ -21,11 +39,28 @@ pub(all) struct ANSIBuf {
   prefix : String
   suffix : String
 } derive(Eq, @debug.Debug)
+pub fn ANSIBuf::as_ref(Self) -> ANSIStr
+pub fn ANSIBuf::default() -> Self
 pub fn ANSIBuf::empty() -> Self
+pub fn ANSIBuf::from_ansi_str(ANSIStr) -> Self
 pub fn ANSIBuf::get_prefix(Self) -> String
 pub fn ANSIBuf::get_suffix(Self) -> String
 pub fn ANSIBuf::is_empty(Self) -> Bool
 pub fn ANSIBuf::new(String, String) -> Self
+pub fn ANSIBuf::try_from(String) -> Result[Self, Unit]
+pub impl ANSIFmt for ANSIBuf
+
+pub(all) struct ANSIStr {
+  prefix : String
+  suffix : String
+} derive(Eq, @debug.Debug)
+pub fn ANSIStr::default() -> Self
+pub fn ANSIStr::empty() -> Self
+pub fn ANSIStr::get_prefix(Self) -> String
+pub fn ANSIStr::get_suffix(Self) -> String
+pub fn ANSIStr::is_empty(Self) -> Bool
+pub fn ANSIStr::new(String, String) -> Self
+pub impl ANSIFmt for ANSIStr
 
 pub struct Borders {
   top : Char?
@@ -321,3 +356,7 @@ pub fn WidthMode::wrap_with(Int, String) -> Self
 // Type aliases
 
 // Traits
+pub(open) trait ANSIFmt {
+  fn fmt_ansi_prefix(Self, StringBuilder) -> Unit
+  fn fmt_ansi_suffix(Self, StringBuilder) -> Unit
+}

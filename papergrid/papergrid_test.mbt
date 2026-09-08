@@ -259,8 +259,8 @@ test "col span collision two spans different widths" {
 }
 
 ///|
-test "wrap uses default placeholder when wide char exceeds width" {
-  assert_eq(apply_width("中", WidthMode::wrap(1)), ["."])
+test "wrap preserves the legacy dot placeholder when wide char exceeds width" {
+  assert_eq(apply_width("中", WidthMode::wrap_with(1, ".")), ["."])
 }
 
 ///|

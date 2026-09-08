@@ -236,10 +236,10 @@ test "table width wrap with wide chars" {
 }
 
 ///|
-test "table width wrap with wide chars uses default placeholder when width is too small" {
+test "table width wrap with wide chars preserves the legacy dot placeholder" {
   let table = centered_table([["中"]])
   table.apply(@tabular.Style::ascii()) |> ignore
-  table.set_width(@tabular.Width::wrap(1)) |> ignore
+  table.set_width(@tabular.Width::wrap_with(1, ".")) |> ignore
   inspect(
     table.to_string(),
     content=(

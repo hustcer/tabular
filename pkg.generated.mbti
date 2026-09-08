@@ -98,7 +98,7 @@ pub impl TableOption for Charset
 pub struct Color {
   // private fields
 } derive(Eq, @debug.Debug)
-pub fn Color::as_ansi_str(Self) -> @papergrid.ANSIBuf?
+pub fn Color::as_ansi_str(Self) -> @papergrid.ANSIStr?
 pub fn Color::bg_black() -> Self
 pub fn Color::bg_blue() -> Self
 pub fn Color::bg_bright_black() -> Self
@@ -139,6 +139,7 @@ pub fn Color::fg_red() -> Self
 pub fn Color::fg_white() -> Self
 pub fn Color::fg_yellow() -> Self
 pub fn Color::from_ansi_buf(@papergrid.ANSIBuf) -> Self
+pub fn Color::from_ansi_str(@papergrid.ANSIStr) -> Self
 pub fn Color::get_prefix(Self) -> String
 pub fn Color::get_suffix(Self) -> String
 pub fn Color::hidden() -> Self
@@ -146,14 +147,17 @@ pub fn Color::invert() -> Self
 pub fn Color::is_empty(Self) -> Bool
 pub fn Color::italic() -> Self
 pub fn Color::new(String, String) -> Self
+pub fn Color::parse(String) -> Self
 pub fn Color::reset() -> Self
 pub fn Color::rgb_bg(Byte, Byte, Byte) -> Self
 pub fn Color::rgb_fg(Byte, Byte, Byte) -> Self
 pub fn Color::strikethrough() -> Self
 pub fn Color::to_ansi_buf(Self) -> @papergrid.ANSIBuf
+pub fn Color::try_from(String) -> Result[Self, Unit]
 pub fn Color::underline() -> Self
 pub impl CellOption for Color
 pub impl TableOption for Color
+pub impl @papergrid.ANSIFmt for Color
 pub impl BitOr for Color
 
 pub struct Cols {
@@ -459,6 +463,7 @@ pub impl TableOption for Shadow
 pub enum Span {
 }
 pub fn Span::col(Int) -> Setting
+pub fn Span::column(Int) -> Setting
 pub fn Span::row(Int) -> Setting
 
 pub struct Split {
@@ -610,6 +615,7 @@ pub(open) trait Object {
   fn cells(Self, Table) -> Array[Array[(Int, Int)]]
   fn entities(Self, Table) -> Array[@papergrid.Entity] = _
 }
+pub impl Object for (Int, Int)
 
 pub(open) trait TableOption {
   fn change(Self, Table) -> Unit

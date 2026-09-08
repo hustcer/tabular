@@ -42,7 +42,7 @@ fn render_cell(
   }
   let format = config.text_format_at(source.0, source.1)
   let content = if format.formatting.horizontal_trim {
-    content.trim().to_owned()
+    trim_ansi(content)
   } else {
     content
   }

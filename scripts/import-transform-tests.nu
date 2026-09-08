@@ -7,6 +7,8 @@ use upstream-literals.nu expected-lines
 def translate [expression: string]: nothing -> string {
   $expression
   | str trim
+  | str replace --all --regex 'Matrix::iter\((multiline_data[12]|tab_data[12]|colored_data)\(\)\)' 'upstream_$1()'
+  | str replace --all --regex 'Matrix::iter\(vec!(\[.*?\])\)' 'upstream_string_table($1).set_align(@tabular.Align::center())'
   | str replace --all --regex 'Matrix::iter\(\[(.*?)\]\)' {|tuples|
       let rows = ($tuples
         | parse --regex '\((?<values>[\d,\s]+)\)'
@@ -26,7 +28,6 @@ def translate [expression: string]: nothing -> string {
   | str replace --all '.with(Dup::' '.duplicate(Dup::'
   | str replace --all '.with(Style::' '.apply(Style::'
   | str replace --all '.with(' '.with_('
-  | str replace --all --regex 'Modify::new\(\((\d+),\s*(\d+)\)\)' 'Modify::new(Cell::new($1, $2))'
   | str replace --all 'Table::new(' 'upstream_string_table('
   | str replace --all 'Columns::' 'Cols::'
   | str replace --all 'ByColumnName::' 'ByColName::'
@@ -37,7 +38,7 @@ def translate [expression: string]: nothing -> string {
     }
   | str replace --all 'Rows::new(1..3)' 'Rows::new(1, 3)'
   | str replace --all 'Rows::new(1..)' 'Rows::new(1, -1)'
-  | str replace --all --regex '(?<![\w.])(Rotate|Reverse|Offset|Concat|Dup|Style|Rows|Cols|Segment|Alignment|Modify|Padding|Charset|Justification|Color|TrimStrategy|AlignmentStrategy|Settings|ByColName)::' '@tabular.$1::'
+  | str replace --all --regex '(?<![\w.])(Rotate|Reverse|Offset|Concat|Dup|Style|Rows|Cols|Segment|Alignment|Modify|Padding|Charset|Justification|Color|TrimStrategy|AlignmentStrategy|Settings|ByColName|Span)::' '@tabular.$1::'
   | str replace --all --regex '(?<![\w.])Cell::' '@tabular.Cell::'
   | str replace --all 'let mut ' 'let '
   | str replace --all --regex '(?m)^(\s*table\d\.[^;]+);' '$1 |> ignore'
@@ -61,8 +62,9 @@ def main [upstream: path, --output: path] {
   let commit = (^git -C $source_root rev-parse HEAD | complete)
   if $commit.exit_code != 0 { error make {msg: $commit.stderr} }
   let pattern = '(?s)test_table!\(\s*(?<name>\w+),\s*(?<expression>.*?)\s*,\s*(?<expected>(?:"(?:\\.|[^"\\])*"\s*)+|Matrix::new\(\d+,\s*\d+\),?)\s*\);'
-  for suite in [rotate reverse concat duplicate alignment formatting color] {
-    let relative = $'tabled/tests/settings/($suite)_test.rs'
+  for suite in [rotate reverse concat duplicate alignment formatting color render_settings] {
+    let name = if $suite == 'render_settings' { $suite } else { $suite + '_test' }
+    let relative = $'tabled/tests/settings/($name).rs'
     let source = (open --raw ($source_root | path join $relative))
     let cases = ($source | parse --regex $pattern)
     let count = ($source | parse --regex 'test_table!\(' | length)

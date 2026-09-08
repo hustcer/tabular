@@ -17,9 +17,7 @@ test "upstream color color_global" {
 test "upstream color color_cell" {
   let actual = upstream_matrix(3, 3)
     .with_(
-      @tabular.Modify::new(@tabular.Cell::new(0, 0)).with_(
-        @tabular.Color::bg_bright_black(),
-      ),
+      @tabular.Modify::new((0, 0)).with_(@tabular.Color::bg_bright_black()),
     )
     .to_string()
   assert_eq(

@@ -30,7 +30,7 @@ pub fn VAlign::center() -> VAlign {
 
 ///|
 pub fn Width::wrap(width : Int) -> Width {
-  Wrap(width, ".")
+  Wrap(width, "�")
 }
 
 ///|
@@ -459,6 +459,12 @@ pub fn Setting::height(height : Height) -> Setting {
 
 ///|
 pub fn Span::col(size : Int) -> Setting {
+  SpanCol(size)
+}
+
+///|
+/// Set the column span using the upstream constructor name.
+pub fn Span::column(size : Int) -> Setting {
   SpanCol(size)
 }
 

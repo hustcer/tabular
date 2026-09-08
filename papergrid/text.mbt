@@ -19,7 +19,7 @@ pub fn WidthMode::none() -> WidthMode {
 
 ///|
 pub fn WidthMode::wrap(width : Int) -> WidthMode {
-  Wrap(width, ".")
+  Wrap(width, "�")
 }
 
 ///|
@@ -189,84 +189,42 @@ fn char_display_width(ch : Char) -> Int {
 ///|
 fn string_display_width(line : String) -> Int {
   let mut width = 0
-  for ch in line {
-    width += char_display_width(ch)
+  for token in ansi_tokens(line) {
+    if token.kind is Text {
+      for ch in token.text {
+        width += char_display_width(ch)
+      }
+    }
   }
   width
 }
 
 ///|
 fn take_prefix_by_width(line : String, width : Int) -> String {
-  if width <= 0 {
-    return ""
-  }
-  let sb = StringBuilder()
-  let mut used = 0
-  for ch in line {
-    let ch_width = char_display_width(ch)
-    if used + ch_width > width {
-      break
-    }
-    sb.write_char(ch)
-    used += ch_width
-    if used >= width {
-      break
-    }
-  }
-  sb.to_string()
+  cut_str(line, width)
 }
 
 ///|
-fn chunk_line(
-  line : String,
+fn wrap_lines(
+  content : String,
   width : Int,
   placeholder : String,
 ) -> Array[String] {
   if width <= 0 {
     return [""]
   }
-  if string_display_width(line) <= width {
-    return [line]
+  if get_text_width(content) <= width {
+    return get_lines(content)
   }
-  let parts = []
-  let mut current = StringBuilder()
-  let mut current_width = 0
-  for ch in line {
-    let ch_width = char_display_width(ch)
-    if current_width > 0 && current_width + ch_width > width {
-      parts.push(current.to_string())
-      current = StringBuilder()
-      current_width = 0
-    }
-    if current_width == 0 && ch_width > width {
-      parts.push(take_prefix_by_width(placeholder, width))
-      continue
-    }
-    current.write_char(ch)
-    current_width += ch_width
-  }
-  if current_width > 0 || parts.is_empty() {
-    parts.push(current.to_string())
-  }
-  parts
+  get_lines(wrap_text(content, width, placeholder~))
 }
 
 ///|
 pub fn apply_width(content : String, mode : WidthMode) -> Array[String] {
-  let lines = split_lines(content)
+  let lines = get_lines(content)
   match mode {
     None => lines
-    Wrap(width, placeholder) => {
-      let result = []
-      lines.each(line => {
-        chunk_line(line, width, placeholder).each(part => result.push(part))
-      })
-      if result.is_empty() {
-        [""]
-      } else {
-        result
-      }
-    }
+    Wrap(width, placeholder) => wrap_lines(content, width, placeholder)
     Truncate(width, suffix) => {
       let result = []
       let suffix_width = string_display_width(suffix)

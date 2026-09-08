@@ -73,6 +73,16 @@ pub impl Object for Cell with fn cells(self, table) {
 }
 
 ///|
+pub impl Object for (Int, Int) with fn cells(self, table) {
+  Object::cells(Cell::new(self.0, self.1), table)
+}
+
+///|
+pub impl Object for (Int, Int) with fn entities(self, table) {
+  Object::entities(Cell::new(self.0, self.1), table)
+}
+
+///|
 pub impl Object for Segment with fn cells(self, table) {
   let (row_count, col_count) = table.shape()
   match (self.kind, self.skip_n, self.step_n) {

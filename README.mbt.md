@@ -12,6 +12,7 @@ A MoonBit library for pretty-printing tables in the terminal. Inspired by the Ru
 - Panel, merge, highlight, shadow, split, extract, remove, and border correction
 - Builder helpers with index and transpose support
 - Rotate, reverse, concatenate, and duplicate selected records
+- ANSI text colors, style parsing, and color-preserving width operations
 
 See [tabled parity status](docs/tabled-parity.md) for the upstream test mapping and remaining work.
 
@@ -32,6 +33,7 @@ let table = @tabular.Table::from_rows([
 ])
 
 table.apply(@tabular.Style::modern()) |> ignore
+table.with_(@tabular.Alignment::center()) |> ignore
 println(table.to_string())
 ```
 
@@ -390,7 +392,28 @@ test {
 
 `Color::fg_red()` and other color constructors work as table or cell options.
 `Justification::color` colors only the alignment fill. ANSI sequences embedded
-in record strings still require further parity work; see the status document.
+in records are excluded from layout width. Wrapping preserves color styles and
+OSC8 hyperlinks; truncation closes styles before adding a suffix. A wide character
+that cannot fit is replaced by `�`; use `Width::wrap_with` for a custom placeholder.
+Full Unicode text measurement and advanced width options are still being aligned
+with upstream; see the status document.
+
+```mbt check
+///|
+test {
+  let red = @tabular.Color::parse("\u001b[31mtext\u001b[39m")
+  assert_eq(red.colorize("hello"), "\u001b[31mhello\u001b[39m")
+  assert_true(@tabular.Color::try_from("") is Err(_))
+  let table = @tabular.Table::from_rows([[red.colorize("abcdef")]]).modify(
+    (0, 0),
+    @tabular.Width::wrap(3),
+  )
+  assert_eq(
+    table.to_string(),
+    "+-----+\n| \u001b[31mabc\u001b[39m |\n| \u001b[31mdef\u001b[39m |\n+-----+",
+  )
+}
+```
 
 ## Validation
 
@@ -403,3 +426,5 @@ moon test
 ## License
 
 Apache-2.0
+
+Adapted upstream code and tests retain their notices in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
