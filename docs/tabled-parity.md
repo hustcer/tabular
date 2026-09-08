@@ -6,13 +6,13 @@
 
 ## 本次完成的数据变换
 
-| 上游 | MoonBit API | 原始测试保留情况 |
-| --- | --- | --- |
-| `Rotate::{Left,Right,Top,Bottom}` | `Table::rotate(Rotate)` | `rotate_test.rs` 全部 12 例，含恒等式与保留边框配置 |
-| `Reverse::{rows,columns}.limit(Offset)` | `Table::reverse(Reverse)` | `reverse_test.rs` 全部 12 例，另保留源码内 2 个单元测试 |
-| `Concat::{horizontal,vertical}.default_cell` | `Table::concat(Concat)` | `concat_test.rs` 全部 8 例 |
-| `Dup::new(dst,src)` | `Table::duplicate(Dup)` | `duplicate_test.rs` 全部 14 例 |
-| `Object` | `Object` trait，Rows/Cols/Cell/Segment 实现 | 保留实体分组顺序，支持自定义对象与无效坐标过滤 |
+| 上游                                         | MoonBit API                                 | 原始测试保留情况                                        |
+| -------------------------------------------- | ------------------------------------------- | ------------------------------------------------------- |
+| `Rotate::{Left,Right,Top,Bottom}`            | `Table::rotate(Rotate)`                     | `rotate_test.rs` 全部 12 例，含恒等式与保留边框配置     |
+| `Reverse::{rows,columns}.limit(Offset)`      | `Table::reverse(Reverse)`                   | `reverse_test.rs` 全部 12 例，另保留源码内 2 个单元测试 |
+| `Concat::{horizontal,vertical}.default_cell` | `Table::concat(Concat)`                     | `concat_test.rs` 全部 8 例                              |
+| `Dup::new(dst,src)`                          | `Table::duplicate(Dup)`                     | `duplicate_test.rs` 全部 14 例                          |
+| `Object`                                     | `Object` trait，Rows/Cols/Cell/Segment 实现 | 保留实体分组顺序，支持自定义对象与无效坐标过滤          |
 
 以上 48 个原始测试全部保留测试名称、源路径及预期语义。其中 45 个 `test_table!` 快照由 `scripts/import-transform-tests.nu` 从源码提取，另外 3 个普通测试在 `transform_test.mbt` 中移植。另有 9 个额外边界测试和 4 个可执行 API 文档示例。
 
@@ -71,6 +71,8 @@ nu --no-config-file scripts/import-ansi-reference-tests.nu /path/to/tabled
 moon fmt
 moon test
 ```
+
+ANSI、尺寸、宽度、高度、填充/边距的五类编译探针统一使用 `scripts/upstream-probe.nu`：要求上述固定上游提交及干净的 tabled/papergrid 源码，并通过 `scripts/reference/Cargo.lock` 和 `cargo build --locked` 锁定传递依赖。2026-09-08 重新生成全部五类夹具后，格式化结果与提交中的期望值逐字一致。显式 `--probe` 用于调试，调用者自行负责该外部二进制的来源。
 
 以上差分夹具是额外验证，不计入原始命名测试映射。原始宽度测试的覆盖范围见下节；其他渲染器和 ANSI 配置仍需继续核对。
 
@@ -158,23 +160,25 @@ moon fmt
 moon test
 ```
 
-| 范围 | 当前证据 / 待办 |
-| --- | --- |
-| Builder / IndexBuilder | 已有实现和部分测试，需逐个核对方法、泛型数据入口、异常边界 |
-| Table 核心 API | 已补齐 TableOption / CellOption / Settings / Modify、统一 Alignment 和尺寸查询；Tabled 数据模型和其他查询接口仍需核对 |
-| 格式 | 已保留全部 render_settings 组合案例；继续核对更多 Span/Width/Height 组合与其他渲染器 |
-| 宽高 | 已接入高级 Width/Height 并保留 width_test.rs/height_test.rs/wrap.rs 全部测试；其他渲染器的宽高语义仍需补齐 |
-| Padding / Margin | Table / SpannedConfig 的填充、扩展、四边颜色、偏移已接入并保留对应源测试；其他渲染器仍待实现 |
-| 颜色 / ANSI | 已补齐样式解析、Unicode 文本测量、修剪、裁剪/换行及填充/边距颜色；仍缺边框颜色、Colorization 与剩余 ANSI 边界 |
-| Style / Theme | 缺少完整 VerticalLine、LineChar、LineText、Theme、Layout、ColumnNames/RowNames 等 |
-| Object / Location | 已有部分对象集合，仍需 Frame、完整组合顺序/迭代器及 ByContent/ByCondition/ByValue |
-| Span / Panel / Merge / Highlight / Split | 已有实现，尚需上游全部原始测试的逐项映射与行为审计 |
-| 其他表格 | 缺少 IterTable、CompactTable、ExtendedTable、PoolTable 及其配置和测试 |
-| papergrid | 当前 IterGrid/SpannedConfig 为部分实现，需核对全部渲染器、Records、Dimension、底层配置/ANSI/Unicode 与原始测试 |
-| 派生 / 宏 | tabled_derive、static_table、row/col 宏需提供 MoonBit 等价能力并保留可运行测试语义 |
-| workspace 转换器 | json/csv/ron/toml/html 等转换器尚未移植，不能视为已覆盖 |
-| 全量测试 | 未映射的旧测试需逐项核对；源测试清单只作为定位工具，不作为语义一致的证明 |
+| 范围                                     | 当前证据 / 待办                                                                                                                 |
+| ---------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| Builder / IndexBuilder                   | 已有实现和部分测试，需逐个核对方法、泛型数据入口、异常边界                                                                      |
+| Table 核心 API                           | 已补齐 TableOption / CellOption / Settings / Modify、统一 Alignment 和尺寸查询；Tabled 数据模型和其他查询接口仍需核对           |
+| 格式                                     | 已保留全部 render_settings 组合案例；继续核对更多 Span/Width/Height 组合与其他渲染器                                            |
+| 宽高                                     | 已接入高级 Width/Height 并保留 width_test.rs/height_test.rs/wrap.rs 全部测试；其他渲染器的宽高语义仍需补齐                      |
+| Padding / Margin                         | Table / SpannedConfig 的填充、扩展、四边颜色、偏移已接入并保留对应源测试；其他渲染器仍待实现                                    |
+| 颜色 / ANSI                              | 已补齐样式解析、Unicode 文本测量、修剪、裁剪/换行及填充/边距颜色；仍缺边框颜色、Colorization 与剩余 ANSI 边界                   |
+| Style / Theme                            | 缺少完整 VerticalLine、LineChar、LineText、Theme、Layout、ColumnNames/RowNames 等；基线已有的 rounded/blank/dots 预设差异见下文 |
+| Object / Location                        | 已有部分对象集合，仍需 Frame、完整组合顺序/迭代器及 ByContent/ByCondition/ByValue                                               |
+| Span / Panel / Merge / Highlight / Split | 已有实现，尚需上游全部原始测试的逐项映射与行为审计                                                                              |
+| 其他表格                                 | 缺少 IterTable、CompactTable、ExtendedTable、PoolTable 及其配置和测试                                                           |
+| papergrid                                | 当前 IterGrid/SpannedConfig 为部分实现，需核对全部渲染器、Records、Dimension、底层配置/ANSI/Unicode 与原始测试                  |
+| 派生 / 宏                                | tabled_derive、static_table、row/col 宏需提供 MoonBit 等价能力并保留可运行测试语义                                              |
+| workspace 转换器                         | json/csv/ron/toml/html 等转换器尚未移植，不能视为已覆盖                                                                         |
+| 全量测试                                 | 未映射的旧测试需逐项核对；源测试清单只作为定位工具，不作为语义一致的证明                                                        |
 
 ## 当前验证
 
-2026-09-08：`moon info`、`moon fmt`、`moon check`、`moon build`、`moon test` 均成功，1316/1316 个运行测试通过，另保留上游原本忽略的 1 例，无 Warning。此结果对应已完成的数据变换、通用配置、当前格式、ANSI/Unicode 文本、尺寸测量、高级宽高和当前填充/边距能力，不表示上表的未完成项目已对齐。
+发布收尾审查还确认了三项在 `282cf50` 基线前已存在的预设差异：`rounded` 当前对每行加分隔线，上游只分隔表头；`blank` 当前与 `empty` 等同，上游多一个空格列分隔；`dots` 当前顶底线形式与上游不同。这些属于后续 Style 对齐范围，README Gallery 展示的是当前 MoonBit 行为。
+
+2026-09-08：`moon info`、`moon fmt` 以及全部四个后端的 `moon check/build/test --target all --deny-warn` 均成功，1322/1322 个运行测试分别通过，另保留上游原本忽略的 1 例，无 Warning。收尾新增缓存边界与无边框 ANSI/CJK Margin 的 4 个回归测试，以及 2 个可执行 README 示例；详见 [0.6.0 发布审计](release-0.6.0.md)。此结果对应已完成的数据变换、通用配置、当前格式、ANSI/Unicode 文本、尺寸测量、高级宽高和当前填充/边距能力，不表示上表的未完成项目已对齐。

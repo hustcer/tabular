@@ -2,12 +2,55 @@
 
 All notable changes to this project will be documented in this file.
 
+## v0.6.0 - Unreleased
+
+This release expands the MoonBit port of `tabled`. Full workspace parity is still
+in progress; see [the parity inventory](docs/tabled-parity.md) and
+[the 0.6 migration guide](docs/migration-0.6.md).
+
+### Breaking Changes
+
+- Default tables are left aligned, multiline text uses per-cell alignment, and
+  bare `papergrid.SpannedConfig` starts without borders or padding.
+- `Width` and `Height` are option factories returning concrete option types.
+  Update explicit type annotations and matches on the old enum variants.
+- `Setting::W/H` now contain `papergrid.WidthMode/HeightMode`. Legacy setters
+  accept the corresponding conversion traits; advanced options use `with_` or `modify`.
+- `Entity` is re-exported from `papergrid` and adds global, column, and cell
+  variants. Padding now includes fill characters for each side.
+- Wide characters that cannot fit use `�` by default. Use `wrap_with(width, ".")`
+  to retain the previous placeholder.
+- Correct Unicode/ANSI measurement and span/padding calculations can change
+  rendered widths, heights, and snapshot output.
+
+### Features
+
+- Add rotate, reverse, concatenation, and record duplication.
+- Add composable table/cell options, settings, tuple and array composition,
+  alignment and trimming strategies, character cleanup, and justification.
+- Add ANSI color construction, parsing, composition, balanced line rendering,
+  and style-preserving truncation and wrapping, including OSC8 links.
+- Port Unicode 17 width data and the `unicode-width 0.2.2` string-width rules.
+- Add measurements, resizing priorities, dimension caching, advanced width and
+  height options, explicit dimension lists, suffix handling, and word wrapping.
+- Add padding expansion, side fill characters, padding/margin colors, and
+  directional margin offsets.
+
+### Fixes And Validation
+
+- Guard short dimension caches after public record growth or explicit cache edits.
+- Measure borderless table margins using grid width, including CJK and ANSI text.
+- Preserve original upstream expectations and track 278 of 1,387 named source
+  test candidates; retain one test that upstream itself ignores.
+- Add Rust differential fixtures, pinned probe dependencies, executable examples,
+  and CI checks that reject warnings on all supported backends.
+- Preserve upstream license notices in `THIRD_PARTY_NOTICES.md`.
+
 ## v0.5.2 - 2026-04-05
 
 ### Refactoring
 
 - Remove deprecated `not()` usage for latest `moon`
-
 
 ## v0.5.1 - 2026-03-22
 

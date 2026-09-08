@@ -15,6 +15,7 @@ A MoonBit library for pretty-printing tables in the terminal. Inspired by the Ru
 - ANSI text colors, style parsing, and color-preserving width operations
 
 See [tabled parity status](docs/tabled-parity.md) for the upstream test mapping and remaining work.
+For the breaking changes in 0.6.0, see the [migration guide](docs/migration-0.6.md).
 
 ## Installation
 
@@ -24,17 +25,33 @@ moon add hustcer/tabular
 
 ## Quick Start
 
-```moonbit nocheck
-let table = @tabular.Table::from_rows([
-  ["Name", "Language", "Stars"],
-  ["Deno", "Rust/TS", "101k"],
-  ["Bun", "Zig/C++", "76k"],
-  ["Node.js", "C++/JS", "110k"],
-])
+```mbt check
+///|
+test "README quick start" {
+  let table = @tabular.Table::from_rows([
+    ["Name", "Language", "Stars"],
+    ["Deno", "Rust/TS", "101k"],
+    ["Bun", "Zig/C++", "76k"],
+    ["Node.js", "C++/JS", "110k"],
+  ])
 
-table.apply(@tabular.Style::modern()) |> ignore
-table.with_(@tabular.Alignment::center()) |> ignore
-println(table.to_string())
+  table.apply(@tabular.Style::modern()) |> ignore
+  table.with_(@tabular.Alignment::center()) |> ignore
+  assert_eq(
+    table.to_string(),
+    (
+      #|┌─────────┬──────────┬───────┐
+      #|│  Name   │ Language │ Stars │
+      #|├─────────┼──────────┼───────┤
+      #|│  Deno   │ Rust/TS  │ 101k  │
+      #|├─────────┼──────────┼───────┤
+      #|│   Bun   │ Zig/C++  │  76k  │
+      #|├─────────┼──────────┼───────┤
+      #|│ Node.js │  C++/JS  │ 110k  │
+      #|└─────────┴──────────┴───────┘
+    ),
+  )
+}
 ```
 
 Output:
@@ -68,6 +85,9 @@ table.apply(@tabular.Style::psql()) |> ignore
 ```
 
 ### Gallery
+
+These examples use `Alignment::center()`. Tables default to left alignment.
+Some presets still differ from Rust tabled; see the [parity notes](docs/tabled-parity.md).
 
 **ascii**
 
@@ -262,29 +282,44 @@ table.modify_cell(
 
 ## Spans
 
-```moonbit nocheck
-let table = @tabular.Table::from_rows([
-  ["Team", "Q1", "Q2", "Q3"],
-  ["A", "12", "18", "22"],
-  ["B", "10", "16", "21"],
-])
+```mbt check
+///|
+test "README spans" {
+  let table = @tabular.Table::from_rows([
+    ["Team", "Q1", "Q2", "Q3"],
+    ["A", "12", "18", "22"],
+    ["B", "10", "16", "21"],
+  ])
 
-table.apply(@tabular.Style::modern()) |> ignore
-table.modify_cell(@tabular.Cell::new(0, 0), @tabular.Span::col(2)) |> ignore
-table.correct_borders() |> ignore
-println(table.to_string())
+  table.apply(@tabular.Style::modern()) |> ignore
+  table.with_(@tabular.Alignment::center()) |> ignore
+  table.modify_cell(@tabular.Cell::new(0, 0), @tabular.Span::col(2)) |> ignore
+  table.correct_borders() |> ignore
+  assert_eq(
+    table.to_string(),
+    (
+      #|┌────────┬────┬────┐
+      #|│  Team  │ Q2 │ Q3 │
+      #|├───┬────┼────┼────┤
+      #|│ A │ 12 │ 18 │ 22 │
+      #|├───┼────┼────┼────┤
+      #|│ B │ 10 │ 16 │ 21 │
+      #|└───┴────┴────┴────┘
+    ),
+  )
+}
 ```
 
-Possible output:
+Output:
 
 ```
-┌─────────────┬────┬────┐
-│    Team     │ Q2 │ Q3 │
-├──────┬──────┼────┼────┤
-│  A   │  12  │ 18 │ 22 │
-├──────┼──────┼────┼────┤
-│  B   │  10  │ 16 │ 21 │
-└──────┴──────┴────┴────┘
+┌────────┬────┬────┐
+│  Team  │ Q2 │ Q3 │
+├───┬────┼────┼────┤
+│ A │ 12 │ 18 │ 22 │
+├───┼────┼────┼────┤
+│ B │ 10 │ 16 │ 21 │
+└───┴────┴────┴────┘
 ```
 
 ## Panels And Merge
