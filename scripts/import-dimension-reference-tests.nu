@@ -1,4 +1,5 @@
 #!/usr/bin/env nu
+use upstream-probe.nu build-upstream-probe
 # Generate resizing-priority and measurement references from upstream Rust.
 
 def generate [probe: path, output: path] {
@@ -65,19 +66,10 @@ test \"measurement reference ($data.index) ($setup.0)\" {
 }
 
 def main [upstream: path] {
-  let root = ($upstream | path expand)
   let project = ($env.CURRENT_FILE | path dirname | path dirname)
   let scratch = (mktemp --directory)
   try {
-    mkdir ($scratch | path join src)
-    cp ($project | path join scripts/reference/dimension_probe.rs) ($scratch | path join src/main.rs)
-    {
-      package: {name: tabular-dimension-probe, version: '0.0.0', edition: '2021'}
-      dependencies: {tabled: {path: ($root | path join tabled), default-features: false, features: [std ansi]}}
-      patch: {crates-io: {papergrid: {path: ($root | path join papergrid)}}}
-    } | to toml | save ($scratch | path join Cargo.toml)
-    let result = (^cargo build --manifest-path ($scratch | path join Cargo.toml) | complete)
-    if $result.exit_code != 0 { error make {msg: $result.stderr} }
-    generate ($scratch | path join target/debug/tabular-dimension-probe) ($project | path join dimension_reference_test.mbt)
+    let binary = (build-upstream-probe $upstream ($project | path join scripts/reference/dimension_probe.rs) $scratch)
+    generate $binary ($project | path join dimension_reference_test.mbt)
   } finally { rm --recursive $scratch }
 }

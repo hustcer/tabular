@@ -1,4 +1,5 @@
 #!/usr/bin/env nu
+use upstream-probe.nu build-upstream-probe
 # Compare rendered output, records, and observable dimension cache with Rust.
 use upstream-literals.nu decode-rust-string
 
@@ -36,16 +37,8 @@ def main [upstream: path, --probe: path, --output: path] {
   if $probe != null { generate ($probe | path expand) $output; return }
   let scratch = (mktemp --directory)
   try {
-    mkdir ($scratch | path join src)
-    cp ($project | path join scripts/reference/width_state_probe.rs) ($scratch | path join src/main.rs)
-    {
-      package: {name: 'tabular-width-state-probe', version: '0.0.0', edition: '2021'}
-      dependencies: {tabled: {path: ($upstream | path expand | path join tabled), default-features: false, features: [std ansi]}}
-      patch: {crates-io: {papergrid: {path: ($upstream | path expand | path join papergrid)}}}
-    } | to toml | save ($scratch | path join Cargo.toml)
-    let result = (^cargo build --manifest-path ($scratch | path join Cargo.toml) | complete)
-    if $result.exit_code != 0 { error make {msg: $result.stderr} }
-    generate ($scratch | path join target/debug/tabular-width-state-probe) $output
+    let binary = (build-upstream-probe $upstream ($project | path join scripts/reference/width_state_probe.rs) $scratch)
+    generate $binary $output
   } finally {
     rm --recursive $scratch
   }

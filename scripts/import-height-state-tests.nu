@@ -1,4 +1,5 @@
 #!/usr/bin/env nu
+use upstream-probe.nu build-upstream-probe
 # Generate height state assertions from the local Rust implementation.
 use upstream-literals.nu decode-rust-string
 use import-transform-tests.nu translate
@@ -50,16 +51,8 @@ def main [upstream: path, --probe: path, --output: path] {
   if $probe != null { generate ($probe | path expand) $source $output; return }
   let scratch = (mktemp --directory)
   try {
-    mkdir ($scratch | path join src)
-    cp $source ($scratch | path join src/main.rs)
-    {
-      package: {name: 'tabular-height-state-probe', version: '0.0.0', edition: '2021'}
-      dependencies: {tabled: {path: ($upstream | path expand | path join tabled), default-features: false, features: [std ansi]}}
-      patch: {crates-io: {papergrid: {path: ($upstream | path expand | path join papergrid)}}}
-    } | to toml | save ($scratch | path join Cargo.toml)
-    let result = (^cargo build --manifest-path ($scratch | path join Cargo.toml) | complete)
-    if $result.exit_code != 0 { error make {msg: $result.stderr} }
-    generate ($scratch | path join target/debug/tabular-height-state-probe) $source $output
+    let binary = (build-upstream-probe $upstream ($project | path join scripts/reference/height_state_probe.rs) $scratch)
+    generate $binary $source $output
   } finally {
     rm --recursive $scratch
   }

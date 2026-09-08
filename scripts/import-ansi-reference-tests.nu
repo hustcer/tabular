@@ -1,4 +1,5 @@
 #!/usr/bin/env nu
+use upstream-probe.nu build-upstream-probe
 # Generate differential fixtures using upstream Rust, never MoonBit output.
 use upstream-literals.nu decode-rust-string
 
@@ -126,22 +127,9 @@ def main [upstream: path, --probe: path, --output: path, --width-output: path] {
   }
   let scratch = (mktemp --directory)
   try {
-    mkdir ($scratch | path join src)
-    cp ($project | path join scripts/reference/ansi_probe.rs) ($scratch | path join src/main.rs)
-    {
-      package: {name: 'tabular-upstream-probe', version: '0.0.0', edition: '2021'}
-      dependencies: {
-        papergrid: {path: ($upstream | path expand | path join papergrid), features: ['ansi']}
-        ansi-str: {version: '=0.9.0'}
-        ansitok: {version: '=0.3.0'}
-        tabled: {path: ($upstream | path expand | path join tabled), default-features: false, features: ['std' 'ansi']}
-      }
-      patch: {crates-io: {papergrid: {path: ($upstream | path expand | path join papergrid)}}}
-    } | to toml | save ($scratch | path join Cargo.toml)
-    let result = (^cargo build --manifest-path ($scratch | path join Cargo.toml) | complete)
-    if $result.exit_code != 0 { error make {msg: $result.stderr} }
-    generate ($scratch | path join target/debug/tabular-upstream-probe) $output
-    generate-widths ($scratch | path join target/debug/tabular-upstream-probe) $width_output
+    let binary = (build-upstream-probe $upstream ($project | path join scripts/reference/ansi_probe.rs) $scratch)
+    generate $binary $output
+    generate-widths $binary $width_output
   } finally {
     # This exact directory was created by this invocation.
     rm --recursive $scratch
