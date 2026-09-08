@@ -26,7 +26,7 @@ moon test --filter 'upstream*'
 
 生成器不会读取 MoonBit 实际输出来制造预期结果，也不会静默跳过无法识别的 `test_table!`。它只写入带有自身生成标记的目标文件。
 
-[`upstream-test-inventory.json`](upstream-test-inventory.json) 当前列出 90 个源文件中的 1,387 个命名测试候选，93 个带有明确的 MoonBit 源引用。它包括条件编译测试，但不包括文档测试和未展开的匿名宏测试；既有测试缺少源引用也会标为未映射。重新生成清单：
+[`upstream-test-inventory.json`](upstream-test-inventory.json) 当前列出 90 个源文件中的 1,387 个命名测试候选，100 个带有明确的 MoonBit 源引用。它包括条件编译测试，以及 MoonBit 黑盒和白盒测试的源引用，但不包括文档测试和未展开的匿名宏测试；既有测试缺少源引用也会标为未映射。重新生成清单：
 
 ```sh
 nu --no-config-file scripts/audit-upstream-tests.nu /path/to/tabled --output docs/upstream-test-inventory.json
@@ -72,7 +72,24 @@ moon fmt
 moon test
 ```
 
-以上差分夹具是额外验证，不计入 93 个原始命名测试映射。Unicode 字符/文本宽度仍使用部分规则，保留单词的换行、完整截断策略及更多 ANSI 边界尚待核对；不能视为整个 ANSI/宽度子系统已完成。
+以上差分夹具是额外验证，不计入原始命名测试映射。保留单词的换行、完整截断策略及更多 ANSI 边界尚待核对；不能视为整个 ANSI/宽度子系统已完成。
+
+## Unicode 宽度与文本工具
+
+- 替换近似字符范围，移植上游 `unicode-width 0.2.2` 的 Unicode 17.0.0 数据及默认窄歧义字符状态机，覆盖 emoji、变体选择符、ZWJ、肤色修饰符、旗帜和语言连字。
+- 883 个压缩元数据区间从 Rust 源码导出；全部 1,112,064 个有效 Unicode 标量的字符宽度和单字符字符串宽度分别通过独立 Rust 摘要核对。
+- 5,427 条文本参考输入包含依赖测试中的字符串字面量及完整 emoji 测试数据；合并为 55 个测试组，所有预期由 Rust 计算。
+- 保留 `tabled/src/util/string.rs` 全部 4 个测试函数、普通换行的 `split_test/chunks_test`；补齐 `papergrid` 文本工具第 7 个 `replace_tab_test`，包括上游四空格快路径与其他 Tab 宽度的差异。
+- 修正 `get_text_width` 对 CRLF 的处理；`get_text_dimension` 继续保留尾部空行和上游不同的 CR 语义。
+
+```sh
+nu --no-config-file scripts/import-unicode-width.nu /path/to/unicode-width-0.2.2
+nu --no-config-file scripts/import-string-tests.nu /path/to/tabled
+moon fmt
+moon test
+```
+
+Unicode 参考输入属于额外验证，不计入 tabled 的原始测试映射。未提供上游 tabled 没有使用的 `width_cjk` 扩展策略。
 
 | 范围 | 当前证据 / 待办 |
 | --- | --- |
@@ -81,7 +98,7 @@ moon test
 | 格式 | 已保留全部 render_settings 组合案例；继续核对更多 Span/Width/Height 组合与其他渲染器 |
 | 宽高 | 现有 Wrap/Truncate/Increase/Limit 只是部分能力，需核对表级与单元格级语义、测量、优先级、列表、最小宽度 |
 | Padding / Margin | 需补齐填充字符、PaddingExpand、Margin 及相关偏移和颜色 |
-| 颜色 / ANSI | 已补齐样式解析、ANSI 文本测量/修剪及基本裁剪/换行；仍缺边框/填充/边距颜色、Colorization、完整 Unicode 测量与剩余 ANSI 边界 |
+| 颜色 / ANSI | 已补齐样式解析、Unicode 文本测量、修剪及基本裁剪/换行；仍缺边框/填充/边距颜色、Colorization 与剩余 ANSI 边界 |
 | Style / Theme | 缺少完整 VerticalLine、LineChar、LineText、Theme、Layout、ColumnNames/RowNames 等 |
 | Object / Location | 已有部分对象集合，仍需 Frame、完整组合顺序/迭代器及 ByContent/ByCondition/ByValue |
 | Span / Panel / Merge / Highlight / Split | 已有实现，尚需上游全部原始测试的逐项映射与行为审计 |
@@ -93,4 +110,4 @@ moon test
 
 ## 当前验证
 
-2026-09-08：`moon info`、`moon fmt`、`moon check`、`moon build`、`moon test` 均成功，797/797 测试通过，无 Warning。此结果对应已完成的数据变换、通用配置、当前格式及 ANSI 能力，不表示上表的未完成项目已对齐。
+2026-09-08：`moon info`、`moon fmt`、`moon check`、`moon build`、`moon test` 均成功，864/864 测试通过，无 Warning。此结果对应已完成的数据变换、通用配置、当前格式、ANSI 及 Unicode 文本能力，不表示上表的未完成项目已对齐。

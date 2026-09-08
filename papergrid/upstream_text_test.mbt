@@ -61,3 +61,17 @@ test "upstream text string_dimension_test" {
   assert_eq(get_text_dimension("asd"), (1, 3))
   assert_eq(get_text_dimension(""), (1, 0))
 }
+
+///|
+// Upstream: papergrid/src/util/string.rs::replace_tab_test
+test "upstream text replace_tab_test" {
+  assert_eq(replace_tab("123\t\tabc\t", 3), "123      abc   ")
+  assert_eq(replace_tab("\t", 0), "")
+  assert_eq(replace_tab("\t", 3), "   ")
+  assert_eq(replace_tab("123\tabc", 3), "123   abc")
+  assert_eq(replace_tab("123\tabc\tzxc", 0), "123abczxc")
+  assert_eq(replace_tab("\\t", 0), "\\t")
+  assert_eq(replace_tab("\\t", 4), "\\t")
+  assert_eq(replace_tab("123\\tabc", 0), "123\\tabc")
+  assert_eq(replace_tab("123\\tabc", 4), "123\\tabc")
+}

@@ -395,8 +395,9 @@ test {
 in records are excluded from layout width. Wrapping preserves color styles and
 OSC8 hyperlinks; truncation closes styles before adding a suffix. A wide character
 that cannot fit is replaced by `�`; use `Width::wrap_with` for a custom placeholder.
-Full Unicode text measurement and advanced width options are still being aligned
-with upstream; see the status document.
+Text measurement follows Unicode 17.0.0, including emoji presentation and ZWJ
+sequences. Advanced width options are still being aligned with upstream; see the
+status document.
 
 ```mbt check
 ///|

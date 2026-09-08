@@ -12,17 +12,25 @@ pub fn apply_width(String, WidthMode) -> Array[String]
 
 pub fn count_lines(String) -> Int
 
+pub fn count_tabs(String) -> Int
+
 pub fn cut_str(String, Int) -> String
+
+pub fn get_char_width(Char) -> Int
 
 pub fn get_line_width(String) -> Int
 
 pub fn get_lines(String) -> Array[String]
+
+pub fn get_string_width(String) -> Int
 
 pub fn get_text_dimension(String) -> (Int, Int)
 
 pub fn get_text_width(String) -> Int
 
 pub fn processed_lines(String, WidthMode, HeightMode) -> Array[String]
+
+pub fn replace_tab(String, Int) -> String
 
 pub fn split_lines(String) -> Array[String]
 

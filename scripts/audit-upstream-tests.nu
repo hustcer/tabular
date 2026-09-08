@@ -8,7 +8,7 @@ def main [upstream: path, --output: path] {
   let upstream = ($upstream | path expand)
   let rust_files = (^rg --files $upstream --glob '*.rs' | complete)
   if $rust_files.exit_code != 0 { error make {msg: $rust_files.stderr} }
-  let moon_files = (^rg --files $project --glob '*_test.mbt' | complete)
+  let moon_files = (^rg --files $project --glob '*_test.mbt' --glob '*_wbtest.mbt' | complete)
   if $moon_files.exit_code != 0 { error make {msg: $moon_files.stderr} }
   let revision = (^git -C $upstream rev-parse HEAD | complete)
   if $revision.exit_code != 0 { error make {msg: $revision.stderr} }
