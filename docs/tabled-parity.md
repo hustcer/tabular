@@ -91,12 +91,27 @@ moon test
 
 Unicode 参考输入属于额外验证，不计入 tabled 的原始测试映射。未提供上游 tabled 没有使用的 `width_cjk` 扩展策略。
 
+## 尺寸测量与调整优先级
+
+- 新增 `Measurement`、`Max`、`Min`、`Percent`。MoonBit trait 不接受类型参数，使用 `Attribute::Width/Height` 参数代替 Rust 的 `Measurement<Width/Height>`。
+- 新增 `Peaker`、`Priority` 和五种优先级实现；保留循环选择、左右选择以及最小/最大值平局时不同的上游顺序。
+- 新增边框存在性/数量查询和静态行列尺寸测量。百分比测量不包含外边距；跨行/跨列测量分别使用上游对应轴的规则。
+- 35 组连续 30 次的优先级调用、40 组尺寸测量场景均由 Rust 产生参考值，覆盖空表、ANSI、CRLF、跨度、不同填充、样式及外边距。
+
+```sh
+nu --no-config-file scripts/import-dimension-reference-tests.nu /path/to/tabled
+moon fmt
+moon test
+```
+
+这些基础接口已经独立验证；现有 `Width` 的整表总宽度调整和新选项类型仍待接入，不能将此步骤视为高级宽度功能完成。
+
 | 范围 | 当前证据 / 待办 |
 | --- | --- |
 | Builder / IndexBuilder | 已有实现和部分测试，需逐个核对方法、泛型数据入口、异常边界 |
 | Table 核心 API | 已补齐 TableOption / CellOption / Settings / Modify、统一 Alignment 和尺寸查询；Tabled 数据模型和其他查询接口仍需核对 |
 | 格式 | 已保留全部 render_settings 组合案例；继续核对更多 Span/Width/Height 组合与其他渲染器 |
-| 宽高 | 现有 Wrap/Truncate/Increase/Limit 只是部分能力，需核对表级与单元格级语义、测量、优先级、列表、最小宽度 |
+| 宽高 | 测量与 Peaker 基础接口已验证；仍需接入表级与单元格级语义、保留单词换行、完整截断策略、列表、最小宽度及高度高级选项 |
 | Padding / Margin | 需补齐填充字符、PaddingExpand、Margin 及相关偏移和颜色 |
 | 颜色 / ANSI | 已补齐样式解析、Unicode 文本测量、修剪及基本裁剪/换行；仍缺边框/填充/边距颜色、Colorization 与剩余 ANSI 边界 |
 | Style / Theme | 缺少完整 VerticalLine、LineChar、LineText、Theme、Layout、ColumnNames/RowNames 等 |
@@ -110,4 +125,4 @@ Unicode 参考输入属于额外验证，不计入 tabled 的原始测试映射�
 
 ## 当前验证
 
-2026-09-08：`moon info`、`moon fmt`、`moon check`、`moon build`、`moon test` 均成功，864/864 测试通过，无 Warning。此结果对应已完成的数据变换、通用配置、当前格式、ANSI 及 Unicode 文本能力，不表示上表的未完成项目已对齐。
+2026-09-08：`moon info`、`moon fmt`、`moon check`、`moon build`、`moon test` 均成功，941/941 测试通过，无 Warning。此结果对应已完成的数据变换、通用配置、当前格式、ANSI/Unicode 文本及尺寸测量基础能力，不表示上表的未完成项目已对齐。

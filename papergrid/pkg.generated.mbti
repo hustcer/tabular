@@ -93,6 +93,12 @@ pub fn Borders::build_line(Self, Char?, Char?, Char?, Char?, Array[Int]) -> Stri
 pub fn Borders::dots() -> Self
 pub fn Borders::empty() -> Self
 pub fn Borders::extended() -> Self
+pub fn Borders::has_bottom(Self) -> Bool
+pub fn Borders::has_horizontal(Self) -> Bool
+pub fn Borders::has_left(Self) -> Bool
+pub fn Borders::has_right(Self) -> Bool
+pub fn Borders::has_top(Self) -> Bool
+pub fn Borders::has_vertical(Self) -> Bool
 pub fn Borders::markdown() -> Self
 pub fn Borders::modern() -> Self
 pub fn Borders::psql() -> Self
@@ -203,6 +209,10 @@ pub struct IterGridDimension {
 }
 pub fn IterGridDimension::default() -> Self
 pub fn IterGridDimension::estimate(Self, IterRecords, SpannedConfig) -> Unit
+pub fn IterGridDimension::height(IterRecords, SpannedConfig) -> Array[Int]
+pub fn IterGridDimension::height_total(IterRecords, SpannedConfig) -> Int
+pub fn IterGridDimension::width(IterRecords, SpannedConfig) -> Array[Int]
+pub fn IterGridDimension::width_total(IterRecords, SpannedConfig) -> Int
 pub fn IterGridDimension::widths(Self) -> Array[Int]
 
 pub struct IterRecords {
@@ -261,6 +271,8 @@ pub fn SpannedConfig::clear_span_source(Self, Int, Int) -> Unit
 pub fn SpannedConfig::clear_spans_and_overrides(Self) -> Unit
 pub fn SpannedConfig::clear_unused_span_source(Self, Int, Int) -> Unit
 pub fn SpannedConfig::col_span_at(Self, Int, Int) -> Int
+pub fn SpannedConfig::count_horizontal(Self, Int) -> Int
+pub fn SpannedConfig::count_vertical(Self, Int) -> Int
 pub fn SpannedConfig::custom_horizontal_line(Self, Int) -> HorizontalLine?
 pub fn SpannedConfig::default() -> Self
 pub fn SpannedConfig::get_cell_border(Self, Int, Int, Int, Int) -> CellBorder
@@ -272,10 +284,12 @@ pub fn SpannedConfig::get_justification_color(Self, Int, Int) -> ANSIBuf?
 pub fn SpannedConfig::get_row_span(Self, Int, Int) -> Int?
 pub fn SpannedConfig::has_cell_borders(Self) -> Bool
 pub fn SpannedConfig::has_col_spans(Self) -> Bool
+pub fn SpannedConfig::has_horizontal(Self, Int, Int) -> Bool
 pub fn SpannedConfig::has_left_border(Self, Int, Int, Int, Int) -> Bool
 pub fn SpannedConfig::has_margin(Self) -> Bool
 pub fn SpannedConfig::has_row_spans(Self) -> Bool
 pub fn SpannedConfig::has_top_border(Self, Int, Int, Int, Int) -> Bool
+pub fn SpannedConfig::has_vertical(Self, Int, Int) -> Bool
 pub fn SpannedConfig::height_mode(Self) -> HeightMode
 pub fn SpannedConfig::height_mode_at(Self, Int, Int) -> HeightMode
 pub fn SpannedConfig::horizontal_lines(Self) -> HorizontalLines

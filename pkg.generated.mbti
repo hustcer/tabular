@@ -46,6 +46,11 @@ pub(all) enum AlignmentStrategy {
 pub impl CellOption for AlignmentStrategy
 pub impl TableOption for AlignmentStrategy
 
+pub(all) enum Attribute {
+  Width
+  Height
+} derive(Eq, @debug.Debug)
+
 pub struct Builder {
   rows : Array[Array[String]]
   mut empty_cell : String
@@ -288,6 +293,12 @@ pub fn Justification::new(Char) -> Self
 pub impl CellOption for Justification
 pub impl TableOption for Justification
 
+pub(all) struct Max {
+} derive(Eq, @debug.Debug)
+pub fn Max::default() -> Self
+pub fn Max::new() -> Self
+pub impl Measurement for Max
+
 pub enum Merge {
   Horizontal
   Vertical
@@ -295,6 +306,12 @@ pub enum Merge {
 pub fn Merge::horizontal() -> Self
 pub fn Merge::vertical() -> Self
 pub impl TableOption for Merge
+
+pub(all) struct Min {
+} derive(Eq, @debug.Debug)
+pub fn Min::default() -> Self
+pub fn Min::new() -> Self
+pub impl Measurement for Min
 
 pub struct Modify[O] {
   // private fields
@@ -334,6 +351,56 @@ pub fn Panel::vertical_with_width(Int, String, Int) -> PanelConfig
 
 type PanelConfig
 pub impl TableOption for PanelConfig
+
+pub(all) struct Percent(Int) derive(Eq, @debug.Debug)
+pub fn Percent::new(Int) -> Self
+pub impl Measurement for Percent
+
+pub enum Priority {
+}
+pub fn Priority::left() -> PriorityLeft
+pub fn Priority::max(Bool) -> PriorityMax
+pub fn Priority::min(Bool) -> PriorityMin
+pub fn Priority::none() -> PriorityNone
+pub fn Priority::right() -> PriorityRight
+
+pub struct PriorityLeft {
+} derive(Eq, @debug.Debug)
+pub fn PriorityLeft::default() -> Self
+pub fn PriorityLeft::new() -> Self
+pub impl Peaker for PriorityLeft
+
+pub struct PriorityMax {
+  // private fields
+} derive(Eq, @debug.Debug)
+pub fn PriorityMax::default() -> Self
+pub fn PriorityMax::left() -> Self
+pub fn PriorityMax::new(Bool) -> Self
+pub fn PriorityMax::right() -> Self
+pub impl Peaker for PriorityMax
+
+pub struct PriorityMin {
+  // private fields
+} derive(Eq, @debug.Debug)
+pub fn PriorityMin::default() -> Self
+pub fn PriorityMin::left() -> Self
+pub fn PriorityMin::new(Bool) -> Self
+pub fn PriorityMin::right() -> Self
+pub impl Peaker for PriorityMin
+
+pub struct PriorityNone {
+  // private fields
+} derive(Eq, @debug.Debug)
+pub fn PriorityNone::default() -> Self
+pub fn PriorityNone::new() -> Self
+pub impl Peaker for PriorityNone
+
+pub struct PriorityRight {
+  // private fields
+} derive(Eq, @debug.Debug)
+pub fn PriorityRight::default() -> Self
+pub fn PriorityRight::new() -> Self
+pub impl Peaker for PriorityRight
 
 pub struct Reverse {
   // private fields
@@ -611,11 +678,20 @@ pub impl[T0 : CellOption, T1 : CellOption, T2 : CellOption, T3 : CellOption, T4 
 pub impl[T0 : CellOption, T1 : CellOption, T2 : CellOption, T3 : CellOption, T4 : CellOption, T5 : CellOption, T6 : CellOption, T7 : CellOption, T8 : CellOption] CellOption for (T0, T1, T2, T3, T4, T5, T6, T7, T8)
 pub impl[T0 : CellOption, T1 : CellOption, T2 : CellOption, T3 : CellOption, T4 : CellOption, T5 : CellOption, T6 : CellOption, T7 : CellOption, T8 : CellOption, T9 : CellOption] CellOption for (T0, T1, T2, T3, T4, T5, T6, T7, T8, T9)
 
+pub(open) trait Measurement {
+  fn measure(Self, Table, Attribute) -> Int
+}
+pub impl Measurement for Int
+
 pub(open) trait Object {
   fn cells(Self, Table) -> Array[Array[(Int, Int)]]
   fn entities(Self, Table) -> Array[@papergrid.Entity] = _
 }
 pub impl Object for (Int, Int)
+
+pub(open) trait Peaker {
+  fn peak(Self, Array[Int], Array[Int]) -> Int?
+}
 
 pub(open) trait TableOption {
   fn change(Self, Table) -> Unit
