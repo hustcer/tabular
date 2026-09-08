@@ -4,16 +4,17 @@
 name: CI
 on:
   workflow_dispatch:
+  pull_request:
   push:
     branches:
       - main
       - develop
 
-    paths-ignore:
-      - '**.md'
-
 jobs:
   tabular-check:
+    defaults:
+      run:
+        shell: bash
     strategy:
       fail-fast: false
       matrix:
@@ -31,7 +32,11 @@ jobs:
       - name: Check Tabular Build & Test
         run: |
           moon version --all
-          moon check --target all
-          moon build --target all
-          moon test --target all
-
+          moon fmt --check
+          moon check --target all --deny-warn
+          moon build --target all --deny-warn
+          moon test --target all --deny-warn
+      - name: Check Generated Interfaces
+        run: |
+          moon info
+          git diff --exit-code -- '*.mbti'
