@@ -37,6 +37,10 @@
 和 CHANGELOG 未列出这一从 v0.5.2 开始的源码兼容性变化。本次已补齐 README、
 迁移指南和 CHANGELOG，并将 README Builder 示例改成可执行测试。
 
+后续命名调整：推荐入口统一为已有的 `Builder::push_record(row)`；
+`extend_(row)` 移至 `deprecated.mbt`，标记为弃用并保留兼容。
+README、迁移指南和 CHANGELOG 已同步，追加一条记录的行为不变。
+
 ## Spec：需求符合性
 
 依据为 [移植对照](tabled-parity.md)、[迁移指南](migration-0.6.md)、CHANGELOG 和

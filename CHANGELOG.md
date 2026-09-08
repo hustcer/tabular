@@ -10,8 +10,9 @@ in progress; see [the parity inventory](docs/tabled-parity.md) and
 
 ### Breaking Changes
 
-- Rename `Builder::extend(row)` to `Builder::extend_(row)` to avoid a MoonBit
-  reserved keyword; it still appends one record.
+- Replace calls to `Builder::extend(row)` with `Builder::push_record(row)` to
+  avoid a MoonBit reserved keyword; it still appends one record. The intermediate
+  name `Builder::extend_(row)` remains as a deprecated compatibility alias.
 - Default tables are left aligned, multiline text uses per-cell alignment, and
   bare `papergrid.SpannedConfig` starts without borders or padding.
 - `Width` and `Height` are option factories returning concrete option types.

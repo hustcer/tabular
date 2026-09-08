@@ -25,10 +25,19 @@ table.set_width(@tabular.Width::wrap_with(10, ".")) |> ignore
 
 Unicode、跨行/跨列尺寸和垂直填充修正会改变部分旧快照。应核对输出含义后更新快照；居中设置不会恢复旧算法的错误尺寸。
 
-## Builder 方法改名
+## Builder 追加记录 API
 
-`Builder::extend(row)` 改为 `Builder::extend_(row)`，避免使用 MoonBit 保留关键字。
-它仍然追加一条记录，与 `push_record(row)` 等价；旧调用需要改名。
+统一使用已有的 `Builder::push_record(row)`，在末尾追加一条记录：
+
+```moonbit
+builder.push_record(["Alice", "30", "NYC"])
+```
+
+0.5.x 的 `Builder::extend(row)` 使用了 MoonBit 保留关键字，需迁移到
+`push_record(row)`。过渡名称 `Builder::extend_(row)` 仍保留兼容，但已标记为
+弃用，调用时会提示改用 `Builder::push_record`。
+
+这两个旧名称都表示追加一条记录，并非批量追加；迁移只需更换方法名，参数和行为不变。
 
 ## Width / Height 类型
 

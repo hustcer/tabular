@@ -61,6 +61,7 @@ pub fn Builder::clear(Self) -> Unit
 pub fn Builder::count_cols(Self) -> Int
 pub fn Builder::count_records(Self) -> Int
 pub fn Builder::default() -> Self
+#deprecated
 pub fn Builder::extend_(Self, Array[String]) -> Unit
 pub fn Builder::from_rows(Array[Array[String]]) -> Self
 pub fn Builder::index(Self) -> IndexBuilder

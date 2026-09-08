@@ -18,7 +18,7 @@ A MoonBit library for pretty-printing tables in the terminal. Inspired by the Ru
 
 See [tabled parity status](docs/tabled-parity.md) for the upstream test mapping and remaining work.
 The examples below use the 0.6 API. For the breaking changes from 0.5.2,
-including `Builder::extend` becoming `Builder::extend_`, see the
+including migration from `Builder::extend` to `Builder::push_record`, see the
 [migration guide](docs/migration-0.6.md).
 
 ## Installation
@@ -249,7 +249,7 @@ table.apply(style) |> ignore
 test "README builder" {
   let builder = @tabular.Builder::default()
   builder.push_record(["Name", "Age", "City"])
-  builder.extend_(["Alice", "30", "NYC"])
+  builder.push_record(["Alice", "30", "NYC"])
   builder.push_record(["Bob", "25", "LA"])
   let table = builder.build()
   assert_eq(table.shape(), (3, 3))
@@ -257,7 +257,8 @@ test "README builder" {
 }
 ```
 
-`extend_` appends one record, just like `push_record`.
+`push_record(row)` appends one record to the end of the builder.
+`extend_(row)` is a deprecated compatibility alias; use `push_record(row)` instead.
 
 ```moonbit nocheck
 ///|

@@ -15,13 +15,9 @@ pub fn Builder::from_rows(rows : Array[Array[String]]) -> Builder {
 }
 
 ///|
+/// Appends one record to the end of the builder.
 pub fn Builder::push_record(self : Builder, row : Array[String]) -> Unit {
   self.rows.push(row)
-}
-
-///|
-pub fn Builder::extend_(self : Builder, row : Array[String]) -> Unit {
-  self.push_record(row)
 }
 
 ///|
