@@ -107,7 +107,8 @@ pub struct Padding {
   right : Int
   top : Int
   bottom : Int
-}
+  fills : @papergrid.Sides[Char]
+} derive(Eq, Compare, Debug)
 
 ///|
 pub struct HorizontalLine {

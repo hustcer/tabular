@@ -4,7 +4,7 @@
   "note": "A source reference is a navigation aid, not evidence that all branches or expected outputs are equivalent. Existing tests without references remain unmapped.",
   "source_files": 90,
   "test_candidates": 1387,
-  "referenced_candidates": 259,
+  "referenced_candidates": 278,
   "suites": [
     {
       "source": "csv_to_table/tests/csv_table.rs",
@@ -1505,26 +1505,34 @@
         {
           "name": "entity_row_overrides_column_intersection_0",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "papergrid/upstream_indent_config_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "entity_row_overrides_column_intersection_1",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "papergrid/upstream_indent_config_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "entity_column_overrides_row_intersection_0",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "papergrid/upstream_indent_config_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "entity_column_overrides_row_intersection_1",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "papergrid/upstream_indent_config_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "test_justification_char_left_alignment",
@@ -6231,50 +6239,66 @@
         {
           "name": "margin_with_table_based_on_grid_borders",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_margin_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "margin_without_table_based_on_grid_borders",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_margin_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "table_with_empty_margin",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_margin_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "table_with_margin_and_min_width",
           "kind": "test",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_margin_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "table_with_margin_and_max_width",
           "kind": "test",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_margin_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "table_0_spanned_with_width",
           "kind": "test",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_margin_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "margin_color_test_not_colored_feature",
           "kind": "test",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_margin_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "margin_color_test",
           "kind": "test",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_margin_test.mbt"
+          ],
+          "status": "referenced"
         }
       ]
     },
@@ -6411,44 +6435,58 @@
         {
           "name": "padding",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_padding_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "padding_with_set_characters",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_padding_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "padding_with_set_characters_and_zero_ident",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_padding_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "padding_multiline",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_padding_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "padding_multiline_with_vertical_alignment",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_padding_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "padding_color",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_padding_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "padding_table",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_padding_test.mbt"
+          ],
+          "status": "referenced"
         }
       ]
     },

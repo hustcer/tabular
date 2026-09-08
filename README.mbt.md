@@ -463,6 +463,27 @@ test {
 }
 ```
 
+## Padding and Margins
+
+`Padding::fill` chooses each cell's fill characters. `PaddingColor` and
+`MarginColor` accept `Color`, `ANSIBuf`, or `ANSIStr` values. Use
+`Padding::expand(true)` or `Padding::expand(false)` to fill unused horizontal
+or vertical cell space according to its alignment.
+
+```mbt check
+///|
+test {
+  let table = @tabular.Table::from_rows([["x"]])
+    .with_(@tabular.Padding::new(1, 1, 1, 1).fill('>', '<', '^', 'v'))
+    .with_(@tabular.PaddingColor::filled(@tabular.Color::bg_blue()))
+    .with_(@tabular.Margin::new(1, 1, 0, 0))
+  assert_eq(
+    @papergrid.strip_ansi(table.to_string()),
+    " +---+ \n |^^^| \n |>x<| \n |vvv| \n +---+ ",
+  )
+}
+```
+
 ## Validation
 
 The current repository test suite passes:

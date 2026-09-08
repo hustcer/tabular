@@ -1,9 +1,5 @@
 ///|
-/// A limit measured from the selected range's start or the table's end.
-pub(all) enum Offset {
-  Start(Int)
-  End(Int)
-} derive(Eq, Debug)
+pub using @papergrid {type Offset}
 
 ///|
 /// Reverse a contiguous range of rows or columns.

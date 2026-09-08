@@ -56,12 +56,7 @@ pub fn Table::set_valign(self : Table, align : VAlign) -> Table {
 
 ///|
 pub fn Table::set_padding(self : Table, padding : Padding) -> Table {
-  self.config.set_padding_for_all(
-    padding.left,
-    padding.right,
-    padding.top,
-    padding.bottom,
-  )
+  self.config.set_padding_sides(Entity::Global, padding.to_sides())
   self.finish_legacy_change()
 }
 
@@ -150,12 +145,7 @@ pub fn Table::modify_segment(
         Align(align) => self.config.set_align_for_all(convert_align(align))
         VAlign(align) => self.config.set_valign_for_all(convert_valign(align))
         Pad(padding) =>
-          self.config.set_padding_for_all(
-            padding.left,
-            padding.right,
-            padding.top,
-            padding.bottom,
-          )
+          self.config.set_padding_sides(Entity::Global, padding.to_sides())
         W(width) => self.config.set_width_mode_for_all(convert_width(width))
         H(height) => self.config.set_height_mode_for_all(convert_height(height))
         Fmt(format) =>

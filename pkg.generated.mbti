@@ -352,10 +352,20 @@ pub struct Margin {
   fill_right : Char
   fill_top : Char
   fill_bottom : Char
-}
+} derive(@debug.Debug)
 pub fn Margin::fill(Self, Char, Char, Char, Char) -> Self
+pub fn Margin::from_sides(@papergrid.Sides[@papergrid.Indent]) -> Self
 pub fn Margin::new(Int, Int, Int, Int) -> Self
+pub fn Margin::to_sides(Self) -> @papergrid.Sides[@papergrid.Indent]
 pub impl TableOption for Margin
+
+pub struct MarginColor[C] {
+  colors : @papergrid.Sides[C]
+} derive(@debug.Debug)
+pub fn MarginColor::empty() -> Self[@papergrid.ANSIStr]
+pub fn[C] MarginColor::filled(C) -> Self[C]
+pub fn[C] MarginColor::new(C, C, C, C) -> Self[C]
+pub impl[C : @papergrid.ANSIFmt] TableOption for MarginColor[C]
 
 pub(all) struct Max {
 } derive(Eq, @debug.Debug)
@@ -401,21 +411,39 @@ pub struct ModifyList[O, M] {
 pub fn[O, A, B] ModifyList::with_(Self[O, A], B) -> Self[O, Settings[A, B]]
 pub impl[O : Object, M : CellOption] TableOption for ModifyList[O, M]
 
-pub(all) enum Offset {
-  Start(Int)
-  End(Int)
-} derive(Eq, @debug.Debug)
-
 pub struct Padding {
   left : Int
   right : Int
   top : Int
   bottom : Int
-}
+  fills : @papergrid.Sides[Char]
+} derive(Compare, Eq, @debug.Debug)
+pub fn Padding::expand(Bool) -> PaddingExpand
+pub fn Padding::fill(Self, Char, Char, Char, Char) -> Self
+pub fn Padding::from_sides(@papergrid.Sides[@papergrid.Indent]) -> Self
 pub fn Padding::new(Int, Int, Int, Int) -> Self
+pub fn Padding::to_sides(Self) -> @papergrid.Sides[@papergrid.Indent]
 pub fn Padding::zero() -> Self
 pub impl CellOption for Padding
 pub impl TableOption for Padding
+
+pub struct PaddingColor[C] {
+  colors : @papergrid.Sides[C]
+} derive(Eq, @debug.Debug)
+pub fn PaddingColor::empty() -> Self[@papergrid.ANSIStr]
+pub fn[C] PaddingColor::filled(C) -> Self[C]
+pub fn[C] PaddingColor::from_sides(@papergrid.Sides[C]) -> Self[C]
+pub fn[C] PaddingColor::new(C, C, C, C) -> Self[C]
+pub fn[C] PaddingColor::to_sides(Self[C]) -> @papergrid.Sides[C]
+pub impl[C : @papergrid.ANSIFmt] CellOption for PaddingColor[C]
+pub impl[C : @papergrid.ANSIFmt] TableOption for PaddingColor[C]
+
+pub(all) enum PaddingExpand {
+  Horizontal
+  Vertical
+} derive(Compare, Eq, @debug.Debug)
+pub impl CellOption for PaddingExpand
+pub impl TableOption for PaddingExpand
 
 pub enum Panel {
 }
@@ -482,7 +510,7 @@ pub struct Reverse {
   // private fields
 }
 pub fn Reverse::columns(Int) -> Self
-pub fn Reverse::limit(Self, Offset) -> Self
+pub fn Reverse::limit(Self, @papergrid.Offset) -> Self
 pub fn Reverse::rows(Int) -> Self
 pub impl TableOption for Reverse
 
@@ -804,6 +832,12 @@ pub impl[P] WidthOption for Wrap[Int, P]
 
 // Type aliases
 pub using @papergrid {type Entity}
+
+pub using @papergrid {type Indent}
+
+pub using @papergrid {type Offset}
+
+pub using @papergrid {type Sides}
 
 // Traits
 pub(open) trait CellOption {

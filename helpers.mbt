@@ -470,14 +470,7 @@ fn apply_setting_to_row(
     VAlign(align) =>
       config.set_valign_for_rows(row, row + 1, convert_valign(align))
     Pad(padding) =>
-      config.set_padding_for_rows(
-        row,
-        row + 1,
-        padding.left,
-        padding.right,
-        padding.top,
-        padding.bottom,
-      )
+      config.set_padding_sides(Entity::Row(row), padding.to_sides())
     W(width) =>
       config.set_width_mode_for_rows(row, row + 1, convert_width(width))
     H(height) =>
@@ -500,14 +493,7 @@ fn apply_setting_to_col(
     VAlign(align) =>
       config.set_valign_for_cols(col, col + 1, convert_valign(align))
     Pad(padding) =>
-      config.set_padding_for_cols(
-        col,
-        col + 1,
-        padding.left,
-        padding.right,
-        padding.top,
-        padding.bottom,
-      )
+      config.set_padding_sides(Entity::Column(col), padding.to_sides())
     W(width) =>
       config.set_width_mode_for_cols(col, col + 1, convert_width(width))
     H(height) =>
@@ -529,14 +515,7 @@ fn apply_setting_to_cell(
     Align(align) => config.set_align_for_cell(row, col, convert_align(align))
     VAlign(align) => config.set_valign_for_cell(row, col, convert_valign(align))
     Pad(padding) =>
-      config.set_padding_for_cell(
-        row,
-        col,
-        padding.left,
-        padding.right,
-        padding.top,
-        padding.bottom,
-      )
+      config.set_padding_sides(Entity::Cell(row, col), padding.to_sides())
     W(width) => config.set_width_mode_for_cell(row, col, convert_width(width))
     H(height) =>
       config.set_height_mode_for_cell(row, col, convert_height(height))

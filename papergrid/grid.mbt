@@ -15,13 +15,11 @@ pub fn IterGrid::new(
 }
 
 ///|
-fn render_padding(size : Int) -> String {
-  let mut out = ""
-  for i in 0..<size {
-    ignore(i)
-    out += " "
+fn render_indent(size : Int, fill : Char, color : ANSIBuf?) -> String {
+  if size <= 0 {
+    return ""
   }
-  out
+  render_colored_text(String::make(size, fill), color)
 }
 
 ///|
@@ -35,10 +33,12 @@ fn render_cell(
   config : SpannedConfig,
   source : (Int, Int),
 ) -> String {
+  let fills = config.padding_fill_at(source.0, source.1)
+  let colors = config.get_padding_color(source.0, source.1)
   let content = match line {
     Content(content) => content
-    TopPadding => return render_padding(width)
-    BottomPadding => return render_padding(width)
+    TopPadding => return render_indent(width, fills.top, colors.top)
+    BottomPadding => return render_indent(width, fills.bottom, colors.bottom)
   }
   let format = config.text_format_at(source.0, source.1)
   let content = if format.formatting.horizontal_trim {
@@ -70,12 +70,12 @@ fn render_cell(
     Right => (gap, 0)
     Center => (gap / 2, gap - gap / 2)
   }
-  render_padding(padding_left) +
+  render_indent(padding_left, fills.left, colors.left) +
   render_justification(format, left_fill) +
   render_colored_text(content, format.color) +
   render_justification(format, right_fill) +
   render_justification(format, Int::max(0, cell_width - line_width)) +
-  render_padding(padding_right)
+  render_indent(padding_right, fills.right, colors.right)
 }
 
 ///|
@@ -368,8 +368,9 @@ fn cell_content_for_row(
   let source = span_source_for_anchor(config, anchor.0, anchor.1)
   if anchor.0 == row && config.row_span_at(anchor.0, anchor.1) <= 1 {
     let lines = display_lines(records, config, source)
-    let (_, _, top, bottom) = config.padding_at(source.0, source.1)
-    let missing = Int::max(0, row_heights[row] - top - bottom - lines.length())
+    let (_, _, top, _) = config.padding_at(source.0, source.1)
+    let cell_height = Int::min(lines.length(), row_heights[row])
+    let missing = Int::max(0, row_heights[row] - top - cell_height)
     let valign = config.valign_at(source.0, source.1)
     let top_fill = top +
       (match valign {
@@ -380,7 +381,7 @@ fn cell_content_for_row(
     if line_index < top_fill {
       return TopPadding
     }
-    if line_index >= top_fill + lines.length() {
+    if line_index >= top_fill + cell_height {
       return BottomPadding
     }
     return Content(lines[line_index - top_fill])
@@ -395,8 +396,9 @@ fn cell_content_for_row(
   let total_height = sum_range(row_heights, anchor.0, end_) +
     count_range_boundaries(config, row_heights.length(), anchor.0, end_)
   let lines = display_lines(records, config, source)
-  let (_, _, top, bottom) = config.padding_at(source.0, source.1)
-  let missing = Int::max(0, total_height - top - bottom - lines.length())
+  let (_, _, top, _) = config.padding_at(source.0, source.1)
+  let cell_height = Int::min(lines.length(), total_height)
+  let missing = Int::max(0, total_height - top - cell_height)
   let valign = config.valign_at(source.0, source.1)
   let top_fill = top +
     (match valign {
@@ -414,7 +416,7 @@ fn cell_content_for_row(
   let absolute = offset + line_index
   if absolute < top_fill {
     TopPadding
-  } else if absolute >= top_fill + lines.length() {
+  } else if absolute >= top_fill + cell_height {
     BottomPadding
   } else {
     Content(lines[absolute - top_fill])
@@ -443,8 +445,9 @@ fn cell_content_for_boundary(
   let total_height = sum_range(row_heights, anchor.0, end_) +
     count_range_boundaries(config, row_heights.length(), anchor.0, end_)
   let lines = display_lines(records, config, source)
-  let (_, _, top, bottom) = config.padding_at(source.0, source.1)
-  let missing = Int::max(0, total_height - top - bottom - lines.length())
+  let (_, _, top, _) = config.padding_at(source.0, source.1)
+  let cell_height = Int::min(lines.length(), total_height)
+  let missing = Int::max(0, total_height - top - cell_height)
   let valign = config.valign_at(source.0, source.1)
   let top_fill = top +
     (match valign {
@@ -462,7 +465,7 @@ fn cell_content_for_boundary(
   }
   if absolute < top_fill {
     TopPadding
-  } else if absolute >= top_fill + lines.length() {
+  } else if absolute >= top_fill + cell_height {
     BottomPadding
   } else {
     Content(lines[absolute - top_fill])
@@ -1009,6 +1012,7 @@ pub fn IterGrid::to_string(self : IterGrid) -> String {
           self.config.margin_fill_left,
           self.config.margin_left,
           self.config.margin_offset_left,
+          self.config.margin_colors.left,
           i,
           table_height,
         )
@@ -1016,6 +1020,7 @@ pub fn IterGrid::to_string(self : IterGrid) -> String {
           self.config.margin_fill_right,
           self.config.margin_right,
           self.config.margin_offset_right,
+          self.config.margin_colors.right,
           i,
           table_height,
         )
@@ -1028,6 +1033,7 @@ pub fn IterGrid::to_string(self : IterGrid) -> String {
         self.config.margin_fill_top,
         self.config.margin_top,
         self.config.margin_offset_top,
+        self.config.margin_colors.top,
         full_width,
       )
       for i = top_lines.length() - 1; i >= 0; i = i - 1 {
@@ -1040,6 +1046,7 @@ pub fn IterGrid::to_string(self : IterGrid) -> String {
         self.config.margin_fill_bottom,
         self.config.margin_bottom,
         self.config.margin_offset_bottom,
+        self.config.margin_colors.bottom,
         full_width,
       )
       for i in 0..<bottom_lines.length() {
@@ -1058,6 +1065,7 @@ fn margin_vertical_str(
   fill : Char,
   size : Int,
   offset : Int,
+  color : ANSIBuf?,
   line : Int,
   height : Int,
 ) -> String {
@@ -1068,7 +1076,7 @@ fn margin_vertical_str(
   if offset >= 0 {
     // Start offset: line < offset → spaces, line >= offset → fill
     if line >= offset {
-      fill.to_string().repeat(size)
+      render_indent(size, fill, color)
     } else {
       " ".repeat(size)
     }
@@ -1080,7 +1088,7 @@ fn margin_vertical_str(
     if line >= pos {
       " ".repeat(size)
     } else {
-      fill.to_string().repeat(size)
+      render_indent(size, fill, color)
     }
   }
 }
@@ -1092,6 +1100,7 @@ fn margin_horizontal_lines(
   fill : Char,
   size : Int,
   offset : Int,
+  color : ANSIBuf?,
   width : Int,
 ) -> Array[String] {
   if size == 0 {
@@ -1120,7 +1129,7 @@ fn margin_horizontal_lines(
   let result = []
   for _ in 0..<size {
     let line = " ".repeat(start_offset) +
-      fill.to_string().repeat(indent_size) +
+      render_indent(indent_size, fill, color) +
       " ".repeat(end_offset)
     result.push(line)
   }

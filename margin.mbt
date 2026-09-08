@@ -9,7 +9,7 @@ pub struct Margin {
   fill_right : Char
   fill_top : Char
   fill_bottom : Char
-}
+} derive(Debug)
 
 ///|
 pub fn Margin::new(left : Int, right : Int, top : Int, bottom : Int) -> Margin {

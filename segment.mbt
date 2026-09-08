@@ -500,5 +500,11 @@ pub fn Padding::new(
   top : Int,
   bottom : Int,
 ) -> Padding {
-  { left, right, top, bottom, }
+  {
+    left: Int::max(0, left),
+    right: Int::max(0, right),
+    top: Int::max(0, top),
+    bottom: Int::max(0, bottom),
+    fills: @papergrid.Sides::filled(' '),
+  }
 }

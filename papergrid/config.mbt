@@ -197,6 +197,10 @@ pub struct SpannedConfig {
   align_rules : Array[(Scope, HAlign)]
   valign_rules : Array[(Scope, VAlign)]
   padding_rules : Array[(Scope, Int, Int, Int, Int)]
+  priv padding_fills : Array[(Scope, Sides[Char])]
+  priv padding_colors : Array[(Scope, Sides[ANSIBuf?])]
+  priv mut margin_colors : Sides[ANSIBuf?]
+  priv mut margin_offsets : Sides[Offset]
   priv formatting_rules : Array[(Scope, FormatChange)]
   col_spans : Array[(Int, Int, Int)]
   row_spans : Array[(Int, Int, Int)]
@@ -242,6 +246,10 @@ pub fn SpannedConfig::default() -> SpannedConfig {
     align_rules: [],
     valign_rules: [],
     padding_rules: [],
+    padding_fills: [],
+    padding_colors: [],
+    margin_colors: Sides::filled(None),
+    margin_offsets: Sides::filled(Offset::Start(0)),
     formatting_rules: [],
     col_spans: [],
     row_spans: [],
@@ -289,6 +297,7 @@ pub fn SpannedConfig::set_padding(
   self.padding_right = right
   self.padding_top = top
   self.padding_bottom = bottom
+  self.padding_fills.push((All, Sides::filled(' ')))
 }
 
 ///|
@@ -628,6 +637,7 @@ pub fn SpannedConfig::set_padding_for_rows(
   bottom : Int,
 ) -> Unit {
   self.padding_rules.push((RowRange(start, end), left, right, top, bottom))
+  self.padding_fills.push((RowRange(start, end), Sides::filled(' ')))
 }
 
 ///|
@@ -641,6 +651,7 @@ pub fn SpannedConfig::set_padding_for_cols(
   bottom : Int,
 ) -> Unit {
   self.padding_rules.push((ColRange(start, end), left, right, top, bottom))
+  self.padding_fills.push((ColRange(start, end), Sides::filled(' ')))
 }
 
 ///|
@@ -652,6 +663,7 @@ pub fn SpannedConfig::set_padding_for_all(
   bottom : Int,
 ) -> Unit {
   self.padding_rules.push((All, left, right, top, bottom))
+  self.padding_fills.push((All, Sides::filled(' ')))
 }
 
 ///|
@@ -665,6 +677,7 @@ pub fn SpannedConfig::set_padding_for_cell(
   bottom : Int,
 ) -> Unit {
   self.padding_rules.push((Cell(row, col), left, right, top, bottom))
+  self.padding_fills.push((Cell(row, col), Sides::filled(' ')))
 }
 
 ///|
@@ -1322,6 +1335,12 @@ pub fn SpannedConfig::set_margin_offset(
   self.margin_offset_bottom = bottom
   self.margin_offset_left = left
   self.margin_offset_right = right
+  self.margin_offsets = Sides::new(
+    Offset::from_int(left),
+    Offset::from_int(right),
+    Offset::from_int(top),
+    Offset::from_int(bottom),
+  )
 }
 
 ///|
@@ -1339,6 +1358,8 @@ pub fn SpannedConfig::remap(
   col_map : Array[Int],
 ) -> Unit {
   self.remap_formatting(row_map, col_map)
+  remap_side_rules(self.padding_fills, row_map, col_map)
+  remap_side_rules(self.padding_colors, row_map, col_map)
   let previous_col_spans = self.col_spans.copy()
   let previous_row_spans = self.row_spans.copy()
 
