@@ -170,7 +170,7 @@ pub fn Table::correct_borders(self : Table) -> Table {
       cfg.set_cell_border(row, col, cb)
     }
   }
-  self
+  self.finish_legacy_change()
 }
 
 ///|
@@ -475,7 +475,7 @@ pub fn Table::highlight(self : Table, highlight : Highlight) -> Table {
       self.config.set_cell_border(p.0, p.1, cell_border)
     })
   })
-  self
+  self.finish_legacy_change()
 }
 
 ///|
@@ -542,5 +542,5 @@ pub fn Table::shadow(self : Table, shadow : Shadow) -> Table {
   self.config.set_margin_offset(
     top_offset, bottom_offset, left_offset, right_offset,
   )
-  self
+  self.finish_legacy_change()
 }

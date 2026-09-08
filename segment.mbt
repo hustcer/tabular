@@ -29,18 +29,38 @@ pub fn VAlign::center() -> VAlign {
 }
 
 ///|
-pub fn Width::wrap(width : Int) -> Width {
-  Wrap(width, "�")
+pub fn Padding::zero() -> Padding {
+  Padding::new(0, 0, 0, 0)
 }
 
 ///|
-pub fn Width::wrap_with(width : Int, placeholder : String) -> Width {
-  Wrap(width, placeholder)
+/// Wrap records at a cell width with `modify`, or fit the total table with `with_`.
+///
+/// ```mbt check
+/// test {
+///   let table = Table::from_rows([["hello world"]])
+///   table.modify((0, 0), Width::wrap(7).keep_words(true)) |> ignore
+///   assert_eq(table.rows, [["hello \nworld"]])
+/// }
+/// ```
+pub fn[M] Width::wrap(width : M) -> Wrap[M, PriorityNone] {
+  Wrap::new(width)
 }
 
 ///|
-pub fn Width::truncate(width : Int, suffix? : String = "") -> Width {
-  Truncate(width, suffix)
+pub fn Width::wrap_with(
+  width : Int,
+  placeholder : String,
+) -> Wrap[Int, PriorityNone] {
+  { ..Wrap::new(width), placeholder, }
+}
+
+///|
+pub fn[M] Width::truncate(
+  width : M,
+  suffix? : String = "",
+) -> Truncate[M, PriorityNone] {
+  Truncate::new(width).suffix(suffix)
 }
 
 ///|
@@ -448,8 +468,8 @@ pub fn Setting::format(format : Format) -> Setting {
 }
 
 ///|
-pub fn Setting::width(width : Width) -> Setting {
-  W(width)
+pub fn[W : WidthOption] Setting::width(width : W) -> Setting {
+  W(WidthOption::to_mode(width))
 }
 
 ///|

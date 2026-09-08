@@ -4,7 +4,7 @@
 
 use upstream-literals.nu expected-lines
 
-def translate [expression: string]: nothing -> string {
+export def translate [expression: string]: nothing -> string {
   $expression
   | str trim
   | str replace --all --regex 'Matrix::iter\((multiline_data[12]|tab_data[12]|colored_data)\(\)\)' 'upstream_$1()'
@@ -42,7 +42,7 @@ def translate [expression: string]: nothing -> string {
   | str replace --all --regex '(?<![\w.])Cell::' '@tabular.Cell::'
   | str replace --all 'let mut ' 'let '
   | str replace --all --regex '(?m)^(\s*table\d\.[^;]+);' '$1 |> ignore'
-  | str replace --all ';' ''
+  | str replace --all --regex ';(?=\s*(?:\n|$))' ''
 }
 
 def expected-value [source: string]: nothing -> string {

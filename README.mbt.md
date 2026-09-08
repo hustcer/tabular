@@ -396,8 +396,7 @@ in records are excluded from layout width. Wrapping preserves color styles and
 OSC8 hyperlinks; truncation closes styles before adding a suffix. A wide character
 that cannot fit is replaced by `�`; use `Width::wrap_with` for a custom placeholder.
 Text measurement follows Unicode 17.0.0, including emoji presentation and ZWJ
-sequences. Advanced width options are still being aligned with upstream; see the
-status document.
+sequences.
 
 ```mbt check
 ///|
@@ -415,6 +414,34 @@ test {
   )
 }
 ```
+
+## Width and Dimensions
+
+`Width::wrap`, `Width::truncate`, and `Width::increase` accept an integer,
+`Max`, `Min`, `Percent`, or a custom `Measurement`. Applied with `modify`, they
+change cell text. Applied with `with_`, they fit the total table width, including
+padding, borders, and margins. `keep_words` preserves words when they fit;
+`priority` chooses which columns to resize.
+
+```mbt check
+///|
+test {
+  let table = @tabular.Table::from_rows([["abcdef", "x"]])
+    .modify((0, 0), @tabular.Width::truncate(4).suffix("..."))
+    .with_(@tabular.Width::increase(20))
+  assert_eq(table.rows, [["a...", "x"]])
+  assert_eq(table.total_width(), 20)
+}
+```
+
+Truncation supports `multiline`, `suffix_limit`, and `suffix_try_color`.
+`Width::justify` sets every cell's text width. `Width::list` directly sets column
+dimensions, including padding; it assumes the content already fits.
+Later layout or content changes invalidate cached dimensions according to the
+option's hint. Rendering does not fill the public cache.
+
+The earlier `set_width` and `Setting::width` methods retain their render-time
+wrap/truncate behavior. Use `with_` or `modify` for the advanced options above.
 
 ## Validation
 

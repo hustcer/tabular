@@ -4,7 +4,7 @@
   "note": "A source reference is a navigation aid, not evidence that all branches or expected outputs are equivalent. Existing tests without references remain unmapped.",
   "source_files": 90,
   "test_candidates": 1387,
-  "referenced_candidates": 100,
+  "referenced_candidates": 245,
   "suites": [
     {
       "source": "csv_to_table/tests/csv_table.rs",
@@ -3095,98 +3095,130 @@
         {
           "name": "split_by_line_keeping_words_test",
           "kind": "test",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "papergrid/upstream_wrap_wbtest.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "split_by_line_keeping_words_color_test",
           "kind": "test",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "papergrid/upstream_wrap_wbtest.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "split_by_line_keeping_words_color_2_test",
           "kind": "test",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "papergrid/upstream_wrap_wbtest.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "split_by_line_keeping_words_color_3_test",
           "kind": "test",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "papergrid/upstream_wrap_wbtest.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "split_keeping_words_4_test",
           "kind": "test",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "papergrid/upstream_wrap_wbtest.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "chunks_test_with_prefix_and_suffix",
           "kind": "test",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "papergrid/upstream_wrap_wbtest.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "split_by_line_keeping_words_test_with_prefix_and_suffix",
           "kind": "test",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "papergrid/upstream_wrap_wbtest.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "split_by_line_keeping_words_color_2_test_with_prefix_and_suffix",
           "kind": "test",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "papergrid/upstream_wrap_wbtest.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "chunks_wrap_2",
           "kind": "test",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "papergrid/upstream_wrap_wbtest.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "chunks_wrap_3",
           "kind": "test",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "papergrid/upstream_wrap_wbtest.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "chunks_wrap_3_keeping_words",
           "kind": "test",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "papergrid/upstream_wrap_wbtest.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "chunks_wrap_4",
           "kind": "test",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "papergrid/upstream_wrap_wbtest.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "chunks_wrap_4_keeping_words",
           "kind": "test",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "papergrid/upstream_wrap_wbtest.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "chunks_wrap_5_keeping_words",
           "kind": "test",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "papergrid/upstream_wrap_wbtest.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "chunks_chinese_0",
           "kind": "test",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "papergrid/upstream_wrap_wbtest.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "chunks_keeping_chinese_0",
           "kind": "test",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "papergrid/upstream_wrap_wbtest.mbt"
+          ],
+          "status": "referenced"
         }
       ]
     },
@@ -8049,776 +8081,1034 @@
         {
           "name": "max_width",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_width_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "max_width_with_suffix",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_width_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "max_width_doesnt_increase_width_if_it_is_smaller",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_width_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "max_width_wrapped",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_width_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "max_width_wrapped_does_nothing_if_str_is_smaller",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_width_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "max_width_wrapped_keep_words_0",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_width_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "max_width_wrapped_keep_words_1",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_width_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "max_width_wrapped_keep_words_2",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_width_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "max_width_wrapped_keep_words_3",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_width_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "max_width_wrapped_keep_words_4",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_width_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "max_width_wrapped_keep_words_5",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_width_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "max_width_wrapped_keep_words_color_0",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_width_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "max_width_wrapped_keep_words_color_0_1",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_width_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "max_width_wrapped_keep_words_color_1",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_width_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "max_width_wrapped_keep_words_color_1_1",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_width_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "max_width_wrapped_keep_words_color_2",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_width_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "max_width_wrapped_keep_words_color_2_1",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_width_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "max_width_wrapped_keep_words_color_3",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_width_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "max_width_wrapped_keep_words_color_3_1",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_width_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "max_width_wrapped_keep_words_color_4",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_width_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "max_width_wrapped_keep_words_color_4_1",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_width_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "max_width_wrapped_keep_words_long_word",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_width_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "max_width_wrapped_keep_words_long_word_color",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_width_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "max_width_keep_words_1",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_width_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "max_width_keep_words_2",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_width_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "max_width_keep_words_3",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_width_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "max_width_wrapped_collored",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_width_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "dont_change_content_if_width_is_less_then_max_width",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_width_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "max_width_with_emoji",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_width_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "color_chars_are_stripped",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_width_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "min_width_0",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_width_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "min_width_1",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_width_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "min_width_with_filler",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_width_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "min_width_one_column_0",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_width_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "min_width_one_column_1",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_width_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "min_width_on_smaller_content",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_width_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "min_with_max_width_0",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_width_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "min_with_max_width_1",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_width_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "min_with_max_width_truncate_suffix_0",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_width_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "min_with_max_width_truncate_suffix_1",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_width_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "min_with_max_width_truncate_suffix_limit_replace",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_width_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "min_with_max_width_truncate_suffix_limit_cut",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_width_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "min_with_max_width_truncate_suffix_limit_ignore",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_width_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "min_with_max_width_truncate_suffix_try_color",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_width_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "min_width_color",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_width_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "min_width_color_with_smaller_then_width",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_width_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "total_width_big_0",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_width_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "total_width_big_1",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_width_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "total_width_big_with_panel",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_width_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "total_width_big_with_panel_with_wrapping_doesnt_affect_increase",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_width_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "total_width_small",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_width_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "total_width_smaller_then_content",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_width_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "total_width_small_with_panel_0",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_width_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "total_width_small_with_panel_1",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_width_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "total_width_small_with_panel_2",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_width_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "total_width_small_with_panel_3",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_width_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "total_width_small_with_panel_4",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_width_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "total_width_small_with_panel_5",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_width_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "total_width_small_with_panel_6",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_width_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "total_width_wrapping_0",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_width_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "total_width_wrapping_1",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_width_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "total_width_small_with_panel_using_wrapping_0",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_width_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "total_width_small_with_panel_using_wrapping_1",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_width_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "total_width_small_with_panel_using_wrapping_2",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_width_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "max_width_with_span_0",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_width_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "max_width_with_span_1",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_width_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "max_width_with_span_2",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_width_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "min_width_works_with_right_alignment_0",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_width_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "min_width_works_with_right_alignment_1",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_width_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "min_width_works_with_right_alignment_2",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_width_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "min_width_works_with_right_alignment_3",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_width_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "min_width_works_with_right_alignment_4",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_width_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "min_width_works_with_right_alignment_5",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_width_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "min_width_with_span_1",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_width_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "min_width_with_span_2",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_width_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "justify_width_constant_test",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_width_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "justify_width_constant_different_sizes_test",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_width_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "justify_width_constant_0_test",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_width_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "justify_width_min_test",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_width_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "justify_width_max_test",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_width_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "max_width_when_cell_has_tabs",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_width_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "max_width_table_when_cell_has_tabs",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_width_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "max_width_truncate_with_big_span_0",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_width_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "max_width_truncate_with_big_span_1",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_width_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "max_width_truncate_with_big_span_2",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_width_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "max_width_truncate_with_big_span_3",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_width_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "max_width_truncate_with_big_span_4",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_width_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "max_width_truncate_priority_max_0",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_width_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "max_width_truncate_priority_max_1",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_width_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "max_width_truncate_priority_max_2",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_width_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "max_width_truncate_priority_max_with_span",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_width_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "max_width_wrap_priority_max_0",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_width_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "max_width_wrap_priority_max_1",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_width_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "max_width_wrap_priority_max_2",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_width_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "max_width_wrap_priority_max_with_span",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_width_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "max_width_truncate_priority_min_0",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_width_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "max_width_truncate_priority_min_1",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_width_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "max_width_truncate_priority_min_2",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_width_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "max_width_truncate_priority_min_with_span_0",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_width_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "max_width_truncate_priority_min_with_span_1",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_width_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "max_width_wrap_priority_min_0",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_width_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "max_width_wrap_priority_min_1",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_width_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "max_width_wrap_priority_min_2",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_width_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "max_width_wrap_priority_min_with_span",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_width_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "min_width_priority_max",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_width_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "min_width_priority_min",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_width_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "max_width_tab_0",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_width_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "min_width_is_not_used_after_padding",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_width_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "min_width_is_used_after_margin",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_width_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "wrap_keeping_words_0",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_width_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "cell_truncate_multiline",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_width_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "cell_truncate_multiline_with_suffix",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_width_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "table_truncate_multiline",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_width_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "table_truncate_multiline_with_suffix",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_width_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "test_priority_left",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_width_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "test_priority_right",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_width_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "priority_max_left",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_width_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "priority_max_right",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_width_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "priority_min_left",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_width_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "priority_min_right",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_width_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "wrap_issue_0",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_width_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "wrap_issue_1",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_width_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "wrapping_as_total_multiline",
           "kind": "test",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_width_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "wrapping_as_total_multiline_color",
           "kind": "test",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_width_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "truncating_as_total_multiline_color",
           "kind": "test",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_width_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "hyperlinks",
           "kind": "test",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_width_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "hyperlinks_with_color",
           "kind": "test",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_width_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "hyperlinks_truncate",
           "kind": "test",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_width_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "hyperlinks_colored_truncate",
           "kind": "test",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_width_test.mbt"
+          ],
+          "status": "referenced"
         }
       ]
     },

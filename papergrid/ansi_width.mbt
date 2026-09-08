@@ -155,10 +155,26 @@ pub fn wrap_text(
   text : String,
   width : Int,
   placeholder? : String = "�",
+  keep_words? : Bool = false,
 ) -> String {
   guard width > 0 && !text.is_empty() else { return "" }
   let (cleaned, url) = strip_osc(text)
   let (line_prefix, line_suffix) = link_boundaries(url)
+  if keep_words {
+    return wrap_words(cleaned, width, line_prefix, line_suffix, placeholder~)
+  }
+  wrap_basic(cleaned, width, line_prefix, line_suffix, placeholder~)
+}
+
+///|
+fn wrap_basic(
+  cleaned : String,
+  width : Int,
+  line_prefix : String,
+  line_suffix : String,
+  placeholder? : String = "�",
+) -> String {
+  guard width > 0 && !cleaned.is_empty() else { return "" }
   let out = StringBuilder()
   let state = SgrState::new()
   let mut used = 0

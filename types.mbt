@@ -20,10 +20,7 @@ pub enum VAlign {
 }
 
 ///|
-pub enum Width {
-  Wrap(Int, String)
-  Truncate(Int, String)
-}
+pub enum Width {}
 
 ///|
 pub enum Height {
@@ -100,7 +97,7 @@ pub enum Setting {
   Align(Align)
   VAlign(VAlign)
   Pad(Padding)
-  W(Width)
+  W(@papergrid.WidthMode)
   H(Height)
   Fmt(Format)
   SpanCol(Int)

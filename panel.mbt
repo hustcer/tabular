@@ -39,7 +39,7 @@ pub fn Table::panel(self : Table, panel : PanelConfig) -> Table {
   } else {
     self.apply_vertical_panel(panel.index, panel.text)
   }
-  self
+  self.finish_legacy_change()
 }
 
 ///|

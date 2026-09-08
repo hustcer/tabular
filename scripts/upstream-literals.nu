@@ -4,6 +4,7 @@
 # Tokenize escapes so a literal backslash followed by `u` stays literal.
 export def decode-rust-string [literal: string]: nothing -> string {
   $literal
+  | str replace --all --regex '\\\r?\n\s*' ''
   | str replace --all --regex '\\(?:u\{[0-9a-fA-F_]+\}|x[0-9a-fA-F]{2}|0|.)' {
       let escape = $in
       if ($escape | str starts-with '\u{') or ($escape | str starts-with '\x') or $escape == '\0' {
@@ -32,7 +33,7 @@ export def expected-lines [source: string]: nothing -> string {
   let parts = if ($source | str trim | str starts-with 'r#"') {
     $source | parse --regex '(?s)r#"(?<text>.*?)"#' | get text
   } else {
-    $source | parse --regex '(?<text>"(?:\\.|[^"\\])*")' | get text | each {|text| decode-rust-string $text }
+    $source | parse --regex '(?s)(?<text>"(?:\\.|[^"\\])*")' | get text | each {|text| decode-rust-string $text }
   }
   if ($parts | is-empty) { error make {msg: 'No expected string literals found'} }
   moon-string ($parts | str join (char nl))

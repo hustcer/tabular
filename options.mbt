@@ -33,7 +33,11 @@ impl CellOption with fn hint_change(_self) {
 /// }
 /// ```
 pub fn[T : TableOption] Table::with_(self : Table, option : T) -> Table {
+  let hint = TableOption::hint_change(option)
+  self.option_depth += 1
   TableOption::change(option, self)
+  self.option_depth -= 1
+  self.dimension.reastimate(hint)
   self
 }
 
@@ -44,20 +48,25 @@ pub fn[O : Object, M : CellOption] Table::modify(
   object : O,
   option : M,
 ) -> Table {
+  self.option_depth += 1
   for entity in Object::entities(object, self) {
     CellOption::change(option, self, entity)
   }
+  self.option_depth -= 1
+  self.dimension.reastimate(CellOption::hint_change(option))
   self
 }
 
 ///|
 pub impl CellOption for Setting with fn change(self, table, entity) {
+  table.option_depth += 1
   match entity {
     Global => table.modify_segment(Segment::all(), self) |> ignore
     Row(row) => table.modify_rows(Rows::one(row), self) |> ignore
     Col(col) | Column(col) => table.modify_cols(Cols::one(col), self) |> ignore
     Cell(row, col) => table.modify_cell(Cell::new(row, col), self) |> ignore
   }
+  table.option_depth -= 1
 }
 
 ///|

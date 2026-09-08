@@ -144,5 +144,5 @@ pub fn Table::merge(self : Table, merge : Merge) -> Table {
       merge_horizontal(self.rows, self.config, count_rows, count_cols)
     Vertical => merge_vertical(self.rows, self.config, count_rows, count_cols)
   }
-  self
+  self.finish_legacy_change()
 }

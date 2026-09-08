@@ -314,11 +314,10 @@ fn row_metrics(
   records : IterRecords,
   count_cols : Int,
   config : SpannedConfig,
-) -> (Array[Int], Array[Int], Array[Int]) {
+) -> Array[Int] {
   let count_rows = records.count_rows()
   let content_heights = Array::make(count_rows, 0)
-  let top_paddings = Array::make(count_rows, 0)
-  let bottom_paddings = Array::make(count_rows, 0)
+  let spans : Array[(Int, Int, Int)] = []
   for row in 0..<count_rows {
     for col in 0..<count_cols {
       if !config.is_cell_visible(row, col) {
@@ -332,62 +331,25 @@ fn row_metrics(
       )
       let rowspan = config.row_span_at(row, col)
       let (_, _, top, bottom) = config.padding_at(source.0, source.1)
+      let height = lines.length() + top + bottom
       if rowspan > 1 {
-        if top > top_paddings[row] {
-          top_paddings[row] = top
-        }
-        let last_row = if row + rowspan < count_rows {
-          row + rowspan - 1
-        } else {
-          count_rows - 1
-        }
-        if bottom > bottom_paddings[last_row] {
-          bottom_paddings[last_row] = bottom
-        }
+        spans.push((row, rowspan, height))
       } else {
-        if lines.length() > content_heights[row] {
-          content_heights[row] = lines.length()
-        }
-        if top > top_paddings[row] {
-          top_paddings[row] = top
-        }
-        if bottom > bottom_paddings[row] {
-          bottom_paddings[row] = bottom
-        }
+        content_heights[row] = Int::max(content_heights[row], height)
       }
     }
   }
 
-  let mut changed = true
-  while changed {
-    changed = false
-    for row in 0..<count_rows {
-      for col in 0..<count_cols {
-        let rowspan = config.row_span_at(row, col)
-        if rowspan <= 1 || !config.is_cell_visible(row, col) {
-          continue
-        }
-        let source = span_source_for_anchor(config, row, col)
-        let end_ = if row + rowspan < count_rows {
-          row + rowspan
-        } else {
-          count_rows
-        }
-        let needed = processed_lines(
-          records.get_cell(source.0, source.1),
-          config.width_mode_at(source.0, source.1),
-          config.height_mode_at(source.0, source.1),
-        ).length()
-        let current = sum_range(content_heights, row, end_) +
-          count_range_boundaries(config, count_rows, row, end_)
-        if needed > current {
-          inc_range(content_heights, needed - current, row, end_)
-          changed = true
-        }
-      }
+  for entry in spans {
+    let (row, span, needed) = entry
+    let end_ = Int::min(count_rows, row + span)
+    let current = sum_range(content_heights, row, end_) +
+      count_range_boundaries(config, count_rows, row, end_)
+    if needed > current {
+      inc_range(content_heights, needed - current, row, end_)
     }
   }
-  (content_heights, top_paddings, bottom_paddings)
+  content_heights
 }
 
 ///|
@@ -406,13 +368,15 @@ fn cell_content_for_row(
   let source = span_source_for_anchor(config, anchor.0, anchor.1)
   if anchor.0 == row && config.row_span_at(anchor.0, anchor.1) <= 1 {
     let lines = display_lines(records, config, source)
-    let missing = row_heights[row] - lines.length()
+    let (_, _, top, bottom) = config.padding_at(source.0, source.1)
+    let missing = Int::max(0, row_heights[row] - top - bottom - lines.length())
     let valign = config.valign_at(source.0, source.1)
-    let top_fill = match valign {
-      Top => 0
-      Bottom => missing
-      Center => missing / 2
-    }
+    let top_fill = top +
+      (match valign {
+        Top => 0
+        Bottom => missing
+        Center => missing / 2
+      })
     if line_index < top_fill {
       return TopPadding
     }
@@ -431,13 +395,15 @@ fn cell_content_for_row(
   let total_height = sum_range(row_heights, anchor.0, end_) +
     count_range_boundaries(config, row_heights.length(), anchor.0, end_)
   let lines = display_lines(records, config, source)
-  let missing = total_height - lines.length()
+  let (_, _, top, bottom) = config.padding_at(source.0, source.1)
+  let missing = Int::max(0, total_height - top - bottom - lines.length())
   let valign = config.valign_at(source.0, source.1)
-  let top_fill = match valign {
-    Top => 0
-    Bottom => missing
-    Center => missing / 2
-  }
+  let top_fill = top +
+    (match valign {
+      Top => 0
+      Bottom => missing
+      Center => missing / 2
+    })
   let mut offset = 0
   for index = anchor.0; index < row; index = index + 1 {
     offset = offset + row_heights[index]
@@ -477,13 +443,15 @@ fn cell_content_for_boundary(
   let total_height = sum_range(row_heights, anchor.0, end_) +
     count_range_boundaries(config, row_heights.length(), anchor.0, end_)
   let lines = display_lines(records, config, source)
-  let missing = total_height - lines.length()
+  let (_, _, top, bottom) = config.padding_at(source.0, source.1)
+  let missing = Int::max(0, total_height - top - bottom - lines.length())
   let valign = config.valign_at(source.0, source.1)
-  let top_fill = match valign {
-    Top => 0
-    Bottom => missing
-    Center => missing / 2
-  }
+  let top_fill = top +
+    (match valign {
+      Top => 0
+      Bottom => missing
+      Center => missing / 2
+    })
   let mut absolute = 0
   for row = anchor.0; row < boundary_row; row = row + 1 {
     absolute = absolute + row_heights[row]
@@ -738,52 +706,20 @@ fn render_row(
   count_cols : Int,
   config : SpannedConfig,
   row_heights : Array[Int],
-  row_top_paddings : Array[Int],
-  row_bottom_paddings : Array[Int],
 ) -> Array[String] {
   let lines = []
-  for i in 0..<row_top_paddings[row_index] {
-    ignore(i)
-    lines.push(
-      render_row_line(
-        records,
-        borders,
-        widths,
-        blank_values(count_cols, TopPadding),
-        row_index,
-        count_cols,
-        config,
-      ),
-    )
-  }
   for line_index = 0
       line_index < row_heights[row_index]
       line_index = line_index + 1 {
-    let values = []
+    let values = blank_values(count_cols, BottomPadding)
     for col in 0..<count_cols {
-      values.push(
-        cell_content_for_row(
-          records, config, row_heights, row_index, col, line_index,
-        ),
+      values[col] = cell_content_for_row(
+        records, config, row_heights, row_index, col, line_index,
       )
     }
     lines.push(
       render_row_line(
         records, borders, widths, values, row_index, count_cols, config,
-      ),
-    )
-  }
-  for i in 0..<row_bottom_paddings[row_index] {
-    ignore(i)
-    lines.push(
-      render_row_line(
-        records,
-        borders,
-        widths,
-        blank_values(count_cols, BottomPadding),
-        row_index,
-        count_cols,
-        config,
       ),
     )
   }
@@ -893,11 +829,10 @@ pub fn IterGrid::to_string(self : IterGrid) -> String {
   }
 
   let rows = self.records.rows()
-  let (row_heights, row_top_paddings, row_bottom_paddings) = row_metrics(
-    self.records,
-    count_cols,
-    self.config,
-  )
+  let row_heights = match self.dimension.heights {
+    Some(heights) => heights
+    None => row_metrics(self.records, count_cols, self.config)
+  }
   let horizontal_lines = self.config.horizontal_lines()
   for row_index in 0..<rows.length() {
     render_row(
@@ -908,8 +843,6 @@ pub fn IterGrid::to_string(self : IterGrid) -> String {
       count_cols,
       self.config,
       row_heights,
-      row_top_paddings,
-      row_bottom_paddings,
     ).each(line => lines.push(line))
     let show_middle = match horizontal_lines {
       All => row_index + 1 < rows.length()

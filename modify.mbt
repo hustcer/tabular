@@ -39,7 +39,9 @@ pub impl[O : Object, M : CellOption] TableOption for ModifyList[O, M] with fn ch
   self,
   table,
 ) {
-  table.modify(self.object, self.options) |> ignore
+  for entity in Object::entities(self.object, table) {
+    CellOption::change(self.options, table, entity)
+  }
 }
 
 ///|

@@ -78,5 +78,5 @@ pub fn Table::reverse(self : Table, reverse : Reverse) -> Table {
       self.rows.swap(start + i, end_ - 1 - i)
     }
   }
-  self
+  self.finish_legacy_change()
 }

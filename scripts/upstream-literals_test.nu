@@ -8,6 +8,7 @@ assert equal (decode-rust-string '"\u{1F600}"') '😀'
 assert equal (decode-rust-string '"a\t\r\n\0\x1b"') ("a\t\r\n" + (char -u '0') + (char -u '1b'))
 assert equal (decode-rust-string '"a\\\"b"') 'a\"b'
 assert equal (decode-rust-string "\"a\nb\"") "a\nb"
+assert equal (decode-rust-string ('"a\n\' + (char nl) + '    b"')) "a\nb"
 assert equal (expected-lines '"a " "b"') (moon-string "a \nb")
 assert equal (expected-lines 'r#"a"b"# r#" c "#') (moon-string "a\"b\n c ")
 assert error { decode-rust-string '"\u{invalid}"' }

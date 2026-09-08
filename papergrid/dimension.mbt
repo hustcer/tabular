@@ -1,11 +1,12 @@
 ///|
 pub struct IterGridDimension {
   mut widths : Array[Int]
+  mut heights : Array[Int]?
 }
 
 ///|
 pub fn IterGridDimension::default() -> IterGridDimension {
-  { widths: [], }
+  { widths: [], heights: None, }
 }
 
 ///|
@@ -37,22 +38,36 @@ pub fn IterGridDimension::estimate(
         if colspan <= 1 && width > widths[col] {
           widths[col] = width
         } else if colspan > 1 {
-          spanned.push((col, colspan, width))
+          spanned.push((col, colspan, width, row))
         }
       })
     }
   }
+  spanned.sort_by((a, b) => {
+    if a.1 != b.1 {
+      a.1.compare(b.1)
+    } else if a.3 != b.3 {
+      a.3.compare(b.3)
+    } else {
+      a.0.compare(b.0)
+    }
+  })
   spanned.each(item => {
     let end_ = if item.0 + item.1 < count { item.0 + item.1 } else { count }
     let mut current = 0
     for col = item.0; col < end_; col = col + 1 {
       current = current + widths[col]
-    }
-    if end_ - item.0 > 1 {
-      current = current + (end_ - item.0 - 1)
+      if col > item.0 && cfg.has_vertical(col, count) {
+        current += 1
+      }
     }
     if item.2 > current && end_ > item.0 {
-      widths[end_ - 1] = widths[end_ - 1] + (item.2 - current)
+      let extra = item.2 - current
+      let each = extra / (end_ - item.0)
+      let rest = extra % (end_ - item.0)
+      for col in item.0..<end_ {
+        widths[col] += each + (if col == item.0 { rest } else { 0 })
+      }
     }
   })
   self.widths = widths
@@ -61,6 +76,14 @@ pub fn IterGridDimension::estimate(
 ///|
 pub fn IterGridDimension::widths(self : IterGridDimension) -> Array[Int] {
   self.widths
+}
+
+///|
+pub fn IterGridDimension::set_widths(
+  self : IterGridDimension,
+  widths : Array[Int],
+) -> Unit {
+  self.widths = widths.copy()
 }
 
 ///|
@@ -106,6 +129,7 @@ fn measure_axis(
   records : IterRecords,
   config : SpannedConfig,
   horizontal : Bool,
+  cached? : Bool = false,
 ) -> Array[Int] {
   let count = if horizontal {
     records.count_cols()
@@ -114,7 +138,10 @@ fn measure_axis(
   }
   let values = Array::make(count, 0)
   let spans : Array[(Int, Int, Int, Int)] = []
-  let spanned = if horizontal {
+  let spanned = if cached {
+    config.col_spans.any(entry => entry.2 > 1) ||
+    config.row_spans.any(entry => entry.2 > 1)
+  } else if horizontal {
     config.col_spans.any(entry => entry.2 > 1)
   } else {
     config.row_spans.any(entry => entry.2 > 1)
@@ -132,7 +159,9 @@ fn measure_axis(
       let text = records.get_cell(source.0, source.1)
       let (left, right, top, bottom) = config.padding_at(source.0, source.1)
       let size = if horizontal {
-        get_text_width(text) + left + right
+        (if cached { get_text_dimension(text).1 } else { get_text_width(text) }) +
+        left +
+        right
       } else {
         count_lines(text) + top + bottom
       }

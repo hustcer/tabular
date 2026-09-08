@@ -72,5 +72,5 @@ pub fn Table::concat(self : Table, concat : Concat) -> Table {
       })
     })
   }
-  self
+  self.finish_legacy_change()
 }

@@ -12,9 +12,9 @@ fn main() {
             let width = std::env::args().nth(2).unwrap().parse().unwrap();
             println!("{:?}", tabled::settings::width::Truncate::truncate(&text, width));
         }
-        Some("wrap") => {
+        Some(mode @ ("wrap" | "words")) => {
             let width = std::env::args().nth(2).unwrap().parse().unwrap();
-            println!("{:?}", tabled::settings::width::Wrap::wrap(&text, width, false));
+            println!("{:?}", tabled::settings::width::Wrap::wrap(&text, width, mode == "words"));
         }
         Some("split") => {
             for line in text.ansi_split("\n") {

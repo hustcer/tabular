@@ -10,6 +10,8 @@ pub fn apply_height(Array[String], HeightMode) -> Array[String]
 
 pub fn apply_width(String, WidthMode) -> Array[String]
 
+pub fn colorize_suffix(String, String) -> String
+
 pub fn count_lines(String) -> Int
 
 pub fn count_tabs(String) -> Int
@@ -38,7 +40,7 @@ pub fn strip_ansi(String) -> String
 
 pub fn trim_ansi(String) -> String
 
-pub fn wrap_text(String, Int, placeholder? : String) -> String
+pub fn wrap_text(String, Int, placeholder? : String, keep_words? : Bool) -> String
 
 // Errors
 
@@ -206,11 +208,14 @@ pub fn IterGrid::to_string(Self) -> String
 
 pub struct IterGridDimension {
   mut widths : Array[Int]
+  mut heights : Array[Int]?
 }
 pub fn IterGridDimension::default() -> Self
 pub fn IterGridDimension::estimate(Self, IterRecords, SpannedConfig) -> Unit
 pub fn IterGridDimension::height(IterRecords, SpannedConfig) -> Array[Int]
 pub fn IterGridDimension::height_total(IterRecords, SpannedConfig) -> Int
+pub fn IterGridDimension::set_heights(Self, Array[Int]) -> Unit
+pub fn IterGridDimension::set_widths(Self, Array[Int]) -> Unit
 pub fn IterGridDimension::width(IterRecords, SpannedConfig) -> Array[Int]
 pub fn IterGridDimension::width_total(IterRecords, SpannedConfig) -> Int
 pub fn IterGridDimension::widths(Self) -> Array[Int]
@@ -224,6 +229,19 @@ pub fn IterRecords::count_rows(Self) -> Int
 pub fn IterRecords::get_cell(Self, Int, Int) -> String
 pub fn IterRecords::new(Array[Array[String]]) -> Self
 pub fn IterRecords::rows(Self) -> Array[Array[String]]
+
+pub struct PeekableGridDimension {
+  mut widths : Array[Int]
+  mut heights : Array[Int]
+} derive(Eq, @debug.Debug)
+pub fn PeekableGridDimension::default() -> Self
+pub fn PeekableGridDimension::dimension(IterRecords, SpannedConfig) -> (Array[Int], Array[Int])
+pub fn PeekableGridDimension::estimate(Self, IterRecords, SpannedConfig) -> Unit
+pub fn PeekableGridDimension::get_height(Self, Int) -> Int
+pub fn PeekableGridDimension::get_values(Self) -> (Array[Int], Array[Int])
+pub fn PeekableGridDimension::get_width(Self, Int) -> Int
+pub fn PeekableGridDimension::height(IterRecords, SpannedConfig) -> Array[Int]
+pub fn PeekableGridDimension::width(IterRecords, SpannedConfig) -> Array[Int]
 
 type Scope
 

@@ -51,5 +51,5 @@ pub fn Table::duplicate(self : Table, dup : Dup) -> Table {
       }
     }
   }
-  self
+  self.finish_legacy_change()
 }

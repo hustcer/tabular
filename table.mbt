@@ -2,6 +2,8 @@
 pub struct Table {
   mut rows : Array[Array[String]]
   config : @papergrid.SpannedConfig
+  dimension : CompleteDimension
+  priv mut option_depth : Int
 }
 
 ///|
@@ -9,7 +11,7 @@ pub fn Table::from_rows(rows : Array[Array[String]]) -> Table {
   let config = @papergrid.SpannedConfig::default()
   config.set_borders(@papergrid.Borders::ascii())
   config.set_padding(1, 1, 0, 0)
-  { rows, config, }
+  { rows, config, dimension: CompleteDimension::default(), option_depth: 0, }
 }
 
 ///|
@@ -37,7 +39,7 @@ pub fn Table::apply(self : Table, style : Style) -> Table {
   self.config.set_borders(style.borders())
   self.config.set_horizontal_lines(style.horizontal_lines())
   self.config.set_custom_horizontal_lines(style.custom_horizontal_lines())
-  self
+  self.finish_legacy_change()
 }
 
 ///|
@@ -60,19 +62,19 @@ pub fn Table::set_padding(self : Table, padding : Padding) -> Table {
     padding.top,
     padding.bottom,
   )
-  self
+  self.finish_legacy_change()
 }
 
 ///|
-pub fn Table::set_width(self : Table, width : Width) -> Table {
-  self.config.set_width_mode(convert_width(width))
-  self
+pub fn[W : WidthOption] Table::set_width(self : Table, width : W) -> Table {
+  self.config.set_width_mode(WidthOption::to_mode(width))
+  self.finish_legacy_change()
 }
 
 ///|
 pub fn Table::set_height(self : Table, height : Height) -> Table {
   self.config.set_height_mode(convert_height(height))
-  self
+  self.finish_legacy_change()
 }
 
 ///|
@@ -80,6 +82,12 @@ pub fn Table::to_string(self : Table) -> String {
   let records = @papergrid.IterRecords::new(self.rows)
   let dims = @papergrid.IterGridDimension::default()
   dims.estimate(records, self.config)
+  if self.dimension.get_widths() is Some(widths) {
+    dims.set_widths(widths[:records.count_cols()].to_owned())
+  }
+  if self.dimension.get_heights() is Some(heights) {
+    dims.set_heights(heights[:records.count_rows()].to_owned())
+  }
   let grid = @papergrid.IterGrid::new(records, self.config, dims)
   grid.to_string()
 }
@@ -104,7 +112,7 @@ pub fn Table::modify_rows(
       apply_setting_to_row(self.config, row, setting)
     })
   }
-  self
+  self.finish_legacy_change()
 }
 
 ///|
@@ -127,7 +135,7 @@ pub fn Table::modify_cols(
       apply_setting_to_col(self.config, col, setting)
     })
   }
-  self
+  self.finish_legacy_change()
 }
 
 ///|
@@ -200,7 +208,7 @@ pub fn Table::modify_segment(
       })
     }
   }
-  self
+  self.finish_legacy_change()
 }
 
 ///|
@@ -217,7 +225,7 @@ pub fn Table::modify_cell(
     setting,
   )
   apply_setting_to_cell(self.config, cell.row, cell.col, setting)
-  self
+  self.finish_legacy_change()
 }
 
 ///|
@@ -229,7 +237,7 @@ pub fn Table::modify_by_col_name(
   resolve_cols_by_name(self.rows, by_name).each(col => {
     self.modify_cols(Cols::one(col), setting) |> ignore
   })
-  self
+  self.finish_legacy_change()
 }
 
 ///|
@@ -239,7 +247,7 @@ pub fn Table::remove_rows(self : Table, rows : Rows) -> Table {
   let col_count = @papergrid.IterRecords::new(self.rows).count_cols()
   remove_rows_at(self.rows, indexes)
   self.config.remap(row_map, build_identity_map(col_count))
-  self
+  self.finish_legacy_change()
 }
 
 ///|
@@ -249,7 +257,7 @@ pub fn Table::remove_cols(self : Table, cols : Cols) -> Table {
   let col_map = build_remove_map(col_count, indexes)
   remove_cols_at(self.rows, indexes)
   self.config.remap(build_identity_map(self.rows.length()), col_map)
-  self
+  self.finish_legacy_change()
 }
 
 ///|
@@ -259,7 +267,7 @@ pub fn Table::remove_by_col_name(self : Table, by_name : ByColName) -> Table {
   let col_map = build_remove_map(col_count, indexes)
   remove_cols_at(self.rows, indexes)
   self.config.remap(build_identity_map(self.rows.length()), col_map)
-  self
+  self.finish_legacy_change()
 }
 
 ///|
@@ -269,7 +277,7 @@ pub fn Table::extract_rows(self : Table, rows : Rows) -> Table {
   let col_count = @papergrid.IterRecords::new(self.rows).count_cols()
   self.rows = extract_rows_at(self.rows, indexes)
   self.config.remap(row_map, build_identity_map(col_count))
-  self
+  self.finish_legacy_change()
 }
 
 ///|
@@ -279,7 +287,7 @@ pub fn Table::extract_cols(self : Table, cols : Cols) -> Table {
   let col_map = build_extract_map(col_count, indexes)
   self.rows = extract_cols_at(self.rows, indexes)
   self.config.remap(build_identity_map(self.rows.length()), col_map)
-  self
+  self.finish_legacy_change()
 }
 
 ///|
@@ -292,5 +300,5 @@ pub fn Table::extract_segment(self : Table, rows : Rows, cols : Cols) -> Table {
   let col_map = build_extract_map(original_col_count, col_indexes)
   self.rows = extract_cols_at(extracted_rows, col_indexes)
   self.config.remap(row_map, col_map)
-  self
+  self.finish_legacy_change()
 }

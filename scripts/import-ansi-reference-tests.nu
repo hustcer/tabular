@@ -71,6 +71,10 @@ def generate-widths [probe: path, output: path]: nothing -> nothing {
   let end_link = $'($esc)]8;;($esc)\'
   let cases = [
     '' '123456' "123\n456789" "ab\n\ncd\n" '😳😳😳' '😳12😳3' '中a中'
+    'a bb ccc dddd' '  aaa   bbbb  ' 'zero 🏳️‍🌈 word' "a\n\n b\n"
+    "a\u{0301} bb" $'($esc)[31ma b($esc)[39m cc' $'($esc)[31m中 中($esc)[0m'
+    $'($esc)[31ma($esc)[32m bb($esc)[0m cc' $'($esc)[11ma bb'
+    $'($esc)[31m($esc)[2Ka bb cc' $'($link)a bb cc($end_link)'
     $'($esc)[31;100m123456($esc)[39m($esc)[49m'
     $'($esc)[31;100m😳😳😳($esc)[39m($esc)[49m'
     $'($esc)[1mab($esc)[31mcd($esc)[22mef($esc)[0m'
@@ -88,7 +92,7 @@ def generate-widths [probe: path, output: path]: nothing -> nothing {
   ]
   let tests = ($cases | enumerate | each {|case|
     [0 1 2 3 4 6 10] | each {|width|
-      let values = ([cut wrap] | each {|mode|
+      let values = ([cut wrap words] | each {|mode|
         let result = ($case.item | ^$probe $mode $width | complete)
         if $result.exit_code != 0 { error make {msg: $result.stderr} }
         decode-rust-string ($result.stdout | str trim --right --char (char nl)) | to json --raw
@@ -99,6 +103,7 @@ test \"ANSI width reference ($case.index) at ($width)\" {
   let input = ($input)
   assert_eq\(cut_str\(input, ($width)), ($values.0))
   assert_eq\(wrap_text\(input, ($width)), ($values.1))
+  assert_eq\(wrap_text\(input, ($width), keep_words=true), ($values.2))
 }\n"
     }
   } | flatten | str join (char nl))

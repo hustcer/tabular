@@ -42,5 +42,5 @@ pub fn Table::rotate(self : Table, rotation : Rotate) -> Table {
         })
       })
   }
-  self
+  self.finish_legacy_change()
 }

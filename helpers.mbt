@@ -17,12 +17,8 @@ fn convert_valign(align : VAlign) -> @papergrid.VAlign {
 }
 
 ///|
-fn convert_width(width : Width) -> @papergrid.WidthMode {
-  match width {
-    Wrap(size, placeholder) =>
-      @papergrid.WidthMode::wrap_with(size, placeholder)
-    Truncate(size, suffix) => @papergrid.WidthMode::truncate(size, suffix)
-  }
+fn convert_width(width : @papergrid.WidthMode) -> @papergrid.WidthMode {
+  width
 }
 
 ///|
@@ -1026,5 +1022,5 @@ pub fn Table::split(self : Table, split : Split) -> Table {
   }
   // Clear spans and border overrides since the table shape changed completely
   self.config.clear_spans_and_overrides()
-  self
+  self.finish_legacy_change()
 }
