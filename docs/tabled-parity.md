@@ -26,7 +26,7 @@ moon test --filter 'upstream*'
 
 生成器不会读取 MoonBit 实际输出来制造预期结果，也不会静默跳过无法识别的 `test_table!`。它只写入带有自身生成标记的目标文件。
 
-[`upstream-test-inventory.json`](upstream-test-inventory.json) 当前列出 90 个源文件中的 1,387 个命名测试候选，245 个带有明确的 MoonBit 源引用。它包括条件编译测试，以及 MoonBit 黑盒和白盒测试的源引用，但不包括文档测试和未展开的匿名宏测试；既有测试缺少源引用也会标为未映射。重新生成清单：
+[`upstream-test-inventory.json`](upstream-test-inventory.json) 当前列出 90 个源文件中的 1,387 个命名测试候选，259 个带有明确的 MoonBit 源引用。它包括条件编译测试，以及 MoonBit 黑盒和白盒测试的源引用，但不包括文档测试和未展开的匿名宏测试；既有测试缺少源引用也会标为未映射。重新生成清单：
 
 ```sh
 nu --no-config-file scripts/audit-upstream-tests.nu /path/to/tabled --output docs/upstream-test-inventory.json
@@ -124,12 +124,28 @@ moon fmt
 moon test
 ```
 
+## 高度选项
+
+- `Height` 改为工厂，返回 `CellHeightIncrease`、`CellHeightLimit`、`TableHeightIncrease`、`TableHeightLimit` 和 `HeightList`；接入通用测量和调整优先级。
+- 单元格增加高度会追加换行，截短会保留 ANSI 样式；整表高度从记录重新测量，包含边框与上下边距，并保留上游对已有缓存的处理。
+- 保留 `height_test.rs` 全部 14 个原始测试及期望文字；其中两个嵌套宏案例按原宏展开成表格构造，宏等价 API 仍在待办范围。
+- 37 组 Rust 差分场景同时核对文本、输出、缓存和总宽高，覆盖测量、优先级、填充、边距、跨度、ANSI/CRLF、组合选项和重复调整。
+- 修正 `total_height()` 只累计实际行数，额外的列表项继续保存在缓存中；保留旧 `set_height` / `Setting::height` 渲染时处理入口。
+
+```sh
+nu --no-config-file scripts/import-height-tests.nu /path/to/tabled
+nu --no-config-file scripts/import-height-state-tests.nu /path/to/tabled
+moon info
+moon fmt
+moon test
+```
+
 | 范围 | 当前证据 / 待办 |
 | --- | --- |
 | Builder / IndexBuilder | 已有实现和部分测试，需逐个核对方法、泛型数据入口、异常边界 |
 | Table 核心 API | 已补齐 TableOption / CellOption / Settings / Modify、统一 Alignment 和尺寸查询；Tabled 数据模型和其他查询接口仍需核对 |
 | 格式 | 已保留全部 render_settings 组合案例；继续核对更多 Span/Width/Height 组合与其他渲染器 |
-| 宽高 | 已接入高级 Width 并保留 width_test.rs/wrap.rs 全部测试；Height 高级选项及其他渲染器的宽高语义仍需补齐 |
+| 宽高 | 已接入高级 Width/Height 并保留 width_test.rs/height_test.rs/wrap.rs 全部测试；其他渲染器的宽高语义仍需补齐 |
 | Padding / Margin | Margin 基础构造/填充与 Padding::zero 已接入；需补齐 Padding 填充、PaddingExpand、相关偏移和颜色及全部原始测试 |
 | 颜色 / ANSI | 已补齐样式解析、Unicode 文本测量、修剪及基本裁剪/换行；仍缺边框/填充/边距颜色、Colorization 与剩余 ANSI 边界 |
 | Style / Theme | 缺少完整 VerticalLine、LineChar、LineText、Theme、Layout、ColumnNames/RowNames 等 |
@@ -143,4 +159,4 @@ moon test
 
 ## 当前验证
 
-2026-09-08：`moon info`、`moon fmt`、`moon check`、`moon build`、`moon test` 均成功，1196/1196 测试通过，无 Warning。此结果对应已完成的数据变换、通用配置、当前格式、ANSI/Unicode 文本、尺寸测量与高级宽度能力，不表示上表的未完成项目已对齐。
+2026-09-08：`moon info`、`moon fmt`、`moon check`、`moon build`、`moon test` 均成功，1255/1255 测试通过，无 Warning。此结果对应已完成的数据变换、通用配置、当前格式、ANSI/Unicode 文本、尺寸测量与高级宽高能力，不表示上表的未完成项目已对齐。

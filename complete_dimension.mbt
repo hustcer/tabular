@@ -133,7 +133,12 @@ pub fn Table::total_width(self : Table) -> Int {
 pub fn Table::total_height(self : Table) -> Int {
   let dims = self.get_dimension()
   dims.estimate(self)
-  dims.get_heights().unwrap().fold(init=0, (sum, value) => sum + value) +
+  dims
+  .get_heights()
+  .unwrap()
+  .iter()
+  .take(self.count_rows())
+  .fold(init=0, (sum, value) => sum + value) +
   self.config.count_horizontal(self.count_rows()) +
   self.config.margin_top +
   self.config.margin_bottom

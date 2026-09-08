@@ -64,13 +64,13 @@ pub fn[M] Width::truncate(
 }
 
 ///|
-pub fn Height::increase(size : Int) -> Height {
-  Increase(size)
+pub fn[M] Height::increase(size : M) -> CellHeightIncrease[M] {
+  CellHeightIncrease::new(size)
 }
 
 ///|
-pub fn Height::limit(size : Int) -> Height {
-  Limit(size)
+pub fn[M] Height::limit(size : M) -> CellHeightLimit[M] {
+  CellHeightLimit::new(size)
 }
 
 ///|
@@ -473,8 +473,8 @@ pub fn[W : WidthOption] Setting::width(width : W) -> Setting {
 }
 
 ///|
-pub fn Setting::height(height : Height) -> Setting {
-  H(height)
+pub fn[H : HeightOption] Setting::height(height : H) -> Setting {
+  H(HeightOption::to_mode(height))
 }
 
 ///|

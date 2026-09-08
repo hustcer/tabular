@@ -89,6 +89,24 @@ pub fn Cell::new(Int, Int) -> Self
 pub fn Cell::not(Self, Self) -> Segment
 pub impl Object for Cell
 
+pub struct CellHeightIncrease[M] {
+  height : M
+} derive(Eq, @debug.Debug)
+pub fn[M] CellHeightIncrease::new(M) -> Self[M]
+pub fn[M, P] CellHeightIncrease::priority(Self[M], P) -> TableHeightIncrease[M, P]
+pub impl[M : Measurement] CellOption for CellHeightIncrease[M]
+pub impl HeightOption for CellHeightIncrease[Int]
+pub impl[M : Measurement] TableOption for CellHeightIncrease[M]
+
+pub struct CellHeightLimit[M] {
+  height : M
+} derive(Eq, @debug.Debug)
+pub fn[M] CellHeightLimit::new(M) -> Self[M]
+pub fn[M, P] CellHeightLimit::priority(Self[M], P) -> TableHeightLimit[M, P]
+pub impl[M : Measurement] CellOption for CellHeightLimit[M]
+pub impl HeightOption for CellHeightLimit[Int]
+pub impl[M : Measurement] TableOption for CellHeightLimit[M]
+
 pub struct Charset {
   // private fields
 }
@@ -248,13 +266,18 @@ pub impl CellOption for Format
 pub impl TableOption for Format
 
 pub enum Height {
-  Increase(Int)
-  Limit(Int)
 }
-pub fn Height::increase(Int) -> Self
-pub fn Height::limit(Int) -> Self
-pub impl CellOption for Height
-pub impl TableOption for Height
+pub fn[M] Height::increase(M) -> CellHeightIncrease[M]
+pub fn[M] Height::limit(M) -> CellHeightLimit[M]
+pub fn Height::list(Array[Int]) -> HeightList
+
+pub struct HeightList {
+  list : Array[Int]
+} derive(@debug.Debug)
+pub fn HeightList::from_array(Array[Int]) -> Self
+pub fn HeightList::from_iter(Iter[Int]) -> Self
+pub fn HeightList::new(Array[Int]) -> Self
+pub impl TableOption for HeightList
 
 pub struct Highlight {
   target : HighlightTarget
@@ -537,14 +560,14 @@ pub enum Setting {
   VAlign(VAlign)
   Pad(Padding)
   W(@papergrid.WidthMode)
-  H(Height)
+  H(@papergrid.HeightMode)
   Fmt(Format)
   SpanCol(Int)
   SpanRow(Int)
 }
 pub fn Setting::align(Align) -> Self
 pub fn Setting::format(Format) -> Self
-pub fn Setting::height(Height) -> Self
+pub fn[H : HeightOption] Setting::height(H) -> Self
 pub fn Setting::padding(Padding) -> Self
 pub fn Setting::valign(VAlign) -> Self
 pub fn[W : WidthOption] Setting::width(W) -> Self
@@ -681,7 +704,7 @@ pub fn Table::remove_rows(Self, Rows) -> Self
 pub fn Table::reverse(Self, Reverse) -> Self
 pub fn Table::rotate(Self, Rotate) -> Self
 pub fn Table::set_align(Self, Align) -> Self
-pub fn Table::set_height(Self, Height) -> Self
+pub fn[H : HeightOption] Table::set_height(Self, H) -> Self
 pub fn Table::set_padding(Self, Padding) -> Self
 pub fn Table::set_valign(Self, VAlign) -> Self
 pub fn[W : WidthOption] Table::set_width(Self, W) -> Self
@@ -692,6 +715,22 @@ pub fn Table::to_string(Self) -> String
 pub fn Table::total_height(Self) -> Int
 pub fn Table::total_width(Self) -> Int
 pub fn[T : TableOption] Table::with_(Self, T) -> Self
+
+pub struct TableHeightIncrease[M, P] {
+  height : M
+  priority : P
+} derive(@debug.Debug)
+pub fn[M] TableHeightIncrease::new(M) -> Self[M, PriorityNone]
+pub fn[M, P, Q] TableHeightIncrease::priority(Self[M, P], Q) -> Self[M, Q]
+pub impl[M : Measurement, P : Peaker] TableOption for TableHeightIncrease[M, P]
+
+pub struct TableHeightLimit[M, P] {
+  height : M
+  priority : P
+} derive(@debug.Debug)
+pub fn[M] TableHeightLimit::new(M) -> Self[M, PriorityNone]
+pub fn[M, P, Q] TableHeightLimit::priority(Self[M, P], Q) -> Self[M, Q]
+pub impl[M : Measurement, P : Peaker] TableOption for TableHeightLimit[M, P]
 
 pub(all) enum TrimStrategy {
   Vertical
@@ -782,6 +821,11 @@ pub impl[T0 : CellOption, T1 : CellOption, T2 : CellOption, T3 : CellOption, T4 
 pub impl[T0 : CellOption, T1 : CellOption, T2 : CellOption, T3 : CellOption, T4 : CellOption, T5 : CellOption, T6 : CellOption, T7 : CellOption] CellOption for (T0, T1, T2, T3, T4, T5, T6, T7)
 pub impl[T0 : CellOption, T1 : CellOption, T2 : CellOption, T3 : CellOption, T4 : CellOption, T5 : CellOption, T6 : CellOption, T7 : CellOption, T8 : CellOption] CellOption for (T0, T1, T2, T3, T4, T5, T6, T7, T8)
 pub impl[T0 : CellOption, T1 : CellOption, T2 : CellOption, T3 : CellOption, T4 : CellOption, T5 : CellOption, T6 : CellOption, T7 : CellOption, T8 : CellOption, T9 : CellOption] CellOption for (T0, T1, T2, T3, T4, T5, T6, T7, T8, T9)
+
+pub(open) trait HeightOption {
+  fn to_mode(Self) -> @papergrid.HeightMode
+}
+pub impl HeightOption for @papergrid.HeightMode
 
 pub(open) trait Measurement {
   fn measure(Self, Table, Attribute) -> Int

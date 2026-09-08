@@ -443,6 +443,26 @@ option's hint. Rendering does not fill the public cache.
 The earlier `set_width` and `Setting::width` methods retain their render-time
 wrap/truncate behavior. Use `with_` or `modify` for the advanced options above.
 
+## Height
+
+Use `modify` to add or remove text lines in selected cells. Use `with_` to
+adjust the total table height, including padding, horizontal borders and margins.
+Height options accept `Max`, `Min`, and `Percent` measurements; `.priority(...)`
+selects which rows grow or shrink. `Height::list` fixes individual row heights.
+
+```mbt check
+///|
+test {
+  let table = @tabular.Table::from_rows([["first\nsecond"], ["last"]])
+  table.modify((0, 0), @tabular.Height::limit(1)) |> ignore
+  assert_eq(table.rows, [["first"], ["last"]])
+  table.with_(@tabular.Height::increase(10)) |> ignore
+  assert_eq(table.total_height(), 10)
+  table.with_(@tabular.Height::list([0, 2])) |> ignore
+  assert_eq(table.total_height(), 5)
+}
+```
+
 ## Validation
 
 The current repository test suite passes:

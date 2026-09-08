@@ -72,8 +72,8 @@ pub fn[W : WidthOption] Table::set_width(self : Table, width : W) -> Table {
 }
 
 ///|
-pub fn Table::set_height(self : Table, height : Height) -> Table {
-  self.config.set_height_mode(convert_height(height))
+pub fn[H : HeightOption] Table::set_height(self : Table, height : H) -> Table {
+  self.config.set_height_mode(HeightOption::to_mode(height))
   self.finish_legacy_change()
 }
 

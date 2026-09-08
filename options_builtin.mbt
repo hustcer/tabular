@@ -41,16 +41,6 @@ pub impl TableOption for Padding with fn change(self, table) {
 }
 
 ///|
-pub impl CellOption for Height with fn change(self, table, entity) {
-  CellOption::change(Setting::height(self), table, entity)
-}
-
-///|
-pub impl TableOption for Height with fn change(self, table) {
-  CellOption::change(self, table, Entity::Global)
-}
-
-///|
 pub impl CellOption for Format with fn change(self, table, entity) {
   CellOption::change(Setting::format(self), table, entity)
 }

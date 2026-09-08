@@ -4,7 +4,7 @@
   "note": "A source reference is a navigation aid, not evidence that all branches or expected outputs are equivalent. Existing tests without references remain unmapped.",
   "source_files": 90,
   "test_candidates": 1387,
-  "referenced_candidates": 245,
+  "referenced_candidates": 259,
   "suites": [
     {
       "source": "csv_to_table/tests/csv_table.rs",
@@ -5975,86 +5975,114 @@
         {
           "name": "cell_height_increase",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_height_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "table_height_increase",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_height_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "cell_height_increase_zero",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_height_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "table_height_increase_zero",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_height_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "cell_height_limit",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_height_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "table_height_limit",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_height_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "table_height_limit_style_change_after",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_height_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "cell_height_limit_zero",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_height_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "table_height_limit_zero",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_height_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "table_height_limit_zero_1",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_height_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "cell_height_limit_colored",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_height_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "table_height_limit_colored",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_height_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "cell_height_1x1",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_height_test.mbt"
+          ],
+          "status": "referenced"
         },
         {
           "name": "cell_height_1x1_no_top_border",
           "kind": "test_table",
-          "moonbit_references": [],
-          "status": "unmapped"
+          "moonbit_references": [
+            "upstream_height_test.mbt"
+          ],
+          "status": "referenced"
         }
       ]
     },

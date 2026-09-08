@@ -22,11 +22,8 @@ fn convert_width(width : @papergrid.WidthMode) -> @papergrid.WidthMode {
 }
 
 ///|
-fn convert_height(height : Height) -> @papergrid.HeightMode {
-  match height {
-    Increase(size) => @papergrid.HeightMode::increase(size)
-    Limit(size) => @papergrid.HeightMode::limit(size)
-  }
+fn convert_height(height : @papergrid.HeightMode) -> @papergrid.HeightMode {
+  height
 }
 
 ///|
