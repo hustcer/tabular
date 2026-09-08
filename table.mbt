@@ -20,18 +20,18 @@ pub fn Table::count_rows(self : Table) -> Int {
 }
 
 ///|
-pub fn Table::count_columns(self : Table) -> Int {
+pub fn Table::count_cols(self : Table) -> Int {
   @papergrid.IterRecords::new(self.rows).count_cols()
 }
 
 ///|
 pub fn Table::shape(self : Table) -> (Int, Int) {
-  (self.count_rows(), self.count_columns())
+  (self.count_rows(), self.count_cols())
 }
 
 ///|
 pub fn Table::is_empty(self : Table) -> Bool {
-  self.count_rows() == 0 || self.count_columns() == 0
+  self.count_rows() == 0 || self.count_cols() == 0
 }
 
 ///|
@@ -76,7 +76,7 @@ pub fn[H : HeightOption] Table::set_height(self : Table, height : H) -> Table {
 pub fn Table::to_string(self : Table) -> String {
   let records = @papergrid.IterRecords::new(self.rows)
   let dims = @papergrid.IterGridDimension::default()
-  let (widths, heights) = @papergrid.IterGridDimension::rendered_dimension(
+  let (widths, heights) = @papergrid.IterGridDimension::measure_rendered(
     records,
     self.config,
   )

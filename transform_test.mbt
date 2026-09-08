@@ -1,4 +1,18 @@
 ///|
+// Keep the four upstream names in the fixture adapter. Vertical flips use Reverse.
+fn upstream_rotation(
+  table : @tabular.Table,
+  direction : String,
+) -> @tabular.Table {
+  match direction {
+    "Left" => table.rotate(@tabular.Rotate::Left)
+    "Right" => table.rotate(@tabular.Rotate::Right)
+    "Top" | "Bottom" => table.reverse(@tabular.Reverse::rows(0))
+    _ => abort("unknown upstream rotation")
+  }
+}
+
+///|
 // Upstream: tabled/tests/settings/rotate_test.rs::test_rotate
 test "upstream rotate test_rotate" {
   let table = () => upstream_int_table([[123, 456, 789], [234, 567, 891]])
@@ -23,14 +37,17 @@ test "upstream rotate test_rotate" {
   )
   for
     pair in [
-      (@tabular.Rotate::Right, @tabular.Rotate::Left),
-      (@tabular.Rotate::Left, @tabular.Rotate::Right),
-      (@tabular.Rotate::Bottom, @tabular.Rotate::Top),
-      (@tabular.Rotate::Bottom, @tabular.Rotate::Bottom),
-      (@tabular.Rotate::Top, @tabular.Rotate::Top),
+      ("Right", "Left"),
+      ("Left", "Right"),
+      ("Bottom", "Top"),
+      ("Bottom", "Bottom"),
+      ("Top", "Top"),
     ] {
     let (first, second) = pair
-    assert_eq(table().rotate(first).rotate(second).to_string(), original)
+    assert_eq(
+      upstream_rotation(upstream_rotation(table(), first), second).to_string(),
+      original,
+    )
   }
 }
 
@@ -54,24 +71,25 @@ test "upstream reverse test_reverse_columns" {
     ["3", "4", "5"],
     ["6", "7", "8"],
   ])
-  table.reverse(@tabular.Reverse::columns(0)) |> ignore
+  table.reverse(@tabular.Reverse::cols(0)) |> ignore
   assert_eq(table.rows, [["2", "1", "0"], ["5", "4", "3"], ["8", "7", "6"]])
 }
 
 ///|
 test "rotate rectangular and degenerate tables" {
-  for
-    rotation in [
-      @tabular.Rotate::Left,
-      @tabular.Rotate::Right,
-      @tabular.Rotate::Top,
-      @tabular.Rotate::Bottom,
-    ] {
-    assert_eq(@tabular.Table::from_rows([]).rotate(rotation).to_string(), "")
-    assert_eq(@tabular.Table::from_rows([[]]).rotate(rotation).to_string(), "")
-    assert_eq(@tabular.Table::from_rows([["界"]]).rotate(rotation).rows, [
-      ["界"],
-    ])
+  for rotation in ["Left", "Right", "Top", "Bottom"] {
+    assert_eq(
+      upstream_rotation(@tabular.Table::from_rows([]), rotation).to_string(),
+      "",
+    )
+    assert_eq(
+      upstream_rotation(@tabular.Table::from_rows([[]]), rotation).to_string(),
+      "",
+    )
+    assert_eq(
+      upstream_rotation(@tabular.Table::from_rows([["界"]]), rotation).rows,
+      [["界"]],
+    )
   }
   for row_count in 1..<=5 {
     for col_count in 1..<=5 {
@@ -98,13 +116,13 @@ test "reverse invalid ranges do not change records" {
     reverse in [
       @tabular.Reverse::rows(-1),
       @tabular.Reverse::rows(2),
-      @tabular.Reverse::columns(3),
-      @tabular.Reverse::columns(0).limit(@tabular.Offset::Start(0)),
-      @tabular.Reverse::rows(1).limit(@tabular.Offset::Start(2)),
-      @tabular.Reverse::columns(0).limit(@tabular.Offset::End(3)),
-      @tabular.Reverse::rows(0).limit(@tabular.Offset::Start(-1)),
-      @tabular.Reverse::columns(0).limit(@tabular.Offset::End(-1)),
-      @tabular.Reverse::rows(1).limit(@tabular.Offset::Start(2147483647)),
+      @tabular.Reverse::cols(3),
+      @tabular.Reverse::cols(0).take(0),
+      @tabular.Reverse::rows(1).take(2),
+      @tabular.Reverse::cols(0).exclude_last(3),
+      @tabular.Reverse::rows(0).take(-1),
+      @tabular.Reverse::cols(0).exclude_last(-1),
+      @tabular.Reverse::rows(1).take(2147483647),
     ] {
     assert_eq(make_table().reverse(reverse).to_string(), original)
   }
@@ -154,14 +172,20 @@ test "concat with self snapshots both sides" {
 test "duplicate overlapping source is collected before mutation" {
   let table = @tabular.Table::from_rows([["a", "b", "c", "d"]])
   table.duplicate(
-    @tabular.Dup::new(@tabular.Cols::new(1, 4), @tabular.Cols::new(0, 3)),
+    @tabular.Duplicate::new(
+      source=@tabular.Cols::new(0, 3),
+      destination=@tabular.Cols::new(1, 4),
+    ),
   )
   |> ignore
   // Each column is a separate destination entity and restarts at "a".
   assert_eq(table.rows, [["a", "a", "a", "a"]])
   let table = @tabular.Table::from_rows([["a", "b"], ["c", "d"]])
   table.duplicate(
-    @tabular.Dup::new(@tabular.Segment::all(), @tabular.Cols::all()),
+    @tabular.Duplicate::new(
+      source=@tabular.Cols::all(),
+      destination=@tabular.Segment::all(),
+    ),
   )
   |> ignore
   assert_eq(table.rows, [["a", "c"], ["b", "d"]])
@@ -171,13 +195,19 @@ test "duplicate overlapping source is collected before mutation" {
 test "duplicate cycles separately for rows and columns" {
   let table = @tabular.Table::from_rows([["a", "b", "c"], ["d", "e", "f"]])
   table.duplicate(
-    @tabular.Dup::new(@tabular.Cols::new(1, 3), @tabular.Rows::one(0)),
+    @tabular.Duplicate::new(
+      source=@tabular.Rows::one(0),
+      destination=@tabular.Cols::new(1, 3),
+    ),
   )
   |> ignore
   assert_eq(table.rows, [["a", "a", "a"], ["d", "b", "b"]])
   let table = @tabular.Table::from_rows([["a", "b", "c"], ["d", "e", "f"]])
   table.duplicate(
-    @tabular.Dup::new(@tabular.Rows::all(), @tabular.Cols::one(0)),
+    @tabular.Duplicate::new(
+      source=@tabular.Cols::one(0),
+      destination=@tabular.Rows::all(),
+    ),
   )
   |> ignore
   assert_eq(table.rows, [["a", "d", "a"], ["a", "d", "a"]])
@@ -187,7 +217,10 @@ test "duplicate cycles separately for rows and columns" {
 test "duplicate rectangular segment restarts per cell" {
   let table = @tabular.Table::from_rows([["a", "b", "c"], ["d", "e", "f"]])
   table.duplicate(
-    @tabular.Dup::new(@tabular.Segment::new(0, 2, 1, 3), @tabular.Rows::one(0)),
+    @tabular.Duplicate::new(
+      source=@tabular.Rows::one(0),
+      destination=@tabular.Segment::new(0, 2, 1, 3),
+    ),
   )
   |> ignore
   assert_eq(table.rows, [["a", "a", "a"], ["d", "a", "a"]])
@@ -207,9 +240,11 @@ impl @tabular.Object for CustomSelection with fn cells(self, _table) {
 test "duplicate accepts custom objects and validates cell bounds" {
   let table = @tabular.Table::from_rows([["a", "b"], ["c"]])
   table.duplicate(
-    @tabular.Dup::new(
-      CustomSelection::{ groups: [[(-1, 0), (1, 1), (2, 0), (0, 0)]], },
-      CustomSelection::{ groups: [[(0, 2), (0, 1), (1, 0)]], },
+    @tabular.Duplicate::new(
+      source=CustomSelection::{ groups: [[(0, 2), (0, 1), (1, 0)]], },
+      destination=CustomSelection::{
+        groups: [[(-1, 0), (1, 1), (2, 0), (0, 0)]],
+      },
     ),
   )
   |> ignore

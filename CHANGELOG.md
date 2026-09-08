@@ -28,6 +28,10 @@ in progress; see [the parity inventory](docs/tabled-parity.md) and
 
 ### Features
 
+- Finalize unreleased API names: `Duplicate`, `TextCleanup`, `AlignmentFill`,
+  `UniformWidth`, `ResizeSelector`, explicit `TieBreak`, and dimension cache access.
+  Use named source/destination, side, and formatting arguments; unify new column
+  APIs on `col/cols`. See [the API naming guide](docs/api-naming-0.6.md).
 - Add rotate, reverse, concatenation, and record duplication.
 - Add composable table/cell options, settings, tuple and array composition,
   alignment and trimming strategies, character cleanup, and justification.

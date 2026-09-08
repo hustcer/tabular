@@ -4,9 +4,9 @@ use upstream-probe.nu build-upstream-probe
 
 def generate [probe: path, output: path] {
   let priorities = [
-    [none 'PriorityNone::new()'] [left 'PriorityLeft::new()'] [right 'PriorityRight::new()']
-    [min-left 'PriorityMin::left()'] [min-right 'PriorityMin::right()']
-    [max-left 'PriorityMax::left()'] [max-right 'PriorityMax::right()']
+    [none 'PriorityRoundRobin::new()'] [left 'PriorityFirst::new()'] [right 'PriorityLast::new()']
+    [min-left 'PriorityMin::prefer_last()'] [min-right 'PriorityMin::prefer_first()']
+    [max-left 'PriorityMax::prefer_first()'] [max-right 'PriorityMax::prefer_last()']
   ]
   let inputs = [
     [[0 0 0] [6 3 6]] [[2 2 2] [6 3 6]] [[0 0 0] [0 0 0]]
@@ -39,7 +39,7 @@ test \"priority reference ($p.0) ($input.index)\" {
     [psql 'table.with_(@tabular.Style::psql()) |> ignore']
     [padding 'table.with_(@tabular.Padding::new(2, 3, 1, 2)) |> ignore']
     [margin "table.config.set_margin(2, 3, 4, 5, ' ', ' ', ' ', ' ')"]
-    [column-span 'table.modify((0, 0), @tabular.Span::column(2)) |> ignore']
+    [column-span 'table.modify((0, 0), @tabular.Span::col(2)) |> ignore']
     [row-span 'table.modify((0, 0), @tabular.Span::row(2)) |> ignore']
     [mixed-padding "table.modify((0, 0), @tabular.Padding::new(0, 0, 3, 0)) |> ignore\n  table.modify((0, 1), @tabular.Padding::new(2, 2, 0, 3)) |> ignore"]
   ]

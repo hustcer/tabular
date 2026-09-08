@@ -3,6 +3,7 @@
 # The expected text comes only from upstream, never from MoonBit render output.
 
 use upstream-literals.nu expected-lines
+use api-names.nu modernize-api
 
 export def translate [expression: string]: nothing -> string {
   $expression
@@ -43,6 +44,7 @@ export def translate [expression: string]: nothing -> string {
   | str replace --all 'let mut ' 'let '
   | str replace --all --regex '(?m)^(\s*table\d\.[^;]+);' '$1 |> ignore'
   | str replace --all --regex ';(?=\s*(?:\n|$))' ''
+  | modernize-api
 }
 
 def expected-value [source: string]: nothing -> string {

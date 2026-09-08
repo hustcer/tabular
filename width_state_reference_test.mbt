@@ -8,8 +8,8 @@ test "width state reference list" {
     table.to_string(),
     "+--------+-----+\n| abc    | xy  |\n+--------+-----+\n| de     | z   |\n+--------+-----+",
   )
-  assert_eq(table.get_dimension().get_widths(), Some([8, 5]))
-  assert_eq(table.get_dimension().get_heights(), None)
+  assert_eq(table.dimension_snapshot().get_widths(), Some([8, 5]))
+  assert_eq(table.dimension_snapshot().get_heights(), None)
   assert_eq(table.total_width(), 16)
   assert_eq(table.total_height(), 5)
   assert_eq(table.rows, [["abc", "xy"], ["de", "z"]])
@@ -23,8 +23,8 @@ test "width state reference long-list" {
     table.to_string(),
     "+--------+-----+\n| abc    | xy  |\n+--------+-----+\n| de     | z   |\n+--------+-----+",
   )
-  assert_eq(table.get_dimension().get_widths(), Some([8, 5, 99]))
-  assert_eq(table.get_dimension().get_heights(), None)
+  assert_eq(table.dimension_snapshot().get_widths(), Some([8, 5, 99]))
+  assert_eq(table.dimension_snapshot().get_heights(), None)
   assert_eq(table.total_width(), 16)
   assert_eq(table.total_height(), 5)
   assert_eq(table.rows, [["abc", "xy"], ["de", "z"]])
@@ -38,8 +38,8 @@ test "width state reference short-list" {
     table.to_string(),
     "+--------+-----+\n| abc    | xy  |\n+--------+-----+\n| de     | z   |\n+--------+-----+",
   )
-  assert_eq(table.get_dimension().get_widths(), Some([8, 5]))
-  assert_eq(table.get_dimension().get_heights(), None)
+  assert_eq(table.dimension_snapshot().get_widths(), Some([8, 5]))
+  assert_eq(table.dimension_snapshot().get_heights(), None)
   assert_eq(table.total_width(), 16)
   assert_eq(table.total_height(), 5)
   assert_eq(table.rows, [["abc", "xy"], ["de", "z"]])
@@ -53,8 +53,8 @@ test "width state reference align" {
     table.to_string(),
     "+--------+-----+\n|    abc |  xy |\n+--------+-----+\n|     de |   z |\n+--------+-----+",
   )
-  assert_eq(table.get_dimension().get_widths(), Some([8, 5]))
-  assert_eq(table.get_dimension().get_heights(), None)
+  assert_eq(table.dimension_snapshot().get_widths(), Some([8, 5]))
+  assert_eq(table.dimension_snapshot().get_heights(), None)
   assert_eq(table.total_width(), 16)
   assert_eq(table.total_height(), 5)
   assert_eq(table.rows, [["abc", "xy"], ["de", "z"]])
@@ -68,8 +68,8 @@ test "width state reference cell-align" {
     table.to_string(),
     "+-----+----+\n| abc | xy |\n+-----+----+\n| de  | z  |\n+-----+----+",
   )
-  assert_eq(table.get_dimension().get_widths(), None)
-  assert_eq(table.get_dimension().get_heights(), None)
+  assert_eq(table.dimension_snapshot().get_widths(), None)
+  assert_eq(table.dimension_snapshot().get_heights(), None)
   assert_eq(table.total_width(), 12)
   assert_eq(table.total_height(), 5)
   assert_eq(table.rows, [["abc", "xy"], ["de", "z"]])
@@ -83,8 +83,8 @@ test "width state reference settings" {
     table.to_string(),
     "+--------+-----+\n|    abc |  xy |\n+--------+-----+\n|     de |   z |\n+--------+-----+",
   )
-  assert_eq(table.get_dimension().get_widths(), Some([8, 5]))
-  assert_eq(table.get_dimension().get_heights(), None)
+  assert_eq(table.dimension_snapshot().get_widths(), Some([8, 5]))
+  assert_eq(table.dimension_snapshot().get_heights(), None)
   assert_eq(table.total_width(), 16)
   assert_eq(table.total_height(), 5)
   assert_eq(table.rows, [["abc", "xy"], ["de", "z"]])
@@ -98,8 +98,8 @@ test "width state reference array" {
     table.to_string(),
     "+-----+----+\n| abc | xy |\n+-----+----+\n| de  | z  |\n+-----+----+",
   )
-  assert_eq(table.get_dimension().get_widths(), None)
-  assert_eq(table.get_dimension().get_heights(), None)
+  assert_eq(table.dimension_snapshot().get_widths(), None)
+  assert_eq(table.dimension_snapshot().get_heights(), None)
   assert_eq(table.total_width(), 12)
   assert_eq(table.total_height(), 5)
   assert_eq(table.rows, [["abc", "xy"], ["de", "z"]])
@@ -113,8 +113,8 @@ test "width state reference nested" {
     table.to_string(),
     "+--------------------+----+\n| a very long string | xy |\n+--------------------+----+\n| de                 | z  |\n+--------------------+----+",
   )
-  assert_eq(table.get_dimension().get_widths(), None)
-  assert_eq(table.get_dimension().get_heights(), None)
+  assert_eq(table.dimension_snapshot().get_widths(), None)
+  assert_eq(table.dimension_snapshot().get_heights(), None)
   assert_eq(table.total_width(), 27)
   assert_eq(table.total_height(), 5)
   assert_eq(table.rows, [["a very long string", "xy"], ["de", "z"]])
@@ -128,8 +128,8 @@ test "width state reference record-wrap" {
     table.to_string(),
     "+----+----+\n| ab | xy |\n| c  |    |\n+----+----+\n| de | z  |\n+----+----+",
   )
-  assert_eq(table.get_dimension().get_widths(), None)
-  assert_eq(table.get_dimension().get_heights(), None)
+  assert_eq(table.dimension_snapshot().get_widths(), None)
+  assert_eq(table.dimension_snapshot().get_heights(), None)
   assert_eq(table.total_width(), 11)
   assert_eq(table.total_height(), 6)
   assert_eq(table.rows, [["ab\nc", "xy"], ["de", "z"]])
@@ -143,8 +143,8 @@ test "width state reference record-increase" {
     table.to_string(),
     "+-------+-------+\n| abc.. | xy... |\n+-------+-------+\n| de... | z.... |\n+-------+-------+",
   )
-  assert_eq(table.get_dimension().get_widths(), None)
-  assert_eq(table.get_dimension().get_heights(), None)
+  assert_eq(table.dimension_snapshot().get_widths(), None)
+  assert_eq(table.dimension_snapshot().get_heights(), None)
   assert_eq(table.total_width(), 17)
   assert_eq(table.total_height(), 5)
   assert_eq(table.rows, [["abc..", "xy..."], ["de...", "z...."]])
@@ -158,8 +158,8 @@ test "width state reference max" {
     table.to_string(),
     "+-----+-----+\n| abc | xy  |\n+-----+-----+\n| de  | z   |\n+-----+-----+",
   )
-  assert_eq(table.get_dimension().get_widths(), None)
-  assert_eq(table.get_dimension().get_heights(), None)
+  assert_eq(table.dimension_snapshot().get_widths(), None)
+  assert_eq(table.dimension_snapshot().get_heights(), None)
   assert_eq(table.total_width(), 13)
   assert_eq(table.total_height(), 5)
   assert_eq(table.rows, [["abc", "xy "], ["de ", "z  "]])
@@ -173,8 +173,8 @@ test "width state reference min" {
     table.to_string(),
     "+----+----+\n| ab | xy |\n+----+----+\n| de | z  |\n+----+----+",
   )
-  assert_eq(table.get_dimension().get_widths(), None)
-  assert_eq(table.get_dimension().get_heights(), None)
+  assert_eq(table.dimension_snapshot().get_widths(), None)
+  assert_eq(table.dimension_snapshot().get_heights(), None)
   assert_eq(table.total_width(), 11)
   assert_eq(table.total_height(), 5)
   assert_eq(table.rows, [["ab", "xy"], ["de", "z"]])
@@ -188,8 +188,8 @@ test "width state reference percent" {
     table.to_string(),
     "+---+---+\n| a | x |\n| b | y |\n| c |   |\n+---+---+\n| d | z |\n| e |   |\n+---+---+",
   )
-  assert_eq(table.get_dimension().get_widths(), Some([3, 3]))
-  assert_eq(table.get_dimension().get_heights(), None)
+  assert_eq(table.dimension_snapshot().get_widths(), Some([3, 3]))
+  assert_eq(table.dimension_snapshot().get_heights(), None)
   assert_eq(table.total_width(), 9)
   assert_eq(table.total_height(), 8)
   assert_eq(table.rows, [["a\nb\nc", "x\ny"], ["d\ne", "z"]])
@@ -203,8 +203,8 @@ test "width state reference percent-increase" {
     table.to_string(),
     "+-----------+----------+\n| abc       | xy       |\n+-----------+----------+\n| de        | z        |\n+-----------+----------+",
   )
-  assert_eq(table.get_dimension().get_widths(), Some([11, 10]))
-  assert_eq(table.get_dimension().get_heights(), Some([1, 1]))
+  assert_eq(table.dimension_snapshot().get_widths(), Some([11, 10]))
+  assert_eq(table.dimension_snapshot().get_heights(), Some([1, 1]))
   assert_eq(table.total_width(), 24)
   assert_eq(table.total_height(), 5)
   assert_eq(table.rows, [["abc", "xy"], ["de", "z"]])
@@ -218,8 +218,8 @@ test "width state reference minimum-priority" {
     table.to_string(),
     "+---------+--------+\n| abc     | xy     |\n+---------+--------+\n| de      | z      |\n+---------+--------+",
   )
-  assert_eq(table.get_dimension().get_widths(), Some([9, 8]))
-  assert_eq(table.get_dimension().get_heights(), Some([1, 1]))
+  assert_eq(table.dimension_snapshot().get_widths(), Some([9, 8]))
+  assert_eq(table.dimension_snapshot().get_heights(), Some([1, 1]))
   assert_eq(table.total_width(), 20)
   assert_eq(table.total_height(), 5)
   assert_eq(table.rows, [["abc", "xy"], ["de", "z"]])
@@ -233,8 +233,8 @@ test "width state reference maximum-priority" {
     table.to_string(),
     "+-------------+----+\n| abc         | xy |\n+-------------+----+\n| de          | z  |\n+-------------+----+",
   )
-  assert_eq(table.get_dimension().get_widths(), Some([13, 4]))
-  assert_eq(table.get_dimension().get_heights(), Some([1, 1]))
+  assert_eq(table.dimension_snapshot().get_widths(), Some([13, 4]))
+  assert_eq(table.dimension_snapshot().get_heights(), Some([1, 1]))
   assert_eq(table.total_width(), 20)
   assert_eq(table.total_height(), 5)
   assert_eq(table.rows, [["abc", "xy"], ["de", "z"]])
@@ -248,8 +248,8 @@ test "width state reference justify-max" {
     table.to_string(),
     "+-----+-----+\n| abc | xy  |\n+-----+-----+\n| de  | z   |\n+-----+-----+",
   )
-  assert_eq(table.get_dimension().get_widths(), None)
-  assert_eq(table.get_dimension().get_heights(), None)
+  assert_eq(table.dimension_snapshot().get_widths(), None)
+  assert_eq(table.dimension_snapshot().get_heights(), None)
   assert_eq(table.total_width(), 13)
   assert_eq(table.total_height(), 5)
   assert_eq(table.rows, [["abc", "xy "], ["de ", "z  "]])
@@ -263,8 +263,8 @@ test "width state reference justify-min" {
     table.to_string(),
     "+----+----+\n| ab | xy |\n+----+----+\n| de | z  |\n+----+----+",
   )
-  assert_eq(table.get_dimension().get_widths(), None)
-  assert_eq(table.get_dimension().get_heights(), None)
+  assert_eq(table.dimension_snapshot().get_widths(), None)
+  assert_eq(table.dimension_snapshot().get_heights(), None)
   assert_eq(table.total_width(), 11)
   assert_eq(table.total_height(), 5)
   assert_eq(table.rows, [["ab", "xy"], ["de", "z "]])
@@ -278,8 +278,8 @@ test "width state reference mixed-padding" {
     table.to_string(),
     "+------+-----+\n|      | xy  |\n|      |     |\n| abc  |     |\n|      |     |\n+------+-----+\n| de   | z   |\n+------+-----+",
   )
-  assert_eq(table.get_dimension().get_widths(), Some([6, 5]))
-  assert_eq(table.get_dimension().get_heights(), Some([4, 1]))
+  assert_eq(table.dimension_snapshot().get_widths(), Some([6, 5]))
+  assert_eq(table.dimension_snapshot().get_heights(), Some([4, 1]))
   assert_eq(table.total_width(), 14)
   assert_eq(table.total_height(), 8)
   assert_eq(table.rows, [["abc", "xy"], ["de", "z"]])
@@ -293,8 +293,8 @@ test "width state reference row-span" {
     table.to_string(),
     "+------+-----+\n| abc  | xy  |\n+      +-----+\n|      | z   |\n+------+-----+",
   )
-  assert_eq(table.get_dimension().get_widths(), Some([6, 5]))
-  assert_eq(table.get_dimension().get_heights(), Some([1, 1]))
+  assert_eq(table.dimension_snapshot().get_widths(), Some([6, 5]))
+  assert_eq(table.dimension_snapshot().get_heights(), Some([1, 1]))
   assert_eq(table.total_width(), 14)
   assert_eq(table.total_height(), 5)
   assert_eq(table.rows, [["abc", "xy"], ["a very long hidden value", "z"]])
@@ -308,8 +308,8 @@ test "width state reference crlf" {
     table.to_string(),
     "+-----+----+\n| a\r  | xy |\n| b\r  |    |\n|     |    |\n+-----+----+\n| de  | z  |\n+-----+----+",
   )
-  assert_eq(table.get_dimension().get_widths(), Some([5, 4]))
-  assert_eq(table.get_dimension().get_heights(), Some([3, 1]))
+  assert_eq(table.dimension_snapshot().get_widths(), Some([5, 4]))
+  assert_eq(table.dimension_snapshot().get_heights(), Some([3, 1]))
   assert_eq(table.total_width(), 12)
   assert_eq(table.total_height(), 7)
   assert_eq(table.rows, [["a\r\nb\r\n", "xy"], ["de", "z"]])
@@ -323,8 +323,8 @@ test "width state reference heights" {
     table.to_string(),
     "+-----+----+\n| abc | xy |\n|     |    |\n|     |    |\n+-----+----+\n| de  | z  |\n|     |    |\n+-----+----+",
   )
-  assert_eq(table.get_dimension().get_widths(), None)
-  assert_eq(table.get_dimension().get_heights(), Some([3, 2]))
+  assert_eq(table.dimension_snapshot().get_widths(), None)
+  assert_eq(table.dimension_snapshot().get_heights(), Some([3, 2]))
   assert_eq(table.total_width(), 12)
   assert_eq(table.total_height(), 8)
   assert_eq(table.rows, [["abc", "xy"], ["de", "z"]])
@@ -338,8 +338,8 @@ test "width state reference height-row-hint" {
     table.to_string(),
     "+-----+----+\n| abc | xy |\n+-----+----+\n| de  | z  |\n+-----+----+",
   )
-  assert_eq(table.get_dimension().get_widths(), Some([5, 4]))
-  assert_eq(table.get_dimension().get_heights(), None)
+  assert_eq(table.dimension_snapshot().get_widths(), Some([5, 4]))
+  assert_eq(table.dimension_snapshot().get_heights(), None)
   assert_eq(table.total_width(), 12)
   assert_eq(table.total_height(), 5)
   assert_eq(table.rows, [["abc", "xy"], ["de", "z"]])
@@ -353,8 +353,8 @@ test "width state reference height-no-hint" {
     table.to_string(),
     "+-----+----+\n| abc | xy |\n|     |    |\n|     |    |\n+-----+----+\n| de  | z  |\n|     |    |\n+-----+----+",
   )
-  assert_eq(table.get_dimension().get_widths(), Some([5, 4]))
-  assert_eq(table.get_dimension().get_heights(), Some([3, 2]))
+  assert_eq(table.dimension_snapshot().get_widths(), Some([5, 4]))
+  assert_eq(table.dimension_snapshot().get_heights(), Some([3, 2]))
   assert_eq(table.total_width(), 12)
   assert_eq(table.total_height(), 8)
   assert_eq(table.rows, [["abc", "xy"], ["de", "z"]])
@@ -368,8 +368,8 @@ test "width state reference color" {
     table.to_string(),
     "+--------+-----+\n| \u001b[31mabc\u001b[39m    | \u001b[31mxy\u001b[39m  |\n+--------+-----+\n| \u001b[31mde\u001b[39m     | \u001b[31mz\u001b[39m   |\n+--------+-----+",
   )
-  assert_eq(table.get_dimension().get_widths(), Some([8, 5]))
-  assert_eq(table.get_dimension().get_heights(), None)
+  assert_eq(table.dimension_snapshot().get_widths(), Some([8, 5]))
+  assert_eq(table.dimension_snapshot().get_heights(), None)
   assert_eq(table.total_width(), 16)
   assert_eq(table.total_height(), 5)
   assert_eq(table.rows, [["abc", "xy"], ["de", "z"]])

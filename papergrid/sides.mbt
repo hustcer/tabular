@@ -45,18 +45,23 @@ pub(all) struct Sides[T] {
 } derive(Eq, Compare, Debug, Hash)
 
 ///|
-pub fn[T] Sides::new(left : T, right : T, top : T, bottom : T) -> Sides[T] {
+pub fn[T] Sides::new(left~ : T, right~ : T, top~ : T, bottom~ : T) -> Sides[T] {
   { left, right, top, bottom, }
 }
 
 ///|
 pub fn[T] Sides::filled(value : T) -> Sides[T] {
-  Sides::new(value, value, value, value)
+  Sides::new(left=value, right=value, top=value, bottom=value)
 }
 
 ///|
 pub fn[T : Default] Sides::default() -> Sides[T] {
-  Sides::new(T::default(), T::default(), T::default(), T::default())
+  Sides::new(
+    left=T::default(),
+    right=T::default(),
+    top=T::default(),
+    bottom=T::default(),
+  )
 }
 
 ///|
@@ -66,7 +71,12 @@ pub impl[T : Default] Default for Sides[T] with fn default() {
 
 ///|
 pub fn[T, U] Sides::map(self : Sides[T], f : (T) -> U) -> Sides[U] {
-  Sides::new(f(self.left), f(self.right), f(self.top), f(self.bottom))
+  Sides::new(
+    left=f(self.left),
+    right=f(self.right),
+    top=f(self.top),
+    bottom=f(self.bottom),
+  )
 }
 
 ///|

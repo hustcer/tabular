@@ -41,14 +41,14 @@ fn render_cell(
     BottomPadding => return render_indent(width, fills.bottom, colors.bottom)
   }
   let format = config.text_format_at(source.0, source.1)
-  let content = if format.formatting.horizontal_trim {
-    trim_ansi(content)
+  let content = if format.formatting.trim_horizontal {
+    trim_ansi_whitespace(content)
   } else {
     content
   }
   let available = width - padding_left - padding_right
   let line_width = string_display_width(content)
-  let cell_width = if format.formatting.allow_lines_alignment {
+  let cell_width = if format.formatting.align_lines {
     line_width
   } else {
     processed_lines(
@@ -56,7 +56,7 @@ fn render_cell(
       config.width_mode_at(source.0, source.1),
       config.height_mode_at(source.0, source.1),
     ).fold(init=0, (width, line) => {
-      let line = if format.formatting.horizontal_trim {
+      let line = if format.formatting.trim_horizontal {
         line.trim().to_owned()
       } else {
         line
@@ -123,7 +123,7 @@ fn display_lines(
     config.width_mode_at(source.0, source.1),
     config.height_mode_at(source.0, source.1),
   )
-  if !config.get_formatting(source.0, source.1).vertical_trim {
+  if !config.get_formatting(source.0, source.1).trim_vertical {
     return lines
   }
   let mut start = 0

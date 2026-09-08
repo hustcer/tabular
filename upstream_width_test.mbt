@@ -734,7 +734,7 @@ test "upstream width max_width_keep_words_3" {
     .with_(
       @tabular.Width::wrap(21)
       .keep_words(true)
-      .priority(@tabular.PriorityMax::right()),
+      .priority(@tabular.PriorityMax::prefer_last()),
     )
     .to_string()
   }
@@ -1172,7 +1172,7 @@ test "upstream width min_with_max_width_truncate_suffix_try_color" {
     upstream_width_strings(data, "String")
     .set_align(@tabular.Align::center())
     .apply(@tabular.Style::markdown())
-    .with_(@tabular.Width::truncate(7).suffix("..").suffix_try_color(true))
+    .with_(@tabular.Width::truncate(7).suffix("..").inherit_suffix_style(true))
   }).to_string()
   assert_eq(
     actual, "| S.. |\n|-----|\n| \u001b[31masd\u001b[39m |\n| \u001b[34mz\u001b[39m\u001b[34m..\u001b[39m |\n| \u001b[32m\u001b[40ma\u001b[39m\u001b[49m\u001b[32m\u001b[40m..\u001b[39m\u001b[49m |",
@@ -1736,8 +1736,8 @@ test "upstream width max_width_with_span_0" {
       @tabular.Setting::format(@tabular.Format::value("a long string")),
     )
     .apply(@tabular.Style::psql())
-    .with_(@tabular.Modify::new((1, 1)).with_(@tabular.Span::column(2)))
-    .with_(@tabular.Modify::new((2, 2)).with_(@tabular.Span::column(2)))
+    .with_(@tabular.Modify::new((1, 1)).with_(@tabular.Span::col(2)))
+    .with_(@tabular.Modify::new((2, 2)).with_(@tabular.Span::col(2)))
     .with_(@tabular.Width::truncate(40))
     .to_string()
   assert_eq(
@@ -1759,8 +1759,8 @@ test "upstream width max_width_with_span_1" {
       @tabular.Setting::format(@tabular.Format::value("a long string")),
     )
     .apply(@tabular.Style::psql())
-    .with_(@tabular.Modify::new((1, 1)).with_(@tabular.Span::column(2)))
-    .with_(@tabular.Modify::new((2, 2)).with_(@tabular.Span::column(2)))
+    .with_(@tabular.Modify::new((1, 1)).with_(@tabular.Span::col(2)))
+    .with_(@tabular.Modify::new((2, 2)).with_(@tabular.Span::col(2)))
     .with_(@tabular.Width::truncate(40))
     .with_(@tabular.Width::truncate(20))
     .to_string()
@@ -1782,8 +1782,8 @@ test "upstream width max_width_with_span_2" {
       @tabular.Setting::format(@tabular.Format::value("a long string")),
     )
     .apply(@tabular.Style::psql())
-    .with_(@tabular.Modify::new((1, 1)).with_(@tabular.Span::column(2)))
-    .with_(@tabular.Modify::new((2, 2)).with_(@tabular.Span::column(2)))
+    .with_(@tabular.Modify::new((1, 1)).with_(@tabular.Span::col(2)))
+    .with_(@tabular.Modify::new((2, 2)).with_(@tabular.Span::col(2)))
     .with_(@tabular.Width::truncate(40))
     .with_(@tabular.Width::truncate(20))
     .with_(@tabular.Width::truncate(10))
@@ -2002,7 +2002,7 @@ test "upstream width min_width_with_span_1" {
     ])
     .set_align(@tabular.Align::center())
     .apply(@tabular.Style::markdown())
-    .with_(@tabular.Modify::new((1, 0)).with_(@tabular.Span::column(2)))
+    .with_(@tabular.Modify::new((1, 0)).with_(@tabular.Span::col(2)))
     .with_(@tabular.MinWidth::new(100))
     .to_string()
   assert_eq(
@@ -2027,7 +2027,7 @@ test "upstream width min_width_with_span_2" {
     ])
     .set_align(@tabular.Align::center())
     .apply(@tabular.Style::markdown())
-    .with_(@tabular.Modify::new((2, 0)).with_(@tabular.Span::column(2)))
+    .with_(@tabular.Modify::new((2, 0)).with_(@tabular.Span::col(2)))
     .with_(@tabular.MinWidth::new(100))
     .to_string()
   assert_eq(
@@ -2047,7 +2047,7 @@ test "upstream width min_width_with_span_2" {
 test "upstream width justify_width_constant_test" {
   let actual = upstream_matrix(3, 3)
     .apply(@tabular.Style::markdown())
-    .with_(@tabular.Justify::new(3))
+    .with_(@tabular.UniformWidth::new(3))
     .to_string()
   assert_eq(
     actual,
@@ -2074,7 +2074,7 @@ test "upstream width justify_width_constant_different_sizes_test" {
       @tabular.Setting::format(@tabular.Format::value("multi\nline string\n")),
     )
     .apply(@tabular.Style::markdown())
-    .with_(@tabular.Justify::new(3))
+    .with_(@tabular.UniformWidth::new(3))
     .to_string()
   assert_eq(
     actual,
@@ -2093,7 +2093,7 @@ test "upstream width justify_width_constant_different_sizes_test" {
 test "upstream width justify_width_constant_0_test" {
   let actual = upstream_matrix(3, 3)
     .apply(@tabular.Style::markdown())
-    .with_(@tabular.Justify::new(0))
+    .with_(@tabular.UniformWidth::new(0))
     .to_string()
   assert_eq(
     actual,
@@ -2112,7 +2112,7 @@ test "upstream width justify_width_constant_0_test" {
 test "upstream width justify_width_min_test" {
   let actual = upstream_matrix(3, 3)
     .apply(@tabular.Style::markdown())
-    .with_(@tabular.Justify::min())
+    .with_(@tabular.UniformWidth::min())
     .to_string()
   assert_eq(
     actual,
@@ -2131,7 +2131,7 @@ test "upstream width justify_width_min_test" {
 test "upstream width justify_width_max_test" {
   let actual = upstream_matrix(3, 3)
     .apply(@tabular.Style::markdown())
-    .with_(@tabular.Justify::max())
+    .with_(@tabular.UniformWidth::max())
     .to_string()
   assert_eq(
     actual,
@@ -2153,7 +2153,7 @@ test "upstream width max_width_when_cell_has_tabs" {
       @tabular.Cell::new(2, 1),
       @tabular.Setting::format(@tabular.Format::value("\tHello\tWorld\t")),
     )
-    .with_(@tabular.Charset::new().tab_size(4))
+    .with_(@tabular.TextCleanup::new().expand_tabs(4))
     .apply(@tabular.Style::markdown())
     .with_(
       @tabular.Modify::new(@tabular.Cols::all()).with_(
@@ -2181,7 +2181,7 @@ test "upstream width max_width_table_when_cell_has_tabs" {
       @tabular.Cell::new(2, 1),
       @tabular.Setting::format(@tabular.Format::value("\tHello\tWorld\t")),
     )
-    .with_(@tabular.Charset::new().tab_size(4))
+    .with_(@tabular.TextCleanup::new().expand_tabs(4))
     .apply(@tabular.Style::markdown())
     .with_(@tabular.Width::truncate(15))
     .to_string()
@@ -2208,7 +2208,7 @@ test "upstream width max_width_truncate_with_big_span_0" {
       ),
     )
     .apply(@tabular.Style::markdown())
-    .with_(@tabular.Modify::new((2, 1)).with_(@tabular.Span::column(3)))
+    .with_(@tabular.Modify::new((2, 1)).with_(@tabular.Span::col(3)))
     .with_(@tabular.Width::truncate(40))
     .to_string()
   assert_eq(
@@ -2240,8 +2240,8 @@ test "upstream width max_width_truncate_with_big_span_1" {
       ),
     )
     .apply(@tabular.Style::markdown())
-    .with_(@tabular.Modify::new((2, 1)).with_(@tabular.Span::column(3)))
-    .with_(@tabular.Modify::new((3, 2)).with_(@tabular.Span::column(2)))
+    .with_(@tabular.Modify::new((2, 1)).with_(@tabular.Span::col(3)))
+    .with_(@tabular.Modify::new((3, 2)).with_(@tabular.Span::col(2)))
     .to_string()
   assert_eq(
     actual,
@@ -2272,8 +2272,8 @@ test "upstream width max_width_truncate_with_big_span_2" {
       ),
     )
     .apply(@tabular.Style::markdown())
-    .with_(@tabular.Modify::new((2, 1)).with_(@tabular.Span::column(3)))
-    .with_(@tabular.Modify::new((3, 2)).with_(@tabular.Span::column(2)))
+    .with_(@tabular.Modify::new((2, 1)).with_(@tabular.Span::col(3)))
+    .with_(@tabular.Modify::new((3, 2)).with_(@tabular.Span::col(2)))
     .with_(@tabular.Width::truncate(40))
     .to_string()
   assert_eq(
@@ -2305,8 +2305,8 @@ test "upstream width max_width_truncate_with_big_span_3" {
       ),
     )
     .apply(@tabular.Style::markdown())
-    .with_(@tabular.Modify::new((2, 1)).with_(@tabular.Span::column(2)))
-    .with_(@tabular.Modify::new((3, 2)).with_(@tabular.Span::column(2)))
+    .with_(@tabular.Modify::new((2, 1)).with_(@tabular.Span::col(2)))
+    .with_(@tabular.Modify::new((3, 2)).with_(@tabular.Span::col(2)))
     .with_(@tabular.Width::truncate(40))
     .to_string()
   assert_eq(
@@ -2336,8 +2336,8 @@ test "upstream width max_width_truncate_with_big_span_4" {
       @tabular.Setting::format(@tabular.Format::value("Hello World With Big L")),
     )
     .apply(@tabular.Style::markdown())
-    .with_(@tabular.Modify::new((2, 1)).with_(@tabular.Span::column(3)))
-    .with_(@tabular.Modify::new((3, 2)).with_(@tabular.Span::column(2)))
+    .with_(@tabular.Modify::new((2, 1)).with_(@tabular.Span::col(3)))
+    .with_(@tabular.Modify::new((3, 2)).with_(@tabular.Span::col(2)))
     .to_string()
   assert_eq(
     actual,
@@ -2362,7 +2362,9 @@ test "upstream width max_width_truncate_priority_max_0" {
       ),
     )
     .apply(@tabular.Style::markdown())
-    .with_(@tabular.Width::truncate(35).priority(@tabular.PriorityMax::right()))
+    .with_(
+      @tabular.Width::truncate(35).priority(@tabular.PriorityMax::prefer_last()),
+    )
     .to_string()
   assert_eq(
     actual,
@@ -2387,7 +2389,9 @@ test "upstream width max_width_truncate_priority_max_1" {
       ),
     )
     .apply(@tabular.Style::markdown())
-    .with_(@tabular.Width::truncate(20).priority(@tabular.PriorityMax::right()))
+    .with_(
+      @tabular.Width::truncate(20).priority(@tabular.PriorityMax::prefer_last()),
+    )
     .to_string()
   assert_eq(
     actual,
@@ -2412,7 +2416,9 @@ test "upstream width max_width_truncate_priority_max_2" {
       ),
     )
     .apply(@tabular.Style::markdown())
-    .with_(@tabular.Width::truncate(0).priority(@tabular.PriorityMax::right()))
+    .with_(
+      @tabular.Width::truncate(0).priority(@tabular.PriorityMax::prefer_last()),
+    )
     .to_string()
   assert_eq(
     actual,
@@ -2437,8 +2443,10 @@ test "upstream width max_width_truncate_priority_max_with_span" {
       ),
     )
     .apply(@tabular.Style::markdown())
-    .with_(@tabular.Modify::new((2, 1)).with_(@tabular.Span::column(2)))
-    .with_(@tabular.Width::truncate(15).priority(@tabular.PriorityMax::right()))
+    .with_(@tabular.Modify::new((2, 1)).with_(@tabular.Span::col(2)))
+    .with_(
+      @tabular.Width::truncate(15).priority(@tabular.PriorityMax::prefer_last()),
+    )
     .to_string()
   assert_eq(
     actual,
@@ -2463,7 +2471,9 @@ test "upstream width max_width_wrap_priority_max_0" {
       ),
     )
     .apply(@tabular.Style::markdown())
-    .with_(@tabular.Width::wrap(35).priority(@tabular.PriorityMax::right()))
+    .with_(
+      @tabular.Width::wrap(35).priority(@tabular.PriorityMax::prefer_last()),
+    )
     .to_string()
   assert_eq(
     actual,
@@ -2492,7 +2502,9 @@ test "upstream width max_width_wrap_priority_max_1" {
       ),
     )
     .apply(@tabular.Style::markdown())
-    .with_(@tabular.Width::wrap(20).priority(@tabular.PriorityMax::right()))
+    .with_(
+      @tabular.Width::wrap(20).priority(@tabular.PriorityMax::prefer_last()),
+    )
     .to_string()
   assert_eq(
     actual,
@@ -2534,7 +2546,9 @@ test "upstream width max_width_wrap_priority_max_2" {
       ),
     )
     .apply(@tabular.Style::markdown())
-    .with_(@tabular.Width::wrap(0).priority(@tabular.PriorityMax::right()))
+    .with_(
+      @tabular.Width::wrap(0).priority(@tabular.PriorityMax::prefer_last()),
+    )
     .to_string()
   assert_eq(
     actual,
@@ -2559,8 +2573,10 @@ test "upstream width max_width_wrap_priority_max_with_span" {
       ),
     )
     .apply(@tabular.Style::markdown())
-    .with_(@tabular.Modify::new((2, 1)).with_(@tabular.Span::column(2)))
-    .with_(@tabular.Width::wrap(15).priority(@tabular.PriorityMax::right()))
+    .with_(@tabular.Modify::new((2, 1)).with_(@tabular.Span::col(2)))
+    .with_(
+      @tabular.Width::wrap(15).priority(@tabular.PriorityMax::prefer_last()),
+    )
     .to_string()
   assert_eq(
     actual,
@@ -2602,7 +2618,11 @@ test "upstream width max_width_truncate_priority_min_0" {
       ),
     )
     .apply(@tabular.Style::markdown())
-    .with_(@tabular.Width::truncate(35).priority(@tabular.PriorityMin::right()))
+    .with_(
+      @tabular.Width::truncate(35).priority(
+        @tabular.PriorityMin::prefer_first(),
+      ),
+    )
     .to_string()
   assert_eq(
     actual,
@@ -2627,7 +2647,11 @@ test "upstream width max_width_truncate_priority_min_1" {
       ),
     )
     .apply(@tabular.Style::markdown())
-    .with_(@tabular.Width::truncate(20).priority(@tabular.PriorityMin::right()))
+    .with_(
+      @tabular.Width::truncate(20).priority(
+        @tabular.PriorityMin::prefer_first(),
+      ),
+    )
     .to_string()
   assert_eq(
     actual,
@@ -2652,7 +2676,9 @@ test "upstream width max_width_truncate_priority_min_2" {
       ),
     )
     .apply(@tabular.Style::markdown())
-    .with_(@tabular.Width::truncate(0).priority(@tabular.PriorityMin::right()))
+    .with_(
+      @tabular.Width::truncate(0).priority(@tabular.PriorityMin::prefer_first()),
+    )
     .to_string()
   assert_eq(
     actual,
@@ -2677,8 +2703,12 @@ test "upstream width max_width_truncate_priority_min_with_span_0" {
       ),
     )
     .apply(@tabular.Style::markdown())
-    .with_(@tabular.Modify::new((2, 1)).with_(@tabular.Span::column(2)))
-    .with_(@tabular.Width::truncate(15).priority(@tabular.PriorityMin::right()))
+    .with_(@tabular.Modify::new((2, 1)).with_(@tabular.Span::col(2)))
+    .with_(
+      @tabular.Width::truncate(15).priority(
+        @tabular.PriorityMin::prefer_first(),
+      ),
+    )
     .to_string()
   assert_eq(
     actual,
@@ -2703,8 +2733,12 @@ test "upstream width max_width_truncate_priority_min_with_span_1" {
       ),
     )
     .apply(@tabular.Style::markdown())
-    .with_(@tabular.Modify::new((2, 1)).with_(@tabular.Span::column(2)))
-    .with_(@tabular.Width::truncate(17).priority(@tabular.PriorityMin::right()))
+    .with_(@tabular.Modify::new((2, 1)).with_(@tabular.Span::col(2)))
+    .with_(
+      @tabular.Width::truncate(17).priority(
+        @tabular.PriorityMin::prefer_first(),
+      ),
+    )
     .to_string()
   assert_eq(
     actual,
@@ -2729,7 +2763,9 @@ test "upstream width max_width_wrap_priority_min_0" {
       ),
     )
     .apply(@tabular.Style::markdown())
-    .with_(@tabular.Width::wrap(35).priority(@tabular.PriorityMin::right()))
+    .with_(
+      @tabular.Width::wrap(35).priority(@tabular.PriorityMin::prefer_first()),
+    )
     .to_string()
   assert_eq(
     actual,
@@ -2755,7 +2791,9 @@ test "upstream width max_width_wrap_priority_min_1" {
       ),
     )
     .apply(@tabular.Style::markdown())
-    .with_(@tabular.Width::wrap(20).priority(@tabular.PriorityMin::right()))
+    .with_(
+      @tabular.Width::wrap(20).priority(@tabular.PriorityMin::prefer_first()),
+    )
     .to_string()
   assert_eq(
     actual,
@@ -2784,7 +2822,9 @@ test "upstream width max_width_wrap_priority_min_2" {
       ),
     )
     .apply(@tabular.Style::markdown())
-    .with_(@tabular.Width::wrap(0).priority(@tabular.PriorityMin::right()))
+    .with_(
+      @tabular.Width::wrap(0).priority(@tabular.PriorityMin::prefer_first()),
+    )
     .to_string()
   assert_eq(
     actual,
@@ -2809,8 +2849,10 @@ test "upstream width max_width_wrap_priority_min_with_span" {
       ),
     )
     .apply(@tabular.Style::markdown())
-    .with_(@tabular.Modify::new((2, 1)).with_(@tabular.Span::column(2)))
-    .with_(@tabular.Width::wrap(15).priority(@tabular.PriorityMin::right()))
+    .with_(@tabular.Modify::new((2, 1)).with_(@tabular.Span::col(2)))
+    .with_(
+      @tabular.Width::wrap(15).priority(@tabular.PriorityMin::prefer_first()),
+    )
     .to_string()
   assert_eq(
     actual,
@@ -2838,7 +2880,9 @@ test "upstream width max_width_wrap_priority_min_with_span" {
 test "upstream width min_width_priority_max" {
   let actual = upstream_matrix(3, 3)
     .apply(@tabular.Style::markdown())
-    .with_(@tabular.MinWidth::new(60).priority(@tabular.PriorityMax::right()))
+    .with_(
+      @tabular.MinWidth::new(60).priority(@tabular.PriorityMax::prefer_last()),
+    )
     .to_string()
   assert_eq(
     actual,
@@ -2857,7 +2901,9 @@ test "upstream width min_width_priority_max" {
 test "upstream width min_width_priority_min" {
   let actual = upstream_matrix(3, 3)
     .apply(@tabular.Style::markdown())
-    .with_(@tabular.MinWidth::new(60).priority(@tabular.PriorityMin::right()))
+    .with_(
+      @tabular.MinWidth::new(60).priority(@tabular.PriorityMin::prefer_first()),
+    )
     .to_string()
   assert_eq(
     actual,
@@ -2881,7 +2927,7 @@ test "upstream width max_width_tab_0" {
       "&str",
     )
     .set_align(@tabular.Align::center())
-    .with_(@tabular.Charset::new().tab_size(4))
+    .with_(@tabular.TextCleanup::new().expand_tabs(4))
     .apply(@tabular.Style::markdown())
     .with_(@tabular.Width::wrap(60))
     .to_string()
@@ -2921,7 +2967,7 @@ test "upstream width min_width_is_not_used_after_padding" {
 test "upstream width min_width_is_used_after_margin" {
   let actual = upstream_matrix(3, 3)
     .apply(@tabular.Style::markdown())
-    .with_(@tabular.Margin::new(1, 1, 1, 1))
+    .with_(@tabular.Margin::new(left=1, right=1, top=1, bottom=1))
     .with_(@tabular.Width::increase(60))
     .to_string()
   assert_eq(
@@ -3091,7 +3137,7 @@ test "upstream width table_truncate_multiline_with_suffix" {
 test "upstream width test_priority_left" {
   let actual = upstream_matrix(3, 10)
     .apply(@tabular.Style::markdown())
-    .with_(@tabular.Width::wrap(60).priority(@tabular.PriorityLeft::default()))
+    .with_(@tabular.Width::wrap(60).priority(@tabular.PriorityFirst::default()))
     .to_string()
   assert_eq(
     actual,
@@ -3116,7 +3162,7 @@ test "upstream width test_priority_left" {
 test "upstream width test_priority_right" {
   let actual = upstream_matrix(3, 10)
     .apply(@tabular.Style::markdown())
-    .with_(@tabular.Width::wrap(60).priority(@tabular.PriorityRight::default()))
+    .with_(@tabular.Width::wrap(60).priority(@tabular.PriorityLast::default()))
     .to_string()
   assert_eq(
     actual,
@@ -3160,7 +3206,11 @@ test "upstream width priority_max_left" {
       ),
     )
     .apply(@tabular.Style::markdown())
-    .with_(@tabular.Width::truncate(37).priority(@tabular.PriorityMax::left()))
+    .with_(
+      @tabular.Width::truncate(37).priority(
+        @tabular.PriorityMax::prefer_first(),
+      ),
+    )
     .to_string()
   assert_eq(
     actual,
@@ -3191,7 +3241,9 @@ test "upstream width priority_max_right" {
       ),
     )
     .apply(@tabular.Style::markdown())
-    .with_(@tabular.Width::truncate(37).priority(@tabular.PriorityMax::right()))
+    .with_(
+      @tabular.Width::truncate(37).priority(@tabular.PriorityMax::prefer_last()),
+    )
     .to_string()
   assert_eq(
     actual,
@@ -3209,7 +3261,9 @@ test "upstream width priority_max_right" {
 // Upstream: tabled/tests/settings/width_test.rs::priority_min_left
 test "upstream width priority_min_left" {
   let actual = upstream_matrix(3, 3)
-    .with_(@tabular.Width::truncate(30).priority(@tabular.PriorityMin::left()))
+    .with_(
+      @tabular.Width::truncate(30).priority(@tabular.PriorityMin::prefer_last()),
+    )
     .to_string()
   assert_eq(
     actual,
@@ -3231,7 +3285,11 @@ test "upstream width priority_min_left" {
 // Upstream: tabled/tests/settings/width_test.rs::priority_min_right
 test "upstream width priority_min_right" {
   let actual = upstream_matrix(3, 3)
-    .with_(@tabular.Width::truncate(30).priority(@tabular.PriorityMin::right()))
+    .with_(
+      @tabular.Width::truncate(30).priority(
+        @tabular.PriorityMin::prefer_first(),
+      ),
+    )
     .to_string()
   assert_eq(
     actual,

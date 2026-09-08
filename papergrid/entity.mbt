@@ -3,8 +3,6 @@
 pub(all) enum Entity {
   Global
   Row(Int)
-  Column(Int)
-  // Existing spelling retained for row/column predicate compatibility.
   Col(Int)
   Cell(Int, Int)
 } derive(Eq, Debug)
@@ -24,7 +22,7 @@ pub fn Entity::iter(
       guard row >= 0 && row < row_count else { return Iter::empty() }
       (row, row + 1, 0, col_count)
     }
-    Col(col) | Column(col) => {
+    Col(col) => {
       guard col >= 0 && col < col_count else { return Iter::empty() }
       (0, row_count, col, col + 1)
     }

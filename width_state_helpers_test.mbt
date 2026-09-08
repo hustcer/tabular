@@ -63,16 +63,20 @@ fn upstream_width_state(mode : String) -> @tabular.Table {
       |> ignore
     "minimum-priority" =>
       table.with_(
-        @tabular.Width::increase(20).priority(@tabular.PriorityMin::right()),
+        @tabular.Width::increase(20).priority(
+          @tabular.PriorityMin::prefer_first(),
+        ),
       )
       |> ignore
     "maximum-priority" =>
       table.with_(
-        @tabular.Width::increase(20).priority(@tabular.PriorityMax::left()),
+        @tabular.Width::increase(20).priority(
+          @tabular.PriorityMax::prefer_first(),
+        ),
       )
       |> ignore
-    "justify-max" => table.with_(@tabular.Justify::max()) |> ignore
-    "justify-min" => table.with_(@tabular.Justify::min()) |> ignore
+    "justify-max" => table.with_(@tabular.UniformWidth::max()) |> ignore
+    "justify-min" => table.with_(@tabular.UniformWidth::min()) |> ignore
     "mixed-padding" =>
       table
       .modify((0, 0), @tabular.Padding::new(1, 1, 2, 0))
@@ -88,13 +92,13 @@ fn upstream_width_state(mode : String) -> @tabular.Table {
     "crlf" =>
       table.modify((0, 0), "a\r\nb\r\n").with_(@tabular.Width::increase(12))
       |> ignore
-    "heights" => table.get_dimension_mut().set_heights([3, 2])
+    "heights" => table.dimension_cache().set_heights([3, 2])
     "height-row-hint" => {
-      table.get_dimension_mut().set_heights([3, 2])
+      table.dimension_cache().set_heights([3, 2])
       table.with_(@tabular.Width::wrap(100)) |> ignore
     }
     "height-no-hint" => {
-      table.get_dimension_mut().set_heights([3, 2])
+      table.dimension_cache().set_heights([3, 2])
       table.with_(@tabular.Width::truncate(100)) |> ignore
     }
     "color" =>

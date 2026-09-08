@@ -25,7 +25,7 @@ def width-expression [expression: string]: nothing -> string {
     | str replace --all '.with(Panel::' '.panel(Panel::'
     | str replace --all 'HorizontalLine::inherit(' 'HorizontalLine::from_style(')
   translate $expr
-    | str replace --all --regex '(?<![\w.])(Width|Truncate|Wrap|MinWidth|Justify|SuffixLimit|PriorityLeft|PriorityRight|PriorityMin|PriorityMax|HorizontalLine|Panel|Margin)::' '@tabular.$1::'
+    | str replace --all --regex '(?<![\w.])(Width|Truncate|Wrap|MinWidth|UniformWidth|SuffixLimit|PriorityFirst|PriorityLast|PriorityMin|PriorityMax|HorizontalLine|Panel|Margin)::' '@tabular.$1::'
     | str replace --all --regex 'upstream_string_table\(data\)' 'upstream_width_strings(data, "String")'
 }
 

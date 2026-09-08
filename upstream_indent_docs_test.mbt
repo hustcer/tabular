@@ -37,8 +37,8 @@ test "upstream indent documentation padding_expand" {
     .with_(@tabular.Style::ascii())
     .with_(@tabular.PaddingColor::filled(@tabular.Color::bg_blue()))
     .modify((2, 1), @tabular.Padding::new(2, 2, 3, 3))
-    .with_(@tabular.Padding::expand(true))
-    .with_(@tabular.Padding::expand(false))
+    .with_(@tabular.PaddingExpand::Horizontal)
+    .with_(@tabular.PaddingExpand::Vertical)
   assert_eq(
     table.to_string(),
     "+---+-----+---+---+\n|2\u001b[44m  \u001b[49m|0\u001b[44m    \u001b[49m|2\u001b[44m  \u001b[49m|1\u001b[44m  \u001b[49m|\n+---+-----+---+---+\n|2\u001b[44m  \u001b[49m|0\u001b[44m    \u001b[49m|2\u001b[44m  \u001b[49m|2\u001b[44m  \u001b[49m|\n+---+-----+---+---+\n|2\u001b[44m  \u001b[49m|0\u001b[44m    \u001b[49m|2\u001b[44m  \u001b[49m|3\u001b[44m  \u001b[49m|\n|\u001b[44m   \u001b[49m|\u001b[44m     \u001b[49m|\u001b[44m   \u001b[49m|\u001b[44m   \u001b[49m|\n|\u001b[44m   \u001b[49m|\u001b[44m     \u001b[49m|\u001b[44m   \u001b[49m|\u001b[44m   \u001b[49m|\n|\u001b[44m   \u001b[49m|\u001b[44m     \u001b[49m|\u001b[44m   \u001b[49m|\u001b[44m   \u001b[49m|\n|\u001b[44m   \u001b[49m|\u001b[44m     \u001b[49m|\u001b[44m   \u001b[49m|\u001b[44m   \u001b[49m|\n|\u001b[44m   \u001b[49m|\u001b[44m     \u001b[49m|\u001b[44m   \u001b[49m|\u001b[44m   \u001b[49m|\n|\u001b[44m   \u001b[49m|\u001b[44m     \u001b[49m|\u001b[44m   \u001b[49m|\u001b[44m   \u001b[49m|\n+---+-----+---+---+\n|2\u001b[44m  \u001b[49m|0\u001b[44m    \u001b[49m|2\u001b[44m  \u001b[49m|4\u001b[44m  \u001b[49m|\n+---+-----+---+---+",
@@ -50,7 +50,7 @@ test "upstream indent documentation padding_expand" {
 test "upstream indent documentation margin" {
   let table = upstream_string_table(["Hello", "World", "!"])
     .with_(@tabular.Style::markdown())
-    .with_(@tabular.Margin::new(3, 3, 1, 0))
+    .with_(@tabular.Margin::new(left=3, right=3, top=1, bottom=0))
   assert_eq(
     table.to_string(),
     "               \n   | &str  |   \n   |-------|   \n   | Hello |   \n   | World |   \n   | !     |   ",
@@ -62,7 +62,7 @@ test "upstream indent documentation margin" {
 test "upstream indent documentation margin_color" {
   let table = upstream_string_table(["Hello", "World", "!"])
     .with_(@tabular.Style::markdown())
-    .with_(@tabular.Margin::new(3, 3, 1, 0))
+    .with_(@tabular.Margin::new(left=3, right=3, top=1, bottom=0))
     .with_(@tabular.MarginColor::filled(@tabular.Color::bg_red()))
   assert_eq(
     table.to_string(),

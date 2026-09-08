@@ -99,7 +99,7 @@ test "upstream rotate test_bottom_rotate" {
       [234, 567, 891],
       [111, 222, 333],
     ])
-    .rotate(@tabular.Rotate::Bottom)
+    .reverse(@tabular.Reverse::rows(0))
     .to_string()
   assert_eq(
     actual,
@@ -125,7 +125,7 @@ test "upstream rotate test_top_rotate" {
       [234, 567, 891],
       [111, 222, 333],
     ])
-    .rotate(@tabular.Rotate::Top)
+    .reverse(@tabular.Reverse::rows(0))
     .to_string()
   assert_eq(
     actual,
@@ -249,7 +249,7 @@ test "upstream rotate test_right_rotate_1" {
 // Upstream: tabled/tests/settings/rotate_test.rs::test_bottom_rotate_1
 test "upstream rotate test_bottom_rotate_1" {
   let actual = upstream_int_table([[0, 1, 2, 3, 4, 5], [0, 1, 2, 3, 4, 5]])
-    .rotate(@tabular.Rotate::Bottom)
+    .reverse(@tabular.Reverse::rows(0))
     .to_string()
   assert_eq(
     actual,

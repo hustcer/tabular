@@ -1,15 +1,15 @@
 ///|
 /// Duplicate an ordered source selection into a destination selection.
-pub struct Dup {
-  priv dst : &Object
-  priv src : &Object
+pub struct Duplicate {
+  priv destination : &Object
+  priv source : &Object
 }
 
 ///|
 /// Source values are collected before any destination is changed.
 /// The source cycles independently for each destination entity.
-pub fn Dup::new(dst : &Object, src : &Object) -> Dup {
-  { dst, src, }
+pub fn Duplicate::new(source~ : &Object, destination~ : &Object) -> Duplicate {
+  { source, destination, }
 }
 
 ///|
@@ -18,11 +18,12 @@ pub fn Dup::new(dst : &Object, src : &Object) -> Dup {
 /// ```mbt check
 /// test {
 ///   let table = Table::from_rows([["a", "b"], ["c", "d"]])
-///   table.duplicate(Dup::new(Rows::one(1), Rows::one(0))) |> ignore
+///   table.duplicate(Duplicate::new(source=Rows::one(0), destination=Rows::one(1)))
+///   |> ignore
 ///   assert_eq(table.rows, [["a", "b"], ["a", "b"]])
 /// }
 /// ```
-pub fn Table::duplicate(self : Table, dup : Dup) -> Table {
+pub fn Table::duplicate(self : Table, duplication : Duplicate) -> Table {
   let records = @papergrid.IterRecords::new(self.rows)
   let row_count = records.count_rows()
   let col_count = records.count_cols()
@@ -30,7 +31,7 @@ pub fn Table::duplicate(self : Table, dup : Dup) -> Table {
     cell.0 >= 0 && cell.0 < row_count && cell.1 >= 0 && cell.1 < col_count
   }
   let source : Array[String] = []
-  for group in dup.src.cells(self) {
+  for group in duplication.source.cells(self) {
     for cell in group {
       if valid(cell) {
         source.push(records.get_cell(cell.0, cell.1))
@@ -38,7 +39,7 @@ pub fn Table::duplicate(self : Table, dup : Dup) -> Table {
     }
   }
   guard !source.is_empty() else { return self }
-  for group in dup.dst.cells(self) {
+  for group in duplication.destination.cells(self) {
     let mut index = 0
     for cell in group {
       if valid(cell) {

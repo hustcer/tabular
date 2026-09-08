@@ -247,7 +247,7 @@ pub fn strip_ansi(text : String) -> String {
 
 ///|
 /// Trim visible whitespace while retaining the original terminal sequences.
-pub fn trim_ansi(text : String) -> String {
+pub fn trim_ansi_whitespace(text : String) -> String {
   let tokens = ansi_tokens(text)
   if tokens.all(token => token.kind is Text) {
     return text.trim().to_owned()

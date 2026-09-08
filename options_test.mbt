@@ -117,7 +117,7 @@ test "custom cell options receive original object scopes" {
     @tabular.Entity::Global,
     @tabular.Entity::Row(0),
     @tabular.Entity::Row(1),
-    @tabular.Entity::Column(0),
+    @tabular.Entity::Col(0),
     @tabular.Entity::Cell(1, 1),
   ])
 }
@@ -159,7 +159,7 @@ impl @tabular.TableOption for HintOption with fn hint_change(self) {
 test "settings and tuples combine layout hints like upstream" {
   let none = HintOption::{ hint: None, }
   let row = HintOption::{ hint: Some(@tabular.Entity::Row(1)), }
-  let col = HintOption::{ hint: Some(@tabular.Entity::Column(2)), }
+  let col = HintOption::{ hint: Some(@tabular.Entity::Col(2)), }
   let cell = HintOption::{ hint: Some(@tabular.Entity::Cell(1, 2)), }
   assert_eq(@tabular.TableOption::hint_change((none, none)), None)
   assert_eq(@tabular.TableOption::hint_change((row, cell, none)), row.hint)
@@ -171,7 +171,9 @@ test "settings and tuples combine layout hints like upstream" {
   assert_eq(@tabular.TableOption::hint_change((cell, cell)), cell.hint)
   assert_eq(
     @tabular.TableOption::hint_change(
-      @tabular.Modify::list(@tabular.Rows::all(), @tabular.Alignment::left()),
+      @tabular.Modify::new(@tabular.Rows::all()).with_(
+        @tabular.Alignment::left(),
+      ),
     ),
     Some(@tabular.Entity::Global),
   )
@@ -211,7 +213,7 @@ test "table shape and empty queries include ragged rows" {
   let table = @tabular.Table::from_rows([["a"], ["b", "c"]])
   assert_eq(table.shape(), (2, 2))
   assert_eq(table.count_rows(), 2)
-  assert_eq(table.count_columns(), 2)
+  assert_eq(table.count_cols(), 2)
   assert_false(table.is_empty())
 }
 
@@ -223,7 +225,7 @@ test "entity iteration is bounded and row-major" {
     (1, 0),
     (1, 1),
   ])
-  assert_eq(@tabular.Entity::Column(1).iter(3, 2).to_array(), [
+  assert_eq(@tabular.Entity::Col(1).iter(3, 2).to_array(), [
     (0, 1),
     (1, 1),
     (2, 1),

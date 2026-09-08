@@ -1,16 +1,16 @@
 ///|
 // Upstream: tabled/src/settings/color/mod.rs::tests::test_try_from
 test "upstream color test_try_from" {
-  assert_eq(@tabular.Color::try_from(""), Err(()))
+  assert_eq(@tabular.Color::try_parse(""), Err(()))
   assert_eq(
-    @tabular.Color::try_from("\u001b[31m\u001b[42m\u001b[39m\u001b[49m"),
+    @tabular.Color::try_parse("\u001b[31m\u001b[42m\u001b[39m\u001b[49m"),
     Err(()),
   )
-  assert_eq(@tabular.Color::try_from("."), Ok(@tabular.Color::new("", "")))
-  assert_eq(@tabular.Color::try_from("...."), Ok(@tabular.Color::new("", "")))
+  assert_eq(@tabular.Color::try_parse("."), Ok(@tabular.Color::new("", "")))
+  assert_eq(@tabular.Color::try_parse("...."), Ok(@tabular.Color::new("", "")))
   for text in [".", "...", ".\n.\n.", ".\n.\n.\n", "\n"] {
     assert_eq(
-      @tabular.Color::try_from(
+      @tabular.Color::try_parse(
         "\u001b[31m\u001b[42m" + text + "\u001b[39m\u001b[49m",
       ),
       Ok(@tabular.Color::new("\u001b[31m\u001b[42m", "\u001b[39m\u001b[49m")),
@@ -22,23 +22,23 @@ test "upstream color test_try_from" {
 // Upstream: tabled/src/settings/color/mod.rs::tests::test_rgb_color
 test "upstream color test_rgb_color" {
   assert_eq(
-    @tabular.Color::rgb_bg(255, 255, 255),
+    @tabular.Color::bg_rgb(255, 255, 255),
     @tabular.Color::new("\u001b[48;2;255;255;255m", "\u001b[49m"),
   )
   assert_eq(
-    @tabular.Color::rgb_bg(0, 255, 128),
+    @tabular.Color::bg_rgb(0, 255, 128),
     @tabular.Color::new("\u001b[48;2;0;255;128m", "\u001b[49m"),
   )
   assert_eq(
-    @tabular.Color::rgb_fg(0, 255, 128),
+    @tabular.Color::fg_rgb(0, 255, 128),
     @tabular.Color::new("\u001b[38;2;0;255;128m", "\u001b[39m"),
   )
   assert_eq(
-    @tabular.Color::rgb_fg(255, 255, 255),
+    @tabular.Color::fg_rgb(255, 255, 255),
     @tabular.Color::new("\u001b[38;2;255;255;255m", "\u001b[39m"),
   )
   assert_eq(
-    @tabular.Color::rgb_bg(255, 255, 255) | @tabular.Color::rgb_fg(0, 0, 0),
+    @tabular.Color::bg_rgb(255, 255, 255) | @tabular.Color::fg_rgb(0, 0, 0),
     @tabular.Color::new(
       "\u001b[48;2;255;255;255m\u001b[38;2;0;0;0m", "\u001b[49m\u001b[39m",
     ),

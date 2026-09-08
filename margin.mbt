@@ -12,7 +12,12 @@ pub struct Margin {
 } derive(Debug)
 
 ///|
-pub fn Margin::new(left : Int, right : Int, top : Int, bottom : Int) -> Margin {
+pub fn Margin::new(
+  left~ : Int,
+  right~ : Int,
+  top~ : Int,
+  bottom~ : Int,
+) -> Margin {
   {
     left: Int::max(0, left),
     right: Int::max(0, right),
@@ -28,10 +33,10 @@ pub fn Margin::new(left : Int, right : Int, top : Int, bottom : Int) -> Margin {
 ///|
 pub fn Margin::fill(
   self : Margin,
-  left : Char,
-  right : Char,
-  top : Char,
-  bottom : Char,
+  left~ : Char,
+  right~ : Char,
+  top~ : Char,
+  bottom~ : Char,
 ) -> Margin {
   {
     ..self,

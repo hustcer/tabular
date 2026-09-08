@@ -50,7 +50,7 @@ pub impl[M : Measurement] CellOption for CellHeightIncrease[M] with fn change(
   entity,
 ) {
   let height = Measurement::measure(self.height, table, Attribute::Height)
-  for position in entity.iter(table.count_rows(), table.count_columns()) {
+  for position in entity.iter(table.count_rows(), table.count_cols()) {
     let (row, col) = position
     if col >= table.rows[row].length() {
       continue
@@ -110,7 +110,7 @@ pub impl[M : Measurement] CellOption for CellHeightLimit[M] with fn change(
   entity,
 ) {
   let height = Measurement::measure(self.height, table, Attribute::Height)
-  for position in entity.iter(table.count_rows(), table.count_columns()) {
+  for position in entity.iter(table.count_rows(), table.count_cols()) {
     let (row, col) = position
     if col >= table.rows[row].length() {
       continue

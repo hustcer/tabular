@@ -37,7 +37,7 @@ pub fn ANSIStr::get_suffix(self : ANSIStr) -> String {
 }
 
 ///|
-pub fn ANSIBuf::as_ref(self : ANSIBuf) -> ANSIStr {
+pub fn ANSIBuf::as_ansi_str(self : ANSIBuf) -> ANSIStr {
   ANSIStr::new(self.prefix, self.suffix)
 }
 

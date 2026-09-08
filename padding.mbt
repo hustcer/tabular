@@ -9,28 +9,28 @@ pub using @papergrid {type Indent, type Sides}
 /// ```mbt check
 /// test {
 ///   let table = Table::from_rows([["x"]]).with_(
-///     Padding::new(1, 1, 1, 1).fill('>', '<', '^', 'v'),
+///     Padding::new(1, 1, 1, 1).fill(left='>', right='<', top='^', bottom='v'),
 ///   )
 ///   assert_eq(table.to_string(), "+---+\n|^^^|\n|>x<|\n|vvv|\n+---+")
 /// }
 /// ```
 pub fn Padding::fill(
   self : Padding,
-  left : Char,
-  right : Char,
-  top : Char,
-  bottom : Char,
+  left~ : Char,
+  right~ : Char,
+  top~ : Char,
+  bottom~ : Char,
 ) -> Padding {
-  { ..self, fills: Sides::new(left, right, top, bottom), }
+  { ..self, fills: Sides::new(left~, right~, top~, bottom~), }
 }
 
 ///|
 pub fn Padding::to_sides(self : Padding) -> Sides[Indent] {
   Sides::new(
-    Indent::new(self.left, self.fills.left),
-    Indent::new(self.right, self.fills.right),
-    Indent::new(self.top, self.fills.top),
-    Indent::new(self.bottom, self.fills.bottom),
+    left=Indent::new(self.left, self.fills.left),
+    right=Indent::new(self.right, self.fills.right),
+    top=Indent::new(self.top, self.fills.top),
+    bottom=Indent::new(self.bottom, self.fills.bottom),
   )
 }
 
@@ -41,27 +41,37 @@ pub fn Padding::from_sides(sides : Sides[Indent]) -> Padding {
     sides.right.size,
     sides.top.size,
     sides.bottom.size,
-  ).fill(sides.left.fill, sides.right.fill, sides.top.fill, sides.bottom.fill)
+  ).fill(
+    left=sides.left.fill,
+    right=sides.right.fill,
+    top=sides.top.fill,
+    bottom=sides.bottom.fill,
+  )
 }
 
 ///|
 pub fn Margin::to_sides(self : Margin) -> Sides[Indent] {
   Sides::new(
-    Indent::new(self.left, self.fill_left),
-    Indent::new(self.right, self.fill_right),
-    Indent::new(self.top, self.fill_top),
-    Indent::new(self.bottom, self.fill_bottom),
+    left=Indent::new(self.left, self.fill_left),
+    right=Indent::new(self.right, self.fill_right),
+    top=Indent::new(self.top, self.fill_top),
+    bottom=Indent::new(self.bottom, self.fill_bottom),
   )
 }
 
 ///|
 pub fn Margin::from_sides(sides : Sides[Indent]) -> Margin {
   Margin::new(
-    sides.left.size,
-    sides.right.size,
-    sides.top.size,
-    sides.bottom.size,
-  ).fill(sides.left.fill, sides.right.fill, sides.top.fill, sides.bottom.fill)
+    left=sides.left.size,
+    right=sides.right.size,
+    top=sides.top.size,
+    bottom=sides.bottom.size,
+  ).fill(
+    left=sides.left.fill,
+    right=sides.right.fill,
+    top=sides.top.fill,
+    bottom=sides.bottom.fill,
+  )
 }
 
 ///|
@@ -71,22 +81,15 @@ pub(all) enum PaddingExpand {
 } derive(Eq, Compare, Debug)
 
 ///|
-pub fn Padding::expand(horizontal : Bool) -> PaddingExpand {
-  if horizontal {
-    Horizontal
-  } else {
-    Vertical
-  }
-}
-
-///|
 pub impl CellOption for PaddingExpand with fn change(self, table, entity) {
   let records = @papergrid.IterRecords::new(table.rows)
   let dimensions = match self {
-    Horizontal => @papergrid.IterGridDimension::width(records, table.config)
-    Vertical => @papergrid.IterGridDimension::height(records, table.config)
+    Horizontal =>
+      @papergrid.IterGridDimension::measure_widths(records, table.config)
+    Vertical =>
+      @papergrid.IterGridDimension::measure_heights(records, table.config)
   }
-  for position in entity.iter(table.count_rows(), table.count_columns()) {
+  for position in entity.iter(table.count_rows(), table.count_cols()) {
     let (row, col) = position
     let text = records.get_cell(row, col)
     let (size, total) = match self {

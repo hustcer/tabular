@@ -1,6 +1,6 @@
 ///|
 test "indent sides support constructors conversion map and ordered fold" {
-  let sides = @tabular.Sides::new(1, 2, 3, 4)
+  let sides = @tabular.Sides::new(left=1, right=2, top=3, bottom=4)
   assert_eq(sides.fold("", (out, value) => out + value.to_string()), "1234")
   let pads = sides.map(value => @tabular.Indent::new(value, '#'))
   assert_eq(@tabular.Padding::from_sides(pads).to_sides(), pads)
@@ -10,7 +10,9 @@ test "indent sides support constructors conversion map and ordered fold" {
   assert_eq(empty, @tabular.Sides::filled(@tabular.Indent::zero()))
   let unset : @tabular.Sides[Int?] = @tabular.Sides::filled(None)
   assert_true(unset.is_empty())
-  assert_false(@tabular.Sides::new(None, Some(0), None, None).is_empty())
+  assert_false(
+    @tabular.Sides::new(left=None, right=Some(0), top=None, bottom=None).is_empty(),
+  )
 }
 
 ///|
@@ -27,12 +29,15 @@ test "indent colors accept color buffers and static ANSI pairs" {
     table.config.get_padding_color(0, 0),
     colors.map(color => Some(color)),
   )
-  table.with_(@tabular.PaddingColor::filled(ansi.as_ref())) |> ignore
+  table.with_(@tabular.PaddingColor::filled(ansi.as_ansi_str())) |> ignore
   assert_eq(
     table.config.get_padding_color(0, 0),
     colors.map(color => Some(color)),
   )
-  table.with_(@tabular.MarginColor::new(ansi, ansi, ansi, ansi)) |> ignore
+  table.with_(
+    @tabular.MarginColor::new(left=ansi, right=ansi, top=ansi, bottom=ansi),
+  )
+  |> ignore
   assert_eq(table.config.get_margin_color(), colors.map(color => Some(color)))
   table.with_(@tabular.MarginColor::empty()) |> ignore
   assert_eq(
@@ -45,17 +50,17 @@ test "indent colors accept color buffers and static ANSI pairs" {
 test "typed margin offsets retain start and end zero identity" {
   let config = @papergrid.SpannedConfig::default()
   assert_eq(
-    config.get_margin_offset(),
+    config.get_margin_offsets(),
     @tabular.Sides::filled(@tabular.Offset::Start(0)),
   )
   let offsets = @tabular.Sides::new(
-    @tabular.Offset::Start(0),
-    @tabular.Offset::End(0),
-    @tabular.Offset::Start(2),
-    @tabular.Offset::End(3),
+    left=@tabular.Offset::Start(0),
+    right=@tabular.Offset::End(0),
+    top=@tabular.Offset::Start(2),
+    bottom=@tabular.Offset::End(3),
   )
   config.set_margin_offsets(offsets)
-  assert_eq(config.get_margin_offset(), offsets)
+  assert_eq(config.get_margin_offsets(), offsets)
   assert_eq(@tabular.Offset::from_int(0), @tabular.Offset::End(0))
   assert_eq(@tabular.Offset::from_int(-2), @tabular.Offset::End(2))
   assert_eq(@tabular.Offset::from_int(2), @tabular.Offset::Start(2))
@@ -67,7 +72,12 @@ test "typed margin offsets retain start and end zero identity" {
 ///|
 test "padding fills and colors follow coordinate remapping" {
   let table = @tabular.Table::from_rows([["a"], ["b"], ["c"]])
-  let pad = @tabular.Padding::new(1, 2, 1, 2).fill('>', '<', '^', 'v')
+  let pad = @tabular.Padding::new(1, 2, 1, 2).fill(
+    left='>',
+    right='<',
+    top='^',
+    bottom='v',
+  )
   table
   .modify((2, 0), pad)
   .modify((2, 0), @tabular.PaddingColor::filled(@tabular.Color::bg_red()))

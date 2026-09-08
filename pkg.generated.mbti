@@ -39,6 +39,16 @@ pub fn Alignment::top() -> Self
 pub impl CellOption for Alignment
 pub impl TableOption for Alignment
 
+pub struct AlignmentFill {
+  // private fields
+}
+pub fn AlignmentFill::color(Self, Color) -> Self
+pub fn AlignmentFill::colored(Char, Color) -> Self
+pub fn AlignmentFill::default() -> Self
+pub fn AlignmentFill::new(Char) -> Self
+pub impl CellOption for AlignmentFill
+pub impl TableOption for AlignmentFill
+
 pub(all) enum AlignmentStrategy {
   PerCell
   PerLine
@@ -108,21 +118,16 @@ pub impl[M : Measurement] CellOption for CellHeightLimit[M]
 pub impl HeightOption for CellHeightLimit[Int]
 pub impl[M : Measurement] TableOption for CellHeightLimit[M]
 
-pub struct Charset {
+pub struct CellSettings[O, M] {
   // private fields
 }
-pub fn Charset::charset_clean(String) -> String
-pub fn Charset::clean(Self) -> Self
-pub fn Charset::default() -> Self
-pub fn Charset::new() -> Self
-pub fn Charset::tab_size(Self, Int) -> Self
-pub impl CellOption for Charset
-pub impl TableOption for Charset
+pub fn[O, A, B] CellSettings::with_(Self[O, A], B) -> Self[O, Settings[A, B]]
+pub impl[O : Object, M : CellOption] TableOption for CellSettings[O, M]
 
 pub struct Color {
   // private fields
 } derive(Eq, @debug.Debug)
-pub fn Color::as_ansi_str(Self) -> @papergrid.ANSIStr?
+pub fn Color::as_static_ansi(Self) -> @papergrid.ANSIStr?
 pub fn Color::bg_black() -> Self
 pub fn Color::bg_blue() -> Self
 pub fn Color::bg_bright_black() -> Self
@@ -137,12 +142,13 @@ pub fn Color::bg_cyan() -> Self
 pub fn Color::bg_green() -> Self
 pub fn Color::bg_magenta() -> Self
 pub fn Color::bg_red() -> Self
+pub fn Color::bg_rgb(Byte, Byte, Byte) -> Self
 pub fn Color::bg_white() -> Self
 pub fn Color::bg_yellow() -> Self
-pub fn Color::bitor(Self, Self) -> Self
 pub fn Color::blink() -> Self
 pub fn Color::bold() -> Self
 pub fn Color::colorize(Self, String) -> String
+pub fn Color::combine(Self, Self) -> Self
 pub fn Color::default() -> Self
 pub fn Color::dimmed() -> Self
 pub fn Color::empty() -> Self
@@ -160,6 +166,7 @@ pub fn Color::fg_cyan() -> Self
 pub fn Color::fg_green() -> Self
 pub fn Color::fg_magenta() -> Self
 pub fn Color::fg_red() -> Self
+pub fn Color::fg_rgb(Byte, Byte, Byte) -> Self
 pub fn Color::fg_white() -> Self
 pub fn Color::fg_yellow() -> Self
 pub fn Color::from_ansi_buf(@papergrid.ANSIBuf) -> Self
@@ -171,13 +178,11 @@ pub fn Color::invert() -> Self
 pub fn Color::is_empty(Self) -> Bool
 pub fn Color::italic() -> Self
 pub fn Color::new(String, String) -> Self
-pub fn Color::parse(String) -> Self
+pub fn Color::parse_or_abort(String) -> Self
 pub fn Color::reset() -> Self
-pub fn Color::rgb_bg(Byte, Byte, Byte) -> Self
-pub fn Color::rgb_fg(Byte, Byte, Byte) -> Self
 pub fn Color::strikethrough() -> Self
 pub fn Color::to_ansi_buf(Self) -> @papergrid.ANSIBuf
-pub fn Color::try_from(String) -> Result[Self, Unit]
+pub fn Color::try_parse(String) -> Result[Self, Unit]
 pub fn Color::underline() -> Self
 pub impl CellOption for Color
 pub impl TableOption for Color
@@ -214,8 +219,8 @@ pub fn Cols::step_by(Self, Int) -> Self
 pub impl Object for Cols
 
 pub struct CompleteDimension {
-  mut width : Array[Int]?
-  mut height : Array[Int]?
+  mut widths : Array[Int]?
+  mut heights : Array[Int]?
 } derive(Eq, @debug.Debug)
 pub fn CompleteDimension::clear(Self) -> Unit
 pub fn CompleteDimension::clear_height(Self) -> Unit
@@ -226,9 +231,9 @@ pub fn CompleteDimension::get_height(Self, Int) -> Int
 pub fn CompleteDimension::get_heights(Self) -> Array[Int]?
 pub fn CompleteDimension::get_width(Self, Int) -> Int
 pub fn CompleteDimension::get_widths(Self) -> Array[Int]?
+pub fn CompleteDimension::invalidate(Self, @papergrid.Entity?) -> Unit
 pub fn CompleteDimension::is_complete(Self) -> Bool
 pub fn CompleteDimension::is_empty(Self) -> Bool
-pub fn CompleteDimension::reastimate(Self, @papergrid.Entity?) -> Unit
 pub fn CompleteDimension::set_heights(Self, Array[Int]) -> Unit
 pub fn CompleteDimension::set_widths(Self, Array[Int]) -> Unit
 
@@ -240,11 +245,11 @@ pub fn Concat::horizontal(Table) -> Self
 pub fn Concat::vertical(Table) -> Self
 pub impl TableOption for Concat
 
-pub struct Dup {
+pub struct Duplicate {
   // private fields
 }
-pub fn Dup::new(&Object, &Object) -> Self
-pub impl TableOption for Dup
+pub fn Duplicate::new(source~ : &Object, destination~ : &Object) -> Self
+pub impl TableOption for Duplicate
 
 pub struct EmptySettings {
 }
@@ -273,7 +278,7 @@ pub fn[M] Height::limit(M) -> CellHeightLimit[M]
 pub fn Height::list(Array[Int]) -> HeightList
 
 pub struct HeightList {
-  list : Array[Int]
+  heights : Array[Int]
 } derive(@debug.Debug)
 pub fn HeightList::from_array(Array[Int]) -> Self
 pub fn HeightList::from_iter(Iter[Int]) -> Self
@@ -326,24 +331,6 @@ pub fn IndexBuilder::hide(Self) -> Self
 pub fn IndexBuilder::name(Self, String?) -> Self
 pub fn IndexBuilder::transpose(Self) -> Self
 
-pub struct Justification {
-  // private fields
-}
-pub fn Justification::color(Self, Color) -> Self
-pub fn Justification::colored(Char, Color) -> Self
-pub fn Justification::default() -> Self
-pub fn Justification::new(Char) -> Self
-pub impl CellOption for Justification
-pub impl TableOption for Justification
-
-pub struct Justify[M] {
-  width : M
-}
-pub fn Justify::max() -> Self[Max]
-pub fn Justify::min() -> Self[Min]
-pub fn[M] Justify::new(M) -> Self[M]
-pub impl[M : Measurement] TableOption for Justify[M]
-
 pub struct Margin {
   left : Int
   right : Int
@@ -354,9 +341,9 @@ pub struct Margin {
   fill_top : Char
   fill_bottom : Char
 } derive(@debug.Debug)
-pub fn Margin::fill(Self, Char, Char, Char, Char) -> Self
+pub fn Margin::fill(Self, left~ : Char, right~ : Char, top~ : Char, bottom~ : Char) -> Self
 pub fn Margin::from_sides(@papergrid.Sides[@papergrid.Indent]) -> Self
-pub fn Margin::new(Int, Int, Int, Int) -> Self
+pub fn Margin::new(left~ : Int, right~ : Int, top~ : Int, bottom~ : Int) -> Self
 pub fn Margin::to_sides(Self) -> @papergrid.Sides[@papergrid.Indent]
 pub impl TableOption for Margin
 
@@ -365,7 +352,7 @@ pub struct MarginColor[C] {
 } derive(@debug.Debug)
 pub fn MarginColor::empty() -> Self[@papergrid.ANSIStr]
 pub fn[C] MarginColor::filled(C) -> Self[C]
-pub fn[C] MarginColor::new(C, C, C, C) -> Self[C]
+pub fn[C] MarginColor::new(left~ : C, right~ : C, top~ : C, bottom~ : C) -> Self[C]
 pub impl[C : @papergrid.ANSIFmt] TableOption for MarginColor[C]
 
 pub(all) struct Max {
@@ -394,23 +381,16 @@ pub struct MinWidth[M, P] {
   priority : P
 }
 pub fn[M, P] MinWidth::fill_with(Self[M, P], Char) -> Self[M, P]
-pub fn[M] MinWidth::new(M) -> Self[M, PriorityNone]
+pub fn[M] MinWidth::new(M) -> Self[M, PriorityRoundRobin]
 pub fn[M, P, Q] MinWidth::priority(Self[M, P], Q) -> Self[M, Q]
 pub impl[M : Measurement, P] CellOption for MinWidth[M, P]
-pub impl[M : Measurement, P : Peaker] TableOption for MinWidth[M, P]
+pub impl[M : Measurement, P : ResizeSelector] TableOption for MinWidth[M, P]
 
 pub struct Modify[O] {
   // private fields
 }
-pub fn[O, M] Modify::list(O, M) -> ModifyList[O, M]
 pub fn[O] Modify::new(O) -> Self[O]
-pub fn[O, M] Modify::with_(Self[O], M) -> ModifyList[O, M]
-
-pub struct ModifyList[O, M] {
-  // private fields
-}
-pub fn[O, A, B] ModifyList::with_(Self[O, A], B) -> Self[O, Settings[A, B]]
-pub impl[O : Object, M : CellOption] TableOption for ModifyList[O, M]
+pub fn[O, M] Modify::with_(Self[O], M) -> CellSettings[O, M]
 
 pub struct Padding {
   left : Int
@@ -419,8 +399,7 @@ pub struct Padding {
   bottom : Int
   fills : @papergrid.Sides[Char]
 } derive(Compare, Eq, @debug.Debug)
-pub fn Padding::expand(Bool) -> PaddingExpand
-pub fn Padding::fill(Self, Char, Char, Char, Char) -> Self
+pub fn Padding::fill(Self, left~ : Char, right~ : Char, top~ : Char, bottom~ : Char) -> Self
 pub fn Padding::from_sides(@papergrid.Sides[@papergrid.Indent]) -> Self
 pub fn Padding::new(Int, Int, Int, Int) -> Self
 pub fn Padding::to_sides(Self) -> @papergrid.Sides[@papergrid.Indent]
@@ -434,7 +413,7 @@ pub struct PaddingColor[C] {
 pub fn PaddingColor::empty() -> Self[@papergrid.ANSIStr]
 pub fn[C] PaddingColor::filled(C) -> Self[C]
 pub fn[C] PaddingColor::from_sides(@papergrid.Sides[C]) -> Self[C]
-pub fn[C] PaddingColor::new(C, C, C, C) -> Self[C]
+pub fn[C] PaddingColor::new(left~ : C, right~ : C, top~ : C, bottom~ : C) -> Self[C]
 pub fn[C] PaddingColor::to_sides(Self[C]) -> @papergrid.Sides[C]
 pub impl[C : @papergrid.ANSIFmt] CellOption for PaddingColor[C]
 pub impl[C : @papergrid.ANSIFmt] TableOption for PaddingColor[C]
@@ -463,63 +442,62 @@ pub impl Measurement for Percent
 
 pub enum Priority {
 }
-pub fn Priority::left() -> PriorityLeft
-pub fn Priority::max(Bool) -> PriorityMax
-pub fn Priority::min(Bool) -> PriorityMin
-pub fn Priority::none() -> PriorityNone
-pub fn Priority::right() -> PriorityRight
+pub fn Priority::first() -> PriorityFirst
+pub fn Priority::last() -> PriorityLast
+pub fn Priority::max(tie_break~ : TieBreak) -> PriorityMax
+pub fn Priority::min(tie_break~ : TieBreak) -> PriorityMin
+pub fn Priority::round_robin() -> PriorityRoundRobin
 
-pub struct PriorityLeft {
+pub struct PriorityFirst {
 } derive(Eq, @debug.Debug)
-pub fn PriorityLeft::default() -> Self
-pub fn PriorityLeft::new() -> Self
-pub impl Peaker for PriorityLeft
+pub fn PriorityFirst::default() -> Self
+pub fn PriorityFirst::new() -> Self
+pub impl ResizeSelector for PriorityFirst
+
+pub struct PriorityLast {
+  // private fields
+} derive(Eq, @debug.Debug)
+pub fn PriorityLast::default() -> Self
+pub fn PriorityLast::new() -> Self
+pub impl ResizeSelector for PriorityLast
 
 pub struct PriorityMax {
   // private fields
 } derive(Eq, @debug.Debug)
 pub fn PriorityMax::default() -> Self
-pub fn PriorityMax::left() -> Self
-pub fn PriorityMax::new(Bool) -> Self
-pub fn PriorityMax::right() -> Self
-pub impl Peaker for PriorityMax
+pub fn PriorityMax::new(tie_break~ : TieBreak) -> Self
+pub fn PriorityMax::prefer_first() -> Self
+pub fn PriorityMax::prefer_last() -> Self
+pub impl ResizeSelector for PriorityMax
 
 pub struct PriorityMin {
   // private fields
 } derive(Eq, @debug.Debug)
 pub fn PriorityMin::default() -> Self
-pub fn PriorityMin::left() -> Self
-pub fn PriorityMin::new(Bool) -> Self
-pub fn PriorityMin::right() -> Self
-pub impl Peaker for PriorityMin
+pub fn PriorityMin::new(tie_break~ : TieBreak) -> Self
+pub fn PriorityMin::prefer_first() -> Self
+pub fn PriorityMin::prefer_last() -> Self
+pub impl ResizeSelector for PriorityMin
 
-pub struct PriorityNone {
+pub struct PriorityRoundRobin {
   // private fields
 } derive(Eq, @debug.Debug)
-pub fn PriorityNone::default() -> Self
-pub fn PriorityNone::new() -> Self
-pub impl Peaker for PriorityNone
-
-pub struct PriorityRight {
-  // private fields
-} derive(Eq, @debug.Debug)
-pub fn PriorityRight::default() -> Self
-pub fn PriorityRight::new() -> Self
-pub impl Peaker for PriorityRight
+pub fn PriorityRoundRobin::default() -> Self
+pub fn PriorityRoundRobin::new() -> Self
+pub impl ResizeSelector for PriorityRoundRobin
 
 pub struct Reverse {
   // private fields
 }
-pub fn Reverse::columns(Int) -> Self
-pub fn Reverse::limit(Self, @papergrid.Offset) -> Self
+pub fn Reverse::cols(Int) -> Self
+pub fn Reverse::exclude_last(Self, Int) -> Self
 pub fn Reverse::rows(Int) -> Self
+pub fn Reverse::take(Self, Int) -> Self
 pub impl TableOption for Reverse
 
 pub(all) enum Rotate {
   Left
   Right
-  Top
-  Bottom
 } derive(Eq, @debug.Debug)
 pub impl TableOption for Rotate
 
@@ -608,7 +586,7 @@ pub struct Settings[A, B] {
 }
 pub fn Settings::default() -> Self[EmptySettings, EmptySettings]
 pub fn Settings::empty() -> Self[EmptySettings, EmptySettings]
-pub fn[A, B, O, M] Settings::modify(Self[A, B], O, M) -> Self[Self[A, B], ModifyList[O, M]]
+pub fn[A, B, O, M] Settings::modify(Self[A, B], O, M) -> Self[Self[A, B], CellSettings[O, M]]
 pub fn[A, B] Settings::new(A, B) -> Self[A, B]
 pub fn[A, B, C] Settings::with_(Self[A, B], C) -> Self[Self[A, B], C]
 pub impl[A : CellOption, B : CellOption] CellOption for Settings[A, B]
@@ -635,7 +613,6 @@ pub impl TableOption for Shadow
 pub enum Span {
 }
 pub fn Span::col(Int) -> Setting
-pub fn Span::column(Int) -> Setting
 pub fn Span::row(Int) -> Setting
 
 pub struct Split {
@@ -708,15 +685,15 @@ pub struct Table {
 pub fn Table::apply(Self, Style) -> Self
 pub fn Table::concat(Self, Concat) -> Self
 pub fn Table::correct_borders(Self) -> Self
-pub fn Table::count_columns(Self) -> Int
+pub fn Table::count_cols(Self) -> Int
 pub fn Table::count_rows(Self) -> Int
-pub fn Table::duplicate(Self, Dup) -> Self
+pub fn Table::dimension_cache(Self) -> CompleteDimension
+pub fn Table::dimension_snapshot(Self) -> CompleteDimension
+pub fn Table::duplicate(Self, Duplicate) -> Self
 pub fn Table::extract_cols(Self, Cols) -> Self
 pub fn Table::extract_rows(Self, Rows) -> Self
 pub fn Table::extract_segment(Self, Rows, Cols) -> Self
 pub fn Table::from_rows(Array[Array[String]]) -> Self
-pub fn Table::get_dimension(Self) -> CompleteDimension
-pub fn Table::get_dimension_mut(Self) -> CompleteDimension
 pub fn Table::highlight(Self, Highlight) -> Self
 pub fn Table::is_empty(Self) -> Bool
 pub fn Table::merge(Self, Merge) -> Self
@@ -749,17 +726,33 @@ pub struct TableHeightIncrease[M, P] {
   height : M
   priority : P
 } derive(@debug.Debug)
-pub fn[M] TableHeightIncrease::new(M) -> Self[M, PriorityNone]
+pub fn[M] TableHeightIncrease::new(M) -> Self[M, PriorityRoundRobin]
 pub fn[M, P, Q] TableHeightIncrease::priority(Self[M, P], Q) -> Self[M, Q]
-pub impl[M : Measurement, P : Peaker] TableOption for TableHeightIncrease[M, P]
+pub impl[M : Measurement, P : ResizeSelector] TableOption for TableHeightIncrease[M, P]
 
 pub struct TableHeightLimit[M, P] {
   height : M
   priority : P
 } derive(@debug.Debug)
-pub fn[M] TableHeightLimit::new(M) -> Self[M, PriorityNone]
+pub fn[M] TableHeightLimit::new(M) -> Self[M, PriorityRoundRobin]
 pub fn[M, P, Q] TableHeightLimit::priority(Self[M, P], Q) -> Self[M, Q]
-pub impl[M : Measurement, P : Peaker] TableOption for TableHeightLimit[M, P]
+pub impl[M : Measurement, P : ResizeSelector] TableOption for TableHeightLimit[M, P]
+
+pub struct TextCleanup {
+  // private fields
+}
+pub fn TextCleanup::clean_text(String) -> String
+pub fn TextCleanup::default() -> Self
+pub fn TextCleanup::expand_tabs(Self, Int) -> Self
+pub fn TextCleanup::new() -> Self
+pub fn TextCleanup::remove_control_chars(Self) -> Self
+pub impl CellOption for TextCleanup
+pub impl TableOption for TextCleanup
+
+pub(all) enum TieBreak {
+  First
+  Last
+} derive(Eq, @debug.Debug)
 
 pub(all) enum TrimStrategy {
   Vertical
@@ -773,21 +766,29 @@ pub impl TableOption for TrimStrategy
 pub struct Truncate[M, P] {
   width : M
   suffix : String
-  limit : SuffixLimit
-  lines : Bool
-  color : Bool
+  suffix_limit : SuffixLimit
+  multiline : Bool
+  inherit_suffix_style : Bool
   priority : P
 }
+pub fn[M, P] Truncate::inherit_suffix_style(Self[M, P], Bool) -> Self[M, P]
 pub fn[M, P] Truncate::multiline(Self[M, P], Bool) -> Self[M, P]
-pub fn[M] Truncate::new(M) -> Self[M, PriorityNone]
+pub fn[M] Truncate::new(M) -> Self[M, PriorityRoundRobin]
 pub fn[M, P, Q] Truncate::priority(Self[M, P], Q) -> Self[M, Q]
 pub fn[M, P] Truncate::suffix(Self[M, P], String) -> Self[M, P]
 pub fn[M, P] Truncate::suffix_limit(Self[M, P], SuffixLimit) -> Self[M, P]
-pub fn[M, P] Truncate::suffix_try_color(Self[M, P], Bool) -> Self[M, P]
 pub fn Truncate::truncate(String, Int) -> String
 pub impl[M : Measurement, P] CellOption for Truncate[M, P]
-pub impl[M : Measurement, P : Peaker] TableOption for Truncate[M, P]
+pub impl[M : Measurement, P : ResizeSelector] TableOption for Truncate[M, P]
 pub impl[P] WidthOption for Truncate[Int, P]
+
+pub struct UniformWidth[M] {
+  width : M
+}
+pub fn UniformWidth::max() -> Self[Max]
+pub fn UniformWidth::min() -> Self[Min]
+pub fn[M] UniformWidth::new(M) -> Self[M]
+pub impl[M : Measurement] TableOption for UniformWidth[M]
 
 pub enum VAlign {
   Top
@@ -802,15 +803,15 @@ pub impl TableOption for VAlign
 
 pub enum Width {
 }
-pub fn[M] Width::increase(M) -> MinWidth[M, PriorityNone]
-pub fn[M] Width::justify(M) -> Justify[M]
+pub fn[M] Width::increase(M) -> MinWidth[M, PriorityRoundRobin]
 pub fn Width::list(Array[Int]) -> WidthList
-pub fn[M] Width::truncate(M, suffix? : String) -> Truncate[M, PriorityNone]
-pub fn[M] Width::wrap(M) -> Wrap[M, PriorityNone]
-pub fn Width::wrap_with(Int, String) -> Wrap[Int, PriorityNone]
+pub fn[M] Width::truncate(M, suffix? : String) -> Truncate[M, PriorityRoundRobin]
+pub fn[M] Width::uniform(M) -> UniformWidth[M]
+pub fn[M] Width::wrap(M) -> Wrap[M, PriorityRoundRobin]
+pub fn Width::wrap_with(Int, String) -> Wrap[Int, PriorityRoundRobin]
 
 pub struct WidthList {
-  list : Array[Int]
+  widths : Array[Int]
 }
 pub fn WidthList::from_array(Array[Int]) -> Self
 pub fn WidthList::from_iter(Iter[Int]) -> Self
@@ -819,16 +820,16 @@ pub impl TableOption for WidthList
 
 pub struct Wrap[M, P] {
   width : M
-  words : Bool
+  keep_words : Bool
   priority : P
   placeholder : String
 }
 pub fn[M, P] Wrap::keep_words(Self[M, P], Bool) -> Self[M, P]
-pub fn[M] Wrap::new(M) -> Self[M, PriorityNone]
+pub fn[M] Wrap::new(M) -> Self[M, PriorityRoundRobin]
 pub fn[M, P, Q] Wrap::priority(Self[M, P], Q) -> Self[M, Q]
-pub fn Wrap::wrap(String, Int, Bool) -> String
+pub fn Wrap::wrap(String, Int, keep_words~ : Bool) -> String
 pub impl[M : Measurement, P] CellOption for Wrap[M, P]
-pub impl[M : Measurement, P : Peaker] TableOption for Wrap[M, P]
+pub impl[M : Measurement, P : ResizeSelector] TableOption for Wrap[M, P]
 pub impl[P] WidthOption for Wrap[Int, P]
 
 // Type aliases
@@ -873,8 +874,8 @@ pub(open) trait Object {
 }
 pub impl Object for (Int, Int)
 
-pub(open) trait Peaker {
-  fn peak(Self, Array[Int], Array[Int]) -> Int?
+pub(open) trait ResizeSelector {
+  fn select(Self, Array[Int], Array[Int]) -> Int?
 }
 
 pub(open) trait TableOption {

@@ -6,12 +6,12 @@ pub struct PaddingColor[C] {
 
 ///|
 pub fn[C] PaddingColor::new(
-  left : C,
-  right : C,
-  top : C,
-  bottom : C,
+  left~ : C,
+  right~ : C,
+  top~ : C,
+  bottom~ : C,
 ) -> PaddingColor[C] {
-  { colors: Sides::new(left, right, top, bottom), }
+  { colors: Sides::new(left~, right~, top~, bottom~), }
 }
 
 ///|
@@ -70,12 +70,12 @@ pub struct MarginColor[C] {
 
 ///|
 pub fn[C] MarginColor::new(
-  left : C,
-  right : C,
-  top : C,
-  bottom : C,
+  left~ : C,
+  right~ : C,
+  top~ : C,
+  bottom~ : C,
 ) -> MarginColor[C] {
-  { colors: Sides::new(left, right, top, bottom), }
+  { colors: Sides::new(left~, right~, top~, bottom~), }
 }
 
 ///|

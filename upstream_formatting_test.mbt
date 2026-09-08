@@ -5,7 +5,7 @@
 // Upstream: tabled/tests/settings/formatting_test.rs::charset_clean_with_tab_size
 test "upstream formatting charset_clean_with_tab_size" {
   let actual = upstream_string_table(["Some\ttext"])
-    .with_(@tabular.Charset::new().tab_size(4))
+    .with_(@tabular.TextCleanup::new().expand_tabs(4))
     .to_string()
   assert_eq(
     actual,
@@ -23,7 +23,7 @@ test "upstream formatting charset_clean_with_tab_size" {
 // Upstream: tabled/tests/settings/formatting_test.rs::charset_clean_without_tab_size_unchanged
 test "upstream formatting charset_clean_without_tab_size_unchanged" {
   let actual = upstream_string_table(["Some\ttext\r"])
-    .with_(@tabular.Charset::new().clean())
+    .with_(@tabular.TextCleanup::new().remove_control_chars())
     .to_string()
   assert_eq(
     actual,
@@ -41,7 +41,7 @@ test "upstream formatting charset_clean_without_tab_size_unchanged" {
 // Upstream: tabled/tests/settings/formatting_test.rs::justification
 test "upstream formatting justification" {
   let actual = upstream_matrix(3, 3)
-    .with_(@tabular.Justification::new('#'))
+    .with_(@tabular.AlignmentFill::new('#'))
     .to_string()
   assert_eq(
     actual,
@@ -63,7 +63,7 @@ test "upstream formatting justification" {
 // Upstream: tabled/tests/settings/formatting_test.rs::justification_color
 test "upstream formatting justification_color" {
   let actual = upstream_matrix(3, 3)
-    .with_(@tabular.Justification::new('#').color(@tabular.Color::bg_red()))
+    .with_(@tabular.AlignmentFill::new('#').color(@tabular.Color::bg_red()))
     .to_string()
   assert_eq(
     actual, "+---+----------+----------+----------+\n| N | column 0 | column 1 | column 2 |\n+---+----------+----------+----------+\n| 0 | \u001b[41m##\u001b[49m0-0\u001b[41m###\u001b[49m | \u001b[41m##\u001b[49m0-1\u001b[41m###\u001b[49m | \u001b[41m##\u001b[49m0-2\u001b[41m###\u001b[49m |\n+---+----------+----------+----------+\n| 1 | \u001b[41m##\u001b[49m1-0\u001b[41m###\u001b[49m | \u001b[41m##\u001b[49m1-1\u001b[41m###\u001b[49m | \u001b[41m##\u001b[49m1-2\u001b[41m###\u001b[49m |\n+---+----------+----------+----------+\n| 2 | \u001b[41m##\u001b[49m2-0\u001b[41m###\u001b[49m | \u001b[41m##\u001b[49m2-1\u001b[41m###\u001b[49m | \u001b[41m##\u001b[49m2-2\u001b[41m###\u001b[49m |\n+---+----------+----------+----------+",
@@ -76,17 +76,17 @@ test "upstream formatting justification_columns" {
   let actual = upstream_matrix(3, 3)
     .with_(
       @tabular.Modify::new(@tabular.Cols::one(1)).with_(
-        @tabular.Justification::new('#'),
+        @tabular.AlignmentFill::new('#'),
       ),
     )
     .with_(
       @tabular.Modify::new(@tabular.Cols::one(2)).with_(
-        @tabular.Justification::new('@'),
+        @tabular.AlignmentFill::new('@'),
       ),
     )
     .with_(
       @tabular.Modify::new(@tabular.Cols::one(3)).with_(
-        @tabular.Justification::new('$'),
+        @tabular.AlignmentFill::new('$'),
       ),
     )
     .to_string()
@@ -112,17 +112,17 @@ test "upstream formatting justification_color_columns" {
   let actual = upstream_matrix(3, 3)
     .with_(
       @tabular.Modify::new(@tabular.Cols::one(1)).with_(
-        @tabular.Justification::new('#').color(@tabular.Color::bg_blue()),
+        @tabular.AlignmentFill::new('#').color(@tabular.Color::bg_blue()),
       ),
     )
     .with_(
       @tabular.Modify::new(@tabular.Cols::one(2)).with_(
-        @tabular.Justification::new('@').color(@tabular.Color::bg_red()),
+        @tabular.AlignmentFill::new('@').color(@tabular.Color::bg_red()),
       ),
     )
     .with_(
       @tabular.Modify::new(@tabular.Cols::one(3)).with_(
-        @tabular.Justification::new('$').color(@tabular.Color::bg_white()),
+        @tabular.AlignmentFill::new('$').color(@tabular.Color::bg_white()),
       ),
     )
     .to_string()
@@ -135,7 +135,7 @@ test "upstream formatting justification_color_columns" {
 // Upstream: tabled/tests/settings/formatting_test.rs::justification_multiline
 test "upstream formatting justification_multiline" {
   let actual = upstream_string_table(["Hello\nW\nor\nld", "yes", "no"])
-    .with_(@tabular.Justification::new('*'))
+    .with_(@tabular.AlignmentFill::new('*'))
     .to_string()
   assert_eq(
     actual,

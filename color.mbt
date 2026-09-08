@@ -28,17 +28,17 @@ pub fn Color::default() -> Color {
 
 ///|
 /// Extract the style of the first text block; no text block produces Err.
-pub fn Color::try_from(text : String) -> Result[Color, Unit] {
-  @papergrid.ANSIBuf::try_from(text).map(Color::from_ansi_buf)
+pub fn Color::try_parse(text : String) -> Result[Color, Unit] {
+  @papergrid.ANSIBuf::try_parse(text).map(Color::from_ansi_buf)
 }
 
 ///|
-/// Parse a style, aborting on input without a text block. Use `try_from` when
+/// Parse a style, aborting on input without a text block. Use `try_parse` when
 /// a missing text block must be handled explicitly.
-pub fn Color::parse(text : String) -> Color {
-  match Color::try_from(text) {
+pub fn Color::parse_or_abort(text : String) -> Color {
+  match Color::try_parse(text) {
     Ok(color) => color
-    Err(_) => abort("Color::parse requires a text block")
+    Err(_) => abort("Color::parse_or_abort requires a text block")
   }
 }
 
@@ -58,9 +58,11 @@ pub fn Color::get_suffix(self : Color) -> String {
 }
 
 ///|
-pub fn Color::as_ansi_str(self : Color) -> @papergrid.ANSIStr? {
+/// Return a style pair only for colors created from a static preset or ANSIStr.
+/// Dynamically parsed or constructed colors return None; use `to_ansi_buf` for those.
+pub fn Color::as_static_ansi(self : Color) -> @papergrid.ANSIStr? {
   if self.static_ {
-    Some(self.ansi.as_ref())
+    Some(self.ansi.as_ansi_str())
   } else {
     None
   }
@@ -92,7 +94,7 @@ pub impl @papergrid.ANSIFmt for Color with fn fmt_ansi_suffix(self, out) {
 }
 
 ///|
-pub fn Color::rgb_fg(red : Byte, green : Byte, blue : Byte) -> Color {
+pub fn Color::fg_rgb(red : Byte, green : Byte, blue : Byte) -> Color {
   Color::new(
     "\u001b[38;2;\{red.to_int()};\{green.to_int()};\{blue.to_int()}m",
     "\u001b[39m",
@@ -100,7 +102,7 @@ pub fn Color::rgb_fg(red : Byte, green : Byte, blue : Byte) -> Color {
 }
 
 ///|
-pub fn Color::rgb_bg(red : Byte, green : Byte, blue : Byte) -> Color {
+pub fn Color::bg_rgb(red : Byte, green : Byte, blue : Byte) -> Color {
   Color::new(
     "\u001b[48;2;\{red.to_int()};\{green.to_int()};\{blue.to_int()}m",
     "\u001b[49m",
@@ -109,7 +111,7 @@ pub fn Color::rgb_bg(red : Byte, green : Byte, blue : Byte) -> Color {
 
 ///|
 /// Combine styles in order, deduplicating identical prefixes or suffixes.
-pub fn Color::bitor(self : Color, other : Color) -> Color {
+pub fn Color::combine(self : Color, other : Color) -> Color {
   Color::new(
     self.ansi.prefix +
     (if self.ansi.prefix == other.ansi.prefix { "" } else { other.ansi.prefix }),
@@ -120,7 +122,7 @@ pub fn Color::bitor(self : Color, other : Color) -> Color {
 
 ///|
 pub impl BitOr for Color with fn lor(self, other) {
-  self.bitor(other)
+  self.combine(other)
 }
 
 ///|

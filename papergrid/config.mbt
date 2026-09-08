@@ -1336,10 +1336,10 @@ pub fn SpannedConfig::set_margin_offset(
   self.margin_offset_left = left
   self.margin_offset_right = right
   self.margin_offsets = Sides::new(
-    Offset::from_int(left),
-    Offset::from_int(right),
-    Offset::from_int(top),
-    Offset::from_int(bottom),
+    left=Offset::from_int(left),
+    right=Offset::from_int(right),
+    top=Offset::from_int(top),
+    bottom=Offset::from_int(bottom),
   )
 }
 

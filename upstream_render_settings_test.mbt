@@ -94,7 +94,7 @@ test "upstream render_settings tab_isnot_handled_by_default_test" {
 test "upstream render_settings tab_size_test_0" {
   let actual = upstream_tab_data1()
     .apply(@tabular.Style::psql())
-    .with_(@tabular.Charset::new().tab_size(4))
+    .with_(@tabular.TextCleanup::new().expand_tabs(4))
     .to_string()
   assert_eq(
     actual,
@@ -118,7 +118,7 @@ test "upstream render_settings tab_size_test_1" {
         @tabular.Alignment::right(),
       ),
     )
-    .with_(@tabular.Charset::new().tab_size(2))
+    .with_(@tabular.TextCleanup::new().expand_tabs(2))
     .to_string()
   assert_eq(
     actual,
@@ -142,7 +142,7 @@ test "upstream render_settings tab_size_test_2" {
         @tabular.Alignment::right(),
       ),
     )
-    .with_(@tabular.Charset::new().tab_size(0))
+    .with_(@tabular.TextCleanup::new().expand_tabs(0))
     .to_string()
   assert_eq(
     actual,
@@ -160,11 +160,11 @@ test "upstream render_settings tab_size_test_2" {
 // Upstream: tabled/tests/settings/render_settings.rs::tab_size_span_test
 test "upstream render_settings tab_size_span_test" {
   let actual = upstream_tab_data2()
-    .with_(@tabular.Charset::new().tab_size(4))
+    .with_(@tabular.TextCleanup::new().expand_tabs(4))
     .apply(@tabular.Style::psql())
-    .with_(@tabular.Modify::new((0, 0)).with_(@tabular.Span::column(3)))
-    .with_(@tabular.Modify::new((1, 0)).with_(@tabular.Span::column(2)))
-    .with_(@tabular.Modify::new((2, 1)).with_(@tabular.Span::column(2)))
+    .with_(@tabular.Modify::new((0, 0)).with_(@tabular.Span::col(3)))
+    .with_(@tabular.Modify::new((1, 0)).with_(@tabular.Span::col(2)))
+    .with_(@tabular.Modify::new((2, 1)).with_(@tabular.Span::col(2)))
     .to_string()
   assert_eq(
     actual,

@@ -43,7 +43,7 @@ pub fn Padding::zero() -> Padding {
 ///   assert_eq(table.rows, [["hello \nworld"]])
 /// }
 /// ```
-pub fn[M] Width::wrap(width : M) -> Wrap[M, PriorityNone] {
+pub fn[M] Width::wrap(width : M) -> Wrap[M, PriorityRoundRobin] {
   Wrap::new(width)
 }
 
@@ -51,7 +51,7 @@ pub fn[M] Width::wrap(width : M) -> Wrap[M, PriorityNone] {
 pub fn Width::wrap_with(
   width : Int,
   placeholder : String,
-) -> Wrap[Int, PriorityNone] {
+) -> Wrap[Int, PriorityRoundRobin] {
   { ..Wrap::new(width), placeholder, }
 }
 
@@ -59,18 +59,18 @@ pub fn Width::wrap_with(
 pub fn[M] Width::truncate(
   width : M,
   suffix? : String = "",
-) -> Truncate[M, PriorityNone] {
+) -> Truncate[M, PriorityRoundRobin] {
   Truncate::new(width).suffix(suffix)
 }
 
 ///|
-pub fn[M] Height::increase(size : M) -> CellHeightIncrease[M] {
-  CellHeightIncrease::new(size)
+pub fn[M] Height::increase(height : M) -> CellHeightIncrease[M] {
+  CellHeightIncrease::new(height)
 }
 
 ///|
-pub fn[M] Height::limit(size : M) -> CellHeightLimit[M] {
-  CellHeightLimit::new(size)
+pub fn[M] Height::limit(height : M) -> CellHeightLimit[M] {
+  CellHeightLimit::new(height)
 }
 
 ///|
@@ -479,12 +479,6 @@ pub fn[H : HeightOption] Setting::height(height : H) -> Setting {
 
 ///|
 pub fn Span::col(size : Int) -> Setting {
-  SpanCol(size)
-}
-
-///|
-/// Set the column span using the upstream constructor name.
-pub fn Span::column(size : Int) -> Setting {
   SpanCol(size)
 }
 

@@ -2,9 +2,9 @@
 fn table_width(table : Table, widths : Array[Int]) -> Int {
   widths
   .iter()
-  .take(table.count_columns())
+  .take(table.count_cols())
   .fold(init=0, (sum, value) => sum + value) +
-  table.config.count_vertical(table.count_columns()) +
+  table.config.count_vertical(table.count_cols()) +
   table.config.margin_left +
   table.config.margin_right
 }
@@ -13,7 +13,7 @@ fn table_width(table : Table, widths : Array[Int]) -> Int {
 // Width lists retain surplus entries, but priorities must only see real columns.
 fn Table::column_widths(self : Table) -> Array[Int] {
   self.dimension.estimate(self)
-  self.dimension.get_widths().unwrap()[:self.count_columns()].to_owned()
+  self.dimension.get_widths().unwrap()[:self.count_cols()].to_owned()
 }
 
 ///|
@@ -28,16 +28,16 @@ fn Table::set_column_widths(self : Table, widths : Array[Int]) -> Unit {
 ///|
 fn minimum_widths(table : Table) -> Array[Int] {
   let rows = Array::makei(table.count_rows(), _ => {
-    Array::make(table.count_columns(), "")
+    Array::make(table.count_cols(), "")
   })
-  @papergrid.IterGridDimension::width(
+  @papergrid.IterGridDimension::measure_widths(
     @papergrid.IterRecords::new(rows),
     table.config,
   )
 }
 
 ///|
-fn[P : Peaker] decrease_widths(
+fn[P : ResizeSelector] decrease_widths(
   widths : Array[Int],
   mins : Array[Int],
   amount : Int,
@@ -49,7 +49,9 @@ fn[P : Peaker] decrease_widths(
     available += Int::max(0, widths[col] - mins[col])
   }
   while remaining > 0 && available > 0 {
-    guard Peaker::peak(priority, mins, widths) is Some(col) else { break }
+    guard ResizeSelector::select(priority, mins, widths) is Some(col) else {
+      break
+    }
     if widths[col] <= mins[col] {
       continue
     }
@@ -66,7 +68,7 @@ fn decrease_cells(
   mins : Array[Int],
 ) -> Array[(Int, Int, Int)] {
   let points = []
-  let cols = table.count_columns()
+  let cols = table.count_cols()
   for col in 0..<cols {
     for row in 0..<table.count_rows() {
       if col >= table.rows[row].length() ||

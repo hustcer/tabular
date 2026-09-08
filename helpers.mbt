@@ -493,7 +493,7 @@ fn apply_setting_to_col(
     VAlign(align) =>
       config.set_valign_for_cols(col, col + 1, convert_valign(align))
     Pad(padding) =>
-      config.set_padding_sides(Entity::Column(col), padding.to_sides())
+      config.set_padding_sides(Entity::Col(col), padding.to_sides())
     W(width) =>
       config.set_width_mode_for_cols(col, col + 1, convert_width(width))
     H(height) =>

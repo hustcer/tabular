@@ -4,7 +4,7 @@
 // Reference: tabled resizing-priority selection, 30 consecutive calls.
 test "priority reference none 0" {
   assert_eq(
-    priority_trace(@tabular.PriorityNone::new(), [0, 0, 0], [6, 3, 6]),
+    priority_trace(@tabular.PriorityRoundRobin::new(), [0, 0, 0], [6, 3, 6]),
     [
       0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 2, 0, 2, 0, 2, -1, -1, -1, -1, -1, -1, -1, -1,
       -1, -1, -1, -1, -1, -1, -1,
@@ -16,7 +16,7 @@ test "priority reference none 0" {
 // Reference: tabled resizing-priority selection, 30 consecutive calls.
 test "priority reference none 1" {
   assert_eq(
-    priority_trace(@tabular.PriorityNone::new(), [2, 2, 2], [6, 3, 6]),
+    priority_trace(@tabular.PriorityRoundRobin::new(), [2, 2, 2], [6, 3, 6]),
     [
       0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0,
       1, 2, 0, 1, 2,
@@ -28,7 +28,7 @@ test "priority reference none 1" {
 // Reference: tabled resizing-priority selection, 30 consecutive calls.
 test "priority reference none 2" {
   assert_eq(
-    priority_trace(@tabular.PriorityNone::new(), [0, 0, 0], [0, 0, 0]),
+    priority_trace(@tabular.PriorityRoundRobin::new(), [0, 0, 0], [0, 0, 0]),
     [
       -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
       -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
@@ -40,7 +40,7 @@ test "priority reference none 2" {
 // Reference: tabled resizing-priority selection, 30 consecutive calls.
 test "priority reference none 3" {
   assert_eq(
-    priority_trace(@tabular.PriorityNone::new(), [0, 0, 0], [2, 2, 2]),
+    priority_trace(@tabular.PriorityRoundRobin::new(), [0, 0, 0], [2, 2, 2]),
     [
       0, 1, 2, 0, 1, 2, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
       -1, -1, -1, -1, -1, -1, -1, -1, -1,
@@ -52,7 +52,7 @@ test "priority reference none 3" {
 // Reference: tabled resizing-priority selection, 30 consecutive calls.
 test "priority reference none 4" {
   assert_eq(
-    priority_trace(@tabular.PriorityNone::new(), [0, 1, 0], [0, 4, 2]),
+    priority_trace(@tabular.PriorityRoundRobin::new(), [0, 1, 0], [0, 4, 2]),
     [
       1, 2, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
       1, 1, 1, 1, 1,
@@ -64,7 +64,7 @@ test "priority reference none 4" {
 // Reference: tabled resizing-priority selection, 30 consecutive calls.
 test "priority reference left 0" {
   assert_eq(
-    priority_trace(@tabular.PriorityLeft::new(), [0, 0, 0], [6, 3, 6]),
+    priority_trace(@tabular.PriorityFirst::new(), [0, 0, 0], [6, 3, 6]),
     [
       0, 0, 0, 0, 0, 0, 1, 1, 1, 2, 2, 2, 2, 2, 2, -1, -1, -1, -1, -1, -1, -1, -1,
       -1, -1, -1, -1, -1, -1, -1,
@@ -76,7 +76,7 @@ test "priority reference left 0" {
 // Reference: tabled resizing-priority selection, 30 consecutive calls.
 test "priority reference left 1" {
   assert_eq(
-    priority_trace(@tabular.PriorityLeft::new(), [2, 2, 2], [6, 3, 6]),
+    priority_trace(@tabular.PriorityFirst::new(), [2, 2, 2], [6, 3, 6]),
     [
       0, 0, 0, 0, 1, 2, 2, 2, 2, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
       -1, -1, -1, -1, -1, -1, -1, -1, -1,
@@ -88,7 +88,7 @@ test "priority reference left 1" {
 // Reference: tabled resizing-priority selection, 30 consecutive calls.
 test "priority reference left 2" {
   assert_eq(
-    priority_trace(@tabular.PriorityLeft::new(), [0, 0, 0], [0, 0, 0]),
+    priority_trace(@tabular.PriorityFirst::new(), [0, 0, 0], [0, 0, 0]),
     [
       -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
       -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
@@ -100,7 +100,7 @@ test "priority reference left 2" {
 // Reference: tabled resizing-priority selection, 30 consecutive calls.
 test "priority reference left 3" {
   assert_eq(
-    priority_trace(@tabular.PriorityLeft::new(), [0, 0, 0], [2, 2, 2]),
+    priority_trace(@tabular.PriorityFirst::new(), [0, 0, 0], [2, 2, 2]),
     [
       0, 0, 1, 1, 2, 2, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
       -1, -1, -1, -1, -1, -1, -1, -1, -1,
@@ -112,7 +112,7 @@ test "priority reference left 3" {
 // Reference: tabled resizing-priority selection, 30 consecutive calls.
 test "priority reference left 4" {
   assert_eq(
-    priority_trace(@tabular.PriorityLeft::new(), [0, 1, 0], [0, 4, 2]),
+    priority_trace(@tabular.PriorityFirst::new(), [0, 1, 0], [0, 4, 2]),
     [
       1, 1, 1, 2, 2, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
       -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
@@ -124,7 +124,7 @@ test "priority reference left 4" {
 // Reference: tabled resizing-priority selection, 30 consecutive calls.
 test "priority reference right 0" {
   assert_eq(
-    priority_trace(@tabular.PriorityRight::new(), [0, 0, 0], [6, 3, 6]),
+    priority_trace(@tabular.PriorityLast::new(), [0, 0, 0], [6, 3, 6]),
     [
       2, 2, 2, 2, 2, 2, 1, 1, 1, 0, 0, 0, 0, 0, 0, -1, -1, -1, -1, -1, -1, -1, -1,
       -1, -1, -1, -1, -1, -1, -1,
@@ -136,7 +136,7 @@ test "priority reference right 0" {
 // Reference: tabled resizing-priority selection, 30 consecutive calls.
 test "priority reference right 1" {
   assert_eq(
-    priority_trace(@tabular.PriorityRight::new(), [2, 2, 2], [6, 3, 6]),
+    priority_trace(@tabular.PriorityLast::new(), [2, 2, 2], [6, 3, 6]),
     [
       2, 2, 2, 2, 1, 0, 0, 0, 0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
       -1, -1, -1, -1, -1, -1, -1, -1, -1,
@@ -148,7 +148,7 @@ test "priority reference right 1" {
 // Reference: tabled resizing-priority selection, 30 consecutive calls.
 test "priority reference right 2" {
   assert_eq(
-    priority_trace(@tabular.PriorityRight::new(), [0, 0, 0], [0, 0, 0]),
+    priority_trace(@tabular.PriorityLast::new(), [0, 0, 0], [0, 0, 0]),
     [
       -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
       -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
@@ -160,7 +160,7 @@ test "priority reference right 2" {
 // Reference: tabled resizing-priority selection, 30 consecutive calls.
 test "priority reference right 3" {
   assert_eq(
-    priority_trace(@tabular.PriorityRight::new(), [0, 0, 0], [2, 2, 2]),
+    priority_trace(@tabular.PriorityLast::new(), [0, 0, 0], [2, 2, 2]),
     [
       2, 2, 1, 1, 0, 0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
       -1, -1, -1, -1, -1, -1, -1, -1, -1,
@@ -172,7 +172,7 @@ test "priority reference right 3" {
 // Reference: tabled resizing-priority selection, 30 consecutive calls.
 test "priority reference right 4" {
   assert_eq(
-    priority_trace(@tabular.PriorityRight::new(), [0, 1, 0], [0, 4, 2]),
+    priority_trace(@tabular.PriorityLast::new(), [0, 1, 0], [0, 4, 2]),
     [
       2, 2, 1, 1, 1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
       -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
@@ -184,7 +184,7 @@ test "priority reference right 4" {
 // Reference: tabled resizing-priority selection, 30 consecutive calls.
 test "priority reference min-left 0" {
   assert_eq(
-    priority_trace(@tabular.PriorityMin::left(), [0, 0, 0], [6, 3, 6]),
+    priority_trace(@tabular.PriorityMin::prefer_last(), [0, 0, 0], [6, 3, 6]),
     [
       1, 1, 1, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0, -1, -1, -1, -1, -1, -1, -1, -1,
       -1, -1, -1, -1, -1, -1, -1,
@@ -196,7 +196,7 @@ test "priority reference min-left 0" {
 // Reference: tabled resizing-priority selection, 30 consecutive calls.
 test "priority reference min-left 1" {
   assert_eq(
-    priority_trace(@tabular.PriorityMin::left(), [2, 2, 2], [6, 3, 6]),
+    priority_trace(@tabular.PriorityMin::prefer_last(), [2, 2, 2], [6, 3, 6]),
     [
       1, 2, 2, 2, 2, 0, 0, 0, 0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
       -1, -1, -1, -1, -1, -1, -1, -1, -1,
@@ -208,7 +208,7 @@ test "priority reference min-left 1" {
 // Reference: tabled resizing-priority selection, 30 consecutive calls.
 test "priority reference min-left 2" {
   assert_eq(
-    priority_trace(@tabular.PriorityMin::left(), [0, 0, 0], [0, 0, 0]),
+    priority_trace(@tabular.PriorityMin::prefer_last(), [0, 0, 0], [0, 0, 0]),
     [
       -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
       -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
@@ -220,7 +220,7 @@ test "priority reference min-left 2" {
 // Reference: tabled resizing-priority selection, 30 consecutive calls.
 test "priority reference min-left 3" {
   assert_eq(
-    priority_trace(@tabular.PriorityMin::left(), [0, 0, 0], [2, 2, 2]),
+    priority_trace(@tabular.PriorityMin::prefer_last(), [0, 0, 0], [2, 2, 2]),
     [
       2, 2, 1, 1, 0, 0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
       -1, -1, -1, -1, -1, -1, -1, -1, -1,
@@ -232,7 +232,7 @@ test "priority reference min-left 3" {
 // Reference: tabled resizing-priority selection, 30 consecutive calls.
 test "priority reference min-left 4" {
   assert_eq(
-    priority_trace(@tabular.PriorityMin::left(), [0, 1, 0], [0, 4, 2]),
+    priority_trace(@tabular.PriorityMin::prefer_last(), [0, 1, 0], [0, 4, 2]),
     [
       2, 2, 1, 1, 1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
       -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
@@ -244,7 +244,7 @@ test "priority reference min-left 4" {
 // Reference: tabled resizing-priority selection, 30 consecutive calls.
 test "priority reference min-right 0" {
   assert_eq(
-    priority_trace(@tabular.PriorityMin::right(), [0, 0, 0], [6, 3, 6]),
+    priority_trace(@tabular.PriorityMin::prefer_first(), [0, 0, 0], [6, 3, 6]),
     [
       1, 1, 1, 0, 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2, -1, -1, -1, -1, -1, -1, -1, -1,
       -1, -1, -1, -1, -1, -1, -1,
@@ -256,7 +256,7 @@ test "priority reference min-right 0" {
 // Reference: tabled resizing-priority selection, 30 consecutive calls.
 test "priority reference min-right 1" {
   assert_eq(
-    priority_trace(@tabular.PriorityMin::right(), [2, 2, 2], [6, 3, 6]),
+    priority_trace(@tabular.PriorityMin::prefer_first(), [2, 2, 2], [6, 3, 6]),
     [
       1, 0, 0, 0, 0, 2, 2, 2, 2, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
       -1, -1, -1, -1, -1, -1, -1, -1, -1,
@@ -268,7 +268,7 @@ test "priority reference min-right 1" {
 // Reference: tabled resizing-priority selection, 30 consecutive calls.
 test "priority reference min-right 2" {
   assert_eq(
-    priority_trace(@tabular.PriorityMin::right(), [0, 0, 0], [0, 0, 0]),
+    priority_trace(@tabular.PriorityMin::prefer_first(), [0, 0, 0], [0, 0, 0]),
     [
       -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
       -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
@@ -280,7 +280,7 @@ test "priority reference min-right 2" {
 // Reference: tabled resizing-priority selection, 30 consecutive calls.
 test "priority reference min-right 3" {
   assert_eq(
-    priority_trace(@tabular.PriorityMin::right(), [0, 0, 0], [2, 2, 2]),
+    priority_trace(@tabular.PriorityMin::prefer_first(), [0, 0, 0], [2, 2, 2]),
     [
       0, 0, 1, 1, 2, 2, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
       -1, -1, -1, -1, -1, -1, -1, -1, -1,
@@ -292,7 +292,7 @@ test "priority reference min-right 3" {
 // Reference: tabled resizing-priority selection, 30 consecutive calls.
 test "priority reference min-right 4" {
   assert_eq(
-    priority_trace(@tabular.PriorityMin::right(), [0, 1, 0], [0, 4, 2]),
+    priority_trace(@tabular.PriorityMin::prefer_first(), [0, 1, 0], [0, 4, 2]),
     [
       2, 2, 1, 1, 1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
       -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
@@ -304,7 +304,7 @@ test "priority reference min-right 4" {
 // Reference: tabled resizing-priority selection, 30 consecutive calls.
 test "priority reference max-left 0" {
   assert_eq(
-    priority_trace(@tabular.PriorityMax::left(), [0, 0, 0], [6, 3, 6]),
+    priority_trace(@tabular.PriorityMax::prefer_first(), [0, 0, 0], [6, 3, 6]),
     [
       0, 2, 0, 2, 0, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, -1, -1, -1, -1, -1, -1, -1, -1,
       -1, -1, -1, -1, -1, -1, -1,
@@ -316,7 +316,7 @@ test "priority reference max-left 0" {
 // Reference: tabled resizing-priority selection, 30 consecutive calls.
 test "priority reference max-left 1" {
   assert_eq(
-    priority_trace(@tabular.PriorityMax::left(), [2, 2, 2], [6, 3, 6]),
+    priority_trace(@tabular.PriorityMax::prefer_first(), [2, 2, 2], [6, 3, 6]),
     [
       0, 2, 0, 2, 0, 2, 0, 1, 2, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
       -1, -1, -1, -1, -1, -1, -1, -1, -1,
@@ -328,7 +328,7 @@ test "priority reference max-left 1" {
 // Reference: tabled resizing-priority selection, 30 consecutive calls.
 test "priority reference max-left 2" {
   assert_eq(
-    priority_trace(@tabular.PriorityMax::left(), [0, 0, 0], [0, 0, 0]),
+    priority_trace(@tabular.PriorityMax::prefer_first(), [0, 0, 0], [0, 0, 0]),
     [
       -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
       -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
@@ -340,7 +340,7 @@ test "priority reference max-left 2" {
 // Reference: tabled resizing-priority selection, 30 consecutive calls.
 test "priority reference max-left 3" {
   assert_eq(
-    priority_trace(@tabular.PriorityMax::left(), [0, 0, 0], [2, 2, 2]),
+    priority_trace(@tabular.PriorityMax::prefer_first(), [0, 0, 0], [2, 2, 2]),
     [
       0, 1, 2, 0, 1, 2, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
       -1, -1, -1, -1, -1, -1, -1, -1, -1,
@@ -352,7 +352,7 @@ test "priority reference max-left 3" {
 // Reference: tabled resizing-priority selection, 30 consecutive calls.
 test "priority reference max-left 4" {
   assert_eq(
-    priority_trace(@tabular.PriorityMax::left(), [0, 1, 0], [0, 4, 2]),
+    priority_trace(@tabular.PriorityMax::prefer_first(), [0, 1, 0], [0, 4, 2]),
     [
       1, 1, 1, 2, 2, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
       -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
@@ -364,7 +364,7 @@ test "priority reference max-left 4" {
 // Reference: tabled resizing-priority selection, 30 consecutive calls.
 test "priority reference max-right 0" {
   assert_eq(
-    priority_trace(@tabular.PriorityMax::right(), [0, 0, 0], [6, 3, 6]),
+    priority_trace(@tabular.PriorityMax::prefer_last(), [0, 0, 0], [6, 3, 6]),
     [
       2, 0, 2, 0, 2, 0, 2, 1, 0, 2, 1, 0, 2, 1, 0, -1, -1, -1, -1, -1, -1, -1, -1,
       -1, -1, -1, -1, -1, -1, -1,
@@ -376,7 +376,7 @@ test "priority reference max-right 0" {
 // Reference: tabled resizing-priority selection, 30 consecutive calls.
 test "priority reference max-right 1" {
   assert_eq(
-    priority_trace(@tabular.PriorityMax::right(), [2, 2, 2], [6, 3, 6]),
+    priority_trace(@tabular.PriorityMax::prefer_last(), [2, 2, 2], [6, 3, 6]),
     [
       2, 0, 2, 0, 2, 0, 2, 1, 0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
       -1, -1, -1, -1, -1, -1, -1, -1, -1,
@@ -388,7 +388,7 @@ test "priority reference max-right 1" {
 // Reference: tabled resizing-priority selection, 30 consecutive calls.
 test "priority reference max-right 2" {
   assert_eq(
-    priority_trace(@tabular.PriorityMax::right(), [0, 0, 0], [0, 0, 0]),
+    priority_trace(@tabular.PriorityMax::prefer_last(), [0, 0, 0], [0, 0, 0]),
     [
       -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
       -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
@@ -400,7 +400,7 @@ test "priority reference max-right 2" {
 // Reference: tabled resizing-priority selection, 30 consecutive calls.
 test "priority reference max-right 3" {
   assert_eq(
-    priority_trace(@tabular.PriorityMax::right(), [0, 0, 0], [2, 2, 2]),
+    priority_trace(@tabular.PriorityMax::prefer_last(), [0, 0, 0], [2, 2, 2]),
     [
       2, 1, 0, 2, 1, 0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
       -1, -1, -1, -1, -1, -1, -1, -1, -1,
@@ -412,7 +412,7 @@ test "priority reference max-right 3" {
 // Reference: tabled resizing-priority selection, 30 consecutive calls.
 test "priority reference max-right 4" {
   assert_eq(
-    priority_trace(@tabular.PriorityMax::right(), [0, 1, 0], [0, 4, 2]),
+    priority_trace(@tabular.PriorityMax::prefer_last(), [0, 1, 0], [0, 4, 2]),
     [
       1, 1, 2, 1, 2, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
       -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
@@ -464,7 +464,7 @@ test "measurement reference 0 margin" {
 // Reference: tabled Measurement implementations for Width and Height.
 test "measurement reference 0 column-span" {
   let table = @tabular.Table::from_rows([])
-  table.modify((0, 0), @tabular.Span::column(2)) |> ignore
+  table.modify((0, 0), @tabular.Span::col(2)) |> ignore
   assert_eq(measure_dimensions(table), [0, 0, 0, 0, 0, 1])
 }
 
@@ -547,7 +547,7 @@ test "measurement reference 1 column-span" {
     ["abcdef", "x", "12"],
     ["y", "ab", "zzzz"],
   ])
-  table.modify((0, 0), @tabular.Span::column(2)) |> ignore
+  table.modify((0, 0), @tabular.Span::col(2)) |> ignore
   assert_eq(measure_dimensions(table), [6, 1, 1, 1, 6, 7])
 }
 
@@ -636,7 +636,7 @@ test "measurement reference 2 column-span" {
     ["a\nb\nc", "x", ""],
     ["z", "x\ny", "r\ns\nt\nu"],
   ])
-  table.modify((0, 0), @tabular.Span::column(2)) |> ignore
+  table.modify((0, 0), @tabular.Span::col(2)) |> ignore
   assert_eq(measure_dimensions(table), [1, 1, 4, 3, 4, 15])
 }
 
@@ -725,7 +725,7 @@ test "measurement reference 3 column-span" {
     ["a\r\n", "\u001b[31m中中\u001b[0m", "👩‍🔬"],
     ["👍🏿", "🏳️", "x"],
   ])
-  table.modify((0, 0), @tabular.Span::column(2)) |> ignore
+  table.modify((0, 0), @tabular.Span::col(2)) |> ignore
   assert_eq(measure_dimensions(table), [4, 1, 2, 1, 5, 9])
 }
 
@@ -814,7 +814,7 @@ test "measurement reference 4 column-span" {
     ["abcdefghijklmnopqrst", "hidden\nline\nline", "x"],
     ["a", "b", "c"],
   ])
-  table.modify((0, 0), @tabular.Span::column(2)) |> ignore
+  table.modify((0, 0), @tabular.Span::col(2)) |> ignore
   assert_eq(measure_dimensions(table), [20, 1, 3, 1, 10, 10])
 }
 

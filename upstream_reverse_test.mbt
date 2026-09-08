@@ -14,7 +14,7 @@ test "upstream reverse test_0x0_reverse_rows" {
 // Upstream: tabled/tests/settings/reverse_test.rs::test_0x0_reverse_columns
 test "upstream reverse test_0x0_reverse_columns" {
   let actual = @tabular.Table::from_rows([])
-    .reverse(@tabular.Reverse::columns(0))
+    .reverse(@tabular.Reverse::cols(0))
     .to_string()
   assert_eq(actual, "")
 }
@@ -63,7 +63,7 @@ test "upstream reverse test_3x3_reverse_rows_skip_start" {
 // Upstream: tabled/tests/settings/reverse_test.rs::test_3x3_reverse_rows_skip_end
 test "upstream reverse test_3x3_reverse_rows_skip_end" {
   let actual = upstream_int_table([[123, 456, 789], [234, 567, 891]])
-    .reverse(@tabular.Reverse::rows(0).limit(@tabular.Offset::End(1)))
+    .reverse(@tabular.Reverse::rows(0).exclude_last(1))
     .to_string()
   assert_eq(
     actual,
@@ -87,7 +87,7 @@ test "upstream reverse test_3x3_reverse_rows_skip_end_0" {
       [234, 567, 891],
       [345, 678, 912],
     ])
-    .reverse(@tabular.Reverse::rows(1).limit(@tabular.Offset::Start(2)))
+    .reverse(@tabular.Reverse::rows(1).take(2))
     .to_string()
   assert_eq(
     actual,
@@ -113,7 +113,7 @@ test "upstream reverse test_4x4_reverse_rows_skip_start_and_end" {
       [234, 567, 891],
       [345, 678, 901],
     ])
-    .reverse(@tabular.Reverse::rows(1).limit(@tabular.Offset::End(1)))
+    .reverse(@tabular.Reverse::rows(1).exclude_last(1))
     .to_string()
   assert_eq(
     actual,
@@ -135,7 +135,7 @@ test "upstream reverse test_4x4_reverse_rows_skip_start_and_end" {
 // Upstream: tabled/tests/settings/reverse_test.rs::test_3x3_reverse_columns
 test "upstream reverse test_3x3_reverse_columns" {
   let actual = upstream_int_table([[123, 456, 789], [234, 567, 891]])
-    .reverse(@tabular.Reverse::columns(0))
+    .reverse(@tabular.Reverse::cols(0))
     .to_string()
   assert_eq(
     actual,
@@ -155,7 +155,7 @@ test "upstream reverse test_3x3_reverse_columns" {
 // Upstream: tabled/tests/settings/reverse_test.rs::test_3x3_reverse_columns_skip_start
 test "upstream reverse test_3x3_reverse_columns_skip_start" {
   let actual = upstream_int_table([[123, 456, 789], [234, 567, 891]])
-    .reverse(@tabular.Reverse::columns(1))
+    .reverse(@tabular.Reverse::cols(1))
     .to_string()
   assert_eq(
     actual,
@@ -175,7 +175,7 @@ test "upstream reverse test_3x3_reverse_columns_skip_start" {
 // Upstream: tabled/tests/settings/reverse_test.rs::test_3x3_reverse_columns_skip_end
 test "upstream reverse test_3x3_reverse_columns_skip_end" {
   let actual = upstream_int_table([[123, 456, 789], [234, 567, 891]])
-    .reverse(@tabular.Reverse::columns(0).limit(@tabular.Offset::End(1)))
+    .reverse(@tabular.Reverse::cols(0).exclude_last(1))
     .to_string()
   assert_eq(
     actual,
@@ -199,7 +199,7 @@ test "upstream reverse test_3x3_reverse_columns_skip_end_0" {
       [234, 567, 891],
       [345, 678, 912],
     ])
-    .reverse(@tabular.Reverse::columns(0).limit(@tabular.Offset::Start(2)))
+    .reverse(@tabular.Reverse::cols(0).take(2))
     .to_string()
   assert_eq(
     actual,
@@ -221,7 +221,7 @@ test "upstream reverse test_3x3_reverse_columns_skip_end_0" {
 // Upstream: tabled/tests/settings/reverse_test.rs::test_4x3_reverse_columns_skip_start_and_end
 test "upstream reverse test_4x3_reverse_columns_skip_start_and_end" {
   let actual = upstream_int_table([[123, 456, 789, 123], [234, 567, 891, 234]])
-    .reverse(@tabular.Reverse::columns(1).limit(@tabular.Offset::End(1)))
+    .reverse(@tabular.Reverse::cols(1).exclude_last(1))
     .to_string()
   assert_eq(
     actual,

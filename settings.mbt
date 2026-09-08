@@ -53,8 +53,8 @@ pub fn[A, B, O, M] Settings::modify(
   self : Settings[A, B],
   object : O,
   option : M,
-) -> Settings[Settings[A, B], ModifyList[O, M]] {
-  self.with_(Modify::list(object, option))
+) -> Settings[Settings[A, B], CellSettings[O, M]] {
+  self.with_(Modify::new(object).with_(option))
 }
 
 ///|

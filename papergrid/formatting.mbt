@@ -1,23 +1,23 @@
 ///|
 /// Rendering-only whitespace and multiline alignment policy.
 pub(all) struct Formatting {
-  horizontal_trim : Bool
-  vertical_trim : Bool
-  allow_lines_alignment : Bool
+  trim_horizontal : Bool
+  trim_vertical : Bool
+  align_lines : Bool
 } derive(Eq, Debug)
 
 ///|
 pub fn Formatting::new(
-  horizontal_trim : Bool,
-  vertical_trim : Bool,
-  lines_alignment : Bool,
+  trim_horizontal~ : Bool,
+  trim_vertical~ : Bool,
+  align_lines~ : Bool,
 ) -> Formatting {
-  { horizontal_trim, vertical_trim, allow_lines_alignment: lines_alignment, }
+  { trim_horizontal, trim_vertical, align_lines, }
 }
 
 ///|
 pub fn Formatting::default() -> Formatting {
-  Formatting::new(false, false, false)
+  Formatting::new(trim_horizontal=false, trim_vertical=false, align_lines=false)
 }
 
 ///|
@@ -57,7 +57,7 @@ priv enum FormatChange {
   HorizontalTrim(Bool)
   VerticalTrim(Bool)
   LineAlignment(Bool)
-  Justification(Char, ANSIBuf?)
+  AlignmentFill(Char, ANSIBuf?)
   TextColor(ANSIBuf?)
 }
 
@@ -74,8 +74,7 @@ fn entity_scope(entity : Entity) -> Scope {
   match entity {
     Global => All
     Row(row) => RowRange(row, if row == 2147483647 { row } else { row + 1 })
-    Col(col) | Column(col) =>
-      ColRange(col, if col == 2147483647 { col } else { col + 1 })
+    Col(col) => ColRange(col, if col == 2147483647 { col } else { col + 1 })
     Cell(row, col) => Cell(row, col)
   }
 }
@@ -113,19 +112,19 @@ pub fn SpannedConfig::set_formatting(
   entity : Entity,
   formatting : Formatting,
 ) -> Unit {
-  self.set_trim_horizontal(entity, formatting.horizontal_trim)
-  self.set_trim_vertical(entity, formatting.vertical_trim)
-  self.set_line_alignment(entity, formatting.allow_lines_alignment)
+  self.set_trim_horizontal(entity, formatting.trim_horizontal)
+  self.set_trim_vertical(entity, formatting.trim_vertical)
+  self.set_line_alignment(entity, formatting.align_lines)
 }
 
 ///|
-pub fn SpannedConfig::set_justification(
+pub fn SpannedConfig::set_alignment_fill(
   self : SpannedConfig,
   entity : Entity,
   fill : Char,
   color? : ANSIBuf,
 ) -> Unit {
-  self.formatting_rules.push((entity_scope(entity), Justification(fill, color)))
+  self.formatting_rules.push((entity_scope(entity), AlignmentFill(fill, color)))
 }
 
 ///|
@@ -153,15 +152,12 @@ fn SpannedConfig::text_format_at(
     if scope_matches(rule.0, row, col) {
       match rule.1 {
         HorizontalTrim(enabled) =>
-          result.formatting = { ..result.formatting, horizontal_trim: enabled, }
+          result.formatting = { ..result.formatting, trim_horizontal: enabled, }
         VerticalTrim(enabled) =>
-          result.formatting = { ..result.formatting, vertical_trim: enabled, }
+          result.formatting = { ..result.formatting, trim_vertical: enabled, }
         LineAlignment(enabled) =>
-          result.formatting = {
-            ..result.formatting,
-            allow_lines_alignment: enabled,
-          }
-        Justification(fill, color) => {
+          result.formatting = { ..result.formatting, align_lines: enabled, }
+        AlignmentFill(fill, color) => {
           result.justification = fill
           result.justification_color = color
         }
@@ -182,7 +178,7 @@ pub fn SpannedConfig::get_formatting(
 }
 
 ///|
-pub fn SpannedConfig::get_justification(
+pub fn SpannedConfig::get_alignment_fill(
   self : SpannedConfig,
   row : Int,
   col : Int,
@@ -191,7 +187,7 @@ pub fn SpannedConfig::get_justification(
 }
 
 ///|
-pub fn SpannedConfig::get_justification_color(
+pub fn SpannedConfig::get_alignment_fill_color(
   self : SpannedConfig,
   row : Int,
   col : Int,

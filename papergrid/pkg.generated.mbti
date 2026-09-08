@@ -38,7 +38,7 @@ pub fn split_lines(String) -> Array[String]
 
 pub fn strip_ansi(String) -> String
 
-pub fn trim_ansi(String) -> String
+pub fn trim_ansi_whitespace(String) -> String
 
 pub fn wrap_text(String, Int, placeholder? : String, keep_words? : Bool) -> String
 
@@ -49,7 +49,7 @@ pub(all) struct ANSIBuf {
   prefix : String
   suffix : String
 } derive(Eq, @debug.Debug)
-pub fn ANSIBuf::as_ref(Self) -> ANSIStr
+pub fn ANSIBuf::as_ansi_str(Self) -> ANSIStr
 pub fn ANSIBuf::default() -> Self
 pub fn ANSIBuf::empty() -> Self
 pub fn ANSIBuf::from_ansi_str(ANSIStr) -> Self
@@ -57,7 +57,7 @@ pub fn ANSIBuf::get_prefix(Self) -> String
 pub fn ANSIBuf::get_suffix(Self) -> String
 pub fn ANSIBuf::is_empty(Self) -> Bool
 pub fn ANSIBuf::new(String, String) -> Self
-pub fn ANSIBuf::try_from(String) -> Result[Self, Unit]
+pub fn ANSIBuf::try_parse(String) -> Result[Self, Unit]
 pub impl ANSIFmt for ANSIBuf
 
 pub(all) struct ANSIStr {
@@ -143,19 +143,18 @@ pub fn CellBorder::filled(Char) -> Self
 pub(all) enum Entity {
   Global
   Row(Int)
-  Column(Int)
   Col(Int)
   Cell(Int, Int)
 } derive(Eq, @debug.Debug)
 pub fn Entity::iter(Self, Int, Int) -> Iter[(Int, Int)]
 
 pub(all) struct Formatting {
-  horizontal_trim : Bool
-  vertical_trim : Bool
-  allow_lines_alignment : Bool
+  trim_horizontal : Bool
+  trim_vertical : Bool
+  align_lines : Bool
 } derive(Eq, @debug.Debug)
 pub fn Formatting::default() -> Self
-pub fn Formatting::new(Bool, Bool, Bool) -> Self
+pub fn Formatting::new(trim_horizontal~ : Bool, trim_vertical~ : Bool, align_lines~ : Bool) -> Self
 
 pub enum HAlign {
   Left
@@ -223,13 +222,13 @@ pub struct IterGridDimension {
 }
 pub fn IterGridDimension::default() -> Self
 pub fn IterGridDimension::estimate(Self, IterRecords, SpannedConfig) -> Unit
-pub fn IterGridDimension::height(IterRecords, SpannedConfig) -> Array[Int]
-pub fn IterGridDimension::height_total(IterRecords, SpannedConfig) -> Int
-pub fn IterGridDimension::rendered_dimension(IterRecords, SpannedConfig) -> (Array[Int], Array[Int])
+pub fn IterGridDimension::measure_heights(IterRecords, SpannedConfig) -> Array[Int]
+pub fn IterGridDimension::measure_rendered(IterRecords, SpannedConfig) -> (Array[Int], Array[Int])
+pub fn IterGridDimension::measure_widths(IterRecords, SpannedConfig) -> Array[Int]
 pub fn IterGridDimension::set_heights(Self, Array[Int]) -> Unit
 pub fn IterGridDimension::set_widths(Self, Array[Int]) -> Unit
-pub fn IterGridDimension::width(IterRecords, SpannedConfig) -> Array[Int]
-pub fn IterGridDimension::width_total(IterRecords, SpannedConfig) -> Int
+pub fn IterGridDimension::total_height(IterRecords, SpannedConfig) -> Int
+pub fn IterGridDimension::total_width(IterRecords, SpannedConfig) -> Int
 pub fn IterGridDimension::widths(Self) -> Array[Int]
 
 pub struct IterRecords {
@@ -253,13 +252,13 @@ pub struct PeekableGridDimension {
   mut heights : Array[Int]
 } derive(Eq, @debug.Debug)
 pub fn PeekableGridDimension::default() -> Self
-pub fn PeekableGridDimension::dimension(IterRecords, SpannedConfig) -> (Array[Int], Array[Int])
+pub fn PeekableGridDimension::dimensions(Self) -> (Array[Int], Array[Int])
 pub fn PeekableGridDimension::estimate(Self, IterRecords, SpannedConfig) -> Unit
 pub fn PeekableGridDimension::get_height(Self, Int) -> Int
-pub fn PeekableGridDimension::get_values(Self) -> (Array[Int], Array[Int])
 pub fn PeekableGridDimension::get_width(Self, Int) -> Int
-pub fn PeekableGridDimension::height(IterRecords, SpannedConfig) -> Array[Int]
-pub fn PeekableGridDimension::width(IterRecords, SpannedConfig) -> Array[Int]
+pub fn PeekableGridDimension::measure(IterRecords, SpannedConfig) -> (Array[Int], Array[Int])
+pub fn PeekableGridDimension::measure_heights(IterRecords, SpannedConfig) -> Array[Int]
+pub fn PeekableGridDimension::measure_widths(IterRecords, SpannedConfig) -> Array[Int]
 
 type Scope
 
@@ -274,7 +273,7 @@ pub fn[T] Sides::filled(T) -> Self[T]
 pub fn[T, U] Sides::fold(Self[T], U, (U, T) -> U) -> U
 pub fn[T] Sides::is_empty(Self[T?]) -> Bool
 pub fn[T, U] Sides::map(Self[T], (T) -> U) -> Self[U]
-pub fn[T] Sides::new(T, T, T, T) -> Self[T]
+pub fn[T] Sides::new(left~ : T, right~ : T, top~ : T, bottom~ : T) -> Self[T]
 pub impl[T : Default] Default for Sides[T]
 
 pub struct SpannedConfig {
@@ -325,15 +324,15 @@ pub fn SpannedConfig::count_horizontal(Self, Int) -> Int
 pub fn SpannedConfig::count_vertical(Self, Int) -> Int
 pub fn SpannedConfig::custom_horizontal_line(Self, Int) -> HorizontalLine?
 pub fn SpannedConfig::default() -> Self
+pub fn SpannedConfig::get_alignment_fill(Self, Int, Int) -> Char
+pub fn SpannedConfig::get_alignment_fill_color(Self, Int, Int) -> ANSIBuf?
 pub fn SpannedConfig::get_cell_border(Self, Int, Int, Int, Int) -> CellBorder
 pub fn SpannedConfig::get_col_span(Self, Int, Int) -> Int?
 pub fn SpannedConfig::get_color(Self, Int, Int) -> ANSIBuf?
 pub fn SpannedConfig::get_formatting(Self, Int, Int) -> Formatting
-pub fn SpannedConfig::get_justification(Self, Int, Int) -> Char
-pub fn SpannedConfig::get_justification_color(Self, Int, Int) -> ANSIBuf?
 pub fn SpannedConfig::get_margin(Self) -> Sides[Indent]
 pub fn SpannedConfig::get_margin_color(Self) -> Sides[ANSIBuf?]
-pub fn SpannedConfig::get_margin_offset(Self) -> Sides[Offset]
+pub fn SpannedConfig::get_margin_offsets(Self) -> Sides[Offset]
 pub fn SpannedConfig::get_padding(Self, Int, Int) -> Sides[Indent]
 pub fn SpannedConfig::get_padding_color(Self, Int, Int) -> Sides[ANSIBuf?]
 pub fn SpannedConfig::get_row_span(Self, Int, Int) -> Int?
@@ -366,6 +365,7 @@ pub fn SpannedConfig::set_align_for_all(Self, HAlign) -> Unit
 pub fn SpannedConfig::set_align_for_cell(Self, Int, Int, HAlign) -> Unit
 pub fn SpannedConfig::set_align_for_cols(Self, Int, Int, HAlign) -> Unit
 pub fn SpannedConfig::set_align_for_rows(Self, Int, Int, HAlign) -> Unit
+pub fn SpannedConfig::set_alignment_fill(Self, Entity, Char, color? : ANSIBuf) -> Unit
 pub fn SpannedConfig::set_borders(Self, Borders) -> Unit
 pub fn SpannedConfig::set_cell_border(Self, Int, Int, CellBorder) -> Unit
 pub fn SpannedConfig::set_col_span(Self, Int, Int, Int) -> Unit
@@ -378,7 +378,6 @@ pub fn SpannedConfig::set_height_mode_for_cell(Self, Int, Int, HeightMode) -> Un
 pub fn SpannedConfig::set_height_mode_for_cols(Self, Int, Int, HeightMode) -> Unit
 pub fn SpannedConfig::set_height_mode_for_rows(Self, Int, Int, HeightMode) -> Unit
 pub fn SpannedConfig::set_horizontal_lines(Self, HorizontalLines) -> Unit
-pub fn SpannedConfig::set_justification(Self, Entity, Char, color? : ANSIBuf) -> Unit
 pub fn SpannedConfig::set_line_alignment(Self, Entity, Bool) -> Unit
 pub fn SpannedConfig::set_margin(Self, Int, Int, Int, Int, Char, Char, Char, Char) -> Unit
 pub fn SpannedConfig::set_margin_color(Self, Sides[ANSIBuf?]) -> Unit

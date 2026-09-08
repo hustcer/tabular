@@ -14,11 +14,11 @@ test "ANSI borrowed and owned style conversions preserve formatting" {
   assert_eq(style.get_suffix(), "\u001b[39m")
   assert_false(style.is_empty())
   let owned = ANSIBuf::from_ansi_str(style)
-  assert_eq(owned.as_ref(), style)
+  assert_eq(owned.as_ansi_str(), style)
   assert_eq(ansi_format(style, "red"), "\u001b[31mred\u001b[39m")
   assert_eq(ansi_format(owned, "red"), ansi_format(style, "red"))
   assert_true(ANSIStr::default().is_empty())
-  assert_eq(ANSIBuf::default().as_ref(), ANSIStr::empty())
+  assert_eq(ANSIBuf::default().as_ansi_str(), ANSIStr::empty())
 }
 
 ///|

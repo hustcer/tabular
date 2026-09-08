@@ -1,15 +1,13 @@
 ///|
 /// Rotate the records while keeping formatting attached to table coordinates.
-/// `Top` and `Bottom` both reverse the row order, as in tabled.
+/// Use `Reverse::rows(0)` to reverse row order without rotating columns.
 pub(all) enum Rotate {
   Left
   Right
-  Top
-  Bottom
 } derive(Eq, Debug)
 
 ///|
-/// Rotate table contents by a quarter turn or reverse the row order.
+/// Rotate table contents by a quarter turn.
 ///
 /// ```mbt check
 /// test {
@@ -33,12 +31,6 @@ pub fn Table::rotate(self : Table, rotation : Rotate) -> Table {
       Array::makei(col_count, row => {
         Array::makei(row_count, col => {
           records.get_cell(row_count - col - 1, row)
-        })
-      })
-    Top | Bottom =>
-      Array::makei(row_count, row => {
-        Array::makei(col_count, col => {
-          records.get_cell(row_count - row - 1, col)
         })
       })
   }

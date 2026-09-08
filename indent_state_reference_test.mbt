@@ -8,13 +8,13 @@ test "indent state reference horizontal" {
     ["d", "x\ny\nz"],
     ["", "q"],
   ])
-  table.with_(@tabular.Padding::expand(true)) |> ignore
+  table.with_(@tabular.PaddingExpand::Horizontal) |> ignore
   assert_eq(
     table.to_string(),
     "+---+------------+\n|a  |long value  |\n|b  |            |\n+---+------------+\n|d  |x           |\n|   |y           |\n|   |z           |\n+---+------------+\n|   |q           |\n+---+------------+",
   )
-  assert_eq(table.get_dimension().get_widths(), None)
-  assert_eq(table.get_dimension().get_heights(), None)
+  assert_eq(table.dimension_snapshot().get_widths(), None)
+  assert_eq(table.dimension_snapshot().get_heights(), None)
   assert_eq(table.total_width(), 18)
   assert_eq(table.total_height(), 10)
   assert_eq(table.rows, [["a\nb", "long value"], ["d", "x\ny\nz"], ["", "q"]])
@@ -40,13 +40,13 @@ test "indent state reference vertical" {
     ["d", "x\ny\nz"],
     ["", "q"],
   ])
-  table.with_(@tabular.Padding::expand(false)) |> ignore
+  table.with_(@tabular.PaddingExpand::Vertical) |> ignore
   assert_eq(
     table.to_string(),
     "+---+------------+\n| a | long value |\n| b |            |\n+---+------------+\n| d | x          |\n|   | y          |\n|   | z          |\n+---+------------+\n|   | q          |\n+---+------------+",
   )
-  assert_eq(table.get_dimension().get_widths(), None)
-  assert_eq(table.get_dimension().get_heights(), None)
+  assert_eq(table.dimension_snapshot().get_widths(), None)
+  assert_eq(table.dimension_snapshot().get_heights(), None)
   assert_eq(table.total_width(), 18)
   assert_eq(table.total_height(), 10)
   assert_eq(table.rows, [["a\nb", "long value"], ["d", "x\ny\nz"], ["", "q"]])
@@ -74,15 +74,15 @@ test "indent state reference both" {
   ])
   table
   .with_(@tabular.PaddingColor::filled(@tabular.Color::bg_blue()))
-  .with_(@tabular.Padding::expand(true))
-  .with_(@tabular.Padding::expand(false))
+  .with_(@tabular.PaddingExpand::Horizontal)
+  .with_(@tabular.PaddingExpand::Vertical)
   |> ignore
   assert_eq(
     table.to_string(),
     "+---+------------+\n|a\u001b[44m  \u001b[49m|long value\u001b[44m  \u001b[49m|\n|b\u001b[44m  \u001b[49m|\u001b[44m            \u001b[49m|\n+---+------------+\n|d\u001b[44m  \u001b[49m|x\u001b[44m           \u001b[49m|\n|\u001b[44m   \u001b[49m|y\u001b[44m           \u001b[49m|\n|\u001b[44m   \u001b[49m|z\u001b[44m           \u001b[49m|\n+---+------------+\n|\u001b[44m   \u001b[49m|q\u001b[44m           \u001b[49m|\n+---+------------+",
   )
-  assert_eq(table.get_dimension().get_widths(), None)
-  assert_eq(table.get_dimension().get_heights(), None)
+  assert_eq(table.dimension_snapshot().get_widths(), None)
+  assert_eq(table.dimension_snapshot().get_heights(), None)
   assert_eq(table.total_width(), 18)
   assert_eq(table.total_height(), 10)
   assert_eq(table.rows, [["a\nb", "long value"], ["d", "x\ny\nz"], ["", "q"]])
@@ -108,14 +108,16 @@ test "indent state reference right" {
     ["d", "x\ny\nz"],
     ["", "q"],
   ])
-  table.with_(@tabular.Alignment::right()).with_(@tabular.Padding::expand(true))
+  table
+  .with_(@tabular.Alignment::right())
+  .with_(@tabular.PaddingExpand::Horizontal)
   |> ignore
   assert_eq(
     table.to_string(),
     "+---+------------+\n|  a|  long value|\n|  b|            |\n+---+------------+\n|  d|           x|\n|   |           y|\n|   |           z|\n+---+------------+\n|   |           q|\n+---+------------+",
   )
-  assert_eq(table.get_dimension().get_widths(), None)
-  assert_eq(table.get_dimension().get_heights(), None)
+  assert_eq(table.dimension_snapshot().get_widths(), None)
+  assert_eq(table.dimension_snapshot().get_heights(), None)
   assert_eq(table.total_width(), 18)
   assert_eq(table.total_height(), 10)
   assert_eq(table.rows, [["a\nb", "long value"], ["d", "x\ny\nz"], ["", "q"]])
@@ -143,14 +145,14 @@ test "indent state reference center" {
   ])
   table
   .with_(@tabular.Alignment::center())
-  .with_(@tabular.Padding::expand(true))
+  .with_(@tabular.PaddingExpand::Horizontal)
   |> ignore
   assert_eq(
     table.to_string(),
     "+---+------------+\n| a | long value |\n| b |            |\n+---+------------+\n| d |     x      |\n|   |     y      |\n|   |     z      |\n+---+------------+\n|   |     q      |\n+---+------------+",
   )
-  assert_eq(table.get_dimension().get_widths(), None)
-  assert_eq(table.get_dimension().get_heights(), None)
+  assert_eq(table.dimension_snapshot().get_widths(), None)
+  assert_eq(table.dimension_snapshot().get_heights(), None)
   assert_eq(table.total_width(), 18)
   assert_eq(table.total_height(), 10)
   assert_eq(table.rows, [["a\nb", "long value"], ["d", "x\ny\nz"], ["", "q"]])
@@ -178,14 +180,14 @@ test "indent state reference bottom" {
   ])
   table
   .with_(@tabular.Alignment::bottom())
-  .with_(@tabular.Padding::expand(false))
+  .with_(@tabular.PaddingExpand::Vertical)
   |> ignore
   assert_eq(
     table.to_string(),
     "+---+------------+\n| a |            |\n| b | long value |\n+---+------------+\n|   | x          |\n|   | y          |\n| d | z          |\n+---+------------+\n|   | q          |\n+---+------------+",
   )
-  assert_eq(table.get_dimension().get_widths(), None)
-  assert_eq(table.get_dimension().get_heights(), None)
+  assert_eq(table.dimension_snapshot().get_widths(), None)
+  assert_eq(table.dimension_snapshot().get_heights(), None)
   assert_eq(table.total_width(), 18)
   assert_eq(table.total_height(), 10)
   assert_eq(table.rows, [["a\nb", "long value"], ["d", "x\ny\nz"], ["", "q"]])
@@ -213,14 +215,14 @@ test "indent state reference center-vertical" {
   ])
   table
   .with_(@tabular.Alignment::center_vertical())
-  .with_(@tabular.Padding::expand(false))
+  .with_(@tabular.PaddingExpand::Vertical)
   |> ignore
   assert_eq(
     table.to_string(),
     "+---+------------+\n| a | long value |\n| b |            |\n+---+------------+\n|   | x          |\n| d | y          |\n|   | z          |\n+---+------------+\n|   | q          |\n+---+------------+",
   )
-  assert_eq(table.get_dimension().get_widths(), None)
-  assert_eq(table.get_dimension().get_heights(), None)
+  assert_eq(table.dimension_snapshot().get_widths(), None)
+  assert_eq(table.dimension_snapshot().get_heights(), None)
   assert_eq(table.total_width(), 18)
   assert_eq(table.total_height(), 10)
   assert_eq(table.rows, [["a\nb", "long value"], ["d", "x\ny\nz"], ["", "q"]])
@@ -247,16 +249,23 @@ test "indent state reference custom-fills" {
     ["", "q"],
   ])
   table
-  .with_(@tabular.Padding::new(2, 1, 2, 1).fill('>', '<', '^', 'v'))
-  .with_(@tabular.Padding::expand(true))
-  .with_(@tabular.Padding::expand(false))
+  .with_(
+    @tabular.Padding::new(2, 1, 2, 1).fill(
+      left='>',
+      right='<',
+      top='^',
+      bottom='v',
+    ),
+  )
+  .with_(@tabular.PaddingExpand::Horizontal)
+  .with_(@tabular.PaddingExpand::Vertical)
   |> ignore
   assert_eq(
     table.to_string(),
     "+----+-------------+\n|a<<<|long value<<<|\n|b<<<|vvvvvvvvvvvvv|\n|vvvv|vvvvvvvvvvvvv|\n|vvvv|vvvvvvvvvvvvv|\n|vvvv|vvvvvvvvvvvvv|\n+----+-------------+\n|d<<<|x<<<<<<<<<<<<|\n|vvvv|y<<<<<<<<<<<<|\n|vvvv|z<<<<<<<<<<<<|\n|vvvv|vvvvvvvvvvvvv|\n|vvvv|vvvvvvvvvvvvv|\n|vvvv|vvvvvvvvvvvvv|\n+----+-------------+\n|<<<<|q<<<<<<<<<<<<|\n|vvvv|vvvvvvvvvvvvv|\n|vvvv|vvvvvvvvvvvvv|\n|vvvv|vvvvvvvvvvvvv|\n+----+-------------+",
   )
-  assert_eq(table.get_dimension().get_widths(), None)
-  assert_eq(table.get_dimension().get_heights(), None)
+  assert_eq(table.dimension_snapshot().get_widths(), None)
+  assert_eq(table.dimension_snapshot().get_heights(), None)
   assert_eq(table.total_width(), 20)
   assert_eq(table.total_height(), 19)
   assert_eq(table.rows, [["a\nb", "long value"], ["d", "x\ny\nz"], ["", "q"]])
@@ -283,15 +292,22 @@ test "indent state reference padding-bottom" {
     ["", "q"],
   ])
   table
-  .with_(@tabular.Padding::new(1, 1, 1, 2).fill('>', '<', '^', 'v'))
+  .with_(
+    @tabular.Padding::new(1, 1, 1, 2).fill(
+      left='>',
+      right='<',
+      top='^',
+      bottom='v',
+    ),
+  )
   .with_(@tabular.Alignment::bottom())
   |> ignore
   assert_eq(
     table.to_string(),
     "+---+------------+\n|^^^|^^^^^^^^^^^^|\n|^^^|^^^^^^^^^^^^|\n|^^^|^^^^^^^^^^^^|\n|>a<|^^^^^^^^^^^^|\n|>b<|>long value<|\n+---+------------+\n|^^^|^^^^^^^^^^^^|\n|^^^|^^^^^^^^^^^^|\n|^^^|^^^^^^^^^^^^|\n|^^^|>x         <|\n|^^^|>y         <|\n|>d<|>z         <|\n+---+------------+\n|^^^|^^^^^^^^^^^^|\n|^^^|^^^^^^^^^^^^|\n|^^^|^^^^^^^^^^^^|\n|> <|>q         <|\n+---+------------+",
   )
-  assert_eq(table.get_dimension().get_widths(), None)
-  assert_eq(table.get_dimension().get_heights(), None)
+  assert_eq(table.dimension_snapshot().get_widths(), None)
+  assert_eq(table.dimension_snapshot().get_heights(), None)
   assert_eq(table.total_width(), 18)
   assert_eq(table.total_height(), 19)
   assert_eq(table.rows, [["a\nb", "long value"], ["d", "x\ny\nz"], ["", "q"]])
@@ -318,15 +334,22 @@ test "indent state reference padding-center" {
     ["", "q"],
   ])
   table
-  .with_(@tabular.Padding::new(1, 1, 1, 2).fill('>', '<', '^', 'v'))
+  .with_(
+    @tabular.Padding::new(1, 1, 1, 2).fill(
+      left='>',
+      right='<',
+      top='^',
+      bottom='v',
+    ),
+  )
   .with_(@tabular.Alignment::center_vertical())
   |> ignore
   assert_eq(
     table.to_string(),
     "+---+------------+\n|^^^|^^^^^^^^^^^^|\n|^^^|^^^^^^^^^^^^|\n|>a<|>long value<|\n|>b<|vvvvvvvvvvvv|\n|vvv|vvvvvvvvvvvv|\n+---+------------+\n|^^^|^^^^^^^^^^^^|\n|^^^|^^^^^^^^^^^^|\n|^^^|>x         <|\n|>d<|>y         <|\n|vvv|>z         <|\n|vvv|vvvvvvvvvvvv|\n+---+------------+\n|^^^|^^^^^^^^^^^^|\n|^^^|^^^^^^^^^^^^|\n|> <|>q         <|\n|vvv|vvvvvvvvvvvv|\n+---+------------+",
   )
-  assert_eq(table.get_dimension().get_widths(), None)
-  assert_eq(table.get_dimension().get_heights(), None)
+  assert_eq(table.dimension_snapshot().get_widths(), None)
+  assert_eq(table.dimension_snapshot().get_heights(), None)
   assert_eq(table.total_width(), 18)
   assert_eq(table.total_height(), 19)
   assert_eq(table.rows, [["a\nb", "long value"], ["d", "x\ny\nz"], ["", "q"]])
@@ -355,19 +378,29 @@ test "indent state reference row-over-column" {
   table
   .modify(
     @tabular.Cols::first(),
-    @tabular.Padding::new(2, 1, 2, 1).fill('>', '<', '^', 'v'),
+    @tabular.Padding::new(2, 1, 2, 1).fill(
+      left='>',
+      right='<',
+      top='^',
+      bottom='v',
+    ),
   )
   .modify(
     @tabular.Rows::first(),
-    @tabular.Padding::new(1, 2, 1, 2).fill('a', 'b', 'c', 'd'),
+    @tabular.Padding::new(1, 2, 1, 2).fill(
+      left='a',
+      right='b',
+      top='c',
+      bottom='d',
+    ),
   )
   |> ignore
   assert_eq(
     table.to_string(),
     "+----+-------------+\n|cccc|ccccccccccccc|\n|aabb|along valuebb|\n|abbb|ddddddddddddd|\n|dddd|ddddddddddddd|\n|dddd|ddddddddddddd|\n+----+-------------+\n|^^^^| x           |\n|^^^^| y           |\n|>>d<| z           |\n|vvvv|             |\n+----+-------------+\n|^^^^| q           |\n|^^^^|             |\n|>> <|             |\n|vvvv|             |\n+----+-------------+",
   )
-  assert_eq(table.get_dimension().get_widths(), None)
-  assert_eq(table.get_dimension().get_heights(), None)
+  assert_eq(table.dimension_snapshot().get_widths(), None)
+  assert_eq(table.dimension_snapshot().get_heights(), None)
   assert_eq(table.total_width(), 20)
   assert_eq(table.total_height(), 17)
   assert_eq(table.rows, [["a\nb", "long value"], ["d", "x\ny\nz"], ["", "q"]])
@@ -396,19 +429,29 @@ test "indent state reference column-over-row" {
   table
   .modify(
     @tabular.Rows::first(),
-    @tabular.Padding::new(2, 1, 2, 1).fill('>', '<', '^', 'v'),
+    @tabular.Padding::new(2, 1, 2, 1).fill(
+      left='>',
+      right='<',
+      top='^',
+      bottom='v',
+    ),
   )
   .modify(
     @tabular.Cols::first(),
-    @tabular.Padding::new(1, 2, 1, 2).fill('a', 'b', 'c', 'd'),
+    @tabular.Padding::new(1, 2, 1, 2).fill(
+      left='a',
+      right='b',
+      top='c',
+      bottom='d',
+    ),
   )
   |> ignore
   assert_eq(
     table.to_string(),
     "+----+-------------+\n|cccc|^^^^^^^^^^^^^|\n|aabb|^^^^^^^^^^^^^|\n|abbb|>>long value<|\n|dddd|vvvvvvvvvvvvv|\n|dddd|vvvvvvvvvvvvv|\n+----+-------------+\n|cccc| x           |\n|adbb| y           |\n|dddd| z           |\n|dddd|             |\n+----+-------------+\n|cccc| q           |\n|a bb|             |\n|dddd|             |\n|dddd|             |\n+----+-------------+",
   )
-  assert_eq(table.get_dimension().get_widths(), None)
-  assert_eq(table.get_dimension().get_heights(), None)
+  assert_eq(table.dimension_snapshot().get_widths(), None)
+  assert_eq(table.dimension_snapshot().get_heights(), None)
   assert_eq(table.total_width(), 20)
   assert_eq(table.total_height(), 17)
   assert_eq(table.rows, [["a\nb", "long value"], ["d", "x\ny\nz"], ["", "q"]])
@@ -435,15 +478,23 @@ test "indent state reference reset-fill" {
     ["", "q"],
   ])
   table
-  .modify((0, 0), @tabular.Padding::new(2, 1, 2, 1).fill('>', '<', '^', 'v'))
+  .modify(
+    (0, 0),
+    @tabular.Padding::new(2, 1, 2, 1).fill(
+      left='>',
+      right='<',
+      top='^',
+      bottom='v',
+    ),
+  )
   .with_(@tabular.Padding::new(1, 1, 1, 1))
   |> ignore
   assert_eq(
     table.to_string(),
     "+---+------------+\n|   |            |\n| a | long value |\n| b |            |\n|   |            |\n+---+------------+\n|   |            |\n| d | x          |\n|   | y          |\n|   | z          |\n|   |            |\n+---+------------+\n|   |            |\n|   | q          |\n|   |            |\n+---+------------+",
   )
-  assert_eq(table.get_dimension().get_widths(), None)
-  assert_eq(table.get_dimension().get_heights(), None)
+  assert_eq(table.dimension_snapshot().get_widths(), None)
+  assert_eq(table.dimension_snapshot().get_heights(), None)
   assert_eq(table.total_width(), 18)
   assert_eq(table.total_height(), 16)
   assert_eq(table.rows, [["a\nb", "long value"], ["d", "x\ny\nz"], ["", "q"]])
@@ -484,8 +535,8 @@ test "indent state reference color-scopes" {
     table.to_string(),
     "+---+------------+\n|\u001b[44m   \u001b[49m|\u001b[44m            \u001b[49m|\n|\u001b[44m \u001b[49ma\u001b[44m \u001b[49m|\u001b[44m \u001b[49mlong value\u001b[44m \u001b[49m|\n|\u001b[44m \u001b[49mb\u001b[44m \u001b[49m|\u001b[44m            \u001b[49m|\n|\u001b[44m   \u001b[49m|\u001b[44m            \u001b[49m|\n+---+------------+\n|\u001b[41m   \u001b[49m|            |\n|\u001b[41m \u001b[49md\u001b[41m \u001b[49m| x          |\n|\u001b[41m   \u001b[49m| y          |\n|\u001b[41m   \u001b[49m| z          |\n|\u001b[41m   \u001b[49m|            |\n+---+------------+\n|\u001b[41m   \u001b[49m|            |\n|\u001b[41m \u001b[49m \u001b[41m \u001b[49m| q          |\n|\u001b[41m   \u001b[49m|            |\n+---+------------+",
   )
-  assert_eq(table.get_dimension().get_widths(), None)
-  assert_eq(table.get_dimension().get_heights(), None)
+  assert_eq(table.dimension_snapshot().get_widths(), None)
+  assert_eq(table.dimension_snapshot().get_heights(), None)
   assert_eq(table.total_width(), 18)
   assert_eq(table.total_height(), 16)
   assert_eq(table.rows, [["a\nb", "long value"], ["d", "x\ny\nz"], ["", "q"]])
@@ -520,8 +571,8 @@ test "indent state reference clear-color" {
     table.to_string(),
     "+---+------------+\n|   |\u001b[41m            \u001b[49m|\n| a |\u001b[41m \u001b[49mlong value\u001b[41m \u001b[49m|\n| b |\u001b[41m            \u001b[49m|\n|   |\u001b[41m            \u001b[49m|\n+---+------------+\n|\u001b[41m   \u001b[49m|\u001b[41m            \u001b[49m|\n|\u001b[41m \u001b[49md\u001b[41m \u001b[49m|\u001b[41m \u001b[49mx         \u001b[41m \u001b[49m|\n|\u001b[41m   \u001b[49m|\u001b[41m \u001b[49my         \u001b[41m \u001b[49m|\n|\u001b[41m   \u001b[49m|\u001b[41m \u001b[49mz         \u001b[41m \u001b[49m|\n|\u001b[41m   \u001b[49m|\u001b[41m            \u001b[49m|\n+---+------------+\n|\u001b[41m   \u001b[49m|\u001b[41m            \u001b[49m|\n|\u001b[41m \u001b[49m \u001b[41m \u001b[49m|\u001b[41m \u001b[49mq         \u001b[41m \u001b[49m|\n|\u001b[41m   \u001b[49m|\u001b[41m            \u001b[49m|\n+---+------------+",
   )
-  assert_eq(table.get_dimension().get_widths(), None)
-  assert_eq(table.get_dimension().get_heights(), None)
+  assert_eq(table.dimension_snapshot().get_widths(), None)
+  assert_eq(table.dimension_snapshot().get_heights(), None)
   assert_eq(table.total_width(), 18)
   assert_eq(table.total_height(), 16)
   assert_eq(table.rows, [["a\nb", "long value"], ["d", "x\ny\nz"], ["", "q"]])
@@ -555,8 +606,8 @@ test "indent state reference zero-color" {
     table.to_string(),
     "+-+----------+\n|a|long value|\n|b|\u001b[41m          \u001b[49m|\n+-+----------+\n|d|x         |\n|\u001b[41m \u001b[49m|y         |\n|\u001b[41m \u001b[49m|z         |\n+-+----------+\n| |q         |\n+-+----------+",
   )
-  assert_eq(table.get_dimension().get_widths(), None)
-  assert_eq(table.get_dimension().get_heights(), None)
+  assert_eq(table.dimension_snapshot().get_widths(), None)
+  assert_eq(table.dimension_snapshot().get_heights(), None)
   assert_eq(table.total_width(), 14)
   assert_eq(table.total_height(), 10)
   assert_eq(table.rows, [["a\nb", "long value"], ["d", "x\ny\nz"], ["", "q"]])
@@ -583,15 +634,15 @@ test "indent state reference cell-expand" {
     ["", "q"],
   ])
   table
-  .modify((0, 0), @tabular.Padding::expand(true))
-  .modify((1, 0), @tabular.Padding::expand(false))
+  .modify((0, 0), @tabular.PaddingExpand::Horizontal)
+  .modify((1, 0), @tabular.PaddingExpand::Vertical)
   |> ignore
   assert_eq(
     table.to_string(),
     "+---+------------+\n|a  | long value |\n|b  |            |\n+---+------------+\n| d | x          |\n|   | y          |\n|   | z          |\n+---+------------+\n|   | q          |\n+---+------------+",
   )
-  assert_eq(table.get_dimension().get_widths(), None)
-  assert_eq(table.get_dimension().get_heights(), None)
+  assert_eq(table.dimension_snapshot().get_widths(), None)
+  assert_eq(table.dimension_snapshot().get_heights(), None)
   assert_eq(table.total_width(), 18)
   assert_eq(table.total_height(), 10)
   assert_eq(table.rows, [["a\nb", "long value"], ["d", "x\ny\nz"], ["", "q"]])
@@ -620,15 +671,15 @@ test "indent state reference row-span" {
   table
   .modify((0, 0), @tabular.Span::row(2))
   .with_(@tabular.PaddingColor::filled(@tabular.Color::bg_blue()))
-  .with_(@tabular.Padding::expand(true))
-  .with_(@tabular.Padding::expand(false))
+  .with_(@tabular.PaddingExpand::Horizontal)
+  .with_(@tabular.PaddingExpand::Vertical)
   |> ignore
   assert_eq(
     table.to_string(),
     "+---+------------+\n|a\u001b[44m  \u001b[49m|long value\u001b[44m  \u001b[49m|\n+b\u001b[44m  \u001b[49m+------------+\n|\u001b[44m   \u001b[49m|x\u001b[44m           \u001b[49m|\n|\u001b[44m   \u001b[49m|y\u001b[44m           \u001b[49m|\n|\u001b[44m   \u001b[49m|z\u001b[44m           \u001b[49m|\n+---+------------+\n|\u001b[44m   \u001b[49m|q\u001b[44m           \u001b[49m|\n+---+------------+",
   )
-  assert_eq(table.get_dimension().get_widths(), None)
-  assert_eq(table.get_dimension().get_heights(), None)
+  assert_eq(table.dimension_snapshot().get_widths(), None)
+  assert_eq(table.dimension_snapshot().get_heights(), None)
   assert_eq(table.total_width(), 18)
   assert_eq(table.total_height(), 9)
   assert_eq(table.rows, [["a\nb", "long value"], ["d", "x\ny\nz"], ["", "q"]])
@@ -655,16 +706,16 @@ test "indent state reference column-span" {
     ["", "q"],
   ])
   table
-  .modify((0, 0), @tabular.Span::column(2))
-  .with_(@tabular.Padding::expand(true))
-  .with_(@tabular.Padding::expand(false))
+  .modify((0, 0), @tabular.Span::col(2))
+  .with_(@tabular.PaddingExpand::Horizontal)
+  .with_(@tabular.PaddingExpand::Vertical)
   |> ignore
   assert_eq(
     table.to_string(),
     "+---+---+\n|a      |\n|b      |\n+---+---+\n|d  |x  |\n|   |y  |\n|   |z  |\n+---+---+\n|   |q  |\n+---+---+",
   )
-  assert_eq(table.get_dimension().get_widths(), None)
-  assert_eq(table.get_dimension().get_heights(), None)
+  assert_eq(table.dimension_snapshot().get_widths(), None)
+  assert_eq(table.dimension_snapshot().get_heights(), None)
   assert_eq(table.total_width(), 9)
   assert_eq(table.total_height(), 10)
   assert_eq(table.rows, [["a\nb", "long value"], ["d", "x\ny\nz"], ["", "q"]])
@@ -692,15 +743,22 @@ test "indent state reference span-colors" {
   ])
   table
   .modify((0, 0), @tabular.Span::row(2))
-  .with_(@tabular.Padding::new(1, 1, 1, 1).fill('>', '<', '^', 'v'))
+  .with_(
+    @tabular.Padding::new(1, 1, 1, 1).fill(
+      left='>',
+      right='<',
+      top='^',
+      bottom='v',
+    ),
+  )
   .with_(@tabular.PaddingColor::filled(@tabular.Color::bg_blue()))
   |> ignore
   assert_eq(
     table.to_string(),
     "+---+------------+\n|\u001b[44m^^^\u001b[49m|\u001b[44m^^^^^^^^^^^^\u001b[49m|\n|\u001b[44m>\u001b[49ma\u001b[44m<\u001b[49m|\u001b[44m>\u001b[49mlong value\u001b[44m<\u001b[49m|\n|\u001b[44m>\u001b[49mb\u001b[44m<\u001b[49m|\u001b[44mvvvvvvvvvvvv\u001b[49m|\n+\u001b[44mvvv\u001b[49m+------------+\n|\u001b[44mvvv\u001b[49m|\u001b[44m^^^^^^^^^^^^\u001b[49m|\n|\u001b[44mvvv\u001b[49m|\u001b[44m>\u001b[49mx         \u001b[44m<\u001b[49m|\n|\u001b[44mvvv\u001b[49m|\u001b[44m>\u001b[49my         \u001b[44m<\u001b[49m|\n|\u001b[44mvvv\u001b[49m|\u001b[44m>\u001b[49mz         \u001b[44m<\u001b[49m|\n|\u001b[44mvvv\u001b[49m|\u001b[44mvvvvvvvvvvvv\u001b[49m|\n+---+------------+\n|\u001b[44m^^^\u001b[49m|\u001b[44m^^^^^^^^^^^^\u001b[49m|\n|\u001b[44m>\u001b[49m \u001b[44m<\u001b[49m|\u001b[44m>\u001b[49mq         \u001b[44m<\u001b[49m|\n|\u001b[44mvvv\u001b[49m|\u001b[44mvvvvvvvvvvvv\u001b[49m|\n+---+------------+",
   )
-  assert_eq(table.get_dimension().get_widths(), None)
-  assert_eq(table.get_dimension().get_heights(), None)
+  assert_eq(table.dimension_snapshot().get_widths(), None)
+  assert_eq(table.dimension_snapshot().get_heights(), None)
   assert_eq(table.total_width(), 18)
   assert_eq(table.total_height(), 15)
   assert_eq(table.rows, [["a\nb", "long value"], ["d", "x\ny\nz"], ["", "q"]])
@@ -728,14 +786,14 @@ test "indent state reference width-cache" {
   ])
   table
   .with_(@tabular.Width::list([15, 18]))
-  .with_(@tabular.Padding::expand(true))
+  .with_(@tabular.PaddingExpand::Horizontal)
   |> ignore
   assert_eq(
     table.to_string(),
     "+---+------------+\n|a  |long value  |\n|b  |            |\n+---+------------+\n|d  |x           |\n|   |y           |\n|   |z           |\n+---+------------+\n|   |q           |\n+---+------------+",
   )
-  assert_eq(table.get_dimension().get_widths(), None)
-  assert_eq(table.get_dimension().get_heights(), None)
+  assert_eq(table.dimension_snapshot().get_widths(), None)
+  assert_eq(table.dimension_snapshot().get_heights(), None)
   assert_eq(table.total_width(), 18)
   assert_eq(table.total_height(), 10)
   assert_eq(table.rows, [["a\nb", "long value"], ["d", "x\ny\nz"], ["", "q"]])
@@ -763,14 +821,14 @@ test "indent state reference height-cache" {
   ])
   table
   .with_(@tabular.Height::list([12, 12, 12]))
-  .with_(@tabular.Padding::expand(false))
+  .with_(@tabular.PaddingExpand::Vertical)
   |> ignore
   assert_eq(
     table.to_string(),
     "+---+------------+\n| a | long value |\n| b |            |\n+---+------------+\n| d | x          |\n|   | y          |\n|   | z          |\n+---+------------+\n|   | q          |\n+---+------------+",
   )
-  assert_eq(table.get_dimension().get_widths(), None)
-  assert_eq(table.get_dimension().get_heights(), None)
+  assert_eq(table.dimension_snapshot().get_widths(), None)
+  assert_eq(table.dimension_snapshot().get_heights(), None)
   assert_eq(table.total_width(), 18)
   assert_eq(table.total_height(), 10)
   assert_eq(table.rows, [["a\nb", "long value"], ["d", "x\ny\nz"], ["", "q"]])
@@ -804,8 +862,8 @@ test "indent state reference color-cache" {
     table.to_string(),
     "+---+------------+\n|\u001b[41m \u001b[49ma\u001b[41m \u001b[49m|\u001b[41m \u001b[49mlong value\u001b[41m \u001b[49m|\n|\u001b[41m \u001b[49mb\u001b[41m \u001b[49m|\u001b[41m            \u001b[49m|\n+---+------------+\n|\u001b[41m \u001b[49md\u001b[41m \u001b[49m|\u001b[41m \u001b[49mx         \u001b[41m \u001b[49m|\n|\u001b[41m   \u001b[49m|\u001b[41m \u001b[49my         \u001b[41m \u001b[49m|\n|\u001b[41m   \u001b[49m|\u001b[41m \u001b[49mz         \u001b[41m \u001b[49m|\n+---+------------+\n|\u001b[41m \u001b[49m \u001b[41m \u001b[49m|\u001b[41m \u001b[49mq         \u001b[41m \u001b[49m|\n+---+------------+",
   )
-  assert_eq(table.get_dimension().get_widths(), None)
-  assert_eq(table.get_dimension().get_heights(), None)
+  assert_eq(table.dimension_snapshot().get_widths(), None)
+  assert_eq(table.dimension_snapshot().get_heights(), None)
   assert_eq(table.total_width(), 18)
   assert_eq(table.total_height(), 10)
   assert_eq(table.rows, [["a\nb", "long value"], ["d", "x\ny\nz"], ["", "q"]])
@@ -839,8 +897,8 @@ test "indent state reference margin-cache" {
     table.to_string(),
     "+---+------------+\n| a | long value |\n| b |            |\n+---+------------+\n| d | x          |\n|   | y          |\n|   | z          |\n+---+------------+\n|   | q          |\n+---+------------+",
   )
-  assert_eq(table.get_dimension().get_widths(), None)
-  assert_eq(table.get_dimension().get_heights(), None)
+  assert_eq(table.dimension_snapshot().get_widths(), None)
+  assert_eq(table.dimension_snapshot().get_heights(), None)
   assert_eq(table.total_width(), 18)
   assert_eq(table.total_height(), 10)
   assert_eq(table.rows, [["a\nb", "long value"], ["d", "x\ny\nz"], ["", "q"]])
@@ -867,7 +925,7 @@ test "indent state reference margin-empty" {
     ["", "q"],
   ])
   table
-  .with_(@tabular.Margin::new(1, 2, 1, 2))
+  .with_(@tabular.Margin::new(left=1, right=2, top=1, bottom=2))
   .with_(@tabular.MarginColor::filled(@tabular.Color::bg_red()))
   .with_(@tabular.MarginColor::empty())
   |> ignore
@@ -875,8 +933,8 @@ test "indent state reference margin-empty" {
     table.to_string(),
     "                     \n +---+------------+  \n | a | long value |  \n | b |            |  \n +---+------------+  \n | d | x          |  \n |   | y          |  \n |   | z          |  \n +---+------------+  \n |   | q          |  \n +---+------------+  \n                     \n                     ",
   )
-  assert_eq(table.get_dimension().get_widths(), None)
-  assert_eq(table.get_dimension().get_heights(), None)
+  assert_eq(table.dimension_snapshot().get_widths(), None)
+  assert_eq(table.dimension_snapshot().get_heights(), None)
   assert_eq(table.total_width(), 21)
   assert_eq(table.total_height(), 13)
   assert_eq(table.rows, [["a\nb", "long value"], ["d", "x\ny\nz"], ["", "q"]])
@@ -903,23 +961,30 @@ test "indent state reference offset-start" {
     ["", "q"],
   ])
   table
-  .with_(@tabular.Margin::new(1, 2, 1, 2).fill('>', '<', '^', 'v'))
+  .with_(
+    @tabular.Margin::new(left=1, right=2, top=1, bottom=2).fill(
+      left='>',
+      right='<',
+      top='^',
+      bottom='v',
+    ),
+  )
   .with_(@tabular.MarginColor::filled(@tabular.Color::bg_red()))
   |> ignore
   table.config.set_margin_offsets(
     @tabular.Sides::new(
-      @tabular.Offset::Start(2),
-      @tabular.Offset::Start(3),
-      @tabular.Offset::Start(2),
-      @tabular.Offset::Start(4),
+      left=@tabular.Offset::Start(2),
+      right=@tabular.Offset::Start(3),
+      top=@tabular.Offset::Start(2),
+      bottom=@tabular.Offset::Start(4),
     ),
   )
   assert_eq(
     table.to_string(),
     "  \u001b[41m^^^^^^^^^^^^^^^^^^^\u001b[49m\n +---+------------+  \n | a | long value |  \n\u001b[41m>\u001b[49m| b |            |  \n\u001b[41m>\u001b[49m+---+------------+\u001b[41m<<\u001b[49m\n\u001b[41m>\u001b[49m| d | x          |\u001b[41m<<\u001b[49m\n\u001b[41m>\u001b[49m|   | y          |\u001b[41m<<\u001b[49m\n\u001b[41m>\u001b[49m|   | z          |\u001b[41m<<\u001b[49m\n\u001b[41m>\u001b[49m+---+------------+\u001b[41m<<\u001b[49m\n\u001b[41m>\u001b[49m|   | q          |\u001b[41m<<\u001b[49m\n\u001b[41m>\u001b[49m+---+------------+\u001b[41m<<\u001b[49m\n    \u001b[41mvvvvvvvvvvvvvvvvv\u001b[49m\n    \u001b[41mvvvvvvvvvvvvvvvvv\u001b[49m",
   )
-  assert_eq(table.get_dimension().get_widths(), None)
-  assert_eq(table.get_dimension().get_heights(), None)
+  assert_eq(table.dimension_snapshot().get_widths(), None)
+  assert_eq(table.dimension_snapshot().get_heights(), None)
   assert_eq(table.total_width(), 21)
   assert_eq(table.total_height(), 13)
   assert_eq(table.rows, [["a\nb", "long value"], ["d", "x\ny\nz"], ["", "q"]])
@@ -946,23 +1011,30 @@ test "indent state reference offset-end" {
     ["", "q"],
   ])
   table
-  .with_(@tabular.Margin::new(1, 2, 1, 2).fill('>', '<', '^', 'v'))
+  .with_(
+    @tabular.Margin::new(left=1, right=2, top=1, bottom=2).fill(
+      left='>',
+      right='<',
+      top='^',
+      bottom='v',
+    ),
+  )
   .with_(@tabular.MarginColor::filled(@tabular.Color::bg_red()))
   |> ignore
   table.config.set_margin_offsets(
     @tabular.Sides::new(
-      @tabular.Offset::End(2),
-      @tabular.Offset::End(3),
-      @tabular.Offset::End(2),
-      @tabular.Offset::End(4),
+      left=@tabular.Offset::End(2),
+      right=@tabular.Offset::End(3),
+      top=@tabular.Offset::End(2),
+      bottom=@tabular.Offset::End(4),
     ),
   )
   assert_eq(
     table.to_string(),
     "\u001b[41m^^^^^^^^^^^^^^^^^^^\u001b[49m  \n\u001b[41m>\u001b[49m+---+------------+\u001b[41m<<\u001b[49m\n\u001b[41m>\u001b[49m| a | long value |\u001b[41m<<\u001b[49m\n\u001b[41m>\u001b[49m| b |            |\u001b[41m<<\u001b[49m\n\u001b[41m>\u001b[49m+---+------------+\u001b[41m<<\u001b[49m\n\u001b[41m>\u001b[49m| d | x          |\u001b[41m<<\u001b[49m\n\u001b[41m>\u001b[49m|   | y          |\u001b[41m<<\u001b[49m\n\u001b[41m>\u001b[49m|   | z          |\u001b[41m<<\u001b[49m\n\u001b[41m>\u001b[49m+---+------------+  \n |   | q          |  \n +---+------------+  \n\u001b[41mvvvvvvvvvvvvvvvvv\u001b[49m    \n\u001b[41mvvvvvvvvvvvvvvvvv\u001b[49m    ",
   )
-  assert_eq(table.get_dimension().get_widths(), None)
-  assert_eq(table.get_dimension().get_heights(), None)
+  assert_eq(table.dimension_snapshot().get_widths(), None)
+  assert_eq(table.dimension_snapshot().get_heights(), None)
   assert_eq(table.total_width(), 21)
   assert_eq(table.total_height(), 13)
   assert_eq(table.rows, [["a\nb", "long value"], ["d", "x\ny\nz"], ["", "q"]])
@@ -989,23 +1061,30 @@ test "indent state reference offset-large" {
     ["", "q"],
   ])
   table
-  .with_(@tabular.Margin::new(1, 2, 1, 2).fill('>', '<', '^', 'v'))
+  .with_(
+    @tabular.Margin::new(left=1, right=2, top=1, bottom=2).fill(
+      left='>',
+      right='<',
+      top='^',
+      bottom='v',
+    ),
+  )
   .with_(@tabular.MarginColor::filled(@tabular.Color::bg_red()))
   |> ignore
   table.config.set_margin_offsets(
     @tabular.Sides::new(
-      @tabular.Offset::Start(100),
-      @tabular.Offset::End(100),
-      @tabular.Offset::Start(100),
-      @tabular.Offset::End(100),
+      left=@tabular.Offset::Start(100),
+      right=@tabular.Offset::End(100),
+      top=@tabular.Offset::Start(100),
+      bottom=@tabular.Offset::End(100),
     ),
   )
   assert_eq(
     table.to_string(),
     "                     \n +---+------------+  \n | a | long value |  \n | b |            |  \n +---+------------+  \n | d | x          |  \n |   | y          |  \n |   | z          |  \n +---+------------+  \n |   | q          |  \n +---+------------+  \n                     \n                     ",
   )
-  assert_eq(table.get_dimension().get_widths(), None)
-  assert_eq(table.get_dimension().get_heights(), None)
+  assert_eq(table.dimension_snapshot().get_widths(), None)
+  assert_eq(table.dimension_snapshot().get_heights(), None)
   assert_eq(table.total_width(), 21)
   assert_eq(table.total_height(), 13)
   assert_eq(table.rows, [["a\nb", "long value"], ["d", "x\ny\nz"], ["", "q"]])
@@ -1034,14 +1113,14 @@ test "indent state reference empty-style" {
   table
   .apply(@tabular.Style::empty())
   .with_(@tabular.PaddingColor::filled(@tabular.Color::bg_red()))
-  .with_(@tabular.Padding::expand(true))
+  .with_(@tabular.PaddingExpand::Horizontal)
   |> ignore
   assert_eq(
     table.to_string(),
     "a\u001b[41m  \u001b[49mlong value\u001b[41m  \u001b[49m\nb\u001b[41m  \u001b[49m\u001b[41m            \u001b[49m\nd\u001b[41m  \u001b[49mx\u001b[41m           \u001b[49m\n\u001b[41m   \u001b[49my\u001b[41m           \u001b[49m\n\u001b[41m   \u001b[49mz\u001b[41m           \u001b[49m\n\u001b[41m   \u001b[49mq\u001b[41m           \u001b[49m",
   )
-  assert_eq(table.get_dimension().get_widths(), None)
-  assert_eq(table.get_dimension().get_heights(), None)
+  assert_eq(table.dimension_snapshot().get_widths(), None)
+  assert_eq(table.dimension_snapshot().get_heights(), None)
   assert_eq(table.total_width(), 15)
   assert_eq(table.total_height(), 6)
   assert_eq(table.rows, [["a\nb", "long value"], ["d", "x\ny\nz"], ["", "q"]])
@@ -1069,8 +1148,8 @@ test "indent state reference settings" {
   ])
   table.with_(
     @tabular.Settings::new(
-      @tabular.Padding::expand(true),
-      @tabular.Padding::expand(false),
+      @tabular.PaddingExpand::Horizontal,
+      @tabular.PaddingExpand::Vertical,
     ),
   )
   |> ignore
@@ -1078,8 +1157,8 @@ test "indent state reference settings" {
     table.to_string(),
     "+---+------------+\n|a  |long value  |\n|b  |            |\n+---+------------+\n|d  |x           |\n|   |y           |\n|   |z           |\n+---+------------+\n|   |q           |\n+---+------------+",
   )
-  assert_eq(table.get_dimension().get_widths(), None)
-  assert_eq(table.get_dimension().get_heights(), None)
+  assert_eq(table.dimension_snapshot().get_widths(), None)
+  assert_eq(table.dimension_snapshot().get_heights(), None)
   assert_eq(table.total_width(), 18)
   assert_eq(table.total_height(), 10)
   assert_eq(table.rows, [["a\nb", "long value"], ["d", "x\ny\nz"], ["", "q"]])
@@ -1107,15 +1186,15 @@ test "indent state reference ansi" {
   ])
   table
   .modify((0, 0), @tabular.Color::fg_red().colorize("a\nb"))
-  .with_(@tabular.Padding::expand(true))
-  .with_(@tabular.Padding::expand(false))
+  .with_(@tabular.PaddingExpand::Horizontal)
+  .with_(@tabular.PaddingExpand::Vertical)
   |> ignore
   assert_eq(
     table.to_string(),
     "+---+------------+\n|\u001b[31ma\u001b[39m  |long value  |\n|\u001b[31mb\u001b[39m  |            |\n+---+------------+\n|d  |x           |\n|   |y           |\n|   |z           |\n+---+------------+\n|   |q           |\n+---+------------+",
   )
-  assert_eq(table.get_dimension().get_widths(), None)
-  assert_eq(table.get_dimension().get_heights(), None)
+  assert_eq(table.dimension_snapshot().get_widths(), None)
+  assert_eq(table.dimension_snapshot().get_heights(), None)
   assert_eq(table.total_width(), 18)
   assert_eq(table.total_height(), 10)
   assert_eq(table.rows, [
@@ -1145,14 +1224,14 @@ test "indent state reference global-entity" {
     ["d", "x\ny\nz"],
     ["", "q"],
   ])
-  table.modify(@tabular.Segment::all(), @tabular.Padding::expand(false))
+  table.modify(@tabular.Segment::all(), @tabular.PaddingExpand::Vertical)
   |> ignore
   assert_eq(
     table.to_string(),
     "+---+------------+\n| a | long value |\n| b |            |\n+---+------------+\n| d | x          |\n|   | y          |\n|   | z          |\n+---+------------+\n|   | q          |\n+---+------------+",
   )
-  assert_eq(table.get_dimension().get_widths(), None)
-  assert_eq(table.get_dimension().get_heights(), None)
+  assert_eq(table.dimension_snapshot().get_widths(), None)
+  assert_eq(table.dimension_snapshot().get_heights(), None)
   assert_eq(table.total_width(), 18)
   assert_eq(table.total_height(), 10)
   assert_eq(table.rows, [["a\nb", "long value"], ["d", "x\ny\nz"], ["", "q"]])

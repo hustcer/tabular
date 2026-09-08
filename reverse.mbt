@@ -17,14 +17,31 @@ pub fn Reverse::rows(start : Int) -> Reverse {
 
 ///|
 /// Reverse all columns from `start`, including `start`.
-pub fn Reverse::columns(start : Int) -> Reverse {
+pub fn Reverse::cols(start : Int) -> Reverse {
   { columns: true, start, end_: End(0), }
 }
 
 ///|
-/// Set the exclusive end using a length (`Start`) or trailing exclusion (`End`).
-pub fn Reverse::limit(self : Reverse, limit : Offset) -> Reverse {
-  { ..self, end_: limit, }
+/// Reverse exactly `count` items, starting at the configured index.
+/// A negative count or a range extending past the table leaves it unchanged.
+/// Replaces any previous `take` or `exclude_last` bound.
+pub fn Reverse::take(self : Reverse, count : Int) -> Reverse {
+  { ..self, end_: Start(count), }
+}
+
+///|
+/// Exclude `count` trailing rows or columns from the reversed range.
+/// Replaces any previous `take` or `exclude_last` bound.
+///
+/// ```mbt check
+/// test {
+///   let table = Table::from_rows([["a"], ["b"], ["c"], ["d"], ["e"]])
+///   table.reverse(Reverse::rows(1).exclude_last(1)) |> ignore
+///   assert_eq(table.rows, [["a"], ["d"], ["c"], ["b"], ["e"]])
+/// }
+/// ```
+pub fn Reverse::exclude_last(self : Reverse, count : Int) -> Reverse {
+  { ..self, end_: End(count), }
 }
 
 ///|
@@ -34,7 +51,7 @@ pub fn Reverse::limit(self : Reverse, limit : Offset) -> Reverse {
 /// ```mbt check
 /// test {
 ///   let table = Table::from_rows([["a"], ["b"], ["c"], ["d"]])
-///   table.reverse(Reverse::rows(1).limit(Offset::Start(2))) |> ignore
+///   table.reverse(Reverse::rows(1).take(2)) |> ignore
 ///   assert_eq(table.rows, [["a"], ["c"], ["b"], ["d"]])
 /// }
 /// ```

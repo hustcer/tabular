@@ -1,7 +1,7 @@
 ///|
 /// Select ordered groups of cells from a table.
 /// Each group is an entity: a row, a column, a cell, or the whole table.
-/// Operations such as `Dup` restart the source sequence for each group.
+/// Operations such as `Duplicate` restart the source sequence for each group.
 pub(open) trait Object {
   fn cells(Self, Table) -> Array[Array[(Int, Int)]]
   fn entities(Self, Table) -> Array[Entity] = _
@@ -21,7 +21,7 @@ pub impl Object for Rows with fn entities(self, table) {
 
 ///|
 pub impl Object for Cols with fn entities(self, table) {
-  resolve_cols(self, table.count_columns()).map(col => Entity::Column(col))
+  resolve_cols(self, table.count_cols()).map(col => Entity::Col(col))
 }
 
 ///|
@@ -36,16 +36,15 @@ pub impl Object for Segment with fn entities(self, table) {
     (RowsOnly(rows), 0, 1) => Object::entities(rows, table)
     (ColsOnly(cols), 0, 1) => Object::entities(cols, table)
     _ =>
-      resolve_segment_cells(self, table.count_rows(), table.count_columns()).map(cell => {
-          Entity::Cell(cell.0, cell.1)
-        },
-      )
+      resolve_segment_cells(self, table.count_rows(), table.count_cols()).map(cell => {
+        Entity::Cell(cell.0, cell.1)
+      })
   }
 }
 
 ///|
 pub impl Object for Rows with fn cells(self, table) {
-  let col_count = table.count_columns()
+  let col_count = table.count_cols()
   resolve_rows(self, table.count_rows()).map(row => {
     Array::makei(col_count, col => (row, col))
   })
@@ -54,7 +53,7 @@ pub impl Object for Rows with fn cells(self, table) {
 ///|
 pub impl Object for Cols with fn cells(self, table) {
   let row_count = table.count_rows()
-  resolve_cols(self, table.count_columns()).map(col => {
+  resolve_cols(self, table.count_cols()).map(col => {
     Array::makei(row_count, row => (row, col))
   })
 }
@@ -95,12 +94,12 @@ pub impl Object for Segment with fn cells(self, table) {
 
 ///|
 pub impl Object for ByColName with fn entities(self, table) {
-  resolve_cols_by_name(table.rows, self).map(col => Entity::Column(col))
+  resolve_cols_by_name(table.rows, self).map(col => Entity::Col(col))
 }
 
 ///|
 pub impl Object for ByColName with fn cells(self, table) {
   Object::entities(self, table).map(entity => {
-    entity.iter(table.count_rows(), table.count_columns()).to_array()
+    entity.iter(table.count_rows(), table.count_cols()).to_array()
   })
 }

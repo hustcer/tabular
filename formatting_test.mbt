@@ -33,7 +33,11 @@ test "trim axes accumulate and reset without changing records or dimensions" {
   |> ignore
   assert_eq(
     table.config.get_formatting(0, 0),
-    @papergrid.Formatting::new(true, true, false),
+    @papergrid.Formatting::new(
+      trim_horizontal=true,
+      trim_vertical=true,
+      align_lines=false,
+    ),
   )
   assert_eq(table.rows, records)
   let trimmed = table.to_string()
@@ -61,42 +65,62 @@ test "format strategies preserve independent fields and selected scopes" {
   |> ignore
   assert_eq(
     table.config.get_formatting(0, 0),
-    @papergrid.Formatting::new(true, false, true),
+    @papergrid.Formatting::new(
+      trim_horizontal=true,
+      trim_vertical=false,
+      align_lines=true,
+    ),
   )
   assert_eq(
     table.config.get_formatting(0, 1),
-    @papergrid.Formatting::new(false, false, true),
+    @papergrid.Formatting::new(
+      trim_horizontal=false,
+      trim_vertical=false,
+      align_lines=true,
+    ),
   )
   assert_eq(
     table.config.get_formatting(1, 0),
-    @papergrid.Formatting::new(false, false, true),
+    @papergrid.Formatting::new(
+      trim_horizontal=false,
+      trim_vertical=false,
+      align_lines=true,
+    ),
   )
   assert_eq(
     table.config.get_formatting(1, 1),
-    @papergrid.Formatting::new(false, true, true),
+    @papergrid.Formatting::new(
+      trim_horizontal=false,
+      trim_vertical=true,
+      align_lines=true,
+    ),
   )
   table.with_(@tabular.TrimStrategy::Both) |> ignore
   assert_eq(
     table.config.get_formatting(1, 0),
-    @papergrid.Formatting::new(true, true, true),
+    @papergrid.Formatting::new(
+      trim_horizontal=true,
+      trim_vertical=true,
+      align_lines=true,
+    ),
   )
 }
 
 ///|
 test "uncolored justification clears previous fill color" {
   let table = @tabular.Table::from_rows([["wide"], ["x"]])
-  table.with_(@tabular.Justification::colored('.', @tabular.Color::bg_red()))
+  table.with_(@tabular.AlignmentFill::colored('.', @tabular.Color::bg_red()))
   |> ignore
   assert_eq(
     table.to_string(),
     "+------+\n| wide |\n+------+\n| x\u001b[41m...\u001b[49m |\n+------+",
   )
-  table.with_(@tabular.Justification::new('#')) |> ignore
+  table.with_(@tabular.AlignmentFill::new('#')) |> ignore
   assert_eq(
     table.to_string(),
     "+------+\n| wide |\n+------+\n| x### |\n+------+",
   )
-  table.with_(@tabular.Justification::default()) |> ignore
+  table.with_(@tabular.AlignmentFill::default()) |> ignore
   assert_eq(
     table.to_string(),
     "+------+\n| wide |\n+------+\n| x    |\n+------+",
@@ -107,17 +131,17 @@ test "uncolored justification clears previous fill color" {
 test "charset cleaning respects selection tab size and control boundaries" {
   let table = @tabular.Table::from_rows([["\u0000a\tb\r\n界\u007f", "x\ty"]])
   let original = table.rows.map(row => row.copy())
-  table.with_(@tabular.Charset::default()) |> ignore
+  table.with_(@tabular.TextCleanup::default()) |> ignore
   assert_eq(table.rows, original)
   table.modify(
     @tabular.Cols::first(),
-    @tabular.Charset::new().tab_size(2).clean(),
+    @tabular.TextCleanup::new().expand_tabs(2).remove_control_chars(),
   )
   |> ignore
   assert_eq(table.rows, [["a  b\n界\u007f", "x\ty"]])
-  table.with_(@tabular.Charset::new().tab_size(0)) |> ignore
+  table.with_(@tabular.TextCleanup::new().expand_tabs(0)) |> ignore
   assert_eq(table.rows, [["a  b\n界\u007f", "xy"]])
-  assert_eq(@tabular.Charset::charset_clean("a\tb\r\n\u001bc"), "a    b\nc")
+  assert_eq(@tabular.TextCleanup::clean_text("a\tb\r\n\u001bc"), "a    b\nc")
 }
 
 ///|
@@ -127,21 +151,25 @@ test "formatting scopes follow extracted and removed records" {
   .modify(@tabular.Rows::one(1), @tabular.TrimStrategy::Vertical)
   .modify(@tabular.Cols::one(1), @tabular.AlignmentStrategy::PerLine)
   .modify(@tabular.Cell::new(1, 1), @tabular.Color::fg_red())
-  .modify(@tabular.Rows::one(2), @tabular.Justification::new('#'))
+  .modify(@tabular.Rows::one(2), @tabular.AlignmentFill::new('#'))
   .extract_cols(@tabular.Cols::one(1))
   .remove_rows(@tabular.Rows::first())
   |> ignore
   assert_eq(table.rows, [["d"], ["f"]])
   assert_eq(
     table.config.get_formatting(0, 0),
-    @papergrid.Formatting::new(false, true, true),
+    @papergrid.Formatting::new(
+      trim_horizontal=false,
+      trim_vertical=true,
+      align_lines=true,
+    ),
   )
   assert_eq(
     table.config.get_color(0, 0),
     Some(@tabular.Color::fg_red().to_ansi_buf()),
   )
   assert_eq(table.config.get_color(1, 0), None)
-  assert_eq(table.config.get_justification(1, 0), '#')
+  assert_eq(table.config.get_alignment_fill(1, 0), '#')
 }
 
 ///|
@@ -163,10 +191,16 @@ test "rendering option layout hints match each upstream trait" {
     @tabular.CellOption::hint_change(@tabular.AlignmentStrategy::PerCell),
     global,
   )
-  assert_eq(@tabular.TableOption::hint_change(@tabular.Charset::new()), global)
-  assert_eq(@tabular.CellOption::hint_change(@tabular.Charset::new()), global)
   assert_eq(
-    @tabular.CellOption::hint_change(@tabular.Justification::default()),
+    @tabular.TableOption::hint_change(@tabular.TextCleanup::new()),
+    global,
+  )
+  assert_eq(
+    @tabular.CellOption::hint_change(@tabular.TextCleanup::new()),
+    global,
+  )
+  assert_eq(
+    @tabular.CellOption::hint_change(@tabular.AlignmentFill::default()),
     None,
   )
   assert_eq(@tabular.CellOption::hint_change(@tabular.Color::default()), None)

@@ -37,7 +37,7 @@ pub fn[T : TableOption] Table::with_(self : Table, option : T) -> Table {
   self.option_depth += 1
   TableOption::change(option, self)
   self.option_depth -= 1
-  self.dimension.reastimate(hint)
+  self.dimension.invalidate(hint)
   self
 }
 
@@ -53,7 +53,7 @@ pub fn[O : Object, M : CellOption] Table::modify(
     CellOption::change(option, self, entity)
   }
   self.option_depth -= 1
-  self.dimension.reastimate(CellOption::hint_change(option))
+  self.dimension.invalidate(CellOption::hint_change(option))
   self
 }
 
@@ -63,7 +63,7 @@ pub impl CellOption for Setting with fn change(self, table, entity) {
   match entity {
     Global => table.modify_segment(Segment::all(), self) |> ignore
     Row(row) => table.modify_rows(Rows::one(row), self) |> ignore
-    Col(col) | Column(col) => table.modify_cols(Cols::one(col), self) |> ignore
+    Col(col) => table.modify_cols(Cols::one(col), self) |> ignore
     Cell(row, col) => table.modify_cell(Cell::new(row, col), self) |> ignore
   }
   table.option_depth -= 1
@@ -110,9 +110,9 @@ fn combine_hints(hints : Array[Entity?]) -> Entity? {
 ///|
 fn combine_entity(first : Entity, second : Entity) -> Entity {
   match (first, second) {
-    (Col(a) | Column(a), Col(b) | Column(b)) if a == b => Column(a)
-    (Col(a) | Column(a), Cell(_, b)) if a == b => Column(a)
-    (Cell(_, a), Col(b) | Column(b)) if a == b => Column(a)
+    (Col(a), Col(b)) if a == b => Col(a)
+    (Col(a), Cell(_, b)) if a == b => Col(a)
+    (Cell(_, a), Col(b)) if a == b => Col(a)
     (Row(a), Row(b)) if a == b => Row(a)
     (Row(a), Cell(b, _)) if a == b => Row(a)
     (Cell(a, _), Row(b)) if a == b => Row(a)

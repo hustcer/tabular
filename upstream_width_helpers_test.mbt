@@ -35,10 +35,10 @@ fn upstream_width_versions(colored : Bool) -> @tabular.Table {
     rows[1][0] = red.colorize(rows[1][0])
     rows[2][0] = red.colorize(rows[2][0])
     rows[3][0] = @tabular.Color::fg_white().colorize(rows[3][0])
-    rows[1][1] = (red | @tabular.Color::rgb_bg(8, 10, 30)).colorize(rows[1][1])
+    rows[1][1] = (red | @tabular.Color::bg_rgb(8, 10, 30)).colorize(rows[1][1])
     rows[2][1] = (@tabular.Color::fg_green() |
-    @tabular.Color::rgb_bg(8, 100, 30)).colorize(rows[2][1])
-    rows[3][1] = (red | @tabular.Color::rgb_bg(8, 10, 30)).colorize(rows[3][1])
+    @tabular.Color::bg_rgb(8, 100, 30)).colorize(rows[2][1])
+    rows[3][1] = (red | @tabular.Color::bg_rgb(8, 10, 30)).colorize(rows[3][1])
     rows[1][3] = (@tabular.Color::fg_blue() | @tabular.Color::bg_green()).colorize(
       rows[1][3],
     )

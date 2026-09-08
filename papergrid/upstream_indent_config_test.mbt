@@ -6,7 +6,7 @@ test "upstream padding scope entity_row_overrides_column_intersection_0" {
   let cfg = upstream_formatting_config()
 
   cfg.set_borders(Borders::empty())
-  cfg.set_padding_sides(Entity::Column(0), {
+  cfg.set_padding_sides(Entity::Col(0), {
     ..Sides::default(),
     bottom: Indent::new(3, '$'),
   })
@@ -25,7 +25,7 @@ test "upstream padding scope entity_row_overrides_column_intersection_1" {
   let cfg = upstream_formatting_config()
 
   cfg.set_borders(Borders::empty())
-  cfg.set_padding_sides(Entity::Column(0), {
+  cfg.set_padding_sides(Entity::Col(0), {
     ..Sides::default(),
     bottom: Indent::new(3, '$'),
   })
@@ -74,19 +74,19 @@ test "upstream padding scope entity_column_overrides_row_intersection_1" {
   cfg.set_padding_sides(
     Entity::Row(0),
     Sides::new(
-      Indent::default(),
-      Indent::default(),
-      Indent::default(),
-      Indent::new(3, '$'),
+      left=Indent::default(),
+      right=Indent::default(),
+      top=Indent::default(),
+      bottom=Indent::new(3, '$'),
     ),
   )
   cfg.set_padding_sides(
-    Entity::Column(1),
+    Entity::Col(1),
     Sides::new(
-      Indent::default(),
-      Indent::default(),
-      Indent::default(),
-      Indent::new(2, '#'),
+      left=Indent::default(),
+      right=Indent::default(),
+      top=Indent::default(),
+      bottom=Indent::new(2, '#'),
     ),
   )
 

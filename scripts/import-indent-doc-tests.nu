@@ -8,9 +8,9 @@ def main [upstream: path, --output: path] {
   let cases = [
     {name: padding, code: '@tabular.Table::from_rows([["char"], ["2"], ["0"], ["2"], ["2"]]).with_(@tabular.Style::modern()).modify((2, 0), @tabular.Padding::new(1, 1, 2, 2))'}
     {name: padding_color, code: '@tabular.Table::from_rows([["char"], ["2"], ["0"], ["2"], ["4"]]).with_(@tabular.Style::modern()).modify((2, 0), @tabular.Padding::new(2, 4, 0, 0)).modify((2, 0), @tabular.PaddingColor::filled(@tabular.Color::fg_red()))'}
-    {name: padding_expand, code: '@tabular.Table::from_rows([["2", "0", "2", "1"], ["2", "0", "2", "2"], ["2", "0", "2", "3"], ["2", "0", "2", "4"]]).with_(@tabular.Style::ascii()).with_(@tabular.PaddingColor::filled(@tabular.Color::bg_blue())).modify((2, 1), @tabular.Padding::new(2, 2, 3, 3)).with_(@tabular.Padding::expand(true)).with_(@tabular.Padding::expand(false))'}
-    {name: margin, code: 'upstream_string_table(["Hello", "World", "!"]).with_(@tabular.Style::markdown()).with_(@tabular.Margin::new(3, 3, 1, 0))'}
-    {name: margin_color, code: 'upstream_string_table(["Hello", "World", "!"]).with_(@tabular.Style::markdown()).with_(@tabular.Margin::new(3, 3, 1, 0)).with_(@tabular.MarginColor::filled(@tabular.Color::bg_red()))'}
+    {name: padding_expand, code: '@tabular.Table::from_rows([["2", "0", "2", "1"], ["2", "0", "2", "2"], ["2", "0", "2", "3"], ["2", "0", "2", "4"]]).with_(@tabular.Style::ascii()).with_(@tabular.PaddingColor::filled(@tabular.Color::bg_blue())).modify((2, 1), @tabular.Padding::new(2, 2, 3, 3)).with_(@tabular.PaddingExpand::Horizontal).with_(@tabular.PaddingExpand::Vertical)'}
+    {name: margin, code: 'upstream_string_table(["Hello", "World", "!"]).with_(@tabular.Style::markdown()).with_(@tabular.Margin::new(left=3, right=3, top=1, bottom=0))'}
+    {name: margin_color, code: 'upstream_string_table(["Hello", "World", "!"]).with_(@tabular.Style::markdown()).with_(@tabular.Margin::new(left=3, right=3, top=1, bottom=0)).with_(@tabular.MarginColor::filled(@tabular.Color::bg_red()))'}
   ]
   let body = ($cases | each {|case|
     let relative = $'tabled/src/settings/($case.name)/mod.rs'

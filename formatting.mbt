@@ -57,58 +57,58 @@ pub impl TableOption for AlignmentStrategy with fn hint_change(_self) {
 
 ///|
 /// Fill the space used to align text, independently from cell padding.
-pub struct Justification {
+pub struct AlignmentFill {
   priv fill : Char
   priv ansi : Color?
 }
 
 ///|
-pub fn Justification::default() -> Justification {
-  Justification::new(' ')
+pub fn AlignmentFill::default() -> AlignmentFill {
+  AlignmentFill::new(' ')
 }
 
 ///|
-pub fn Justification::new(fill : Char) -> Justification {
+pub fn AlignmentFill::new(fill : Char) -> AlignmentFill {
   { fill, ansi: None, }
 }
 
 ///|
-pub fn Justification::colored(fill : Char, color : Color) -> Justification {
+pub fn AlignmentFill::colored(fill : Char, color : Color) -> AlignmentFill {
   { fill, ansi: Some(color), }
 }
 
 ///|
-pub fn Justification::color(
-  self : Justification,
+pub fn AlignmentFill::color(
+  self : AlignmentFill,
   color : Color,
-) -> Justification {
+) -> AlignmentFill {
   { ..self, ansi: Some(color), }
 }
 
 ///|
-pub impl CellOption for Justification with fn change(self, table, entity) {
+pub impl CellOption for AlignmentFill with fn change(self, table, entity) {
   match self.ansi {
     Some(color) =>
-      table.config.set_justification(
+      table.config.set_alignment_fill(
         entity,
         self.fill,
         color=color.to_ansi_buf(),
       )
-    None => table.config.set_justification(entity, self.fill)
+    None => table.config.set_alignment_fill(entity, self.fill)
   }
 }
 
 ///|
-pub impl TableOption for Justification with fn change(self, table) {
+pub impl TableOption for AlignmentFill with fn change(self, table) {
   CellOption::change(self, table, Entity::Global)
 }
 
 ///|
-pub impl CellOption for Justification with fn hint_change(_self) {
+pub impl CellOption for AlignmentFill with fn hint_change(_self) {
   None
 }
 
 ///|
-pub impl TableOption for Justification with fn hint_change(_self) {
+pub impl TableOption for AlignmentFill with fn hint_change(_self) {
   None
 }

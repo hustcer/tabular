@@ -18,8 +18,8 @@ def generate [probe: path, output: path] {
 test \"width state reference ($mode)\" {
   let table = upstream_width_state\(\"($mode)\")
   assert_eq\(table.to_string\(), ($rendered))
-  assert_eq\(table.get_dimension\().get_widths\(), ($parts.1))
-  assert_eq\(table.get_dimension\().get_heights\(), ($parts.2))
+  assert_eq\(table.dimension_snapshot\().get_widths\(), ($parts.1))
+  assert_eq\(table.dimension_snapshot\().get_heights\(), ($parts.2))
   assert_eq\(table.total_width\(), ($parts.3))
   assert_eq\(table.total_height\(), ($parts.4))
   assert_eq\(table.rows, ($records))

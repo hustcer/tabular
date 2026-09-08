@@ -6,7 +6,10 @@
 test "upstream duplicate dup_cell_to_cell" {
   let actual = upstream_matrix(3, 3)
     .duplicate(
-      @tabular.Dup::new(@tabular.Cell::new(0, 0), @tabular.Cell::new(0, 1)),
+      @tabular.Duplicate::new(
+        source=@tabular.Cell::new(0, 1),
+        destination=@tabular.Cell::new(0, 0),
+      ),
     )
     .to_string()
   assert_eq(
@@ -30,7 +33,10 @@ test "upstream duplicate dup_cell_to_cell" {
 test "upstream duplicate dup_cell_to_column" {
   let actual = upstream_matrix(3, 3)
     .duplicate(
-      @tabular.Dup::new(@tabular.Cols::one(1), @tabular.Cell::new(0, 0)),
+      @tabular.Duplicate::new(
+        source=@tabular.Cell::new(0, 0),
+        destination=@tabular.Cols::one(1),
+      ),
     )
     .to_string()
   assert_eq(
@@ -53,7 +59,12 @@ test "upstream duplicate dup_cell_to_column" {
 // Upstream: tabled/tests/settings/duplicate_test.rs::dup_row_to_row_single
 test "upstream duplicate dup_row_to_row_single" {
   let actual = upstream_matrix(3, 3)
-    .duplicate(@tabular.Dup::new(@tabular.Rows::one(1), @tabular.Rows::one(0)))
+    .duplicate(
+      @tabular.Duplicate::new(
+        source=@tabular.Rows::one(0),
+        destination=@tabular.Rows::one(1),
+      ),
+    )
     .to_string()
   assert_eq(
     actual,
@@ -76,7 +87,10 @@ test "upstream duplicate dup_row_to_row_single" {
 test "upstream duplicate dup_row_to_row_single_to_many" {
   let actual = upstream_matrix(3, 3)
     .duplicate(
-      @tabular.Dup::new(@tabular.Rows::new(1, 3), @tabular.Rows::one(0)),
+      @tabular.Duplicate::new(
+        source=@tabular.Rows::one(0),
+        destination=@tabular.Rows::new(1, 3),
+      ),
     )
     .to_string()
   assert_eq(
@@ -100,7 +114,10 @@ test "upstream duplicate dup_row_to_row_single_to_many" {
 test "upstream duplicate dup_row_to_row_single_to_all" {
   let actual = upstream_matrix(3, 3)
     .duplicate(
-      @tabular.Dup::new(@tabular.Rows::new(1, -1), @tabular.Rows::one(0)),
+      @tabular.Duplicate::new(
+        source=@tabular.Rows::one(0),
+        destination=@tabular.Rows::new(1, -1),
+      ),
     )
     .to_string()
   assert_eq(
@@ -123,7 +140,12 @@ test "upstream duplicate dup_row_to_row_single_to_all" {
 // Upstream: tabled/tests/settings/duplicate_test.rs::dup_row_to_column_single
 test "upstream duplicate dup_row_to_column_single" {
   let actual = upstream_matrix(3, 3)
-    .duplicate(@tabular.Dup::new(@tabular.Cols::one(1), @tabular.Rows::one(0)))
+    .duplicate(
+      @tabular.Duplicate::new(
+        source=@tabular.Rows::one(0),
+        destination=@tabular.Cols::one(1),
+      ),
+    )
     .to_string()
   assert_eq(
     actual,
@@ -145,7 +167,12 @@ test "upstream duplicate dup_row_to_column_single" {
 // Upstream: tabled/tests/settings/duplicate_test.rs::dup_column_to_row_single
 test "upstream duplicate dup_column_to_row_single" {
   let actual = upstream_matrix(3, 3)
-    .duplicate(@tabular.Dup::new(@tabular.Cols::one(1), @tabular.Cols::one(0)))
+    .duplicate(
+      @tabular.Duplicate::new(
+        source=@tabular.Cols::one(0),
+        destination=@tabular.Cols::one(1),
+      ),
+    )
     .to_string()
   assert_eq(
     actual,
@@ -167,7 +194,12 @@ test "upstream duplicate dup_column_to_row_single" {
 // Upstream: tabled/tests/settings/duplicate_test.rs::dup_row_to_column_single_repeat
 test "upstream duplicate dup_row_to_column_single_repeat" {
   let actual = upstream_matrix(4, 3)
-    .duplicate(@tabular.Dup::new(@tabular.Cols::one(1), @tabular.Rows::one(0)))
+    .duplicate(
+      @tabular.Duplicate::new(
+        source=@tabular.Rows::one(0),
+        destination=@tabular.Cols::one(1),
+      ),
+    )
     .to_string()
   assert_eq(
     actual,
@@ -191,7 +223,12 @@ test "upstream duplicate dup_row_to_column_single_repeat" {
 // Upstream: tabled/tests/settings/duplicate_test.rs::dup_column_to_row_single_stop
 test "upstream duplicate dup_column_to_row_single_stop" {
   let actual = upstream_matrix(4, 3)
-    .duplicate(@tabular.Dup::new(@tabular.Rows::one(1), @tabular.Cols::one(0)))
+    .duplicate(
+      @tabular.Duplicate::new(
+        source=@tabular.Cols::one(0),
+        destination=@tabular.Rows::one(1),
+      ),
+    )
     .to_string()
   assert_eq(
     actual,
@@ -216,7 +253,10 @@ test "upstream duplicate dup_column_to_row_single_stop" {
 test "upstream duplicate dup_row_to_global" {
   let actual = upstream_matrix(4, 3)
     .duplicate(
-      @tabular.Dup::new(@tabular.Segment::all(), @tabular.Rows::one(0)),
+      @tabular.Duplicate::new(
+        source=@tabular.Rows::one(0),
+        destination=@tabular.Segment::all(),
+      ),
     )
     .to_string()
   assert_eq(
@@ -242,7 +282,10 @@ test "upstream duplicate dup_row_to_global" {
 test "upstream duplicate dup_column_to_global" {
   let actual = upstream_matrix(4, 3)
     .duplicate(
-      @tabular.Dup::new(@tabular.Segment::all(), @tabular.Cols::one(0)),
+      @tabular.Duplicate::new(
+        source=@tabular.Cols::one(0),
+        destination=@tabular.Segment::all(),
+      ),
     )
     .to_string()
   assert_eq(
@@ -268,7 +311,10 @@ test "upstream duplicate dup_column_to_global" {
 test "upstream duplicate dup_empty_table" {
   let actual = @tabular.Table::from_rows([])
     .duplicate(
-      @tabular.Dup::new(@tabular.Segment::all(), @tabular.Cols::one(0)),
+      @tabular.Duplicate::new(
+        source=@tabular.Cols::one(0),
+        destination=@tabular.Segment::all(),
+      ),
     )
     .to_string()
   assert_eq(actual, "")
@@ -279,7 +325,10 @@ test "upstream duplicate dup_empty_table" {
 test "upstream duplicate dup_invalid_target" {
   let actual = upstream_matrix(4, 3)
     .duplicate(
-      @tabular.Dup::new(@tabular.Segment::all(), @tabular.Cols::one(99)),
+      @tabular.Duplicate::new(
+        source=@tabular.Cols::one(99),
+        destination=@tabular.Segment::all(),
+      ),
     )
     .to_string()
   assert_eq(actual, upstream_matrix(4, 3).to_string())
@@ -290,7 +339,10 @@ test "upstream duplicate dup_invalid_target" {
 test "upstream duplicate dup_invalid_source" {
   let actual = upstream_matrix(4, 3)
     .duplicate(
-      @tabular.Dup::new(@tabular.Rows::one(99), @tabular.Cols::first()),
+      @tabular.Duplicate::new(
+        source=@tabular.Cols::first(),
+        destination=@tabular.Rows::one(99),
+      ),
     )
     .to_string()
   assert_eq(actual, upstream_matrix(4, 3).to_string())

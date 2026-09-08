@@ -31,8 +31,8 @@ test \"height state reference ($case.name)\" {
   let table = @tabular.Table::from_rows\([[\"a\\nb\\nc\\n\", \"long value\"], [\"d\\ne\", \"x\\ny\\nz\"], [\"\", \"q\"]])
   ($action) |> ignore
   assert_eq\(table.to_string\(), ($rendered))
-  assert_eq\(table.get_dimension\().get_widths\(), ($parts.1))
-  assert_eq\(table.get_dimension\().get_heights\(), ($parts.2))
+  assert_eq\(table.dimension_snapshot\().get_widths\(), ($parts.1))
+  assert_eq\(table.dimension_snapshot\().get_heights\(), ($parts.2))
   assert_eq\(table.total_width\(), ($parts.3))
   assert_eq\(table.total_height\(), ($parts.4))
   assert_eq\(table.rows, ($records))

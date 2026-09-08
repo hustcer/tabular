@@ -1,23 +1,23 @@
 ///|
 /// Cached column widths and row heights. Options invalidate only affected axes.
 pub struct CompleteDimension {
-  mut width : Array[Int]?
-  mut height : Array[Int]?
+  mut widths : Array[Int]?
+  mut heights : Array[Int]?
 } derive(Eq, Debug)
 
 ///|
 pub fn CompleteDimension::default() -> CompleteDimension {
-  { width: None, height: None, }
+  { widths: None, heights: None, }
 }
 
 ///|
 pub fn CompleteDimension::is_complete(self : CompleteDimension) -> Bool {
-  self.width is Some(_) && self.height is Some(_)
+  self.widths is Some(_) && self.heights is Some(_)
 }
 
 ///|
 pub fn CompleteDimension::is_empty(self : CompleteDimension) -> Bool {
-  self.width is None && self.height is None
+  self.widths is None && self.heights is None
 }
 
 ///|
@@ -25,7 +25,7 @@ pub fn CompleteDimension::set_widths(
   self : CompleteDimension,
   widths : Array[Int],
 ) -> Unit {
-  self.width = Some(widths.map(value => Int::max(0, value)))
+  self.widths = Some(widths.map(value => Int::max(0, value)))
 }
 
 ///|
@@ -33,17 +33,17 @@ pub fn CompleteDimension::set_heights(
   self : CompleteDimension,
   heights : Array[Int],
 ) -> Unit {
-  self.height = Some(heights.map(value => Int::max(0, value)))
+  self.heights = Some(heights.map(value => Int::max(0, value)))
 }
 
 ///|
 pub fn CompleteDimension::clear_width(self : CompleteDimension) -> Unit {
-  self.width = None
+  self.widths = None
 }
 
 ///|
 pub fn CompleteDimension::clear_height(self : CompleteDimension) -> Unit {
-  self.height = None
+  self.heights = None
 }
 
 ///|
@@ -54,20 +54,17 @@ pub fn CompleteDimension::clear(self : CompleteDimension) -> Unit {
 
 ///|
 pub fn CompleteDimension::get_widths(self : CompleteDimension) -> Array[Int]? {
-  self.width.map(Array::copy)
+  self.widths.map(Array::copy)
 }
 
 ///|
 pub fn CompleteDimension::get_heights(self : CompleteDimension) -> Array[Int]? {
-  self.height.map(Array::copy)
+  self.heights.map(Array::copy)
 }
 
 ///|
-pub fn CompleteDimension::get_width(
-  self : CompleteDimension,
-  column : Int,
-) -> Int {
-  self.width.unwrap()[column]
+pub fn CompleteDimension::get_width(self : CompleteDimension, col : Int) -> Int {
+  self.widths.unwrap()[col]
 }
 
 ///|
@@ -75,18 +72,21 @@ pub fn CompleteDimension::get_height(
   self : CompleteDimension,
   row : Int,
 ) -> Int {
-  self.height.unwrap()[row]
+  self.heights.unwrap()[row]
 }
 
 ///|
-pub fn CompleteDimension::reastimate(
+/// Invalidate the cached axes affected by an option's change hint.
+/// None keeps the cache; row hints clear heights, column hints clear widths,
+/// and cell/global hints clear both. Measurement is deferred until `estimate`.
+pub fn CompleteDimension::invalidate(
   self : CompleteDimension,
   hint : Entity?,
 ) -> Unit {
   match hint {
     None => ()
     Some(Global | Cell(_, _)) => self.clear()
-    Some(Column(_) | Col(_)) => self.clear_width()
+    Some(Col(_)) => self.clear_width()
     Some(Row(_)) => self.clear_height()
   }
 }
@@ -99,48 +99,51 @@ pub fn CompleteDimension::estimate(
   table : Table,
 ) -> Unit {
   let records = @papergrid.IterRecords::new(table.rows)
-  let missing_width = self.width is None ||
-    (self.width is Some(widths) && widths.length() < records.count_cols())
-  let missing_height = self.height is None ||
-    (self.height is Some(heights) && heights.length() < records.count_rows())
+  let missing_width = self.widths is None ||
+    (self.widths is Some(widths) && widths.length() < records.count_cols())
+  let missing_height = self.heights is None ||
+    (self.heights is Some(heights) && heights.length() < records.count_rows())
   if !missing_width && !missing_height {
     return
   }
-  let (widths, heights) = @papergrid.IterGridDimension::rendered_dimension(
+  let (widths, heights) = @papergrid.IterGridDimension::measure_rendered(
     records,
     table.config,
   )
   if missing_width {
-    self.width = Some(widths)
+    self.widths = Some(widths)
   }
   if missing_height {
-    self.height = Some(heights)
+    self.heights = Some(heights)
   }
 }
 
 ///|
-pub fn Table::get_dimension(self : Table) -> CompleteDimension {
-  { width: self.dimension.get_widths(), height: self.dimension.get_heights(), }
+/// Return an independent snapshot of the dimension cache without measuring.
+pub fn Table::dimension_snapshot(self : Table) -> CompleteDimension {
+  {
+    widths: self.dimension.get_widths(),
+    heights: self.dimension.get_heights(),
+  }
 }
 
 ///|
-pub fn Table::get_dimension_mut(self : Table) -> CompleteDimension {
+/// Return the shared dimension cache. Changes affect this table directly.
+/// Clear it after changing records or configuration through raw mutable access.
+pub fn Table::dimension_cache(self : Table) -> CompleteDimension {
   self.dimension
 }
 
 ///|
 pub fn Table::total_width(self : Table) -> Int {
-  let dims = self.get_dimension()
+  let dims = self.dimension_snapshot()
   dims.estimate(self)
-  table_width(
-    self,
-    dims.get_widths().unwrap()[:self.count_columns()].to_owned(),
-  )
+  table_width(self, dims.get_widths().unwrap()[:self.count_cols()].to_owned())
 }
 
 ///|
 pub fn Table::total_height(self : Table) -> Int {
-  let dims = self.get_dimension()
+  let dims = self.dimension_snapshot()
   dims.estimate(self)
   dims
   .get_heights()

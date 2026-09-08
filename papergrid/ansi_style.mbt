@@ -229,7 +229,7 @@ fn SgrState::suffix(self : SgrState) -> String {
 ///|
 /// Extract the canonical style of the first text block, as in tabled.
 /// Empty input or input containing only control sequences has no text block.
-pub fn ANSIBuf::try_from(text : String) -> Result[ANSIBuf, Unit] {
+pub fn ANSIBuf::try_parse(text : String) -> Result[ANSIBuf, Unit] {
   let state = SgrState::new()
   for token in ansi_tokens(text) {
     match token.kind {

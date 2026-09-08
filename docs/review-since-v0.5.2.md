@@ -41,6 +41,9 @@
 `extend_(row)` 移至 `deprecated.mbt`，标记为弃用并保留兼容。
 README、迁移指南和 CHANGELOG 已同步，追加一条记录的行为不变。
 
+发布前的新增 API 命名复核随后完成；本报告中的初审名称与行号保留作为历史证据。
+当前名称、参数和验证结果见 [API 命名调整](api-naming-0.6.md)。
+
 ## Spec：需求符合性
 
 依据为 [移植对照](tabled-parity.md)、[迁移指南](migration-0.6.md)、CHANGELOG 和

@@ -12,34 +12,39 @@ pub impl WidthOption for @papergrid.WidthMode with fn to_mode(self) {
 ///|
 pub struct Wrap[M, P] {
   width : M
-  words : Bool
+  keep_words : Bool
   priority : P
   placeholder : String
 }
 
 ///|
-pub fn[M] Wrap::new(width : M) -> Wrap[M, PriorityNone] {
-  { width, words: false, priority: PriorityNone::new(), placeholder: "�", }
+pub fn[M] Wrap::new(width : M) -> Wrap[M, PriorityRoundRobin] {
+  {
+    width,
+    keep_words: false,
+    priority: PriorityRoundRobin::new(),
+    placeholder: "�",
+  }
 }
 
 ///|
-pub fn[M, P] Wrap::keep_words(self : Wrap[M, P], on : Bool) -> Wrap[M, P] {
-  { ..self, words: on, }
+pub fn[M, P] Wrap::keep_words(self : Wrap[M, P], enabled : Bool) -> Wrap[M, P] {
+  { ..self, keep_words: enabled, }
 }
 
 ///|
 pub fn[M, P, Q] Wrap::priority(self : Wrap[M, P], priority : Q) -> Wrap[M, Q] {
   {
     width: self.width,
-    words: self.words,
+    keep_words: self.keep_words,
     placeholder: self.placeholder,
     priority,
   }
 }
 
 ///|
-pub fn Wrap::wrap(text : String, width : Int, keeping_words : Bool) -> String {
-  @papergrid.wrap_text(text, width, keep_words=keeping_words)
+pub fn Wrap::wrap(text : String, width : Int, keep_words~ : Bool) -> String {
+  @papergrid.wrap_text(text, width, keep_words~)
 }
 
 ///|
@@ -54,7 +59,7 @@ pub impl[M : Measurement, P] CellOption for Wrap[M, P] with fn change(
   entity,
 ) {
   let width = Measurement::measure(self.width, table, Attribute::Width)
-  for position in entity.iter(table.count_rows(), table.count_columns()) {
+  for position in entity.iter(table.count_rows(), table.count_cols()) {
     let (row, col) = position
     if col >= table.rows[row].length() {
       continue
@@ -64,7 +69,7 @@ pub impl[M : Measurement, P] CellOption for Wrap[M, P] with fn change(
       table.rows[row][col] = @papergrid.wrap_text(
         text,
         width,
-        keep_words=self.words,
+        keep_words=self.keep_words,
         placeholder=self.placeholder,
       )
     }
@@ -72,7 +77,7 @@ pub impl[M : Measurement, P] CellOption for Wrap[M, P] with fn change(
 }
 
 ///|
-pub impl[M : Measurement, P : Peaker] TableOption for Wrap[M, P] with fn change(
+pub impl[M : Measurement, P : ResizeSelector] TableOption for Wrap[M, P] with fn change(
   self,
   table,
 ) {
@@ -92,7 +97,7 @@ pub impl[M : Measurement, P : Peaker] TableOption for Wrap[M, P] with fn change(
     table.rows[row][col] = @papergrid.wrap_text(
       table.rows[row][col],
       width,
-      keep_words=self.words,
+      keep_words=self.keep_words,
       placeholder=self.placeholder,
     )
   }
@@ -100,7 +105,7 @@ pub impl[M : Measurement, P : Peaker] TableOption for Wrap[M, P] with fn change(
 }
 
 ///|
-pub impl[M : Measurement, P : Peaker] TableOption for Wrap[M, P] with fn hint_change(
+pub impl[M : Measurement, P : ResizeSelector] TableOption for Wrap[M, P] with fn hint_change(
   _self,
 ) {
   Some(Entity::Row(0))

@@ -6,9 +6,9 @@ test "ANSI upstream reference 0" {
   let input = ""
   assert_eq(get_line_width(input), 0)
   assert_eq(strip_ansi(input), "")
-  assert_eq(trim_ansi(input), "")
+  assert_eq(trim_ansi_whitespace(input), "")
   assert_eq(get_lines(input), [""])
-  assert_eq(ANSIBuf::try_from(input), Err(()))
+  assert_eq(ANSIBuf::try_parse(input), Err(()))
 }
 
 ///|
@@ -17,9 +17,9 @@ test "ANSI upstream reference 1" {
   let input = "."
   assert_eq(get_line_width(input), 1)
   assert_eq(strip_ansi(input), ".")
-  assert_eq(trim_ansi(input), ".")
+  assert_eq(trim_ansi_whitespace(input), ".")
   assert_eq(get_lines(input), ["."])
-  assert_eq(ANSIBuf::try_from(input), Ok(ANSIBuf::new("", "")))
+  assert_eq(ANSIBuf::try_parse(input), Ok(ANSIBuf::new("", "")))
 }
 
 ///|
@@ -28,9 +28,9 @@ test "ANSI upstream reference 2" {
   let input = "   "
   assert_eq(get_line_width(input), 3)
   assert_eq(strip_ansi(input), "   ")
-  assert_eq(trim_ansi(input), "")
+  assert_eq(trim_ansi_whitespace(input), "")
   assert_eq(get_lines(input), ["   "])
-  assert_eq(ANSIBuf::try_from(input), Ok(ANSIBuf::new("", "")))
+  assert_eq(ANSIBuf::try_parse(input), Ok(ANSIBuf::new("", "")))
 }
 
 ///|
@@ -39,9 +39,9 @@ test "ANSI upstream reference 3" {
   let input = " x \n y "
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "x \n y")
+  assert_eq(trim_ansi_whitespace(input), "x \n y")
   assert_eq(get_lines(input), [" x ", " y "])
-  assert_eq(ANSIBuf::try_from(input), Ok(ANSIBuf::new("", "")))
+  assert_eq(ANSIBuf::try_parse(input), Ok(ANSIBuf::new("", "")))
 }
 
 ///|
@@ -50,9 +50,9 @@ test "ANSI upstream reference 4" {
   let input = "\u001b"
   assert_eq(get_line_width(input), 0)
   assert_eq(strip_ansi(input), "")
-  assert_eq(trim_ansi(input), "\u001b")
+  assert_eq(trim_ansi_whitespace(input), "\u001b")
   assert_eq(get_lines(input), ["\u001b"])
-  assert_eq(ANSIBuf::try_from(input), Err(()))
+  assert_eq(ANSIBuf::try_parse(input), Err(()))
 }
 
 ///|
@@ -61,9 +61,9 @@ test "ANSI upstream reference 5" {
   let input = "\u001b[31"
   assert_eq(get_line_width(input), 3)
   assert_eq(strip_ansi(input), "[31")
-  assert_eq(trim_ansi(input), "\u001b[31")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[31")
   assert_eq(get_lines(input), ["\u001b[31"])
-  assert_eq(ANSIBuf::try_from(input), Ok(ANSIBuf::new("", "")))
+  assert_eq(ANSIBuf::try_parse(input), Ok(ANSIBuf::new("", "")))
 }
 
 ///|
@@ -72,9 +72,9 @@ test "ANSI upstream reference 6" {
   let input = "a\u001b[31"
   assert_eq(get_line_width(input), 1)
   assert_eq(strip_ansi(input), "a")
-  assert_eq(trim_ansi(input), "a\u001b[31")
+  assert_eq(trim_ansi_whitespace(input), "a\u001b[31")
   assert_eq(get_lines(input), ["a\u001b[31"])
-  assert_eq(ANSIBuf::try_from(input), Ok(ANSIBuf::new("", "")))
+  assert_eq(ANSIBuf::try_parse(input), Ok(ANSIBuf::new("", "")))
 }
 
 ///|
@@ -83,9 +83,9 @@ test "ANSI upstream reference 7" {
   let input = "\u001b["
   assert_eq(get_line_width(input), 1)
   assert_eq(strip_ansi(input), "[")
-  assert_eq(trim_ansi(input), "\u001b[")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[")
   assert_eq(get_lines(input), ["\u001b["])
-  assert_eq(ANSIBuf::try_from(input), Ok(ANSIBuf::new("", "")))
+  assert_eq(ANSIBuf::try_parse(input), Ok(ANSIBuf::new("", "")))
 }
 
 ///|
@@ -94,9 +94,9 @@ test "ANSI upstream reference 8" {
   let input = "\u001b]abc"
   assert_eq(get_line_width(input), 4)
   assert_eq(strip_ansi(input), "]abc")
-  assert_eq(trim_ansi(input), "\u001b]abc")
+  assert_eq(trim_ansi_whitespace(input), "\u001b]abc")
   assert_eq(get_lines(input), ["\u001b]abc"])
-  assert_eq(ANSIBuf::try_from(input), Ok(ANSIBuf::new("", "")))
+  assert_eq(ANSIBuf::try_parse(input), Ok(ANSIBuf::new("", "")))
 }
 
 ///|
@@ -105,9 +105,9 @@ test "ANSI upstream reference 9" {
   let input = "\u001b[?x"
   assert_eq(get_line_width(input), 0)
   assert_eq(strip_ansi(input), "")
-  assert_eq(trim_ansi(input), "\u001b[?x")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[?x")
   assert_eq(get_lines(input), ["\u001b[?x"])
-  assert_eq(ANSIBuf::try_from(input), Err(()))
+  assert_eq(ANSIBuf::try_parse(input), Err(()))
 }
 
 ///|
@@ -116,9 +116,9 @@ test "ANSI upstream reference 10" {
   let input = "\u001b[1;bad"
   assert_eq(get_line_width(input), 2)
   assert_eq(strip_ansi(input), "ad")
-  assert_eq(trim_ansi(input), "\u001b[1;bad")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[1;bad")
   assert_eq(get_lines(input), ["\u001b[1;bad"])
-  assert_eq(ANSIBuf::try_from(input), Ok(ANSIBuf::new("", "")))
+  assert_eq(ANSIBuf::try_parse(input), Ok(ANSIBuf::new("", "")))
 }
 
 ///|
@@ -127,9 +127,9 @@ test "ANSI upstream reference 11" {
   let input = "\u001bPstuff\u001b\\x"
   assert_eq(get_line_width(input), 1)
   assert_eq(strip_ansi(input), "x")
-  assert_eq(trim_ansi(input), "\u001bPstuff\u001b\\x")
+  assert_eq(trim_ansi_whitespace(input), "\u001bPstuff\u001b\\x")
   assert_eq(get_lines(input), ["\u001bPstuff\u001b\\x"])
-  assert_eq(ANSIBuf::try_from(input), Ok(ANSIBuf::new("", "")))
+  assert_eq(ANSIBuf::try_parse(input), Ok(ANSIBuf::new("", "")))
 }
 
 ///|
@@ -138,9 +138,9 @@ test "ANSI upstream reference 12" {
   let input = "a\u001b\u0000b"
   assert_eq(get_line_width(input), 2)
   assert_eq(strip_ansi(input), "a\u001b")
-  assert_eq(trim_ansi(input), "a\u001b\u0000b")
+  assert_eq(trim_ansi_whitespace(input), "a\u001b\u0000b")
   assert_eq(get_lines(input), ["a\u001b\u0000b"])
-  assert_eq(ANSIBuf::try_from(input), Ok(ANSIBuf::new("", "")))
+  assert_eq(ANSIBuf::try_parse(input), Ok(ANSIBuf::new("", "")))
 }
 
 ///|
@@ -149,10 +149,10 @@ test "ANSI upstream reference 13" {
   let input = "\u001b\u001b[31mx"
   assert_eq(get_line_width(input), 1)
   assert_eq(strip_ansi(input), "x")
-  assert_eq(trim_ansi(input), "\u001b\u001b[31mx")
+  assert_eq(trim_ansi_whitespace(input), "\u001b\u001b[31mx")
   assert_eq(get_lines(input), ["\u001b\u001b[31mx\u001b[39m"])
   assert_eq(
-    ANSIBuf::try_from(input),
+    ANSIBuf::try_parse(input),
     Ok(ANSIBuf::new("\u001b[31m", "\u001b[39m")),
   )
 }
@@ -163,9 +163,9 @@ test "ANSI upstream reference 14" {
   let input = "\u001b[0Kあ.\u001b[m"
   assert_eq(get_line_width(input), 3)
   assert_eq(strip_ansi(input), "あ.")
-  assert_eq(trim_ansi(input), "\u001b[0Kあ.\u001b[m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[0Kあ.\u001b[m")
   assert_eq(get_lines(input), ["\u001b[0Kあ.\u001b[m"])
-  assert_eq(ANSIBuf::try_from(input), Ok(ANSIBuf::new("", "")))
+  assert_eq(ANSIBuf::try_parse(input), Ok(ANSIBuf::new("", "")))
 }
 
 ///|
@@ -175,13 +175,13 @@ test "ANSI upstream reference 15" {
   assert_eq(get_line_width(input), 2)
   assert_eq(strip_ansi(input), "界")
   assert_eq(
-    trim_ansi(input),
+    trim_ansi_whitespace(input),
     "\u001b]8;;https://example.com\u001b\\界\u001b]8;;\u001b\\",
   )
   assert_eq(get_lines(input), [
     "\u001b]8;;https://example.com\u001b\\界\u001b]8;;\u001b\\",
   ])
-  assert_eq(ANSIBuf::try_from(input), Ok(ANSIBuf::new("", "")))
+  assert_eq(ANSIBuf::try_parse(input), Ok(ANSIBuf::new("", "")))
 }
 
 ///|
@@ -191,13 +191,13 @@ test "ANSI upstream reference 16" {
   assert_eq(get_line_width(input), 4)
   assert_eq(strip_ansi(input), "link")
   assert_eq(
-    trim_ansi(input),
+    trim_ansi_whitespace(input),
     "\u001b]8;;https://example.com\u0007link\u001b]8;;\u0007",
   )
   assert_eq(get_lines(input), [
     "\u001b]8;;https://example.com\u0007link\u001b]8;;\u0007",
   ])
-  assert_eq(ANSIBuf::try_from(input), Ok(ANSIBuf::new("", "")))
+  assert_eq(ANSIBuf::try_parse(input), Ok(ANSIBuf::new("", "")))
 }
 
 ///|
@@ -206,12 +206,15 @@ test "ANSI upstream reference 17" {
   let input = "\u001b[31m a  \u001b[39m  \u001b[32m b \u001b[0m"
   assert_eq(get_line_width(input), 9)
   assert_eq(strip_ansi(input), " a     b ")
-  assert_eq(trim_ansi(input), "\u001b[31ma  \u001b[39m  \u001b[32m b\u001b[0m")
+  assert_eq(
+    trim_ansi_whitespace(input),
+    "\u001b[31ma  \u001b[39m  \u001b[32m b\u001b[0m",
+  )
   assert_eq(get_lines(input), [
     "\u001b[31m a  \u001b[39m  \u001b[32m b \u001b[0m",
   ])
   assert_eq(
-    ANSIBuf::try_from(input),
+    ANSIBuf::try_parse(input),
     Ok(ANSIBuf::new("\u001b[31m", "\u001b[39m")),
   )
 }
@@ -222,10 +225,10 @@ test "ANSI upstream reference 18" {
   let input = "\u001b[31m   \u001b[39m"
   assert_eq(get_line_width(input), 3)
   assert_eq(strip_ansi(input), "   ")
-  assert_eq(trim_ansi(input), "\u001b[31m\u001b[39m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[31m\u001b[39m")
   assert_eq(get_lines(input), ["\u001b[31m   \u001b[39m"])
   assert_eq(
-    ANSIBuf::try_from(input),
+    ANSIBuf::try_parse(input),
     Ok(ANSIBuf::new("\u001b[31m", "\u001b[39m")),
   )
 }
@@ -236,9 +239,9 @@ test "ANSI upstream reference 19" {
   let input = "\u001b[31m\u001b[39m"
   assert_eq(get_line_width(input), 0)
   assert_eq(strip_ansi(input), "")
-  assert_eq(trim_ansi(input), "\u001b[31m\u001b[39m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[31m\u001b[39m")
   assert_eq(get_lines(input), ["\u001b[31m\u001b[39m"])
-  assert_eq(ANSIBuf::try_from(input), Err(()))
+  assert_eq(ANSIBuf::try_parse(input), Err(()))
 }
 
 ///|
@@ -247,12 +250,12 @@ test "ANSI upstream reference 20" {
   let input = "\u001b[31ma\n\nb\n\u001b[39m"
   assert_eq(get_line_width(input), 5)
   assert_eq(strip_ansi(input), "a\n\nb\n")
-  assert_eq(trim_ansi(input), "\u001b[31ma\n\nb\u001b[39m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[31ma\n\nb\u001b[39m")
   assert_eq(get_lines(input), [
     "\u001b[31ma\u001b[39m", "", "\u001b[31mb\u001b[39m", "\u001b[31m\u001b[39m",
   ])
   assert_eq(
-    ANSIBuf::try_from(input),
+    ANSIBuf::try_parse(input),
     Ok(ANSIBuf::new("\u001b[31m", "\u001b[39m")),
   )
 }
@@ -263,12 +266,12 @@ test "ANSI upstream reference 21" {
   let input = "\u001b[31ma\n\nb\n"
   assert_eq(get_line_width(input), 5)
   assert_eq(strip_ansi(input), "a\n\nb\n")
-  assert_eq(trim_ansi(input), "\u001b[31ma\n\nb")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[31ma\n\nb")
   assert_eq(get_lines(input), [
     "\u001b[31ma\u001b[39m", "", "\u001b[31mb\u001b[39m", "",
   ])
   assert_eq(
-    ANSIBuf::try_from(input),
+    ANSIBuf::try_parse(input),
     Ok(ANSIBuf::new("\u001b[31m", "\u001b[39m")),
   )
 }
@@ -279,12 +282,12 @@ test "ANSI upstream reference 22" {
   let input = "\u001b[31m\n\n\u001b[39m"
   assert_eq(get_line_width(input), 2)
   assert_eq(strip_ansi(input), "\n\n")
-  assert_eq(trim_ansi(input), "\u001b[31m\u001b[39m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[31m\u001b[39m")
   assert_eq(get_lines(input), [
     "\u001b[31m\u001b[39m", "", "\u001b[31m\u001b[39m",
   ])
   assert_eq(
-    ANSIBuf::try_from(input),
+    ANSIBuf::try_parse(input),
     Ok(ANSIBuf::new("\u001b[31m", "\u001b[39m")),
   )
 }
@@ -295,10 +298,10 @@ test "ANSI upstream reference 23" {
   let input = "\u001b[38;5;42m😀é\u001b[0m"
   assert_eq(get_line_width(input), 3)
   assert_eq(strip_ansi(input), "😀é")
-  assert_eq(trim_ansi(input), "\u001b[38;5;42m😀é\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[38;5;42m😀é\u001b[0m")
   assert_eq(get_lines(input), ["\u001b[38;5;42m😀é\u001b[0m"])
   assert_eq(
-    ANSIBuf::try_from(input),
+    ANSIBuf::try_parse(input),
     Ok(ANSIBuf::new("\u001b[38;5;42m", "\u001b[39m")),
   )
 }
@@ -309,9 +312,9 @@ test "ANSI upstream reference 24" {
   let input = "\u001b[4:3munder"
   assert_eq(get_line_width(input), 5)
   assert_eq(strip_ansi(input), "under")
-  assert_eq(trim_ansi(input), "\u001b[4:3munder")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[4:3munder")
   assert_eq(get_lines(input), ["\u001b[4:3munder"])
-  assert_eq(ANSIBuf::try_from(input), Ok(ANSIBuf::new("", "")))
+  assert_eq(ANSIBuf::try_parse(input), Ok(ANSIBuf::new("", "")))
 }
 
 ///|
@@ -320,9 +323,9 @@ test "ANSI upstream reference 25" {
   let input = "\u001b[m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[mx \n y\u001b[0m")
   assert_eq(get_lines(input), ["\u001b[m x ", " y \u001b[0m"])
-  assert_eq(ANSIBuf::try_from(input), Ok(ANSIBuf::new("", "")))
+  assert_eq(ANSIBuf::try_parse(input), Ok(ANSIBuf::new("", "")))
 }
 
 ///|
@@ -331,9 +334,9 @@ test "ANSI upstream reference 26" {
   let input = "\u001b[01m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[01mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[01mx \n y\u001b[0m")
   assert_eq(get_lines(input), ["\u001b[01m x ", " y \u001b[0m"])
-  assert_eq(ANSIBuf::try_from(input), Ok(ANSIBuf::new("", "")))
+  assert_eq(ANSIBuf::try_parse(input), Ok(ANSIBuf::new("", "")))
 }
 
 ///|
@@ -342,13 +345,16 @@ test "ANSI upstream reference 27" {
   let input = "\u001b[1;2;3;4;5;6;7;8;9m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[1;2;3;4;5;6;7;8;9mx \n y\u001b[0m")
+  assert_eq(
+    trim_ansi_whitespace(input),
+    "\u001b[1;2;3;4;5;6;7;8;9mx \n y\u001b[0m",
+  )
   assert_eq(get_lines(input), [
     "\u001b[1;2;3;4;5;6;7;8;9m x \u001b[22m\u001b[23m\u001b[24m\u001b[25m\u001b[27m\u001b[28m\u001b[29m",
     "\u001b[1m\u001b[2m\u001b[3m\u001b[4m\u001b[5m\u001b[6m\u001b[7m\u001b[8m\u001b[9m y \u001b[0m",
   ])
   assert_eq(
-    ANSIBuf::try_from(input),
+    ANSIBuf::try_parse(input),
     Ok(
       ANSIBuf::new(
         "\u001b[1m\u001b[2m\u001b[3m\u001b[4m\u001b[5m\u001b[6m\u001b[7m\u001b[8m\u001b[9m",
@@ -365,7 +371,7 @@ test "ANSI upstream reference 28" {
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
   assert_eq(
-    trim_ansi(input),
+    trim_ansi_whitespace(input),
     "\u001b[11;20;21;26;51;52;53;60;61;62;63;64;73;74mx \n y\u001b[0m",
   )
   assert_eq(get_lines(input), [
@@ -373,7 +379,7 @@ test "ANSI upstream reference 28" {
     "\u001b[11m\u001b[20m\u001b[21m\u001b[26m\u001b[51m\u001b[52m\u001b[53m\u001b[60m\u001b[61m\u001b[62m\u001b[63m\u001b[64m\u001b[73m\u001b[74m y \u001b[0m",
   ])
   assert_eq(
-    ANSIBuf::try_from(input),
+    ANSIBuf::try_parse(input),
     Ok(
       ANSIBuf::new(
         "\u001b[11m\u001b[20m\u001b[21m\u001b[26m\u001b[51m\u001b[52m\u001b[53m\u001b[60m\u001b[61m\u001b[62m\u001b[63m\u001b[64m\u001b[73m\u001b[74m",
@@ -389,12 +395,12 @@ test "ANSI upstream reference 29" {
   let input = "\u001b[31;42m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[31;42mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[31;42mx \n y\u001b[0m")
   assert_eq(get_lines(input), [
     "\u001b[31;42m x \u001b[39m\u001b[49m", "\u001b[31m\u001b[42m y \u001b[0m",
   ])
   assert_eq(
-    ANSIBuf::try_from(input),
+    ANSIBuf::try_parse(input),
     Ok(ANSIBuf::new("\u001b[31m\u001b[42m", "\u001b[39m\u001b[49m")),
   )
 }
@@ -405,12 +411,12 @@ test "ANSI upstream reference 30" {
   let input = "\u001b[42;31m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[42;31mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[42;31mx \n y\u001b[0m")
   assert_eq(get_lines(input), [
     "\u001b[42;31m x \u001b[39m\u001b[49m", "\u001b[31m\u001b[42m y \u001b[0m",
   ])
   assert_eq(
-    ANSIBuf::try_from(input),
+    ANSIBuf::try_parse(input),
     Ok(ANSIBuf::new("\u001b[31m\u001b[42m", "\u001b[39m\u001b[49m")),
   )
 }
@@ -421,12 +427,12 @@ test "ANSI upstream reference 31" {
   let input = "\u001b[31;32m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[31;32mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[31;32mx \n y\u001b[0m")
   assert_eq(get_lines(input), [
     "\u001b[31;32m x \u001b[39m", "\u001b[32m y \u001b[0m",
   ])
   assert_eq(
-    ANSIBuf::try_from(input),
+    ANSIBuf::try_parse(input),
     Ok(ANSIBuf::new("\u001b[32m", "\u001b[39m")),
   )
 }
@@ -437,9 +443,9 @@ test "ANSI upstream reference 32" {
   let input = "\u001b[31;39m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[31;39mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[31;39mx \n y\u001b[0m")
   assert_eq(get_lines(input), ["\u001b[31;39m x ", " y \u001b[0m"])
-  assert_eq(ANSIBuf::try_from(input), Ok(ANSIBuf::new("", "")))
+  assert_eq(ANSIBuf::try_parse(input), Ok(ANSIBuf::new("", "")))
 }
 
 ///|
@@ -448,9 +454,9 @@ test "ANSI upstream reference 33" {
   let input = "\u001b[1;22m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[1;22mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[1;22mx \n y\u001b[0m")
   assert_eq(get_lines(input), ["\u001b[1;22m x ", " y \u001b[0m"])
-  assert_eq(ANSIBuf::try_from(input), Ok(ANSIBuf::new("", "")))
+  assert_eq(ANSIBuf::try_parse(input), Ok(ANSIBuf::new("", "")))
 }
 
 ///|
@@ -459,12 +465,12 @@ test "ANSI upstream reference 34" {
   let input = "\u001b[20;23m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[20;23mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[20;23mx \n y\u001b[0m")
   assert_eq(get_lines(input), [
     "\u001b[20;23m x \u001b[23m", "\u001b[20m y \u001b[0m",
   ])
   assert_eq(
-    ANSIBuf::try_from(input),
+    ANSIBuf::try_parse(input),
     Ok(ANSIBuf::new("\u001b[20m", "\u001b[23m")),
   )
 }
@@ -475,12 +481,12 @@ test "ANSI upstream reference 35" {
   let input = "\u001b[31;;1m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[31;;1mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[31;;1mx \n y\u001b[0m")
   assert_eq(get_lines(input), [
     "\u001b[31;;1m x \u001b[22m\u001b[39m\u001b[0m", "\u001b[1m\u001b[31m y \u001b[0m",
   ])
   assert_eq(
-    ANSIBuf::try_from(input),
+    ANSIBuf::try_parse(input),
     Ok(ANSIBuf::new("\u001b[1m\u001b[31m", "\u001b[22m\u001b[39m\u001b[0m")),
   )
 }
@@ -491,12 +497,12 @@ test "ANSI upstream reference 36" {
   let input = "\u001b[0;999m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[0;999mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[0;999mx \n y\u001b[0m")
   assert_eq(get_lines(input), [
     "\u001b[0;999m x \u001b[0m\u001b[0m", " y \u001b[0m",
   ])
   assert_eq(
-    ANSIBuf::try_from(input),
+    ANSIBuf::try_parse(input),
     Ok(ANSIBuf::new("", "\u001b[0m\u001b[0m")),
   )
 }
@@ -507,9 +513,9 @@ test "ANSI upstream reference 37" {
   let input = "\u001b[999;0m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[999;0mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[999;0mx \n y\u001b[0m")
   assert_eq(get_lines(input), ["\u001b[999;0m x ", " y \u001b[0m"])
-  assert_eq(ANSIBuf::try_from(input), Ok(ANSIBuf::new("", "")))
+  assert_eq(ANSIBuf::try_parse(input), Ok(ANSIBuf::new("", "")))
 }
 
 ///|
@@ -518,12 +524,12 @@ test "ANSI upstream reference 38" {
   let input = "\u001b[31;999m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[31;999mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[31;999mx \n y\u001b[0m")
   assert_eq(get_lines(input), [
     "\u001b[31;999m x \u001b[39m\u001b[0m", "\u001b[31m y \u001b[0m",
   ])
   assert_eq(
-    ANSIBuf::try_from(input),
+    ANSIBuf::try_parse(input),
     Ok(ANSIBuf::new("\u001b[31m", "\u001b[39m\u001b[0m")),
   )
 }
@@ -534,12 +540,12 @@ test "ANSI upstream reference 39" {
   let input = "\u001b[0;31;999m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[0;31;999mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[0;31;999mx \n y\u001b[0m")
   assert_eq(get_lines(input), [
     "\u001b[0;31;999m x \u001b[0m\u001b[39m\u001b[0m", "\u001b[31m y \u001b[0m",
   ])
   assert_eq(
-    ANSIBuf::try_from(input),
+    ANSIBuf::try_parse(input),
     Ok(ANSIBuf::new("\u001b[31m", "\u001b[0m\u001b[39m\u001b[0m")),
   )
 }
@@ -550,12 +556,12 @@ test "ANSI upstream reference 40" {
   let input = "\u001b[38;2;1;2;3m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[38;2;1;2;3mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[38;2;1;2;3mx \n y\u001b[0m")
   assert_eq(get_lines(input), [
     "\u001b[38;2;1;2;3m x \u001b[39m", "\u001b[38;2;1;2;3m y \u001b[0m",
   ])
   assert_eq(
-    ANSIBuf::try_from(input),
+    ANSIBuf::try_parse(input),
     Ok(ANSIBuf::new("\u001b[38;2;1;2;3m", "\u001b[39m")),
   )
 }
@@ -566,12 +572,12 @@ test "ANSI upstream reference 41" {
   let input = "\u001b[48;5;255m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[48;5;255mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[48;5;255mx \n y\u001b[0m")
   assert_eq(get_lines(input), [
     "\u001b[48;5;255m x \u001b[49m", "\u001b[48;5;255m y \u001b[0m",
   ])
   assert_eq(
-    ANSIBuf::try_from(input),
+    ANSIBuf::try_parse(input),
     Ok(ANSIBuf::new("\u001b[48;5;255m", "\u001b[49m")),
   )
 }
@@ -582,12 +588,12 @@ test "ANSI upstream reference 42" {
   let input = "\u001b[58;2;8;9;10m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[58;2;8;9;10mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[58;2;8;9;10mx \n y\u001b[0m")
   assert_eq(get_lines(input), [
     "\u001b[58;2;8;9;10m x \u001b[59m", "\u001b[58;2;8;9;10m y \u001b[0m",
   ])
   assert_eq(
-    ANSIBuf::try_from(input),
+    ANSIBuf::try_parse(input),
     Ok(ANSIBuf::new("\u001b[58;2;8;9;10m", "\u001b[59m")),
   )
 }
@@ -598,12 +604,12 @@ test "ANSI upstream reference 43" {
   let input = "\u001b[38;2;256;0;2m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[38;2;256;0;2mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[38;2;256;0;2mx \n y\u001b[0m")
   assert_eq(get_lines(input), [
     "\u001b[38;2;256;0;2m x \u001b[39m", "\u001b[38;2;0;0;2m y \u001b[0m",
   ])
   assert_eq(
-    ANSIBuf::try_from(input),
+    ANSIBuf::try_parse(input),
     Ok(ANSIBuf::new("\u001b[38;2;0;0;2m", "\u001b[39m")),
   )
 }
@@ -614,9 +620,9 @@ test "ANSI upstream reference 44" {
   let input = "\u001b[38;2;1;2m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[38;2;1;2mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[38;2;1;2mx \n y\u001b[0m")
   assert_eq(get_lines(input), ["\u001b[38;2;1;2m x ", " y \u001b[0m"])
-  assert_eq(ANSIBuf::try_from(input), Ok(ANSIBuf::new("", "")))
+  assert_eq(ANSIBuf::try_parse(input), Ok(ANSIBuf::new("", "")))
 }
 
 ///|
@@ -625,12 +631,12 @@ test "ANSI upstream reference 45" {
   let input = "\u001b[31;38;3;1m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[31;38;3;1mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[31;38;3;1mx \n y\u001b[0m")
   assert_eq(get_lines(input), [
     "\u001b[31;38;3;1m x \u001b[22m\u001b[39m", "\u001b[1m\u001b[31m y \u001b[0m",
   ])
   assert_eq(
-    ANSIBuf::try_from(input),
+    ANSIBuf::try_parse(input),
     Ok(ANSIBuf::new("\u001b[1m\u001b[31m", "\u001b[22m\u001b[39m")),
   )
 }
@@ -641,12 +647,12 @@ test "ANSI upstream reference 46" {
   let input = "\u001b[38;5;m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[38;5;mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[38;5;mx \n y\u001b[0m")
   assert_eq(get_lines(input), [
     "\u001b[38;5;m x \u001b[39m", "\u001b[38;5;0m y \u001b[0m",
   ])
   assert_eq(
-    ANSIBuf::try_from(input),
+    ANSIBuf::try_parse(input),
     Ok(ANSIBuf::new("\u001b[38;5;0m", "\u001b[39m")),
   )
 }
@@ -657,12 +663,12 @@ test "ANSI upstream reference 47" {
   let input = "\u001b[38;5;0001m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[38;5;0001mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[38;5;0001mx \n y\u001b[0m")
   assert_eq(get_lines(input), [
     "\u001b[38;5;0001m x \u001b[39m", "\u001b[38;5;1m y \u001b[0m",
   ])
   assert_eq(
-    ANSIBuf::try_from(input),
+    ANSIBuf::try_parse(input),
     Ok(ANSIBuf::new("\u001b[38;5;1m", "\u001b[39m")),
   )
 }
@@ -673,9 +679,9 @@ test "ANSI upstream reference 48" {
   let input = "\u001b[38;5;+3m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), "\u001b[38;5;")
-  assert_eq(trim_ansi(input), "\u001b[38;5;+3m x \n y \u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[38;5;+3m x \n y \u001b[0m")
   assert_eq(get_lines(input), ["\u001b[38;5;+3m x ", " y \u001b[0m"])
-  assert_eq(ANSIBuf::try_from(input), Ok(ANSIBuf::new("", "")))
+  assert_eq(ANSIBuf::try_parse(input), Ok(ANSIBuf::new("", "")))
 }
 
 ///|
@@ -684,12 +690,15 @@ test "ANSI upstream reference 49" {
   let input = "\u001b[58;5;9;59;48;2;0;8;9m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[58;5;9;59;48;2;0;8;9mx \n y\u001b[0m")
+  assert_eq(
+    trim_ansi_whitespace(input),
+    "\u001b[58;5;9;59;48;2;0;8;9mx \n y\u001b[0m",
+  )
   assert_eq(get_lines(input), [
     "\u001b[58;5;9;59;48;2;0;8;9m x \u001b[49m", "\u001b[48;2;0;8;9m y \u001b[0m",
   ])
   assert_eq(
-    ANSIBuf::try_from(input),
+    ANSIBuf::try_parse(input),
     Ok(ANSIBuf::new("\u001b[48;2;0;8;9m", "\u001b[49m")),
   )
 }
@@ -701,7 +710,7 @@ test "ANSI upstream reference 50" {
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
   assert_eq(
-    trim_ansi(input),
+    trim_ansi_whitespace(input),
     "\u001b[1;2;3;4;5;6;7;8;9;11;20;21;26;51;52;53;60;61;62mx \n y\u001b[0m",
   )
   assert_eq(get_lines(input), [
@@ -709,7 +718,7 @@ test "ANSI upstream reference 50" {
     "\u001b[1m\u001b[2m\u001b[3m\u001b[4m\u001b[5m\u001b[6m\u001b[7m\u001b[8m\u001b[9m\u001b[11m\u001b[20m\u001b[21m\u001b[26m\u001b[51m\u001b[52m\u001b[53m\u001b[60m\u001b[61m\u001b[62m y \u001b[0m",
   ])
   assert_eq(
-    ANSIBuf::try_from(input),
+    ANSIBuf::try_parse(input),
     Ok(
       ANSIBuf::new(
         "\u001b[1m\u001b[2m\u001b[3m\u001b[4m\u001b[5m\u001b[6m\u001b[7m\u001b[8m\u001b[9m\u001b[11m\u001b[20m\u001b[21m\u001b[26m\u001b[51m\u001b[52m\u001b[53m\u001b[60m\u001b[61m\u001b[62m",
@@ -725,9 +734,9 @@ test "ANSI upstream reference 51" {
   let input = "\u001b[?31;1m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[?31;1mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[?31;1mx \n y\u001b[0m")
   assert_eq(get_lines(input), ["\u001b[?31;1m x ", " y \u001b[0m"])
-  assert_eq(ANSIBuf::try_from(input), Ok(ANSIBuf::new("", "")))
+  assert_eq(ANSIBuf::try_parse(input), Ok(ANSIBuf::new("", "")))
 }
 
 ///|
@@ -736,9 +745,9 @@ test "ANSI upstream reference 52" {
   let input = "\u001b[>1;31m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[>1;31mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[>1;31mx \n y\u001b[0m")
   assert_eq(get_lines(input), ["\u001b[>1;31m x ", " y \u001b[0m"])
-  assert_eq(ANSIBuf::try_from(input), Ok(ANSIBuf::new("", "")))
+  assert_eq(ANSIBuf::try_parse(input), Ok(ANSIBuf::new("", "")))
 }
 
 ///|
@@ -747,9 +756,9 @@ test "ANSI upstream reference 53" {
   let input = "\u001b[<2;31m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[<2;31mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[<2;31mx \n y\u001b[0m")
   assert_eq(get_lines(input), ["\u001b[<2;31m x ", " y \u001b[0m"])
-  assert_eq(ANSIBuf::try_from(input), Ok(ANSIBuf::new("", "")))
+  assert_eq(ANSIBuf::try_parse(input), Ok(ANSIBuf::new("", "")))
 }
 
 ///|
@@ -758,9 +767,9 @@ test "ANSI upstream reference 54" {
   let input = "\u001b[31;?1m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), "\u001b[31;?1")
-  assert_eq(trim_ansi(input), "\u001b[31;?1m x \n y \u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[31;?1m x \n y \u001b[0m")
   assert_eq(get_lines(input), ["\u001b[31;?1m x ", " y \u001b[0m"])
-  assert_eq(ANSIBuf::try_from(input), Ok(ANSIBuf::new("", "")))
+  assert_eq(ANSIBuf::try_parse(input), Ok(ANSIBuf::new("", "")))
 }
 
 ///|
@@ -769,9 +778,9 @@ test "ANSI upstream reference 55" {
   let input = "\u001b[31 mm x \n y \u001b[0m"
   assert_eq(get_line_width(input), 8)
   assert_eq(strip_ansi(input), "m x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[31 mm x \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[31 mm x \n y\u001b[0m")
   assert_eq(get_lines(input), ["\u001b[31 mm x ", " y \u001b[0m"])
-  assert_eq(ANSIBuf::try_from(input), Ok(ANSIBuf::new("", "")))
+  assert_eq(ANSIBuf::try_parse(input), Ok(ANSIBuf::new("", "")))
 }
 
 ///|
@@ -780,9 +789,9 @@ test "ANSI upstream reference 56" {
   let input = "\u001b[31  mm x \n y \u001b[0m"
   assert_eq(get_line_width(input), 8)
   assert_eq(strip_ansi(input), "\u001b[31  mm")
-  assert_eq(trim_ansi(input), "\u001b[31  mm x \n y \u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[31  mm x \n y \u001b[0m")
   assert_eq(get_lines(input), ["\u001b[31  mm x ", " y \u001b[0m"])
-  assert_eq(ANSIBuf::try_from(input), Ok(ANSIBuf::new("", "")))
+  assert_eq(ANSIBuf::try_parse(input), Ok(ANSIBuf::new("", "")))
 }
 
 ///|
@@ -792,14 +801,14 @@ test "ANSI upstream reference 57" {
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), "\u001b[1;1;1")
   assert_eq(
-    trim_ansi(input),
+    trim_ansi_whitespace(input),
     "\u001b[1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;m x \n y \u001b[0m",
   )
   assert_eq(get_lines(input), [
     "\u001b[1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;m x ",
     " y \u001b[0m",
   ])
-  assert_eq(ANSIBuf::try_from(input), Ok(ANSIBuf::new("", "")))
+  assert_eq(ANSIBuf::try_parse(input), Ok(ANSIBuf::new("", "")))
 }
 
 ///|
@@ -808,9 +817,9 @@ test "ANSI upstream reference 58" {
   let input = "\u001b[0m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[0mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[0mx \n y\u001b[0m")
   assert_eq(get_lines(input), ["\u001b[0m x ", " y \u001b[0m"])
-  assert_eq(ANSIBuf::try_from(input), Ok(ANSIBuf::new("", "")))
+  assert_eq(ANSIBuf::try_parse(input), Ok(ANSIBuf::new("", "")))
 }
 
 ///|
@@ -819,12 +828,12 @@ test "ANSI upstream reference 59" {
   let input = "\u001b[1m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[1mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[1mx \n y\u001b[0m")
   assert_eq(get_lines(input), [
     "\u001b[1m x \u001b[22m", "\u001b[1m y \u001b[0m",
   ])
   assert_eq(
-    ANSIBuf::try_from(input),
+    ANSIBuf::try_parse(input),
     Ok(ANSIBuf::new("\u001b[1m", "\u001b[22m")),
   )
 }
@@ -835,12 +844,12 @@ test "ANSI upstream reference 60" {
   let input = "\u001b[2m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[2mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[2mx \n y\u001b[0m")
   assert_eq(get_lines(input), [
     "\u001b[2m x \u001b[22m", "\u001b[2m y \u001b[0m",
   ])
   assert_eq(
-    ANSIBuf::try_from(input),
+    ANSIBuf::try_parse(input),
     Ok(ANSIBuf::new("\u001b[2m", "\u001b[22m")),
   )
 }
@@ -851,12 +860,12 @@ test "ANSI upstream reference 61" {
   let input = "\u001b[3m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[3mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[3mx \n y\u001b[0m")
   assert_eq(get_lines(input), [
     "\u001b[3m x \u001b[23m", "\u001b[3m y \u001b[0m",
   ])
   assert_eq(
-    ANSIBuf::try_from(input),
+    ANSIBuf::try_parse(input),
     Ok(ANSIBuf::new("\u001b[3m", "\u001b[23m")),
   )
 }
@@ -867,12 +876,12 @@ test "ANSI upstream reference 62" {
   let input = "\u001b[4m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[4mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[4mx \n y\u001b[0m")
   assert_eq(get_lines(input), [
     "\u001b[4m x \u001b[24m", "\u001b[4m y \u001b[0m",
   ])
   assert_eq(
-    ANSIBuf::try_from(input),
+    ANSIBuf::try_parse(input),
     Ok(ANSIBuf::new("\u001b[4m", "\u001b[24m")),
   )
 }
@@ -883,12 +892,12 @@ test "ANSI upstream reference 63" {
   let input = "\u001b[5m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[5mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[5mx \n y\u001b[0m")
   assert_eq(get_lines(input), [
     "\u001b[5m x \u001b[25m", "\u001b[5m y \u001b[0m",
   ])
   assert_eq(
-    ANSIBuf::try_from(input),
+    ANSIBuf::try_parse(input),
     Ok(ANSIBuf::new("\u001b[5m", "\u001b[25m")),
   )
 }
@@ -899,12 +908,12 @@ test "ANSI upstream reference 64" {
   let input = "\u001b[6m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[6mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[6mx \n y\u001b[0m")
   assert_eq(get_lines(input), [
     "\u001b[6m x \u001b[25m", "\u001b[6m y \u001b[0m",
   ])
   assert_eq(
-    ANSIBuf::try_from(input),
+    ANSIBuf::try_parse(input),
     Ok(ANSIBuf::new("\u001b[6m", "\u001b[25m")),
   )
 }
@@ -915,12 +924,12 @@ test "ANSI upstream reference 65" {
   let input = "\u001b[7m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[7mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[7mx \n y\u001b[0m")
   assert_eq(get_lines(input), [
     "\u001b[7m x \u001b[27m", "\u001b[7m y \u001b[0m",
   ])
   assert_eq(
-    ANSIBuf::try_from(input),
+    ANSIBuf::try_parse(input),
     Ok(ANSIBuf::new("\u001b[7m", "\u001b[27m")),
   )
 }
@@ -931,12 +940,12 @@ test "ANSI upstream reference 66" {
   let input = "\u001b[8m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[8mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[8mx \n y\u001b[0m")
   assert_eq(get_lines(input), [
     "\u001b[8m x \u001b[28m", "\u001b[8m y \u001b[0m",
   ])
   assert_eq(
-    ANSIBuf::try_from(input),
+    ANSIBuf::try_parse(input),
     Ok(ANSIBuf::new("\u001b[8m", "\u001b[28m")),
   )
 }
@@ -947,12 +956,12 @@ test "ANSI upstream reference 67" {
   let input = "\u001b[9m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[9mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[9mx \n y\u001b[0m")
   assert_eq(get_lines(input), [
     "\u001b[9m x \u001b[29m", "\u001b[9m y \u001b[0m",
   ])
   assert_eq(
-    ANSIBuf::try_from(input),
+    ANSIBuf::try_parse(input),
     Ok(ANSIBuf::new("\u001b[9m", "\u001b[29m")),
   )
 }
@@ -963,9 +972,9 @@ test "ANSI upstream reference 68" {
   let input = "\u001b[10m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[10mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[10mx \n y\u001b[0m")
   assert_eq(get_lines(input), ["\u001b[10m x ", " y \u001b[0m"])
-  assert_eq(ANSIBuf::try_from(input), Ok(ANSIBuf::new("", "")))
+  assert_eq(ANSIBuf::try_parse(input), Ok(ANSIBuf::new("", "")))
 }
 
 ///|
@@ -974,9 +983,9 @@ test "ANSI upstream reference 69" {
   let input = "\u001b[11m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[11mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[11mx \n y\u001b[0m")
   assert_eq(get_lines(input), ["\u001b[11m x ", " y \u001b[0m"])
-  assert_eq(ANSIBuf::try_from(input), Ok(ANSIBuf::new("", "")))
+  assert_eq(ANSIBuf::try_parse(input), Ok(ANSIBuf::new("", "")))
 }
 
 ///|
@@ -985,9 +994,9 @@ test "ANSI upstream reference 70" {
   let input = "\u001b[12m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[12mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[12mx \n y\u001b[0m")
   assert_eq(get_lines(input), ["\u001b[12m x ", " y \u001b[0m"])
-  assert_eq(ANSIBuf::try_from(input), Ok(ANSIBuf::new("", "")))
+  assert_eq(ANSIBuf::try_parse(input), Ok(ANSIBuf::new("", "")))
 }
 
 ///|
@@ -996,9 +1005,9 @@ test "ANSI upstream reference 71" {
   let input = "\u001b[13m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[13mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[13mx \n y\u001b[0m")
   assert_eq(get_lines(input), ["\u001b[13m x ", " y \u001b[0m"])
-  assert_eq(ANSIBuf::try_from(input), Ok(ANSIBuf::new("", "")))
+  assert_eq(ANSIBuf::try_parse(input), Ok(ANSIBuf::new("", "")))
 }
 
 ///|
@@ -1007,9 +1016,9 @@ test "ANSI upstream reference 72" {
   let input = "\u001b[14m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[14mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[14mx \n y\u001b[0m")
   assert_eq(get_lines(input), ["\u001b[14m x ", " y \u001b[0m"])
-  assert_eq(ANSIBuf::try_from(input), Ok(ANSIBuf::new("", "")))
+  assert_eq(ANSIBuf::try_parse(input), Ok(ANSIBuf::new("", "")))
 }
 
 ///|
@@ -1018,9 +1027,9 @@ test "ANSI upstream reference 73" {
   let input = "\u001b[15m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[15mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[15mx \n y\u001b[0m")
   assert_eq(get_lines(input), ["\u001b[15m x ", " y \u001b[0m"])
-  assert_eq(ANSIBuf::try_from(input), Ok(ANSIBuf::new("", "")))
+  assert_eq(ANSIBuf::try_parse(input), Ok(ANSIBuf::new("", "")))
 }
 
 ///|
@@ -1029,9 +1038,9 @@ test "ANSI upstream reference 74" {
   let input = "\u001b[16m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[16mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[16mx \n y\u001b[0m")
   assert_eq(get_lines(input), ["\u001b[16m x ", " y \u001b[0m"])
-  assert_eq(ANSIBuf::try_from(input), Ok(ANSIBuf::new("", "")))
+  assert_eq(ANSIBuf::try_parse(input), Ok(ANSIBuf::new("", "")))
 }
 
 ///|
@@ -1040,9 +1049,9 @@ test "ANSI upstream reference 75" {
   let input = "\u001b[17m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[17mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[17mx \n y\u001b[0m")
   assert_eq(get_lines(input), ["\u001b[17m x ", " y \u001b[0m"])
-  assert_eq(ANSIBuf::try_from(input), Ok(ANSIBuf::new("", "")))
+  assert_eq(ANSIBuf::try_parse(input), Ok(ANSIBuf::new("", "")))
 }
 
 ///|
@@ -1051,9 +1060,9 @@ test "ANSI upstream reference 76" {
   let input = "\u001b[18m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[18mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[18mx \n y\u001b[0m")
   assert_eq(get_lines(input), ["\u001b[18m x ", " y \u001b[0m"])
-  assert_eq(ANSIBuf::try_from(input), Ok(ANSIBuf::new("", "")))
+  assert_eq(ANSIBuf::try_parse(input), Ok(ANSIBuf::new("", "")))
 }
 
 ///|
@@ -1062,9 +1071,9 @@ test "ANSI upstream reference 77" {
   let input = "\u001b[19m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[19mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[19mx \n y\u001b[0m")
   assert_eq(get_lines(input), ["\u001b[19m x ", " y \u001b[0m"])
-  assert_eq(ANSIBuf::try_from(input), Ok(ANSIBuf::new("", "")))
+  assert_eq(ANSIBuf::try_parse(input), Ok(ANSIBuf::new("", "")))
 }
 
 ///|
@@ -1073,12 +1082,12 @@ test "ANSI upstream reference 78" {
   let input = "\u001b[20m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[20mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[20mx \n y\u001b[0m")
   assert_eq(get_lines(input), [
     "\u001b[20m x \u001b[23m", "\u001b[20m y \u001b[0m",
   ])
   assert_eq(
-    ANSIBuf::try_from(input),
+    ANSIBuf::try_parse(input),
     Ok(ANSIBuf::new("\u001b[20m", "\u001b[23m")),
   )
 }
@@ -1089,12 +1098,12 @@ test "ANSI upstream reference 79" {
   let input = "\u001b[21m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[21mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[21mx \n y\u001b[0m")
   assert_eq(get_lines(input), [
     "\u001b[21m x \u001b[24m", "\u001b[21m y \u001b[0m",
   ])
   assert_eq(
-    ANSIBuf::try_from(input),
+    ANSIBuf::try_parse(input),
     Ok(ANSIBuf::new("\u001b[21m", "\u001b[24m")),
   )
 }
@@ -1105,9 +1114,9 @@ test "ANSI upstream reference 80" {
   let input = "\u001b[22m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[22mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[22mx \n y\u001b[0m")
   assert_eq(get_lines(input), ["\u001b[22m x ", " y \u001b[0m"])
-  assert_eq(ANSIBuf::try_from(input), Ok(ANSIBuf::new("", "")))
+  assert_eq(ANSIBuf::try_parse(input), Ok(ANSIBuf::new("", "")))
 }
 
 ///|
@@ -1116,9 +1125,9 @@ test "ANSI upstream reference 81" {
   let input = "\u001b[23m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[23mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[23mx \n y\u001b[0m")
   assert_eq(get_lines(input), ["\u001b[23m x ", " y \u001b[0m"])
-  assert_eq(ANSIBuf::try_from(input), Ok(ANSIBuf::new("", "")))
+  assert_eq(ANSIBuf::try_parse(input), Ok(ANSIBuf::new("", "")))
 }
 
 ///|
@@ -1127,9 +1136,9 @@ test "ANSI upstream reference 82" {
   let input = "\u001b[24m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[24mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[24mx \n y\u001b[0m")
   assert_eq(get_lines(input), ["\u001b[24m x ", " y \u001b[0m"])
-  assert_eq(ANSIBuf::try_from(input), Ok(ANSIBuf::new("", "")))
+  assert_eq(ANSIBuf::try_parse(input), Ok(ANSIBuf::new("", "")))
 }
 
 ///|
@@ -1138,9 +1147,9 @@ test "ANSI upstream reference 83" {
   let input = "\u001b[25m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[25mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[25mx \n y\u001b[0m")
   assert_eq(get_lines(input), ["\u001b[25m x ", " y \u001b[0m"])
-  assert_eq(ANSIBuf::try_from(input), Ok(ANSIBuf::new("", "")))
+  assert_eq(ANSIBuf::try_parse(input), Ok(ANSIBuf::new("", "")))
 }
 
 ///|
@@ -1149,12 +1158,12 @@ test "ANSI upstream reference 84" {
   let input = "\u001b[26m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[26mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[26mx \n y\u001b[0m")
   assert_eq(get_lines(input), [
     "\u001b[26m x \u001b[50m", "\u001b[26m y \u001b[0m",
   ])
   assert_eq(
-    ANSIBuf::try_from(input),
+    ANSIBuf::try_parse(input),
     Ok(ANSIBuf::new("\u001b[26m", "\u001b[50m")),
   )
 }
@@ -1165,9 +1174,9 @@ test "ANSI upstream reference 85" {
   let input = "\u001b[27m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[27mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[27mx \n y\u001b[0m")
   assert_eq(get_lines(input), ["\u001b[27m x ", " y \u001b[0m"])
-  assert_eq(ANSIBuf::try_from(input), Ok(ANSIBuf::new("", "")))
+  assert_eq(ANSIBuf::try_parse(input), Ok(ANSIBuf::new("", "")))
 }
 
 ///|
@@ -1176,9 +1185,9 @@ test "ANSI upstream reference 86" {
   let input = "\u001b[28m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[28mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[28mx \n y\u001b[0m")
   assert_eq(get_lines(input), ["\u001b[28m x ", " y \u001b[0m"])
-  assert_eq(ANSIBuf::try_from(input), Ok(ANSIBuf::new("", "")))
+  assert_eq(ANSIBuf::try_parse(input), Ok(ANSIBuf::new("", "")))
 }
 
 ///|
@@ -1187,9 +1196,9 @@ test "ANSI upstream reference 87" {
   let input = "\u001b[29m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[29mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[29mx \n y\u001b[0m")
   assert_eq(get_lines(input), ["\u001b[29m x ", " y \u001b[0m"])
-  assert_eq(ANSIBuf::try_from(input), Ok(ANSIBuf::new("", "")))
+  assert_eq(ANSIBuf::try_parse(input), Ok(ANSIBuf::new("", "")))
 }
 
 ///|
@@ -1198,12 +1207,12 @@ test "ANSI upstream reference 88" {
   let input = "\u001b[30m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[30mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[30mx \n y\u001b[0m")
   assert_eq(get_lines(input), [
     "\u001b[30m x \u001b[39m", "\u001b[30m y \u001b[0m",
   ])
   assert_eq(
-    ANSIBuf::try_from(input),
+    ANSIBuf::try_parse(input),
     Ok(ANSIBuf::new("\u001b[30m", "\u001b[39m")),
   )
 }
@@ -1214,12 +1223,12 @@ test "ANSI upstream reference 89" {
   let input = "\u001b[31m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[31mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[31mx \n y\u001b[0m")
   assert_eq(get_lines(input), [
     "\u001b[31m x \u001b[39m", "\u001b[31m y \u001b[0m",
   ])
   assert_eq(
-    ANSIBuf::try_from(input),
+    ANSIBuf::try_parse(input),
     Ok(ANSIBuf::new("\u001b[31m", "\u001b[39m")),
   )
 }
@@ -1230,12 +1239,12 @@ test "ANSI upstream reference 90" {
   let input = "\u001b[32m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[32mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[32mx \n y\u001b[0m")
   assert_eq(get_lines(input), [
     "\u001b[32m x \u001b[39m", "\u001b[32m y \u001b[0m",
   ])
   assert_eq(
-    ANSIBuf::try_from(input),
+    ANSIBuf::try_parse(input),
     Ok(ANSIBuf::new("\u001b[32m", "\u001b[39m")),
   )
 }
@@ -1246,12 +1255,12 @@ test "ANSI upstream reference 91" {
   let input = "\u001b[33m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[33mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[33mx \n y\u001b[0m")
   assert_eq(get_lines(input), [
     "\u001b[33m x \u001b[39m", "\u001b[33m y \u001b[0m",
   ])
   assert_eq(
-    ANSIBuf::try_from(input),
+    ANSIBuf::try_parse(input),
     Ok(ANSIBuf::new("\u001b[33m", "\u001b[39m")),
   )
 }
@@ -1262,12 +1271,12 @@ test "ANSI upstream reference 92" {
   let input = "\u001b[34m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[34mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[34mx \n y\u001b[0m")
   assert_eq(get_lines(input), [
     "\u001b[34m x \u001b[39m", "\u001b[34m y \u001b[0m",
   ])
   assert_eq(
-    ANSIBuf::try_from(input),
+    ANSIBuf::try_parse(input),
     Ok(ANSIBuf::new("\u001b[34m", "\u001b[39m")),
   )
 }
@@ -1278,12 +1287,12 @@ test "ANSI upstream reference 93" {
   let input = "\u001b[35m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[35mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[35mx \n y\u001b[0m")
   assert_eq(get_lines(input), [
     "\u001b[35m x \u001b[39m", "\u001b[35m y \u001b[0m",
   ])
   assert_eq(
-    ANSIBuf::try_from(input),
+    ANSIBuf::try_parse(input),
     Ok(ANSIBuf::new("\u001b[35m", "\u001b[39m")),
   )
 }
@@ -1294,12 +1303,12 @@ test "ANSI upstream reference 94" {
   let input = "\u001b[36m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[36mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[36mx \n y\u001b[0m")
   assert_eq(get_lines(input), [
     "\u001b[36m x \u001b[39m", "\u001b[36m y \u001b[0m",
   ])
   assert_eq(
-    ANSIBuf::try_from(input),
+    ANSIBuf::try_parse(input),
     Ok(ANSIBuf::new("\u001b[36m", "\u001b[39m")),
   )
 }
@@ -1310,12 +1319,12 @@ test "ANSI upstream reference 95" {
   let input = "\u001b[37m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[37mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[37mx \n y\u001b[0m")
   assert_eq(get_lines(input), [
     "\u001b[37m x \u001b[39m", "\u001b[37m y \u001b[0m",
   ])
   assert_eq(
-    ANSIBuf::try_from(input),
+    ANSIBuf::try_parse(input),
     Ok(ANSIBuf::new("\u001b[37m", "\u001b[39m")),
   )
 }
@@ -1326,9 +1335,9 @@ test "ANSI upstream reference 96" {
   let input = "\u001b[38m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[38mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[38mx \n y\u001b[0m")
   assert_eq(get_lines(input), ["\u001b[38m x ", " y \u001b[0m"])
-  assert_eq(ANSIBuf::try_from(input), Ok(ANSIBuf::new("", "")))
+  assert_eq(ANSIBuf::try_parse(input), Ok(ANSIBuf::new("", "")))
 }
 
 ///|
@@ -1337,9 +1346,9 @@ test "ANSI upstream reference 97" {
   let input = "\u001b[39m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[39mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[39mx \n y\u001b[0m")
   assert_eq(get_lines(input), ["\u001b[39m x ", " y \u001b[0m"])
-  assert_eq(ANSIBuf::try_from(input), Ok(ANSIBuf::new("", "")))
+  assert_eq(ANSIBuf::try_parse(input), Ok(ANSIBuf::new("", "")))
 }
 
 ///|
@@ -1348,12 +1357,12 @@ test "ANSI upstream reference 98" {
   let input = "\u001b[40m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[40mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[40mx \n y\u001b[0m")
   assert_eq(get_lines(input), [
     "\u001b[40m x \u001b[49m", "\u001b[40m y \u001b[0m",
   ])
   assert_eq(
-    ANSIBuf::try_from(input),
+    ANSIBuf::try_parse(input),
     Ok(ANSIBuf::new("\u001b[40m", "\u001b[49m")),
   )
 }
@@ -1364,12 +1373,12 @@ test "ANSI upstream reference 99" {
   let input = "\u001b[41m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[41mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[41mx \n y\u001b[0m")
   assert_eq(get_lines(input), [
     "\u001b[41m x \u001b[49m", "\u001b[41m y \u001b[0m",
   ])
   assert_eq(
-    ANSIBuf::try_from(input),
+    ANSIBuf::try_parse(input),
     Ok(ANSIBuf::new("\u001b[41m", "\u001b[49m")),
   )
 }
@@ -1380,12 +1389,12 @@ test "ANSI upstream reference 100" {
   let input = "\u001b[42m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[42mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[42mx \n y\u001b[0m")
   assert_eq(get_lines(input), [
     "\u001b[42m x \u001b[49m", "\u001b[42m y \u001b[0m",
   ])
   assert_eq(
-    ANSIBuf::try_from(input),
+    ANSIBuf::try_parse(input),
     Ok(ANSIBuf::new("\u001b[42m", "\u001b[49m")),
   )
 }
@@ -1396,12 +1405,12 @@ test "ANSI upstream reference 101" {
   let input = "\u001b[43m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[43mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[43mx \n y\u001b[0m")
   assert_eq(get_lines(input), [
     "\u001b[43m x \u001b[49m", "\u001b[43m y \u001b[0m",
   ])
   assert_eq(
-    ANSIBuf::try_from(input),
+    ANSIBuf::try_parse(input),
     Ok(ANSIBuf::new("\u001b[43m", "\u001b[49m")),
   )
 }
@@ -1412,12 +1421,12 @@ test "ANSI upstream reference 102" {
   let input = "\u001b[44m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[44mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[44mx \n y\u001b[0m")
   assert_eq(get_lines(input), [
     "\u001b[44m x \u001b[49m", "\u001b[44m y \u001b[0m",
   ])
   assert_eq(
-    ANSIBuf::try_from(input),
+    ANSIBuf::try_parse(input),
     Ok(ANSIBuf::new("\u001b[44m", "\u001b[49m")),
   )
 }
@@ -1428,12 +1437,12 @@ test "ANSI upstream reference 103" {
   let input = "\u001b[45m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[45mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[45mx \n y\u001b[0m")
   assert_eq(get_lines(input), [
     "\u001b[45m x \u001b[49m", "\u001b[45m y \u001b[0m",
   ])
   assert_eq(
-    ANSIBuf::try_from(input),
+    ANSIBuf::try_parse(input),
     Ok(ANSIBuf::new("\u001b[45m", "\u001b[49m")),
   )
 }
@@ -1444,12 +1453,12 @@ test "ANSI upstream reference 104" {
   let input = "\u001b[46m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[46mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[46mx \n y\u001b[0m")
   assert_eq(get_lines(input), [
     "\u001b[46m x \u001b[49m", "\u001b[46m y \u001b[0m",
   ])
   assert_eq(
-    ANSIBuf::try_from(input),
+    ANSIBuf::try_parse(input),
     Ok(ANSIBuf::new("\u001b[46m", "\u001b[49m")),
   )
 }
@@ -1460,12 +1469,12 @@ test "ANSI upstream reference 105" {
   let input = "\u001b[47m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[47mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[47mx \n y\u001b[0m")
   assert_eq(get_lines(input), [
     "\u001b[47m x \u001b[49m", "\u001b[47m y \u001b[0m",
   ])
   assert_eq(
-    ANSIBuf::try_from(input),
+    ANSIBuf::try_parse(input),
     Ok(ANSIBuf::new("\u001b[47m", "\u001b[49m")),
   )
 }
@@ -1476,9 +1485,9 @@ test "ANSI upstream reference 106" {
   let input = "\u001b[48m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[48mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[48mx \n y\u001b[0m")
   assert_eq(get_lines(input), ["\u001b[48m x ", " y \u001b[0m"])
-  assert_eq(ANSIBuf::try_from(input), Ok(ANSIBuf::new("", "")))
+  assert_eq(ANSIBuf::try_parse(input), Ok(ANSIBuf::new("", "")))
 }
 
 ///|
@@ -1487,9 +1496,9 @@ test "ANSI upstream reference 107" {
   let input = "\u001b[49m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[49mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[49mx \n y\u001b[0m")
   assert_eq(get_lines(input), ["\u001b[49m x ", " y \u001b[0m"])
-  assert_eq(ANSIBuf::try_from(input), Ok(ANSIBuf::new("", "")))
+  assert_eq(ANSIBuf::try_parse(input), Ok(ANSIBuf::new("", "")))
 }
 
 ///|
@@ -1498,9 +1507,9 @@ test "ANSI upstream reference 108" {
   let input = "\u001b[50m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[50mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[50mx \n y\u001b[0m")
   assert_eq(get_lines(input), ["\u001b[50m x ", " y \u001b[0m"])
-  assert_eq(ANSIBuf::try_from(input), Ok(ANSIBuf::new("", "")))
+  assert_eq(ANSIBuf::try_parse(input), Ok(ANSIBuf::new("", "")))
 }
 
 ///|
@@ -1509,12 +1518,12 @@ test "ANSI upstream reference 109" {
   let input = "\u001b[51m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[51mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[51mx \n y\u001b[0m")
   assert_eq(get_lines(input), [
     "\u001b[51m x \u001b[54m", "\u001b[51m y \u001b[0m",
   ])
   assert_eq(
-    ANSIBuf::try_from(input),
+    ANSIBuf::try_parse(input),
     Ok(ANSIBuf::new("\u001b[51m", "\u001b[54m")),
   )
 }
@@ -1525,12 +1534,12 @@ test "ANSI upstream reference 110" {
   let input = "\u001b[52m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[52mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[52mx \n y\u001b[0m")
   assert_eq(get_lines(input), [
     "\u001b[52m x \u001b[54m", "\u001b[52m y \u001b[0m",
   ])
   assert_eq(
-    ANSIBuf::try_from(input),
+    ANSIBuf::try_parse(input),
     Ok(ANSIBuf::new("\u001b[52m", "\u001b[54m")),
   )
 }
@@ -1541,12 +1550,12 @@ test "ANSI upstream reference 111" {
   let input = "\u001b[53m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[53mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[53mx \n y\u001b[0m")
   assert_eq(get_lines(input), [
     "\u001b[53m x \u001b[55m", "\u001b[53m y \u001b[0m",
   ])
   assert_eq(
-    ANSIBuf::try_from(input),
+    ANSIBuf::try_parse(input),
     Ok(ANSIBuf::new("\u001b[53m", "\u001b[55m")),
   )
 }
@@ -1557,9 +1566,9 @@ test "ANSI upstream reference 112" {
   let input = "\u001b[54m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[54mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[54mx \n y\u001b[0m")
   assert_eq(get_lines(input), ["\u001b[54m x ", " y \u001b[0m"])
-  assert_eq(ANSIBuf::try_from(input), Ok(ANSIBuf::new("", "")))
+  assert_eq(ANSIBuf::try_parse(input), Ok(ANSIBuf::new("", "")))
 }
 
 ///|
@@ -1568,9 +1577,9 @@ test "ANSI upstream reference 113" {
   let input = "\u001b[55m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[55mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[55mx \n y\u001b[0m")
   assert_eq(get_lines(input), ["\u001b[55m x ", " y \u001b[0m"])
-  assert_eq(ANSIBuf::try_from(input), Ok(ANSIBuf::new("", "")))
+  assert_eq(ANSIBuf::try_parse(input), Ok(ANSIBuf::new("", "")))
 }
 
 ///|
@@ -1579,9 +1588,9 @@ test "ANSI upstream reference 114" {
   let input = "\u001b[56m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[56mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[56mx \n y\u001b[0m")
   assert_eq(get_lines(input), ["\u001b[56m x ", " y \u001b[0m"])
-  assert_eq(ANSIBuf::try_from(input), Ok(ANSIBuf::new("", "")))
+  assert_eq(ANSIBuf::try_parse(input), Ok(ANSIBuf::new("", "")))
 }
 
 ///|
@@ -1590,9 +1599,9 @@ test "ANSI upstream reference 115" {
   let input = "\u001b[57m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[57mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[57mx \n y\u001b[0m")
   assert_eq(get_lines(input), ["\u001b[57m x ", " y \u001b[0m"])
-  assert_eq(ANSIBuf::try_from(input), Ok(ANSIBuf::new("", "")))
+  assert_eq(ANSIBuf::try_parse(input), Ok(ANSIBuf::new("", "")))
 }
 
 ///|
@@ -1601,9 +1610,9 @@ test "ANSI upstream reference 116" {
   let input = "\u001b[58m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[58mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[58mx \n y\u001b[0m")
   assert_eq(get_lines(input), ["\u001b[58m x ", " y \u001b[0m"])
-  assert_eq(ANSIBuf::try_from(input), Ok(ANSIBuf::new("", "")))
+  assert_eq(ANSIBuf::try_parse(input), Ok(ANSIBuf::new("", "")))
 }
 
 ///|
@@ -1612,9 +1621,9 @@ test "ANSI upstream reference 117" {
   let input = "\u001b[59m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[59mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[59mx \n y\u001b[0m")
   assert_eq(get_lines(input), ["\u001b[59m x ", " y \u001b[0m"])
-  assert_eq(ANSIBuf::try_from(input), Ok(ANSIBuf::new("", "")))
+  assert_eq(ANSIBuf::try_parse(input), Ok(ANSIBuf::new("", "")))
 }
 
 ///|
@@ -1623,12 +1632,12 @@ test "ANSI upstream reference 118" {
   let input = "\u001b[60m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[60mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[60mx \n y\u001b[0m")
   assert_eq(get_lines(input), [
     "\u001b[60m x \u001b[65m", "\u001b[60m y \u001b[0m",
   ])
   assert_eq(
-    ANSIBuf::try_from(input),
+    ANSIBuf::try_parse(input),
     Ok(ANSIBuf::new("\u001b[60m", "\u001b[65m")),
   )
 }
@@ -1639,12 +1648,12 @@ test "ANSI upstream reference 119" {
   let input = "\u001b[61m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[61mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[61mx \n y\u001b[0m")
   assert_eq(get_lines(input), [
     "\u001b[61m x \u001b[65m", "\u001b[61m y \u001b[0m",
   ])
   assert_eq(
-    ANSIBuf::try_from(input),
+    ANSIBuf::try_parse(input),
     Ok(ANSIBuf::new("\u001b[61m", "\u001b[65m")),
   )
 }
@@ -1655,12 +1664,12 @@ test "ANSI upstream reference 120" {
   let input = "\u001b[62m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[62mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[62mx \n y\u001b[0m")
   assert_eq(get_lines(input), [
     "\u001b[62m x \u001b[65m", "\u001b[62m y \u001b[0m",
   ])
   assert_eq(
-    ANSIBuf::try_from(input),
+    ANSIBuf::try_parse(input),
     Ok(ANSIBuf::new("\u001b[62m", "\u001b[65m")),
   )
 }
@@ -1671,12 +1680,12 @@ test "ANSI upstream reference 121" {
   let input = "\u001b[63m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[63mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[63mx \n y\u001b[0m")
   assert_eq(get_lines(input), [
     "\u001b[63m x \u001b[65m", "\u001b[63m y \u001b[0m",
   ])
   assert_eq(
-    ANSIBuf::try_from(input),
+    ANSIBuf::try_parse(input),
     Ok(ANSIBuf::new("\u001b[63m", "\u001b[65m")),
   )
 }
@@ -1687,12 +1696,12 @@ test "ANSI upstream reference 122" {
   let input = "\u001b[64m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[64mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[64mx \n y\u001b[0m")
   assert_eq(get_lines(input), [
     "\u001b[64m x \u001b[65m", "\u001b[64m y \u001b[0m",
   ])
   assert_eq(
-    ANSIBuf::try_from(input),
+    ANSIBuf::try_parse(input),
     Ok(ANSIBuf::new("\u001b[64m", "\u001b[65m")),
   )
 }
@@ -1703,9 +1712,9 @@ test "ANSI upstream reference 123" {
   let input = "\u001b[65m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[65mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[65mx \n y\u001b[0m")
   assert_eq(get_lines(input), ["\u001b[65m x ", " y \u001b[0m"])
-  assert_eq(ANSIBuf::try_from(input), Ok(ANSIBuf::new("", "")))
+  assert_eq(ANSIBuf::try_parse(input), Ok(ANSIBuf::new("", "")))
 }
 
 ///|
@@ -1714,9 +1723,9 @@ test "ANSI upstream reference 124" {
   let input = "\u001b[66m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[66mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[66mx \n y\u001b[0m")
   assert_eq(get_lines(input), ["\u001b[66m x ", " y \u001b[0m"])
-  assert_eq(ANSIBuf::try_from(input), Ok(ANSIBuf::new("", "")))
+  assert_eq(ANSIBuf::try_parse(input), Ok(ANSIBuf::new("", "")))
 }
 
 ///|
@@ -1725,9 +1734,9 @@ test "ANSI upstream reference 125" {
   let input = "\u001b[67m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[67mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[67mx \n y\u001b[0m")
   assert_eq(get_lines(input), ["\u001b[67m x ", " y \u001b[0m"])
-  assert_eq(ANSIBuf::try_from(input), Ok(ANSIBuf::new("", "")))
+  assert_eq(ANSIBuf::try_parse(input), Ok(ANSIBuf::new("", "")))
 }
 
 ///|
@@ -1736,9 +1745,9 @@ test "ANSI upstream reference 126" {
   let input = "\u001b[68m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[68mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[68mx \n y\u001b[0m")
   assert_eq(get_lines(input), ["\u001b[68m x ", " y \u001b[0m"])
-  assert_eq(ANSIBuf::try_from(input), Ok(ANSIBuf::new("", "")))
+  assert_eq(ANSIBuf::try_parse(input), Ok(ANSIBuf::new("", "")))
 }
 
 ///|
@@ -1747,9 +1756,9 @@ test "ANSI upstream reference 127" {
   let input = "\u001b[69m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[69mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[69mx \n y\u001b[0m")
   assert_eq(get_lines(input), ["\u001b[69m x ", " y \u001b[0m"])
-  assert_eq(ANSIBuf::try_from(input), Ok(ANSIBuf::new("", "")))
+  assert_eq(ANSIBuf::try_parse(input), Ok(ANSIBuf::new("", "")))
 }
 
 ///|
@@ -1758,9 +1767,9 @@ test "ANSI upstream reference 128" {
   let input = "\u001b[70m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[70mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[70mx \n y\u001b[0m")
   assert_eq(get_lines(input), ["\u001b[70m x ", " y \u001b[0m"])
-  assert_eq(ANSIBuf::try_from(input), Ok(ANSIBuf::new("", "")))
+  assert_eq(ANSIBuf::try_parse(input), Ok(ANSIBuf::new("", "")))
 }
 
 ///|
@@ -1769,9 +1778,9 @@ test "ANSI upstream reference 129" {
   let input = "\u001b[71m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[71mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[71mx \n y\u001b[0m")
   assert_eq(get_lines(input), ["\u001b[71m x ", " y \u001b[0m"])
-  assert_eq(ANSIBuf::try_from(input), Ok(ANSIBuf::new("", "")))
+  assert_eq(ANSIBuf::try_parse(input), Ok(ANSIBuf::new("", "")))
 }
 
 ///|
@@ -1780,9 +1789,9 @@ test "ANSI upstream reference 130" {
   let input = "\u001b[72m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[72mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[72mx \n y\u001b[0m")
   assert_eq(get_lines(input), ["\u001b[72m x ", " y \u001b[0m"])
-  assert_eq(ANSIBuf::try_from(input), Ok(ANSIBuf::new("", "")))
+  assert_eq(ANSIBuf::try_parse(input), Ok(ANSIBuf::new("", "")))
 }
 
 ///|
@@ -1791,12 +1800,12 @@ test "ANSI upstream reference 131" {
   let input = "\u001b[73m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[73mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[73mx \n y\u001b[0m")
   assert_eq(get_lines(input), [
     "\u001b[73m x \u001b[75m", "\u001b[73m y \u001b[0m",
   ])
   assert_eq(
-    ANSIBuf::try_from(input),
+    ANSIBuf::try_parse(input),
     Ok(ANSIBuf::new("\u001b[73m", "\u001b[75m")),
   )
 }
@@ -1807,12 +1816,12 @@ test "ANSI upstream reference 132" {
   let input = "\u001b[74m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[74mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[74mx \n y\u001b[0m")
   assert_eq(get_lines(input), [
     "\u001b[74m x \u001b[75m", "\u001b[74m y \u001b[0m",
   ])
   assert_eq(
-    ANSIBuf::try_from(input),
+    ANSIBuf::try_parse(input),
     Ok(ANSIBuf::new("\u001b[74m", "\u001b[75m")),
   )
 }
@@ -1823,9 +1832,9 @@ test "ANSI upstream reference 133" {
   let input = "\u001b[75m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[75mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[75mx \n y\u001b[0m")
   assert_eq(get_lines(input), ["\u001b[75m x ", " y \u001b[0m"])
-  assert_eq(ANSIBuf::try_from(input), Ok(ANSIBuf::new("", "")))
+  assert_eq(ANSIBuf::try_parse(input), Ok(ANSIBuf::new("", "")))
 }
 
 ///|
@@ -1834,9 +1843,9 @@ test "ANSI upstream reference 134" {
   let input = "\u001b[76m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[76mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[76mx \n y\u001b[0m")
   assert_eq(get_lines(input), ["\u001b[76m x ", " y \u001b[0m"])
-  assert_eq(ANSIBuf::try_from(input), Ok(ANSIBuf::new("", "")))
+  assert_eq(ANSIBuf::try_parse(input), Ok(ANSIBuf::new("", "")))
 }
 
 ///|
@@ -1845,9 +1854,9 @@ test "ANSI upstream reference 135" {
   let input = "\u001b[77m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[77mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[77mx \n y\u001b[0m")
   assert_eq(get_lines(input), ["\u001b[77m x ", " y \u001b[0m"])
-  assert_eq(ANSIBuf::try_from(input), Ok(ANSIBuf::new("", "")))
+  assert_eq(ANSIBuf::try_parse(input), Ok(ANSIBuf::new("", "")))
 }
 
 ///|
@@ -1856,9 +1865,9 @@ test "ANSI upstream reference 136" {
   let input = "\u001b[78m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[78mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[78mx \n y\u001b[0m")
   assert_eq(get_lines(input), ["\u001b[78m x ", " y \u001b[0m"])
-  assert_eq(ANSIBuf::try_from(input), Ok(ANSIBuf::new("", "")))
+  assert_eq(ANSIBuf::try_parse(input), Ok(ANSIBuf::new("", "")))
 }
 
 ///|
@@ -1867,9 +1876,9 @@ test "ANSI upstream reference 137" {
   let input = "\u001b[79m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[79mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[79mx \n y\u001b[0m")
   assert_eq(get_lines(input), ["\u001b[79m x ", " y \u001b[0m"])
-  assert_eq(ANSIBuf::try_from(input), Ok(ANSIBuf::new("", "")))
+  assert_eq(ANSIBuf::try_parse(input), Ok(ANSIBuf::new("", "")))
 }
 
 ///|
@@ -1878,9 +1887,9 @@ test "ANSI upstream reference 138" {
   let input = "\u001b[80m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[80mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[80mx \n y\u001b[0m")
   assert_eq(get_lines(input), ["\u001b[80m x ", " y \u001b[0m"])
-  assert_eq(ANSIBuf::try_from(input), Ok(ANSIBuf::new("", "")))
+  assert_eq(ANSIBuf::try_parse(input), Ok(ANSIBuf::new("", "")))
 }
 
 ///|
@@ -1889,9 +1898,9 @@ test "ANSI upstream reference 139" {
   let input = "\u001b[81m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[81mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[81mx \n y\u001b[0m")
   assert_eq(get_lines(input), ["\u001b[81m x ", " y \u001b[0m"])
-  assert_eq(ANSIBuf::try_from(input), Ok(ANSIBuf::new("", "")))
+  assert_eq(ANSIBuf::try_parse(input), Ok(ANSIBuf::new("", "")))
 }
 
 ///|
@@ -1900,9 +1909,9 @@ test "ANSI upstream reference 140" {
   let input = "\u001b[82m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[82mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[82mx \n y\u001b[0m")
   assert_eq(get_lines(input), ["\u001b[82m x ", " y \u001b[0m"])
-  assert_eq(ANSIBuf::try_from(input), Ok(ANSIBuf::new("", "")))
+  assert_eq(ANSIBuf::try_parse(input), Ok(ANSIBuf::new("", "")))
 }
 
 ///|
@@ -1911,9 +1920,9 @@ test "ANSI upstream reference 141" {
   let input = "\u001b[83m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[83mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[83mx \n y\u001b[0m")
   assert_eq(get_lines(input), ["\u001b[83m x ", " y \u001b[0m"])
-  assert_eq(ANSIBuf::try_from(input), Ok(ANSIBuf::new("", "")))
+  assert_eq(ANSIBuf::try_parse(input), Ok(ANSIBuf::new("", "")))
 }
 
 ///|
@@ -1922,9 +1931,9 @@ test "ANSI upstream reference 142" {
   let input = "\u001b[84m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[84mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[84mx \n y\u001b[0m")
   assert_eq(get_lines(input), ["\u001b[84m x ", " y \u001b[0m"])
-  assert_eq(ANSIBuf::try_from(input), Ok(ANSIBuf::new("", "")))
+  assert_eq(ANSIBuf::try_parse(input), Ok(ANSIBuf::new("", "")))
 }
 
 ///|
@@ -1933,9 +1942,9 @@ test "ANSI upstream reference 143" {
   let input = "\u001b[85m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[85mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[85mx \n y\u001b[0m")
   assert_eq(get_lines(input), ["\u001b[85m x ", " y \u001b[0m"])
-  assert_eq(ANSIBuf::try_from(input), Ok(ANSIBuf::new("", "")))
+  assert_eq(ANSIBuf::try_parse(input), Ok(ANSIBuf::new("", "")))
 }
 
 ///|
@@ -1944,9 +1953,9 @@ test "ANSI upstream reference 144" {
   let input = "\u001b[86m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[86mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[86mx \n y\u001b[0m")
   assert_eq(get_lines(input), ["\u001b[86m x ", " y \u001b[0m"])
-  assert_eq(ANSIBuf::try_from(input), Ok(ANSIBuf::new("", "")))
+  assert_eq(ANSIBuf::try_parse(input), Ok(ANSIBuf::new("", "")))
 }
 
 ///|
@@ -1955,9 +1964,9 @@ test "ANSI upstream reference 145" {
   let input = "\u001b[87m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[87mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[87mx \n y\u001b[0m")
   assert_eq(get_lines(input), ["\u001b[87m x ", " y \u001b[0m"])
-  assert_eq(ANSIBuf::try_from(input), Ok(ANSIBuf::new("", "")))
+  assert_eq(ANSIBuf::try_parse(input), Ok(ANSIBuf::new("", "")))
 }
 
 ///|
@@ -1966,9 +1975,9 @@ test "ANSI upstream reference 146" {
   let input = "\u001b[88m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[88mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[88mx \n y\u001b[0m")
   assert_eq(get_lines(input), ["\u001b[88m x ", " y \u001b[0m"])
-  assert_eq(ANSIBuf::try_from(input), Ok(ANSIBuf::new("", "")))
+  assert_eq(ANSIBuf::try_parse(input), Ok(ANSIBuf::new("", "")))
 }
 
 ///|
@@ -1977,9 +1986,9 @@ test "ANSI upstream reference 147" {
   let input = "\u001b[89m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[89mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[89mx \n y\u001b[0m")
   assert_eq(get_lines(input), ["\u001b[89m x ", " y \u001b[0m"])
-  assert_eq(ANSIBuf::try_from(input), Ok(ANSIBuf::new("", "")))
+  assert_eq(ANSIBuf::try_parse(input), Ok(ANSIBuf::new("", "")))
 }
 
 ///|
@@ -1988,12 +1997,12 @@ test "ANSI upstream reference 148" {
   let input = "\u001b[90m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[90mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[90mx \n y\u001b[0m")
   assert_eq(get_lines(input), [
     "\u001b[90m x \u001b[39m", "\u001b[90m y \u001b[0m",
   ])
   assert_eq(
-    ANSIBuf::try_from(input),
+    ANSIBuf::try_parse(input),
     Ok(ANSIBuf::new("\u001b[90m", "\u001b[39m")),
   )
 }
@@ -2004,12 +2013,12 @@ test "ANSI upstream reference 149" {
   let input = "\u001b[91m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[91mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[91mx \n y\u001b[0m")
   assert_eq(get_lines(input), [
     "\u001b[91m x \u001b[39m", "\u001b[91m y \u001b[0m",
   ])
   assert_eq(
-    ANSIBuf::try_from(input),
+    ANSIBuf::try_parse(input),
     Ok(ANSIBuf::new("\u001b[91m", "\u001b[39m")),
   )
 }
@@ -2020,12 +2029,12 @@ test "ANSI upstream reference 150" {
   let input = "\u001b[92m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[92mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[92mx \n y\u001b[0m")
   assert_eq(get_lines(input), [
     "\u001b[92m x \u001b[39m", "\u001b[92m y \u001b[0m",
   ])
   assert_eq(
-    ANSIBuf::try_from(input),
+    ANSIBuf::try_parse(input),
     Ok(ANSIBuf::new("\u001b[92m", "\u001b[39m")),
   )
 }
@@ -2036,12 +2045,12 @@ test "ANSI upstream reference 151" {
   let input = "\u001b[93m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[93mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[93mx \n y\u001b[0m")
   assert_eq(get_lines(input), [
     "\u001b[93m x \u001b[39m", "\u001b[93m y \u001b[0m",
   ])
   assert_eq(
-    ANSIBuf::try_from(input),
+    ANSIBuf::try_parse(input),
     Ok(ANSIBuf::new("\u001b[93m", "\u001b[39m")),
   )
 }
@@ -2052,12 +2061,12 @@ test "ANSI upstream reference 152" {
   let input = "\u001b[94m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[94mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[94mx \n y\u001b[0m")
   assert_eq(get_lines(input), [
     "\u001b[94m x \u001b[39m", "\u001b[94m y \u001b[0m",
   ])
   assert_eq(
-    ANSIBuf::try_from(input),
+    ANSIBuf::try_parse(input),
     Ok(ANSIBuf::new("\u001b[94m", "\u001b[39m")),
   )
 }
@@ -2068,12 +2077,12 @@ test "ANSI upstream reference 153" {
   let input = "\u001b[95m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[95mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[95mx \n y\u001b[0m")
   assert_eq(get_lines(input), [
     "\u001b[95m x \u001b[39m", "\u001b[95m y \u001b[0m",
   ])
   assert_eq(
-    ANSIBuf::try_from(input),
+    ANSIBuf::try_parse(input),
     Ok(ANSIBuf::new("\u001b[95m", "\u001b[39m")),
   )
 }
@@ -2084,12 +2093,12 @@ test "ANSI upstream reference 154" {
   let input = "\u001b[96m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[96mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[96mx \n y\u001b[0m")
   assert_eq(get_lines(input), [
     "\u001b[96m x \u001b[39m", "\u001b[96m y \u001b[0m",
   ])
   assert_eq(
-    ANSIBuf::try_from(input),
+    ANSIBuf::try_parse(input),
     Ok(ANSIBuf::new("\u001b[96m", "\u001b[39m")),
   )
 }
@@ -2100,12 +2109,12 @@ test "ANSI upstream reference 155" {
   let input = "\u001b[97m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[97mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[97mx \n y\u001b[0m")
   assert_eq(get_lines(input), [
     "\u001b[97m x \u001b[39m", "\u001b[97m y \u001b[0m",
   ])
   assert_eq(
-    ANSIBuf::try_from(input),
+    ANSIBuf::try_parse(input),
     Ok(ANSIBuf::new("\u001b[97m", "\u001b[39m")),
   )
 }
@@ -2116,9 +2125,9 @@ test "ANSI upstream reference 156" {
   let input = "\u001b[98m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[98mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[98mx \n y\u001b[0m")
   assert_eq(get_lines(input), ["\u001b[98m x ", " y \u001b[0m"])
-  assert_eq(ANSIBuf::try_from(input), Ok(ANSIBuf::new("", "")))
+  assert_eq(ANSIBuf::try_parse(input), Ok(ANSIBuf::new("", "")))
 }
 
 ///|
@@ -2127,9 +2136,9 @@ test "ANSI upstream reference 157" {
   let input = "\u001b[99m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[99mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[99mx \n y\u001b[0m")
   assert_eq(get_lines(input), ["\u001b[99m x ", " y \u001b[0m"])
-  assert_eq(ANSIBuf::try_from(input), Ok(ANSIBuf::new("", "")))
+  assert_eq(ANSIBuf::try_parse(input), Ok(ANSIBuf::new("", "")))
 }
 
 ///|
@@ -2138,12 +2147,12 @@ test "ANSI upstream reference 158" {
   let input = "\u001b[100m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[100mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[100mx \n y\u001b[0m")
   assert_eq(get_lines(input), [
     "\u001b[100m x \u001b[49m", "\u001b[100m y \u001b[0m",
   ])
   assert_eq(
-    ANSIBuf::try_from(input),
+    ANSIBuf::try_parse(input),
     Ok(ANSIBuf::new("\u001b[100m", "\u001b[49m")),
   )
 }
@@ -2154,12 +2163,12 @@ test "ANSI upstream reference 159" {
   let input = "\u001b[101m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[101mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[101mx \n y\u001b[0m")
   assert_eq(get_lines(input), [
     "\u001b[101m x \u001b[49m", "\u001b[101m y \u001b[0m",
   ])
   assert_eq(
-    ANSIBuf::try_from(input),
+    ANSIBuf::try_parse(input),
     Ok(ANSIBuf::new("\u001b[101m", "\u001b[49m")),
   )
 }
@@ -2170,12 +2179,12 @@ test "ANSI upstream reference 160" {
   let input = "\u001b[102m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[102mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[102mx \n y\u001b[0m")
   assert_eq(get_lines(input), [
     "\u001b[102m x \u001b[49m", "\u001b[102m y \u001b[0m",
   ])
   assert_eq(
-    ANSIBuf::try_from(input),
+    ANSIBuf::try_parse(input),
     Ok(ANSIBuf::new("\u001b[102m", "\u001b[49m")),
   )
 }
@@ -2186,12 +2195,12 @@ test "ANSI upstream reference 161" {
   let input = "\u001b[103m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[103mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[103mx \n y\u001b[0m")
   assert_eq(get_lines(input), [
     "\u001b[103m x \u001b[49m", "\u001b[103m y \u001b[0m",
   ])
   assert_eq(
-    ANSIBuf::try_from(input),
+    ANSIBuf::try_parse(input),
     Ok(ANSIBuf::new("\u001b[103m", "\u001b[49m")),
   )
 }
@@ -2202,12 +2211,12 @@ test "ANSI upstream reference 162" {
   let input = "\u001b[104m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[104mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[104mx \n y\u001b[0m")
   assert_eq(get_lines(input), [
     "\u001b[104m x \u001b[49m", "\u001b[104m y \u001b[0m",
   ])
   assert_eq(
-    ANSIBuf::try_from(input),
+    ANSIBuf::try_parse(input),
     Ok(ANSIBuf::new("\u001b[104m", "\u001b[49m")),
   )
 }
@@ -2218,12 +2227,12 @@ test "ANSI upstream reference 163" {
   let input = "\u001b[105m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[105mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[105mx \n y\u001b[0m")
   assert_eq(get_lines(input), [
     "\u001b[105m x \u001b[49m", "\u001b[105m y \u001b[0m",
   ])
   assert_eq(
-    ANSIBuf::try_from(input),
+    ANSIBuf::try_parse(input),
     Ok(ANSIBuf::new("\u001b[105m", "\u001b[49m")),
   )
 }
@@ -2234,12 +2243,12 @@ test "ANSI upstream reference 164" {
   let input = "\u001b[106m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[106mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[106mx \n y\u001b[0m")
   assert_eq(get_lines(input), [
     "\u001b[106m x \u001b[49m", "\u001b[106m y \u001b[0m",
   ])
   assert_eq(
-    ANSIBuf::try_from(input),
+    ANSIBuf::try_parse(input),
     Ok(ANSIBuf::new("\u001b[106m", "\u001b[49m")),
   )
 }
@@ -2250,12 +2259,12 @@ test "ANSI upstream reference 165" {
   let input = "\u001b[107m x \n y \u001b[0m"
   assert_eq(get_line_width(input), 7)
   assert_eq(strip_ansi(input), " x \n y ")
-  assert_eq(trim_ansi(input), "\u001b[107mx \n y\u001b[0m")
+  assert_eq(trim_ansi_whitespace(input), "\u001b[107mx \n y\u001b[0m")
   assert_eq(get_lines(input), [
     "\u001b[107m x \u001b[49m", "\u001b[107m y \u001b[0m",
   ])
   assert_eq(
-    ANSIBuf::try_from(input),
+    ANSIBuf::try_parse(input),
     Ok(ANSIBuf::new("\u001b[107m", "\u001b[49m")),
   )
 }

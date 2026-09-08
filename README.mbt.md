@@ -20,6 +20,8 @@ See [tabled parity status](docs/tabled-parity.md) for the upstream test mapping 
 The examples below use the 0.6 API. For the breaking changes from 0.5.2,
 including migration from `Builder::extend` to `Builder::push_record`, see the
 [migration guide](docs/migration-0.6.md).
+The final names for APIs introduced during 0.6 development are listed in the
+[API naming guide](docs/api-naming-0.6.md).
 
 ## Installation
 
@@ -399,7 +401,10 @@ test {
   )
   |> ignore
   table.duplicate(
-    @tabular.Dup::new(@tabular.Rows::one(1), @tabular.Rows::one(0)),
+    @tabular.Duplicate::new(
+      source=@tabular.Rows::one(0),
+      destination=@tabular.Rows::one(1),
+    ),
   )
   |> ignore
   assert_eq(table.rows, [["a", "c", "e"], ["a", "c", "e"]])
@@ -435,7 +440,7 @@ test {
 Tables default to left alignment. Multiline text is aligned as a block;
 `AlignmentStrategy::PerLine` aligns its lines independently. `TrimStrategy`
 trims displayed whitespace while preserving records and layout dimensions.
-`Charset` changes records to remove control characters or expand tabs.
+`TextCleanup` changes records to remove control characters or expand tabs.
 
 ```mbt check
 ///|
@@ -444,7 +449,7 @@ test {
     (
       @tabular.Alignment::right(),
       @tabular.AlignmentStrategy::PerLine,
-      @tabular.Justification::new('.'),
+      @tabular.AlignmentFill::new('.'),
     ),
   )
   assert_eq(
@@ -455,7 +460,7 @@ test {
 ```
 
 `Color::fg_red()` and other color constructors work as table or cell options.
-`Justification::color` colors only the alignment fill. ANSI sequences embedded
+`AlignmentFill::color` colors only the alignment fill. ANSI sequences embedded
 in records are excluded from layout width. Wrapping preserves color styles and
 OSC8 hyperlinks; truncation closes styles before adding a suffix. A wide character
 that cannot fit is replaced by `�`; use `Width::wrap_with` for a custom placeholder.
@@ -465,9 +470,9 @@ sequences.
 ```mbt check
 ///|
 test {
-  let red = @tabular.Color::parse("\u001b[31mtext\u001b[39m")
+  let red = @tabular.Color::parse_or_abort("\u001b[31mtext\u001b[39m")
   assert_eq(red.colorize("hello"), "\u001b[31mhello\u001b[39m")
-  assert_true(@tabular.Color::try_from("") is Err(_))
+  assert_true(@tabular.Color::try_parse("") is Err(_))
   let table = @tabular.Table::from_rows([[red.colorize("abcdef")]]).modify(
     (0, 0),
     @tabular.Width::wrap(3),
@@ -486,6 +491,10 @@ test {
 change cell text. Applied with `with_`, they fit the total table width, including
 padding, borders, and margins. `keep_words` preserves words when they fit;
 `priority` chooses which columns to resize.
+Use `Priority::round_robin()`, `Priority::first()`, or `Priority::last()` for
+index-based selection. `Priority::min(tie_break=TieBreak::First)` and
+`Priority::max(tie_break=TieBreak::Last)` explicitly select how equal sizes are
+resolved; first/last refer to indexes and work for both columns and rows.
 
 ```mbt check
 ///|
@@ -498,8 +507,8 @@ test {
 }
 ```
 
-Truncation supports `multiline`, `suffix_limit`, and `suffix_try_color`.
-`Width::justify` sets every cell's text width. `Width::list` directly sets column
+Truncation supports `multiline`, `suffix_limit`, and `inherit_suffix_style`.
+`Width::uniform` sets every cell's text width. `Width::list` directly sets column
 dimensions, including padding; it assumes the content already fits.
 Extra list entries remain cached, while table-level wrapping, truncation, and
 growth only measure and resize the actual columns.
@@ -508,8 +517,8 @@ option's hint. Rendering does not fill the public cache.
 
 `Table::from_rows` keeps the input arrays by reference. If you edit `table.rows`
 or `table.config` directly, clear cached dimensions with
-`table.get_dimension_mut().clear()` before running size-dependent operations.
-`get_dimension()` returns an independent copy; `get_dimension_mut()` exposes
+`table.dimension_cache().clear()` before running size-dependent operations.
+`dimension_snapshot()` returns an independent copy; `dimension_cache()` exposes
 the live cache.
 
 The earlier `set_width` and `Setting::width` methods retain their render-time
@@ -541,16 +550,23 @@ test {
 
 `Padding::fill` chooses each cell's fill characters. `PaddingColor` and
 `MarginColor` accept `Color`, `ANSIBuf`, or `ANSIStr` values. Use
-`Padding::expand(true)` or `Padding::expand(false)` to fill unused horizontal
+`PaddingExpand::Horizontal` or `PaddingExpand::Vertical` to fill unused horizontal
 or vertical cell space according to its alignment.
 
 ```mbt check
 ///|
 test {
   let table = @tabular.Table::from_rows([["x"]])
-    .with_(@tabular.Padding::new(1, 1, 1, 1).fill('>', '<', '^', 'v'))
+    .with_(
+      @tabular.Padding::new(1, 1, 1, 1).fill(
+        left='>',
+        right='<',
+        top='^',
+        bottom='v',
+      ),
+    )
     .with_(@tabular.PaddingColor::filled(@tabular.Color::bg_blue()))
-    .with_(@tabular.Margin::new(1, 1, 0, 0))
+    .with_(@tabular.Margin::new(left=1, right=1, top=0, bottom=0))
   assert_eq(
     @papergrid.strip_ansi(table.to_string()),
     " +---+ \n |^^^| \n |>x<| \n |vvv| \n +---+ ",

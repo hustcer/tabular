@@ -9,21 +9,21 @@ pub(all) enum SuffixLimit {
 pub struct Truncate[M, P] {
   width : M
   suffix : String
-  limit : SuffixLimit
-  lines : Bool
-  color : Bool
+  suffix_limit : SuffixLimit
+  multiline : Bool
+  inherit_suffix_style : Bool
   priority : P
 }
 
 ///|
-pub fn[M] Truncate::new(width : M) -> Truncate[M, PriorityNone] {
+pub fn[M] Truncate::new(width : M) -> Truncate[M, PriorityRoundRobin] {
   {
     width,
     suffix: "",
-    limit: Cut,
-    lines: false,
-    color: false,
-    priority: PriorityNone::new(),
+    suffix_limit: Cut,
+    multiline: false,
+    inherit_suffix_style: false,
+    priority: PriorityRoundRobin::new(),
   }
 }
 
@@ -40,23 +40,24 @@ pub fn[M, P] Truncate::suffix_limit(
   self : Truncate[M, P],
   limit : SuffixLimit,
 ) -> Truncate[M, P] {
-  { ..self, limit, }
+  { ..self, suffix_limit: limit, }
 }
 
 ///|
-pub fn[M, P] Truncate::suffix_try_color(
+/// Let the suffix inherit the last text block's ANSI style when enabled.
+pub fn[M, P] Truncate::inherit_suffix_style(
   self : Truncate[M, P],
-  color : Bool,
+  enabled : Bool,
 ) -> Truncate[M, P] {
-  { ..self, color, }
+  { ..self, inherit_suffix_style: enabled, }
 }
 
 ///|
 pub fn[M, P] Truncate::multiline(
   self : Truncate[M, P],
-  on : Bool,
+  enabled : Bool,
 ) -> Truncate[M, P] {
-  { ..self, lines: on, }
+  { ..self, multiline: enabled, }
 }
 
 ///|
@@ -67,9 +68,9 @@ pub fn[M, P, Q] Truncate::priority(
   {
     width: self.width,
     suffix: self.suffix,
-    limit: self.limit,
-    lines: self.lines,
-    color: self.color,
+    suffix_limit: self.suffix_limit,
+    multiline: self.multiline,
+    inherit_suffix_style: self.inherit_suffix_style,
     priority,
   }
 }
@@ -91,8 +92,12 @@ pub impl[M : Measurement, P] CellOption for Truncate[M, P] with fn change(
   entity,
 ) {
   let available = Measurement::measure(self.width, table, Attribute::Width)
-  let (suffix, width) = truncation_suffix(self.suffix, self.limit, available)
-  for position in entity.iter(table.count_rows(), table.count_columns()) {
+  let (suffix, width) = truncation_suffix(
+    self.suffix,
+    self.suffix_limit,
+    available,
+  )
+  for position in entity.iter(table.count_rows(), table.count_cols()) {
     let (row, col) = position
     if col >= table.rows[row].length() {
       continue
@@ -104,15 +109,15 @@ pub impl[M : Measurement, P] CellOption for Truncate[M, P] with fn change(
         width,
         available,
         suffix,
-        self.color,
-        self.lines,
+        self.inherit_suffix_style,
+        self.multiline,
       )
     }
   }
 }
 
 ///|
-pub impl[M : Measurement, P : Peaker] TableOption for Truncate[M, P] with fn change(
+pub impl[M : Measurement, P : ResizeSelector] TableOption for Truncate[M, P] with fn change(
   self,
   table,
 ) {
@@ -134,14 +139,18 @@ pub impl[M : Measurement, P : Peaker] TableOption for Truncate[M, P] with fn cha
     if available >= text_width {
       continue
     }
-    let (suffix, width) = truncation_suffix(self.suffix, self.limit, available)
+    let (suffix, width) = truncation_suffix(
+      self.suffix,
+      self.suffix_limit,
+      available,
+    )
     table.rows[row][col] = truncate_content(
       text,
       width,
       text_width,
       suffix,
-      self.color,
-      self.lines,
+      self.inherit_suffix_style,
+      self.multiline,
     )
   }
   table.set_column_widths(widths)
@@ -149,7 +158,7 @@ pub impl[M : Measurement, P : Peaker] TableOption for Truncate[M, P] with fn cha
 }
 
 ///|
-pub impl[M : Measurement, P : Peaker] TableOption for Truncate[M, P] with fn hint_change(
+pub impl[M : Measurement, P : ResizeSelector] TableOption for Truncate[M, P] with fn hint_change(
   _self,
 ) {
   None

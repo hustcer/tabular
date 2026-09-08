@@ -11,7 +11,7 @@ pub fn PeekableGridDimension::default() -> PeekableGridDimension {
 }
 
 ///|
-pub fn PeekableGridDimension::width(
+pub fn PeekableGridDimension::measure_widths(
   records : IterRecords,
   config : SpannedConfig,
 ) -> Array[Int] {
@@ -19,7 +19,7 @@ pub fn PeekableGridDimension::width(
 }
 
 ///|
-pub fn PeekableGridDimension::height(
+pub fn PeekableGridDimension::measure_heights(
   records : IterRecords,
   config : SpannedConfig,
 ) -> Array[Int] {
@@ -27,13 +27,13 @@ pub fn PeekableGridDimension::height(
 }
 
 ///|
-pub fn PeekableGridDimension::dimension(
+pub fn PeekableGridDimension::measure(
   records : IterRecords,
   config : SpannedConfig,
 ) -> (Array[Int], Array[Int]) {
   (
-    PeekableGridDimension::width(records, config),
-    PeekableGridDimension::height(records, config),
+    PeekableGridDimension::measure_widths(records, config),
+    PeekableGridDimension::measure_heights(records, config),
   )
 }
 
@@ -43,13 +43,13 @@ pub fn PeekableGridDimension::estimate(
   records : IterRecords,
   config : SpannedConfig,
 ) -> Unit {
-  let (widths, heights) = PeekableGridDimension::dimension(records, config)
+  let (widths, heights) = PeekableGridDimension::measure(records, config)
   self.widths = widths
   self.heights = heights
 }
 
 ///|
-pub fn PeekableGridDimension::get_values(
+pub fn PeekableGridDimension::dimensions(
   self : PeekableGridDimension,
 ) -> (Array[Int], Array[Int]) {
   (self.widths.copy(), self.heights.copy())
@@ -58,9 +58,9 @@ pub fn PeekableGridDimension::get_values(
 ///|
 pub fn PeekableGridDimension::get_width(
   self : PeekableGridDimension,
-  column : Int,
+  col : Int,
 ) -> Int {
-  self.widths[column]
+  self.widths[col]
 }
 
 ///|

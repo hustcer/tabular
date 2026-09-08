@@ -6,7 +6,7 @@ test "column growth through input aliases remeasures a short width cache" {
   let fresh = @tabular.Table::from_rows(rows)
   assert_eq(table.to_string(), fresh.to_string())
   assert_eq(table.total_width(), 10)
-  assert_eq(table.get_dimension().get_widths(), Some([10]))
+  assert_eq(table.dimension_snapshot().get_widths(), Some([10]))
 }
 
 ///|
@@ -18,13 +18,13 @@ test "row growth remeasures a short height cache without mutating it on reads" {
   let fresh = @tabular.Table::from_rows(table.rows)
   assert_eq(table.to_string(), fresh.to_string())
   assert_eq(table.total_height(), 6)
-  assert_eq(table.get_dimension().get_heights(), Some([4]))
+  assert_eq(table.dimension_snapshot().get_heights(), Some([4]))
 }
 
 ///|
 test "explicitly incomplete dimension arrays are estimated before use" {
   let table = @tabular.Table::from_rows([["abc", "d"], ["e", "f"]])
-  let dims = table.get_dimension_mut()
+  let dims = table.dimension_cache()
   dims.set_widths([])
   dims.set_heights([5])
   let fresh = @tabular.Table::from_rows(table.rows)

@@ -9,8 +9,8 @@ pub struct TableHeightIncrease[M, P] {
 ///|
 pub fn[M] TableHeightIncrease::new(
   height : M,
-) -> TableHeightIncrease[M, PriorityNone] {
-  { height, priority: PriorityNone::new(), }
+) -> TableHeightIncrease[M, PriorityRoundRobin] {
+  { height, priority: PriorityRoundRobin::new(), }
 }
 
 ///|
@@ -22,10 +22,10 @@ pub fn[M, P, Q] TableHeightIncrease::priority(
 }
 
 ///|
-pub impl[M : Measurement, P : Peaker] TableOption for TableHeightIncrease[M, P] with fn change(
-  self,
-  table,
-) {
+pub impl[M : Measurement, P : ResizeSelector] TableOption for TableHeightIncrease[
+  M,
+  P,
+] with fn change(self, table) {
   if table.is_empty() {
     return
   }
@@ -35,16 +35,19 @@ pub impl[M : Measurement, P : Peaker] TableOption for TableHeightIncrease[M, P] 
     return
   }
   for _ in total..<target {
-    guard Peaker::peak(self.priority, [], heights) is Some(row) else { break }
+    guard ResizeSelector::select(self.priority, [], heights) is Some(row) else {
+      break
+    }
     heights[row] += 1
   }
   table.dimension.set_heights(heights)
 }
 
 ///|
-pub impl[M : Measurement, P : Peaker] TableOption for TableHeightIncrease[M, P] with fn hint_change(
-  _self,
-) {
+pub impl[M : Measurement, P : ResizeSelector] TableOption for TableHeightIncrease[
+  M,
+  P,
+] with fn hint_change(_self) {
   None
 }
 
@@ -57,8 +60,8 @@ pub struct TableHeightLimit[M, P] {
 ///|
 pub fn[M] TableHeightLimit::new(
   height : M,
-) -> TableHeightLimit[M, PriorityNone] {
-  { height, priority: PriorityNone::new(), }
+) -> TableHeightLimit[M, PriorityRoundRobin] {
+  { height, priority: PriorityRoundRobin::new(), }
 }
 
 ///|
@@ -70,10 +73,10 @@ pub fn[M, P, Q] TableHeightLimit::priority(
 }
 
 ///|
-pub impl[M : Measurement, P : Peaker] TableOption for TableHeightLimit[M, P] with fn change(
-  self,
-  table,
-) {
+pub impl[M : Measurement, P : ResizeSelector] TableOption for TableHeightLimit[
+  M,
+  P,
+] with fn change(self, table) {
   if table.is_empty() {
     return
   }
@@ -83,7 +86,9 @@ pub impl[M : Measurement, P : Peaker] TableOption for TableHeightLimit[M, P] wit
     return
   }
   for _ in target..<total {
-    guard Peaker::peak(self.priority, [], heights) is Some(row) else { break }
+    guard ResizeSelector::select(self.priority, [], heights) is Some(row) else {
+      break
+    }
     heights[row] -= 1
   }
   for row, height in heights {
@@ -98,9 +103,10 @@ pub impl[M : Measurement, P : Peaker] TableOption for TableHeightLimit[M, P] wit
 }
 
 ///|
-pub impl[M : Measurement, P : Peaker] TableOption for TableHeightLimit[M, P] with fn hint_change(
-  _self,
-) {
+pub impl[M : Measurement, P : ResizeSelector] TableOption for TableHeightLimit[
+  M,
+  P,
+] with fn hint_change(_self) {
   None
 }
 
@@ -108,7 +114,7 @@ pub impl[M : Measurement, P : Peaker] TableOption for TableHeightLimit[M, P] wit
 // Upstream height operations measure records afresh, independently of cached
 // dimensions, and include all horizontal borders and both vertical margins.
 fn height_table_measure(table : Table) -> (Int, Array[Int]) {
-  let heights = @papergrid.IterGridDimension::height(
+  let heights = @papergrid.IterGridDimension::measure_heights(
     @papergrid.IterRecords::new(table.rows),
     table.config,
   )
@@ -121,22 +127,22 @@ fn height_table_measure(table : Table) -> (Int, Array[Int]) {
 
 ///|
 pub struct HeightList {
-  list : Array[Int]
+  heights : Array[Int]
 } derive(Debug)
 
 ///|
-pub fn HeightList::new(list : Array[Int]) -> HeightList {
-  { list: list.copy(), }
+pub fn HeightList::new(heights : Array[Int]) -> HeightList {
+  { heights: heights.copy(), }
 }
 
 ///|
-pub fn HeightList::from_array(list : Array[Int]) -> HeightList {
-  HeightList::new(list)
+pub fn HeightList::from_array(heights : Array[Int]) -> HeightList {
+  HeightList::new(heights)
 }
 
 ///|
-pub fn HeightList::from_iter(list : Iter[Int]) -> HeightList {
-  HeightList::new(list.to_array())
+pub fn HeightList::from_iter(heights : Iter[Int]) -> HeightList {
+  HeightList::new(heights.to_array())
 }
 
 ///|
@@ -148,14 +154,14 @@ pub fn HeightList::from_iter(list : Iter[Int]) -> HeightList {
 ///   assert_eq(table.to_string(), "+-----+\n+-----+\n| two |\n|     |\n+-----+")
 /// }
 /// ```
-pub fn Height::list(list : Array[Int]) -> HeightList {
-  HeightList::new(list)
+pub fn Height::list(heights : Array[Int]) -> HeightList {
+  HeightList::new(heights)
 }
 
 ///|
 pub impl TableOption for HeightList with fn change(self, table) {
-  if self.list.length() >= table.count_rows() {
-    table.dimension.set_heights(self.list)
+  if self.heights.length() >= table.count_rows() {
+    table.dimension.set_heights(self.heights)
   }
 }
 

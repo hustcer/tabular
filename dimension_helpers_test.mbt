@@ -1,12 +1,12 @@
 ///|
-fn[P : @tabular.Peaker] priority_trace(
+fn[P : @tabular.ResizeSelector] priority_trace(
   priority : P,
   minimums : Array[Int],
   initial : Array[Int],
 ) -> Array[Int] {
   let values = initial.copy()
   Array::makei(30, _ => {
-    match @tabular.Peaker::peak(priority, minimums, values) {
+    match @tabular.ResizeSelector::select(priority, minimums, values) {
       Some(index) => {
         if values[index] > minimums.get(index).unwrap_or(0) {
           values[index] -= 1

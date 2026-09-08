@@ -7,7 +7,14 @@ test "upstream margin margin_with_table_based_on_grid_borders" {
     .apply(@tabular.Style::extended())
     .with_(@tabular.Highlight::outline_cell(@tabular.Cell::new(0, 0), '+'))
     .with_(@tabular.Highlight::outline_cell(@tabular.Cell::new(1, 1), '*'))
-    .with_(@tabular.Margin::new(1, 2, 1, 2).fill('>', '<', 'V', '^'))
+    .with_(
+      @tabular.Margin::new(left=1, right=2, top=1, bottom=2).fill(
+        left='>',
+        right='<',
+        top='V',
+        bottom='^',
+      ),
+    )
     .to_string()
   assert_eq(
     actual,
@@ -41,10 +48,17 @@ test "upstream margin margin_without_table_based_on_grid_borders" {
     .apply(@tabular.Style::psql())
     .with_(
       @tabular.Modify::new(@tabular.Cell::new(3, 2)).with_(
-        @tabular.Span::column(2),
+        @tabular.Span::col(2),
       ),
     )
-    .with_(@tabular.Margin::new(1, 1, 1, 1).fill('>', '<', 'V', '^'))
+    .with_(
+      @tabular.Margin::new(left=1, right=1, top=1, bottom=1).fill(
+        left='>',
+        right='<',
+        top='V',
+        bottom='^',
+      ),
+    )
     .to_string()
   assert_eq(
     actual,
@@ -78,10 +92,17 @@ test "upstream margin table_with_empty_margin" {
     .apply(@tabular.Style::psql())
     .with_(
       @tabular.Modify::new(@tabular.Cell::new(3, 2)).with_(
-        @tabular.Span::column(2),
+        @tabular.Span::col(2),
       ),
     )
-    .with_(@tabular.Margin::new(0, 0, 0, 0).fill('>', '<', 'V', '^'))
+    .with_(
+      @tabular.Margin::new(left=0, right=0, top=0, bottom=0).fill(
+        left='>',
+        right='<',
+        top='V',
+        bottom='^',
+      ),
+    )
     .to_string()
   assert_eq(
     actual,
@@ -102,10 +123,17 @@ test "upstream margin table_with_margin_and_min_width" {
     .apply(@tabular.Style::psql())
     .with_(
       @tabular.Modify::new(@tabular.Cell::new(1, 1)).with_(
-        @tabular.Span::column(2),
+        @tabular.Span::col(2),
       ),
     )
-    .with_(@tabular.Margin::new(1, 1, 1, 1).fill('>', '<', 'V', '^'))
+    .with_(
+      @tabular.Margin::new(left=1, right=1, top=1, bottom=1).fill(
+        left='>',
+        right='<',
+        top='V',
+        bottom='^',
+      ),
+    )
     .with_(@tabular.Width::truncate(20))
     .to_string()
 
@@ -131,10 +159,17 @@ test "upstream margin table_with_margin_and_max_width" {
     .apply(@tabular.Style::psql())
     .with_(
       @tabular.Modify::new(@tabular.Cell::new(1, 1)).with_(
-        @tabular.Span::column(2),
+        @tabular.Span::col(2),
       ),
     )
-    .with_(@tabular.Margin::new(1, 1, 1, 1).fill('>', '<', 'V', '^'))
+    .with_(
+      @tabular.Margin::new(left=1, right=1, top=1, bottom=1).fill(
+        left='>',
+        right='<',
+        top='V',
+        bottom='^',
+      ),
+    )
     .with_(@tabular.Width::increase(50))
     .to_string()
 
@@ -160,7 +195,7 @@ test "upstream margin table_0_spanned_with_width" {
   let table = upstream_matrix(0, 0)
     .with_(
       @tabular.Modify::new(@tabular.Cell::new(0, 0)).with_(
-        @tabular.Span::column(0),
+        @tabular.Span::col(0),
       ),
     )
     .with_(@tabular.Width::increase(50))
@@ -171,7 +206,7 @@ test "upstream margin table_0_spanned_with_width" {
   let table = upstream_matrix(0, 0)
     .with_(
       @tabular.Modify::new(@tabular.Cell::new(0, 0)).with_(
-        @tabular.Span::column(0),
+        @tabular.Span::col(0),
       ),
     )
     .with_(@tabular.Width::truncate(50))
@@ -185,13 +220,20 @@ test "upstream margin table_0_spanned_with_width" {
 test "upstream margin margin_color_test_not_colored_feature" {
   let table = upstream_matrix(3, 3)
     .apply(@tabular.Style::psql())
-    .with_(@tabular.Margin::new(2, 2, 2, 2).fill('>', '<', 'V', '^'))
+    .with_(
+      @tabular.Margin::new(left=2, right=2, top=2, bottom=2).fill(
+        left='>',
+        right='<',
+        top='V',
+        bottom='^',
+      ),
+    )
     .with_(
       @tabular.MarginColor::new(
-        @tabular.Color::bg_green(),
-        @tabular.Color::bg_yellow(),
-        @tabular.Color::bg_red(),
-        @tabular.Color::bg_blue(),
+        left=@tabular.Color::bg_green(),
+        right=@tabular.Color::bg_yellow(),
+        top=@tabular.Color::bg_red(),
+        bottom=@tabular.Color::bg_blue(),
       ),
     )
     .to_string()
@@ -206,15 +248,22 @@ test "upstream margin margin_color_test_not_colored_feature" {
 test "upstream margin margin_color_test" {
   let table = upstream_matrix(3, 3)
     .apply(@tabular.Style::psql())
-    .with_(@tabular.Margin::new(2, 2, 2, 2).fill('>', '<', 'V', '^'))
+    .with_(
+      @tabular.Margin::new(left=2, right=2, top=2, bottom=2).fill(
+        left='>',
+        right='<',
+        top='V',
+        bottom='^',
+      ),
+    )
     .with_(
       @tabular.MarginColor::new(
-        @tabular.Color::fg_red() | @tabular.Color::bold(),
-        @tabular.Color::fg_green(),
-        @tabular.Color::fg_red() |
-        @tabular.Color::bg_blue() |
-        @tabular.Color::bold(),
-        @tabular.Color::fg_blue() | @tabular.Color::bg_yellow(),
+        left=@tabular.Color::fg_red() | @tabular.Color::bold(),
+        right=@tabular.Color::fg_green(),
+        top=@tabular.Color::fg_red() |
+          @tabular.Color::bg_blue() |
+          @tabular.Color::bold(),
+        bottom=@tabular.Color::fg_blue() | @tabular.Color::bg_yellow(),
       ),
     )
     .to_string()

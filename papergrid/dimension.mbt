@@ -89,10 +89,10 @@ pub fn IterGridDimension::widths(self : IterGridDimension) -> Array[Int] {
 ///   let config = SpannedConfig::default()
 ///   config.set_width_mode(WidthMode::wrap(2))
 ///   config.set_height_mode(HeightMode::increase(5))
-///   assert_eq(IterGridDimension::rendered_dimension(records, config), ([2], [5]))
+///   assert_eq(IterGridDimension::measure_rendered(records, config), ([2], [5]))
 /// }
 /// ```
-pub fn IterGridDimension::rendered_dimension(
+pub fn IterGridDimension::measure_rendered(
   records : IterRecords,
   config : SpannedConfig,
 ) -> (Array[Int], Array[Int]) {
@@ -110,7 +110,7 @@ pub fn IterGridDimension::set_widths(
 }
 
 ///|
-pub fn IterGridDimension::width(
+pub fn IterGridDimension::measure_widths(
   records : IterRecords,
   config : SpannedConfig,
 ) -> Array[Int] {
@@ -118,7 +118,7 @@ pub fn IterGridDimension::width(
 }
 
 ///|
-pub fn IterGridDimension::height(
+pub fn IterGridDimension::measure_heights(
   records : IterRecords,
   config : SpannedConfig,
 ) -> Array[Int] {
@@ -126,22 +126,22 @@ pub fn IterGridDimension::height(
 }
 
 ///|
-pub fn IterGridDimension::width_total(
+pub fn IterGridDimension::total_width(
   records : IterRecords,
   config : SpannedConfig,
 ) -> Int {
-  IterGridDimension::width(records, config).fold(init=0, (sum, width) => {
+  IterGridDimension::measure_widths(records, config).fold(init=0, (sum, width) => {
     sum + width
   }) +
   config.count_vertical(records.count_cols())
 }
 
 ///|
-pub fn IterGridDimension::height_total(
+pub fn IterGridDimension::total_height(
   records : IterRecords,
   config : SpannedConfig,
 ) -> Int {
-  IterGridDimension::height(records, config).fold(init=0, (sum, height) => {
+  IterGridDimension::measure_heights(records, config).fold(init=0, (sum, height) => {
     sum + height
   }) +
   config.count_horizontal(records.count_rows())

@@ -79,7 +79,7 @@ pub impl TableOption for Concat with fn change(self, table) {
 }
 
 ///|
-pub impl TableOption for Dup with fn change(self, table) {
+pub impl TableOption for Duplicate with fn change(self, table) {
   table.option_depth += 1
   table.duplicate(self) |> ignore
   table.option_depth -= 1

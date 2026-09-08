@@ -6,13 +6,17 @@ test "height constructors preserve text and table option distinctions" {
   table.modify((1, 0), @tabular.CellHeightLimit::new(1)) |> ignore
   assert_eq(table.rows, [["a\n\n"], ["b"]])
   table.with_(
-    @tabular.TableHeightIncrease::new(12).priority(@tabular.PriorityMax::left()),
+    @tabular.TableHeightIncrease::new(12).priority(
+      @tabular.PriorityMax::prefer_first(),
+    ),
   )
   |> ignore
   assert_eq(table.total_height(), 12)
   assert_eq(table.rows, [["a\n\n"], ["b"]])
   table.with_(
-    @tabular.TableHeightLimit::new(4).priority(@tabular.PriorityMax::left()),
+    @tabular.TableHeightLimit::new(4).priority(
+      @tabular.PriorityMax::prefer_first(),
+    ),
   )
   |> ignore
   assert_eq(table.total_height(), 4)
@@ -25,7 +29,7 @@ test "height list constructors copy inputs and preserve excess cache values" {
   let option = @tabular.HeightList::new(heights)
   heights[0] = 20
   let table = @tabular.Table::from_rows([["a"], ["b"]]).with_(option)
-  assert_eq(table.get_dimension().get_heights(), Some([3, 2, 99]))
+  assert_eq(table.dimension_snapshot().get_heights(), Some([3, 2, 99]))
   assert_eq(table.total_height(), 8)
   let expected = table.to_string()
   table.with_(@tabular.HeightList::from_array([3, 2])) |> ignore
@@ -52,7 +56,7 @@ test "height options handle empty and invalid entities without records" {
     let table = @tabular.Table::from_rows(rows)
     table.with_(@tabular.Height::increase(20)).with_(@tabular.Height::limit(0))
     |> ignore
-    assert_true(table.get_dimension().is_empty())
+    assert_true(table.dimension_snapshot().is_empty())
     table.modify((20, 20), @tabular.Height::increase(5)) |> ignore
     table.modify((0, 0), @tabular.Height::limit(-1)) |> ignore
     assert_eq(table.rows, rows)
@@ -66,6 +70,6 @@ test "cell height mutations invalidate both cached axes" {
     .with_(@tabular.Width::list([20]))
     .with_(@tabular.Height::list([8]))
   table.modify((0, 0), @tabular.Height::limit(1)) |> ignore
-  assert_true(table.get_dimension().is_empty())
+  assert_true(table.dimension_snapshot().is_empty())
   assert_eq(table.rows, [["long value"]])
 }

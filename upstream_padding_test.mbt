@@ -36,7 +36,12 @@ test "upstream padding padding_with_set_characters" {
     .apply(@tabular.Style::psql())
     .with_(
       @tabular.Modify::new(@tabular.Segment::all()).with_(
-        @tabular.Padding::new(1, 2, 1, 1).fill('>', '<', 'V', '^'),
+        @tabular.Padding::new(1, 2, 1, 1).fill(
+          left='>',
+          right='<',
+          top='V',
+          bottom='^',
+        ),
       ),
     )
     .to_string()
@@ -67,7 +72,7 @@ test "upstream padding padding_with_set_characters_and_zero_ident" {
     .apply(@tabular.Style::psql())
     .with_(
       @tabular.Modify::new(@tabular.Segment::all()).with_(
-        @tabular.Padding::zero().fill('>', '<', '^', 'V'),
+        @tabular.Padding::zero().fill(left='>', right='<', top='^', bottom='V'),
       ),
     )
     .to_string()
@@ -142,10 +147,10 @@ test "upstream padding padding_color" {
     .modify(
       @tabular.Rows::new(1, -1),
       @tabular.PaddingColor::new(
-        @tabular.Color::bg_yellow(),
-        @tabular.Color::bg_blue(),
-        @tabular.Color::bg_red(),
-        @tabular.Color::bg_green(),
+        left=@tabular.Color::bg_yellow(),
+        right=@tabular.Color::bg_blue(),
+        top=@tabular.Color::bg_red(),
+        bottom=@tabular.Color::bg_green(),
       ),
     )
     .to_string()

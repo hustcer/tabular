@@ -7,7 +7,14 @@ test "upstream grid formatting variant 0" {
   let cfg = upstream_formatting_config()
   cfg.set_align(HAlign::left())
   cfg.set_valign(VAlign::top())
-  cfg.set_formatting(Entity::Global, Formatting::new(false, false, true))
+  cfg.set_formatting(
+    Entity::Global,
+    Formatting::new(
+      trim_horizontal=false,
+      trim_vertical=false,
+      align_lines=true,
+    ),
+  )
   assert_eq(
     upstream_formatting_render(
       [
@@ -49,7 +56,10 @@ test "upstream grid formatting variant 1" {
   let cfg = upstream_formatting_config()
   cfg.set_align(HAlign::left())
   cfg.set_valign(VAlign::top())
-  cfg.set_formatting(Entity::Global, Formatting::new(true, false, true))
+  cfg.set_formatting(
+    Entity::Global,
+    Formatting::new(trim_horizontal=true, trim_vertical=false, align_lines=true),
+  )
   assert_eq(
     upstream_formatting_render(
       [
@@ -91,7 +101,10 @@ test "upstream grid formatting variant 2" {
   let cfg = upstream_formatting_config()
   cfg.set_align(HAlign::left())
   cfg.set_valign(VAlign::top())
-  cfg.set_formatting(Entity::Global, Formatting::new(true, true, true))
+  cfg.set_formatting(
+    Entity::Global,
+    Formatting::new(trim_horizontal=true, trim_vertical=true, align_lines=true),
+  )
   assert_eq(
     upstream_formatting_render(
       [
@@ -133,7 +146,14 @@ test "upstream grid formatting variant 3" {
   let cfg = upstream_formatting_config()
   cfg.set_align(HAlign::center())
   cfg.set_valign(VAlign::top())
-  cfg.set_formatting(Entity::Global, Formatting::new(false, false, true))
+  cfg.set_formatting(
+    Entity::Global,
+    Formatting::new(
+      trim_horizontal=false,
+      trim_vertical=false,
+      align_lines=true,
+    ),
+  )
   assert_eq(
     upstream_formatting_render(
       [
@@ -175,7 +195,10 @@ test "upstream grid formatting variant 4" {
   let cfg = upstream_formatting_config()
   cfg.set_align(HAlign::center())
   cfg.set_valign(VAlign::top())
-  cfg.set_formatting(Entity::Global, Formatting::new(true, false, true))
+  cfg.set_formatting(
+    Entity::Global,
+    Formatting::new(trim_horizontal=true, trim_vertical=false, align_lines=true),
+  )
   assert_eq(
     upstream_formatting_render(
       [
@@ -217,7 +240,10 @@ test "upstream grid formatting variant 5" {
   let cfg = upstream_formatting_config()
   cfg.set_align(HAlign::center())
   cfg.set_valign(VAlign::top())
-  cfg.set_formatting(Entity::Global, Formatting::new(true, true, true))
+  cfg.set_formatting(
+    Entity::Global,
+    Formatting::new(trim_horizontal=true, trim_vertical=true, align_lines=true),
+  )
   assert_eq(
     upstream_formatting_render(
       [
@@ -259,7 +285,14 @@ test "upstream grid formatting variant 6" {
   let cfg = upstream_formatting_config()
   cfg.set_align(HAlign::right())
   cfg.set_valign(VAlign::top())
-  cfg.set_formatting(Entity::Global, Formatting::new(false, false, true))
+  cfg.set_formatting(
+    Entity::Global,
+    Formatting::new(
+      trim_horizontal=false,
+      trim_vertical=false,
+      align_lines=true,
+    ),
+  )
   assert_eq(
     upstream_formatting_render(
       [
@@ -301,7 +334,10 @@ test "upstream grid formatting variant 7" {
   let cfg = upstream_formatting_config()
   cfg.set_align(HAlign::right())
   cfg.set_valign(VAlign::top())
-  cfg.set_formatting(Entity::Global, Formatting::new(true, false, true))
+  cfg.set_formatting(
+    Entity::Global,
+    Formatting::new(trim_horizontal=true, trim_vertical=false, align_lines=true),
+  )
   assert_eq(
     upstream_formatting_render(
       [
@@ -343,7 +379,10 @@ test "upstream grid formatting variant 8" {
   let cfg = upstream_formatting_config()
   cfg.set_align(HAlign::right())
   cfg.set_valign(VAlign::top())
-  cfg.set_formatting(Entity::Global, Formatting::new(true, true, true))
+  cfg.set_formatting(
+    Entity::Global,
+    Formatting::new(trim_horizontal=true, trim_vertical=true, align_lines=true),
+  )
   assert_eq(
     upstream_formatting_render(
       [
@@ -385,7 +424,14 @@ test "upstream grid formatting variant 9" {
   let cfg = upstream_formatting_config()
   cfg.set_align(HAlign::left())
   cfg.set_valign(VAlign::center())
-  cfg.set_formatting(Entity::Global, Formatting::new(false, false, true))
+  cfg.set_formatting(
+    Entity::Global,
+    Formatting::new(
+      trim_horizontal=false,
+      trim_vertical=false,
+      align_lines=true,
+    ),
+  )
   assert_eq(
     upstream_formatting_render(
       [
@@ -427,7 +473,10 @@ test "upstream grid formatting variant 10" {
   let cfg = upstream_formatting_config()
   cfg.set_align(HAlign::left())
   cfg.set_valign(VAlign::center())
-  cfg.set_formatting(Entity::Global, Formatting::new(true, false, true))
+  cfg.set_formatting(
+    Entity::Global,
+    Formatting::new(trim_horizontal=true, trim_vertical=false, align_lines=true),
+  )
   assert_eq(
     upstream_formatting_render(
       [
@@ -469,7 +518,10 @@ test "upstream grid formatting variant 11" {
   let cfg = upstream_formatting_config()
   cfg.set_align(HAlign::left())
   cfg.set_valign(VAlign::center())
-  cfg.set_formatting(Entity::Global, Formatting::new(true, true, true))
+  cfg.set_formatting(
+    Entity::Global,
+    Formatting::new(trim_horizontal=true, trim_vertical=true, align_lines=true),
+  )
   assert_eq(
     upstream_formatting_render(
       [
@@ -511,7 +563,14 @@ test "upstream grid formatting variant 12" {
   let cfg = upstream_formatting_config()
   cfg.set_align(HAlign::center())
   cfg.set_valign(VAlign::center())
-  cfg.set_formatting(Entity::Global, Formatting::new(false, false, true))
+  cfg.set_formatting(
+    Entity::Global,
+    Formatting::new(
+      trim_horizontal=false,
+      trim_vertical=false,
+      align_lines=true,
+    ),
+  )
   assert_eq(
     upstream_formatting_render(
       [
@@ -553,7 +612,10 @@ test "upstream grid formatting variant 13" {
   let cfg = upstream_formatting_config()
   cfg.set_align(HAlign::center())
   cfg.set_valign(VAlign::center())
-  cfg.set_formatting(Entity::Global, Formatting::new(true, false, true))
+  cfg.set_formatting(
+    Entity::Global,
+    Formatting::new(trim_horizontal=true, trim_vertical=false, align_lines=true),
+  )
   assert_eq(
     upstream_formatting_render(
       [
@@ -595,7 +657,10 @@ test "upstream grid formatting variant 14" {
   let cfg = upstream_formatting_config()
   cfg.set_align(HAlign::center())
   cfg.set_valign(VAlign::center())
-  cfg.set_formatting(Entity::Global, Formatting::new(true, true, true))
+  cfg.set_formatting(
+    Entity::Global,
+    Formatting::new(trim_horizontal=true, trim_vertical=true, align_lines=true),
+  )
   assert_eq(
     upstream_formatting_render(
       [
@@ -637,7 +702,14 @@ test "upstream grid formatting variant 15" {
   let cfg = upstream_formatting_config()
   cfg.set_align(HAlign::right())
   cfg.set_valign(VAlign::center())
-  cfg.set_formatting(Entity::Global, Formatting::new(false, false, true))
+  cfg.set_formatting(
+    Entity::Global,
+    Formatting::new(
+      trim_horizontal=false,
+      trim_vertical=false,
+      align_lines=true,
+    ),
+  )
   assert_eq(
     upstream_formatting_render(
       [
@@ -679,7 +751,10 @@ test "upstream grid formatting variant 16" {
   let cfg = upstream_formatting_config()
   cfg.set_align(HAlign::right())
   cfg.set_valign(VAlign::center())
-  cfg.set_formatting(Entity::Global, Formatting::new(true, false, true))
+  cfg.set_formatting(
+    Entity::Global,
+    Formatting::new(trim_horizontal=true, trim_vertical=false, align_lines=true),
+  )
   assert_eq(
     upstream_formatting_render(
       [
@@ -721,7 +796,10 @@ test "upstream grid formatting variant 17" {
   let cfg = upstream_formatting_config()
   cfg.set_align(HAlign::right())
   cfg.set_valign(VAlign::center())
-  cfg.set_formatting(Entity::Global, Formatting::new(true, true, true))
+  cfg.set_formatting(
+    Entity::Global,
+    Formatting::new(trim_horizontal=true, trim_vertical=true, align_lines=true),
+  )
   assert_eq(
     upstream_formatting_render(
       [
@@ -763,7 +841,14 @@ test "upstream grid formatting variant 18" {
   let cfg = upstream_formatting_config()
   cfg.set_align(HAlign::left())
   cfg.set_valign(VAlign::bottom())
-  cfg.set_formatting(Entity::Global, Formatting::new(false, false, true))
+  cfg.set_formatting(
+    Entity::Global,
+    Formatting::new(
+      trim_horizontal=false,
+      trim_vertical=false,
+      align_lines=true,
+    ),
+  )
   assert_eq(
     upstream_formatting_render(
       [
@@ -805,7 +890,10 @@ test "upstream grid formatting variant 19" {
   let cfg = upstream_formatting_config()
   cfg.set_align(HAlign::left())
   cfg.set_valign(VAlign::bottom())
-  cfg.set_formatting(Entity::Global, Formatting::new(true, false, true))
+  cfg.set_formatting(
+    Entity::Global,
+    Formatting::new(trim_horizontal=true, trim_vertical=false, align_lines=true),
+  )
   assert_eq(
     upstream_formatting_render(
       [
@@ -847,7 +935,10 @@ test "upstream grid formatting variant 20" {
   let cfg = upstream_formatting_config()
   cfg.set_align(HAlign::left())
   cfg.set_valign(VAlign::bottom())
-  cfg.set_formatting(Entity::Global, Formatting::new(true, true, true))
+  cfg.set_formatting(
+    Entity::Global,
+    Formatting::new(trim_horizontal=true, trim_vertical=true, align_lines=true),
+  )
   assert_eq(
     upstream_formatting_render(
       [
@@ -889,7 +980,14 @@ test "upstream grid formatting variant 21" {
   let cfg = upstream_formatting_config()
   cfg.set_align(HAlign::center())
   cfg.set_valign(VAlign::bottom())
-  cfg.set_formatting(Entity::Global, Formatting::new(false, false, true))
+  cfg.set_formatting(
+    Entity::Global,
+    Formatting::new(
+      trim_horizontal=false,
+      trim_vertical=false,
+      align_lines=true,
+    ),
+  )
   assert_eq(
     upstream_formatting_render(
       [
@@ -931,7 +1029,10 @@ test "upstream grid formatting variant 22" {
   let cfg = upstream_formatting_config()
   cfg.set_align(HAlign::center())
   cfg.set_valign(VAlign::bottom())
-  cfg.set_formatting(Entity::Global, Formatting::new(true, false, true))
+  cfg.set_formatting(
+    Entity::Global,
+    Formatting::new(trim_horizontal=true, trim_vertical=false, align_lines=true),
+  )
   assert_eq(
     upstream_formatting_render(
       [
@@ -973,7 +1074,10 @@ test "upstream grid formatting variant 23" {
   let cfg = upstream_formatting_config()
   cfg.set_align(HAlign::center())
   cfg.set_valign(VAlign::bottom())
-  cfg.set_formatting(Entity::Global, Formatting::new(true, true, true))
+  cfg.set_formatting(
+    Entity::Global,
+    Formatting::new(trim_horizontal=true, trim_vertical=true, align_lines=true),
+  )
   assert_eq(
     upstream_formatting_render(
       [
@@ -1015,7 +1119,14 @@ test "upstream grid formatting variant 24" {
   let cfg = upstream_formatting_config()
   cfg.set_align(HAlign::right())
   cfg.set_valign(VAlign::bottom())
-  cfg.set_formatting(Entity::Global, Formatting::new(false, false, true))
+  cfg.set_formatting(
+    Entity::Global,
+    Formatting::new(
+      trim_horizontal=false,
+      trim_vertical=false,
+      align_lines=true,
+    ),
+  )
   assert_eq(
     upstream_formatting_render(
       [
@@ -1057,7 +1168,10 @@ test "upstream grid formatting variant 25" {
   let cfg = upstream_formatting_config()
   cfg.set_align(HAlign::right())
   cfg.set_valign(VAlign::bottom())
-  cfg.set_formatting(Entity::Global, Formatting::new(true, false, true))
+  cfg.set_formatting(
+    Entity::Global,
+    Formatting::new(trim_horizontal=true, trim_vertical=false, align_lines=true),
+  )
   assert_eq(
     upstream_formatting_render(
       [
@@ -1099,7 +1213,10 @@ test "upstream grid formatting variant 26" {
   let cfg = upstream_formatting_config()
   cfg.set_align(HAlign::right())
   cfg.set_valign(VAlign::bottom())
-  cfg.set_formatting(Entity::Global, Formatting::new(true, true, true))
+  cfg.set_formatting(
+    Entity::Global,
+    Formatting::new(trim_horizontal=true, trim_vertical=true, align_lines=true),
+  )
   assert_eq(
     upstream_formatting_render(
       [
@@ -1139,7 +1256,14 @@ test "upstream grid formatting variant 26" {
 // Upstream: papergrid/tests/grid/format_configuration.rs::formatting_1x1_test
 test "upstream grid formatting 1x1 0" {
   let cfg = upstream_formatting_config()
-  cfg.set_formatting(Entity::Global, Formatting::new(false, false, false))
+  cfg.set_formatting(
+    Entity::Global,
+    Formatting::new(
+      trim_horizontal=false,
+      trim_vertical=false,
+      align_lines=false,
+    ),
+  )
   assert_eq(
     upstream_formatting_render(
       [
@@ -1173,7 +1297,14 @@ test "upstream grid formatting 1x1 0" {
 // Upstream: papergrid/tests/grid/format_configuration.rs::formatting_1x1_test
 test "upstream grid formatting 1x1 1" {
   let cfg = upstream_formatting_config()
-  cfg.set_formatting(Entity::Global, Formatting::new(false, false, true))
+  cfg.set_formatting(
+    Entity::Global,
+    Formatting::new(
+      trim_horizontal=false,
+      trim_vertical=false,
+      align_lines=true,
+    ),
+  )
   assert_eq(
     upstream_formatting_render(
       [
@@ -1207,7 +1338,10 @@ test "upstream grid formatting 1x1 1" {
 // Upstream: papergrid/tests/grid/format_configuration.rs::formatting_1x1_test
 test "upstream grid formatting 1x1 2" {
   let cfg = upstream_formatting_config()
-  cfg.set_formatting(Entity::Global, Formatting::new(true, false, true))
+  cfg.set_formatting(
+    Entity::Global,
+    Formatting::new(trim_horizontal=true, trim_vertical=false, align_lines=true),
+  )
   assert_eq(
     upstream_formatting_render(
       [
@@ -1241,7 +1375,10 @@ test "upstream grid formatting 1x1 2" {
 // Upstream: papergrid/tests/grid/format_configuration.rs::formatting_1x1_test
 test "upstream grid formatting 1x1 3" {
   let cfg = upstream_formatting_config()
-  cfg.set_formatting(Entity::Global, Formatting::new(true, true, true))
+  cfg.set_formatting(
+    Entity::Global,
+    Formatting::new(trim_horizontal=true, trim_vertical=true, align_lines=true),
+  )
   assert_eq(
     upstream_formatting_render(
       [
@@ -1276,7 +1413,14 @@ test "upstream grid formatting 1x1 3" {
 test "upstream grid formatting empty" {
   for shape in [(0, 0), (0, 4), (4, 0)] {
     let cfg = upstream_formatting_config()
-    cfg.set_formatting(Entity::Global, Formatting::new(true, true, true))
+    cfg.set_formatting(
+      Entity::Global,
+      Formatting::new(
+        trim_horizontal=true,
+        trim_vertical=true,
+        align_lines=true,
+      ),
+    )
     let rows = Array::makei(shape.0, _ => Array::make(shape.1, ""))
     assert_eq(upstream_formatting_render(rows, cfg), "")
   }

@@ -1,6 +1,7 @@
 #!/usr/bin/env nu
 # Preserve every fixture in papergrid's formatting configuration tests.
 use upstream-literals.nu [decode-rust-string moon-string expected-lines]
+use api-names.nu modernize-api
 
 def main [upstream: path, --output: path] {
   let project = ($env.CURRENT_FILE | path dirname | path dirname)
@@ -29,11 +30,12 @@ def main [upstream: path, --output: path] {
     let h = ($case.horizontal | str lowercase)
     let v = ($case.vertical | str lowercase)
     let expected = (expected-lines $case.expected)
+    let formatting = ('Formatting::new(' + $case.formatting + ')' | modernize-api)
     $"///|\n// Upstream: ($relative)::formatting_test\ntest \"upstream grid formatting variant ($entry.index)\" {
   let cfg = upstream_formatting_config\()
   cfg.set_align\(HAlign::($h)\())
   cfg.set_valign\(VAlign::($v)\())
-  cfg.set_formatting\(Entity::Global, Formatting::new\(($case.formatting)))
+  cfg.set_formatting\(Entity::Global, ($formatting))
   assert_eq\(upstream_formatting_render\(($matrix), cfg), ($expected))
 }\n"
   } | str join (char nl))
@@ -46,7 +48,7 @@ def main [upstream: path, --output: path] {
     let text = ($json | to json --raw)
     $"///|\n// Upstream: ($relative)::formatting_1x1_test\ntest \"upstream grid formatting 1x1 ($i)\" {
   let cfg = upstream_formatting_config\()
-  cfg.set_formatting\(Entity::Global, Formatting::new\(($h), ($v), ($lines)))
+  cfg.set_formatting\(Entity::Global, Formatting::new\(trim_horizontal=($h), trim_vertical=($v), align_lines=($lines)))
   assert_eq\(upstream_formatting_render\([[($text)]], cfg), ($expected))
 }\n"
   } | str join (char nl))
@@ -56,7 +58,7 @@ def main [upstream: path, --output: path] {
 test \"upstream grid formatting empty\" {
   for shape in [\(0, 0), \(0, 4), \(4, 0)] {
     let cfg = upstream_formatting_config\()
-    cfg.set_formatting\(Entity::Global, Formatting::new\(true, true, true))
+    cfg.set_formatting\(Entity::Global, Formatting::new\(trim_horizontal=true, trim_vertical=true, align_lines=true))
     let rows = Array::makei\(shape.0, _ => Array::make\(shape.1, \"\"))
     assert_eq\(upstream_formatting_render\(rows, cfg), \"\")
   }

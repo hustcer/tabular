@@ -27,10 +27,10 @@ pub fn SpannedConfig::get_padding(
   let (left, right, top, bottom) = self.padding_at(row, col)
   let fills = self.padding_fill_at(row, col)
   Sides::new(
-    Indent::new(left, fills.left),
-    Indent::new(right, fills.right),
-    Indent::new(top, fills.top),
-    Indent::new(bottom, fills.bottom),
+    left=Indent::new(left, fills.left),
+    right=Indent::new(right, fills.right),
+    top=Indent::new(top, fills.top),
+    bottom=Indent::new(bottom, fills.bottom),
   )
 }
 
@@ -106,10 +106,10 @@ pub fn SpannedConfig::set_margin_sides(
 ///|
 pub fn SpannedConfig::get_margin(self : SpannedConfig) -> Sides[Indent] {
   Sides::new(
-    Indent::new(self.margin_left, self.margin_fill_left),
-    Indent::new(self.margin_right, self.margin_fill_right),
-    Indent::new(self.margin_top, self.margin_fill_top),
-    Indent::new(self.margin_bottom, self.margin_fill_bottom),
+    left=Indent::new(self.margin_left, self.margin_fill_left),
+    right=Indent::new(self.margin_right, self.margin_fill_right),
+    top=Indent::new(self.margin_top, self.margin_fill_top),
+    bottom=Indent::new(self.margin_bottom, self.margin_fill_bottom),
   )
 }
 
@@ -128,7 +128,7 @@ pub fn SpannedConfig::set_margin_offsets(
 }
 
 ///|
-pub fn SpannedConfig::get_margin_offset(self : SpannedConfig) -> Sides[Offset] {
+pub fn SpannedConfig::get_margin_offsets(self : SpannedConfig) -> Sides[Offset] {
   self.margin_offsets
 }
 

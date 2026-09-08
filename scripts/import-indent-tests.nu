@@ -2,6 +2,7 @@
 # Preserve all padding/margin source cases and the upstream ignored status.
 use upstream-literals.nu [expected-lines decode-rust-string]
 use import-transform-tests.nu translate
+use api-names.nu modernize-api
 
 def indent-expression [expression: string]: nothing -> string {
   let input = ($expression
@@ -62,7 +63,8 @@ test \"upstream ($suite) ($case.name)\" {
       | str replace --all 'Borders::default()' 'Borders::empty()'
       | str replace --all '.set_padding(' '.set_padding_sides('
       | str replace --all --regex '(?s)Sides \{\s*bottom: (Indent::new\([^)]*\)),\s*\.\.Default::default\(\)\s*\}' '{ ..Sides::default(), bottom: $1 }'
-      | str replace --all --regex ';(?=\s*(?:\n|$))' '')
+      | str replace --all --regex ';(?=\s*(?:\n|$))' ''
+      | modernize-api)
     let expected = (expected-lines $case.expected)
     $"///|\n// Upstream: ($relative)::($case.name)
 test \"upstream padding scope ($case.name)\" {

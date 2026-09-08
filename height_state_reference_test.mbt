@@ -13,8 +13,8 @@ test "height state reference list" {
     table.to_string(),
     "+---+------------+\n| a | long value |\n| b |            |\n+---+------------+\n+---+------------+\n|   | q          |\n|   |            |\n|   |            |\n+---+------------+",
   )
-  assert_eq(table.get_dimension().get_widths(), None)
-  assert_eq(table.get_dimension().get_heights(), Some([2, 0, 3]))
+  assert_eq(table.dimension_snapshot().get_widths(), None)
+  assert_eq(table.dimension_snapshot().get_heights(), Some([2, 0, 3]))
   assert_eq(table.total_width(), 18)
   assert_eq(table.total_height(), 9)
   assert_eq(table.rows, [
@@ -37,8 +37,8 @@ test "height state reference long-list" {
     table.to_string(),
     "+---+------------+\n| a | long value |\n| b |            |\n+---+------------+\n+---+------------+\n|   | q          |\n|   |            |\n|   |            |\n+---+------------+",
   )
-  assert_eq(table.get_dimension().get_widths(), None)
-  assert_eq(table.get_dimension().get_heights(), Some([2, 0, 3, 99]))
+  assert_eq(table.dimension_snapshot().get_widths(), None)
+  assert_eq(table.dimension_snapshot().get_heights(), Some([2, 0, 3, 99]))
   assert_eq(table.total_width(), 18)
   assert_eq(table.total_height(), 9)
   assert_eq(table.rows, [
@@ -64,8 +64,8 @@ test "height state reference short-list" {
     table.to_string(),
     "+---+------------+\n| a | long value |\n| b |            |\n+---+------------+\n+---+------------+\n|   | q          |\n|   |            |\n|   |            |\n+---+------------+",
   )
-  assert_eq(table.get_dimension().get_widths(), None)
-  assert_eq(table.get_dimension().get_heights(), Some([2, 0, 3]))
+  assert_eq(table.dimension_snapshot().get_widths(), None)
+  assert_eq(table.dimension_snapshot().get_heights(), Some([2, 0, 3]))
   assert_eq(table.total_width(), 18)
   assert_eq(table.total_height(), 9)
   assert_eq(table.rows, [
@@ -88,8 +88,8 @@ test "height state reference increase" {
     table.to_string(),
     "+---+------------+\n| a | long value |\n| b |            |\n| c |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n+---+------------+\n| d | x          |\n| e | y          |\n|   | z          |\n|   |            |\n|   |            |\n|   |            |\n+---+------------+\n|   | q          |\n|   |            |\n|   |            |\n+---+------------+",
   )
-  assert_eq(table.get_dimension().get_widths(), None)
-  assert_eq(table.get_dimension().get_heights(), Some([7, 6, 3]))
+  assert_eq(table.dimension_snapshot().get_widths(), None)
+  assert_eq(table.dimension_snapshot().get_heights(), Some([7, 6, 3]))
   assert_eq(table.total_width(), 18)
   assert_eq(table.total_height(), 20)
   assert_eq(table.rows, [
@@ -112,8 +112,8 @@ test "height state reference limit" {
     table.to_string(),
     "+---+------------+\n| a | long value |\n| b |            |\n+---+------------+\n| d | x          |\n+---+------------+\n+---+------------+",
   )
-  assert_eq(table.get_dimension().get_widths(), None)
-  assert_eq(table.get_dimension().get_heights(), Some([2, 1, 0]))
+  assert_eq(table.dimension_snapshot().get_widths(), None)
+  assert_eq(table.dimension_snapshot().get_heights(), Some([2, 1, 0]))
   assert_eq(table.total_width(), 18)
   assert_eq(table.total_height(), 7)
   assert_eq(table.rows, [["a\nb", "long value"], ["d", "x"], ["", ""]])
@@ -129,8 +129,8 @@ test "height state reference zero" {
   ])
   table.with_(@tabular.Height::limit(0)) |> ignore
   assert_eq(table.to_string(), "+--+--+\n+--+--+\n+--+--+\n+--+--+")
-  assert_eq(table.get_dimension().get_widths(), None)
-  assert_eq(table.get_dimension().get_heights(), Some([0, 0, 0]))
+  assert_eq(table.dimension_snapshot().get_widths(), None)
+  assert_eq(table.dimension_snapshot().get_heights(), Some([0, 0, 0]))
   assert_eq(table.total_width(), 7)
   assert_eq(table.total_height(), 4)
   assert_eq(table.rows, [["", ""], ["", ""], ["", ""]])
@@ -144,14 +144,16 @@ test "height state reference min-limit" {
     ["d\ne", "x\ny\nz"],
     ["", "q"],
   ])
-  table.with_(@tabular.Height::limit(6).priority(@tabular.PriorityMin::right()))
+  table.with_(
+    @tabular.Height::limit(6).priority(@tabular.PriorityMin::prefer_first()),
+  )
   |> ignore
   assert_eq(
     table.to_string(),
     "+---+------------+\n| a | long value |\n| b |            |\n| c |            |\n|   |            |\n+---+------------+\n| d | x          |\n| e | y          |\n|   | z          |\n+---+------------+\n+---+------------+",
   )
-  assert_eq(table.get_dimension().get_widths(), None)
-  assert_eq(table.get_dimension().get_heights(), Some([4, 3, 0]))
+  assert_eq(table.dimension_snapshot().get_widths(), None)
+  assert_eq(table.dimension_snapshot().get_heights(), Some([4, 3, 0]))
   assert_eq(table.total_width(), 18)
   assert_eq(table.total_height(), 11)
   assert_eq(table.rows, [
@@ -169,14 +171,16 @@ test "height state reference max-limit" {
     ["d\ne", "x\ny\nz"],
     ["", "q"],
   ])
-  table.with_(@tabular.Height::limit(7).priority(@tabular.PriorityMax::left()))
+  table.with_(
+    @tabular.Height::limit(7).priority(@tabular.PriorityMax::prefer_first()),
+  )
   |> ignore
   assert_eq(
     table.to_string(),
     "+---+------------+\n| a | long value |\n+---+------------+\n| d | x          |\n+---+------------+\n|   | q          |\n+---+------------+",
   )
-  assert_eq(table.get_dimension().get_widths(), None)
-  assert_eq(table.get_dimension().get_heights(), Some([1, 1, 1]))
+  assert_eq(table.dimension_snapshot().get_widths(), None)
+  assert_eq(table.dimension_snapshot().get_heights(), Some([1, 1, 1]))
   assert_eq(table.total_width(), 18)
   assert_eq(table.total_height(), 7)
   assert_eq(table.rows, [["a", "long value"], ["d", "x"], ["", "q"]])
@@ -191,15 +195,15 @@ test "height state reference min-increase" {
     ["", "q"],
   ])
   table.with_(
-    @tabular.Height::increase(18).priority(@tabular.PriorityMin::right()),
+    @tabular.Height::increase(18).priority(@tabular.PriorityMin::prefer_first()),
   )
   |> ignore
   assert_eq(
     table.to_string(),
     "+---+------------+\n| a | long value |\n| b |            |\n| c |            |\n|   |            |\n|   |            |\n+---+------------+\n| d | x          |\n| e | y          |\n|   | z          |\n|   |            |\n|   |            |\n+---+------------+\n|   | q          |\n|   |            |\n|   |            |\n|   |            |\n+---+------------+",
   )
-  assert_eq(table.get_dimension().get_widths(), None)
-  assert_eq(table.get_dimension().get_heights(), Some([5, 5, 4]))
+  assert_eq(table.dimension_snapshot().get_widths(), None)
+  assert_eq(table.dimension_snapshot().get_heights(), Some([5, 5, 4]))
   assert_eq(table.total_width(), 18)
   assert_eq(table.total_height(), 18)
   assert_eq(table.rows, [
@@ -218,15 +222,15 @@ test "height state reference max-increase" {
     ["", "q"],
   ])
   table.with_(
-    @tabular.Height::increase(18).priority(@tabular.PriorityMax::left()),
+    @tabular.Height::increase(18).priority(@tabular.PriorityMax::prefer_first()),
   )
   |> ignore
   assert_eq(
     table.to_string(),
     "+---+------------+\n| a | long value |\n| b |            |\n| c |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n+---+------------+\n| d | x          |\n| e | y          |\n|   | z          |\n+---+------------+\n|   | q          |\n+---+------------+",
   )
-  assert_eq(table.get_dimension().get_widths(), None)
-  assert_eq(table.get_dimension().get_heights(), Some([10, 3, 1]))
+  assert_eq(table.dimension_snapshot().get_widths(), None)
+  assert_eq(table.dimension_snapshot().get_heights(), Some([10, 3, 1]))
   assert_eq(table.total_width(), 18)
   assert_eq(table.total_height(), 18)
   assert_eq(table.rows, [
@@ -249,8 +253,8 @@ test "height state reference record-increase" {
     table.to_string(),
     "+---+------------+\n| a | long value |\n| b |            |\n| c |            |\n|   |            |\n|   |            |\n+---+------------+\n| d | x          |\n| e | y          |\n|   | z          |\n|   |            |\n|   |            |\n+---+------------+\n|   | q          |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n+---+------------+",
   )
-  assert_eq(table.get_dimension().get_widths(), None)
-  assert_eq(table.get_dimension().get_heights(), None)
+  assert_eq(table.dimension_snapshot().get_widths(), None)
+  assert_eq(table.dimension_snapshot().get_heights(), None)
   assert_eq(table.total_width(), 18)
   assert_eq(table.total_height(), 19)
   assert_eq(table.rows, [
@@ -273,8 +277,8 @@ test "height state reference record-limit" {
     table.to_string(),
     "+---+------------+\n| a | long value |\n+---+------------+\n| d | x          |\n+---+------------+\n|   | q          |\n+---+------------+",
   )
-  assert_eq(table.get_dimension().get_widths(), None)
-  assert_eq(table.get_dimension().get_heights(), None)
+  assert_eq(table.dimension_snapshot().get_widths(), None)
+  assert_eq(table.dimension_snapshot().get_heights(), None)
   assert_eq(table.total_width(), 18)
   assert_eq(table.total_height(), 7)
   assert_eq(table.rows, [["a", "long value"], ["d", "x"], ["", "q"]])
@@ -293,8 +297,8 @@ test "height state reference record-zero" {
     table.to_string(),
     "+--+--+\n|  |  |\n+--+--+\n|  |  |\n+--+--+\n|  |  |\n+--+--+",
   )
-  assert_eq(table.get_dimension().get_widths(), None)
-  assert_eq(table.get_dimension().get_heights(), None)
+  assert_eq(table.dimension_snapshot().get_widths(), None)
+  assert_eq(table.dimension_snapshot().get_heights(), None)
   assert_eq(table.total_width(), 7)
   assert_eq(table.total_height(), 7)
   assert_eq(table.rows, [["", ""], ["", ""], ["", ""]])
@@ -317,8 +321,8 @@ test "height state reference max" {
     table.to_string(),
     "+---+------------+\n| a | long value |\n| b |            |\n| c |            |\n|   |            |\n+---+------------+\n| d | x          |\n| e | y          |\n|   | z          |\n|   |            |\n+---+------------+\n|   | q          |\n|   |            |\n|   |            |\n|   |            |\n+---+------------+",
   )
-  assert_eq(table.get_dimension().get_widths(), None)
-  assert_eq(table.get_dimension().get_heights(), None)
+  assert_eq(table.dimension_snapshot().get_widths(), None)
+  assert_eq(table.dimension_snapshot().get_heights(), None)
   assert_eq(table.total_width(), 18)
   assert_eq(table.total_height(), 16)
   assert_eq(table.rows, [
@@ -345,8 +349,8 @@ test "height state reference min" {
     table.to_string(),
     "+---+------------+\n| a | long value |\n+---+------------+\n| d | x          |\n+---+------------+\n|   | q          |\n+---+------------+",
   )
-  assert_eq(table.get_dimension().get_widths(), None)
-  assert_eq(table.get_dimension().get_heights(), None)
+  assert_eq(table.dimension_snapshot().get_widths(), None)
+  assert_eq(table.dimension_snapshot().get_heights(), None)
   assert_eq(table.total_width(), 18)
   assert_eq(table.total_height(), 7)
   assert_eq(table.rows, [["a", "long value"], ["d", "x"], ["", "q"]])
@@ -365,8 +369,8 @@ test "height state reference percent-increase" {
     table.to_string(),
     "+---+------------+\n| a | long value |\n| b |            |\n| c |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n+---+------------+\n| d | x          |\n| e | y          |\n|   | z          |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n+---+------------+\n|   | q          |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n+---+------------+",
   )
-  assert_eq(table.get_dimension().get_widths(), None)
-  assert_eq(table.get_dimension().get_heights(), Some([8, 7, 5]))
+  assert_eq(table.dimension_snapshot().get_widths(), None)
+  assert_eq(table.dimension_snapshot().get_heights(), Some([8, 7, 5]))
   assert_eq(table.total_width(), 18)
   assert_eq(table.total_height(), 24)
   assert_eq(table.rows, [
@@ -389,8 +393,8 @@ test "height state reference percent-limit" {
     table.to_string(),
     "+---+------------+\n| a | long value |\n+---+------------+\n| d | x          |\n+---+------------+\n+---+------------+",
   )
-  assert_eq(table.get_dimension().get_widths(), None)
-  assert_eq(table.get_dimension().get_heights(), Some([1, 1, 0]))
+  assert_eq(table.dimension_snapshot().get_widths(), None)
+  assert_eq(table.dimension_snapshot().get_heights(), Some([1, 1, 0]))
   assert_eq(table.total_width(), 18)
   assert_eq(table.total_height(), 6)
   assert_eq(table.rows, [["a", "long value"], ["d", "x"], ["", ""]])
@@ -405,15 +409,15 @@ test "height state reference percent-margin" {
     ["", "q"],
   ])
   table
-  .with_(@tabular.Margin::new(1, 1, 2, 3))
+  .with_(@tabular.Margin::new(left=1, right=1, top=2, bottom=3))
   .with_(@tabular.Height::increase(@tabular.Percent::new(200)))
   |> ignore
   assert_eq(
     table.to_string(),
     "                    \n                    \n +---+------------+ \n | a | long value | \n | b |            | \n | c |            | \n |   |            | \n |   |            | \n |   |            | \n |   |            | \n +---+------------+ \n | d | x          | \n | e | y          | \n |   | z          | \n |   |            | \n |   |            | \n +---+------------+ \n |   | q          | \n |   |            | \n |   |            | \n +---+------------+ \n                    \n                    \n                    ",
   )
-  assert_eq(table.get_dimension().get_widths(), None)
-  assert_eq(table.get_dimension().get_heights(), Some([7, 5, 3]))
+  assert_eq(table.dimension_snapshot().get_widths(), None)
+  assert_eq(table.dimension_snapshot().get_heights(), Some([7, 5, 3]))
   assert_eq(table.total_width(), 20)
   assert_eq(table.total_height(), 24)
   assert_eq(table.rows, [
@@ -440,8 +444,8 @@ test "height state reference mixed-padding" {
     table.to_string(),
     "+---+------------+\n|   | long value |\n|   |            |\n| a |            |\n+---+------------+\n| d | x          |\n+---+------------+\n+---+------------+",
   )
-  assert_eq(table.get_dimension().get_widths(), None)
-  assert_eq(table.get_dimension().get_heights(), Some([3, 1, 0]))
+  assert_eq(table.dimension_snapshot().get_widths(), None)
+  assert_eq(table.dimension_snapshot().get_heights(), Some([3, 1, 0]))
   assert_eq(table.total_width(), 18)
   assert_eq(table.total_height(), 8)
   assert_eq(table.rows, [["a\nb\nc", "long value"], ["d", "x"], ["", ""]])
@@ -463,8 +467,8 @@ test "height state reference padding-list" {
     table.to_string(),
     "+---+------------+\n|   |            |\n|   |            |\n| a | long value |\n+---+------------+\n+---+------------+\n|   |            |\n|   |            |\n|   | q          |\n|   |            |\n|   |            |\n|   |            |\n+---+------------+",
   )
-  assert_eq(table.get_dimension().get_widths(), None)
-  assert_eq(table.get_dimension().get_heights(), Some([3, 0, 6]))
+  assert_eq(table.dimension_snapshot().get_widths(), None)
+  assert_eq(table.dimension_snapshot().get_heights(), Some([3, 0, 6]))
   assert_eq(table.total_width(), 18)
   assert_eq(table.total_height(), 13)
   assert_eq(table.rows, [
@@ -491,8 +495,8 @@ test "height state reference row-span" {
     table.to_string(),
     "+--+---+\n+  +---+\n|  | x |\n|  | y |\n|  | z |\n+--+---+\n|  | q |\n+--+---+",
   )
-  assert_eq(table.get_dimension().get_widths(), None)
-  assert_eq(table.get_dimension().get_heights(), Some([0, 3, 1]))
+  assert_eq(table.dimension_snapshot().get_widths(), None)
+  assert_eq(table.dimension_snapshot().get_heights(), Some([0, 3, 1]))
   assert_eq(table.total_width(), 8)
   assert_eq(table.total_height(), 8)
   assert_eq(table.rows, [["", ""], ["hidden\nlong\ntext", "x\ny\nz"], ["", "q"]])
@@ -507,7 +511,7 @@ test "height state reference column-span" {
     ["", "q"],
   ])
   table
-  .modify((0, 0), @tabular.Span::column(2))
+  .modify((0, 0), @tabular.Span::col(2))
   .modify((0, 1), "hidden\nlong\ntext\na\nb\nc")
   .with_(@tabular.Height::increase(16))
   |> ignore
@@ -515,8 +519,8 @@ test "height state reference column-span" {
     table.to_string(),
     "+---+---+\n| a     |\n| b     |\n| c     |\n|       |\n|       |\n|       |\n|       |\n+---+---+\n| d | x |\n| e | y |\n|   | z |\n|   |   |\n+---+---+\n|   | q |\n+---+---+",
   )
-  assert_eq(table.get_dimension().get_widths(), None)
-  assert_eq(table.get_dimension().get_heights(), Some([7, 4, 1]))
+  assert_eq(table.dimension_snapshot().get_widths(), None)
+  assert_eq(table.dimension_snapshot().get_heights(), Some([7, 4, 1]))
   assert_eq(table.total_width(), 9)
   assert_eq(table.total_height(), 16)
   assert_eq(table.rows, [
@@ -540,8 +544,8 @@ test "height state reference crlf" {
     table.to_string(),
     "+----+------------+\n| a\r | long value |\n| b\r |            |\n+----+------------+\n| d  | x          |\n| e  | y          |\n|    | z          |\n+----+------------+\n|    | q          |\n+----+------------+",
   )
-  assert_eq(table.get_dimension().get_widths(), None)
-  assert_eq(table.get_dimension().get_heights(), None)
+  assert_eq(table.dimension_snapshot().get_widths(), None)
+  assert_eq(table.dimension_snapshot().get_heights(), None)
   assert_eq(table.total_width(), 19)
   assert_eq(table.total_height(), 10)
   assert_eq(table.rows, [
@@ -567,8 +571,8 @@ test "height state reference ansi" {
     table.to_string(),
     "+---+------------+\n| \u001b[31ma\u001b[39m | long value |\n| \u001b[31mb\u001b[39m |            |\n+---+------------+\n| d | x          |\n| e | y          |\n|   | z          |\n+---+------------+\n|   | q          |\n+---+------------+",
   )
-  assert_eq(table.get_dimension().get_widths(), None)
-  assert_eq(table.get_dimension().get_heights(), None)
+  assert_eq(table.dimension_snapshot().get_widths(), None)
+  assert_eq(table.dimension_snapshot().get_heights(), None)
   assert_eq(table.total_width(), 18)
   assert_eq(table.total_height(), 10)
   assert_eq(table.rows, [
@@ -592,8 +596,8 @@ test "height state reference color" {
     table.to_string(),
     "+---+------------+\n| \u001b[31ma\u001b[39m | \u001b[31mlong value\u001b[39m |\n| \u001b[31mb\u001b[39m |            |\n+---+------------+\n+---+------------+\n| \u001b[31m\u001b[39m  | \u001b[31mq\u001b[39m          |\n|   |            |\n|   |            |\n+---+------------+",
   )
-  assert_eq(table.get_dimension().get_widths(), None)
-  assert_eq(table.get_dimension().get_heights(), Some([2, 0, 3]))
+  assert_eq(table.dimension_snapshot().get_widths(), None)
+  assert_eq(table.dimension_snapshot().get_heights(), Some([2, 0, 3]))
   assert_eq(table.total_width(), 18)
   assert_eq(table.total_height(), 9)
   assert_eq(table.rows, [
@@ -622,8 +626,8 @@ test "height state reference settings" {
     table.to_string(),
     "+---+------------+\n|   |            |\n| a |            |\n| b |            |\n| c |            |\n|   | long value |\n+---+------------+\n+---+------------+\n|   |            |\n|   |            |\n|   | q          |\n+---+------------+",
   )
-  assert_eq(table.get_dimension().get_widths(), None)
-  assert_eq(table.get_dimension().get_heights(), Some([5, 0, 3]))
+  assert_eq(table.dimension_snapshot().get_widths(), None)
+  assert_eq(table.dimension_snapshot().get_heights(), Some([5, 0, 3]))
   assert_eq(table.total_width(), 18)
   assert_eq(table.total_height(), 12)
   assert_eq(table.rows, [
@@ -646,8 +650,8 @@ test "height state reference array" {
     table.to_string(),
     "+---+------------+\n| a | long value |\n| b |            |\n| c |            |\n|   |            |\n+---+------------+\n| d | x          |\n| e | y          |\n|   | z          |\n+---+------------+\n|   | q          |\n+---+------------+",
   )
-  assert_eq(table.get_dimension().get_widths(), None)
-  assert_eq(table.get_dimension().get_heights(), None)
+  assert_eq(table.dimension_snapshot().get_widths(), None)
+  assert_eq(table.dimension_snapshot().get_heights(), None)
   assert_eq(table.total_width(), 18)
   assert_eq(table.total_height(), 12)
   assert_eq(table.rows, [
@@ -673,8 +677,8 @@ test "height state reference cell-align" {
     table.to_string(),
     "+---+------------+\n| a | long value |\n| b |            |\n| c |            |\n|   |            |\n+---+------------+\n| d | x          |\n| e | y          |\n|   | z          |\n+---+------------+\n|   | q          |\n+---+------------+",
   )
-  assert_eq(table.get_dimension().get_widths(), None)
-  assert_eq(table.get_dimension().get_heights(), None)
+  assert_eq(table.dimension_snapshot().get_widths(), None)
+  assert_eq(table.dimension_snapshot().get_heights(), None)
   assert_eq(table.total_width(), 18)
   assert_eq(table.total_height(), 12)
   assert_eq(table.rows, [
@@ -700,8 +704,8 @@ test "height state reference increase-after-list" {
     table.to_string(),
     "+---+------------+\n| a | long value |\n| b |            |\n| c |            |\n|   |            |\n|   |            |\n+---+------------+\n| d | x          |\n| e | y          |\n|   | z          |\n|   |            |\n+---+------------+\n|   | q          |\n|   |            |\n+---+------------+",
   )
-  assert_eq(table.get_dimension().get_widths(), None)
-  assert_eq(table.get_dimension().get_heights(), Some([5, 4, 2]))
+  assert_eq(table.dimension_snapshot().get_widths(), None)
+  assert_eq(table.dimension_snapshot().get_heights(), Some([5, 4, 2]))
   assert_eq(table.total_width(), 18)
   assert_eq(table.total_height(), 15)
   assert_eq(table.rows, [
@@ -727,8 +731,8 @@ test "height state reference limit-after-list" {
     table.to_string(),
     "+---+------------+\n| a | long value |\n| b |            |\n+---+------------+\n| d | x          |\n| e | y          |\n+---+------------+\n+---+------------+",
   )
-  assert_eq(table.get_dimension().get_widths(), None)
-  assert_eq(table.get_dimension().get_heights(), Some([2, 2, 0]))
+  assert_eq(table.dimension_snapshot().get_widths(), None)
+  assert_eq(table.dimension_snapshot().get_heights(), Some([2, 2, 0]))
   assert_eq(table.total_width(), 18)
   assert_eq(table.total_height(), 8)
   assert_eq(table.rows, [["a\nb", "long value"], ["d\ne", "x\ny"], ["", ""]])
@@ -750,8 +754,8 @@ test "height state reference increase-noop-list" {
     table.to_string(),
     "+---+------------+\n| a | long value |\n| b |            |\n| c |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n+---+------------+\n| d | x          |\n| e | y          |\n|   | z          |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n+---+------------+\n|   | q          |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n+---+------------+",
   )
-  assert_eq(table.get_dimension().get_widths(), None)
-  assert_eq(table.get_dimension().get_heights(), Some([50, 50, 50]))
+  assert_eq(table.dimension_snapshot().get_widths(), None)
+  assert_eq(table.dimension_snapshot().get_heights(), Some([50, 50, 50]))
   assert_eq(table.total_width(), 18)
   assert_eq(table.total_height(), 154)
   assert_eq(table.rows, [
@@ -777,8 +781,8 @@ test "height state reference limit-noop-list" {
     table.to_string(),
     "+---+------------+\n| a | long value |\n| b |            |\n| c |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n+---+------------+\n| d | x          |\n| e | y          |\n|   | z          |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n+---+------------+\n|   | q          |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n|   |            |\n+---+------------+",
   )
-  assert_eq(table.get_dimension().get_widths(), None)
-  assert_eq(table.get_dimension().get_heights(), Some([50, 50, 50]))
+  assert_eq(table.dimension_snapshot().get_widths(), None)
+  assert_eq(table.dimension_snapshot().get_heights(), Some([50, 50, 50]))
   assert_eq(table.total_width(), 18)
   assert_eq(table.total_height(), 154)
   assert_eq(table.rows, [
@@ -802,8 +806,8 @@ test "height state reference width-cache" {
     table.to_string(),
     "+--------+------------+\n| a      | long value |\n| b      |            |\n+--------+------------+\n| d      | x          |\n+--------+------------+\n+--------+------------+",
   )
-  assert_eq(table.get_dimension().get_widths(), Some([8, 12]))
-  assert_eq(table.get_dimension().get_heights(), Some([2, 1, 0]))
+  assert_eq(table.dimension_snapshot().get_widths(), Some([8, 12]))
+  assert_eq(table.dimension_snapshot().get_heights(), Some([2, 1, 0]))
   assert_eq(table.total_width(), 23)
   assert_eq(table.total_height(), 7)
   assert_eq(table.rows, [["a\nb", "long value"], ["d", "x"], ["", ""]])
@@ -823,8 +827,8 @@ test "height state reference width-after-height" {
     table.to_string(),
     "+---+------------+\n| a | long value |\n| b |            |\n| c |            |\n|   |            |\n+---+------------+\n| d | x          |\n| e | y          |\n|   | z          |\n+---+------------+\n|   | q          |\n+---+------------+",
   )
-  assert_eq(table.get_dimension().get_widths(), Some([3, 12]))
-  assert_eq(table.get_dimension().get_heights(), None)
+  assert_eq(table.dimension_snapshot().get_widths(), Some([3, 12]))
+  assert_eq(table.dimension_snapshot().get_heights(), None)
   assert_eq(table.total_width(), 18)
   assert_eq(table.total_height(), 12)
   assert_eq(table.rows, [
@@ -855,8 +859,8 @@ test "height state reference nested" {
     table.to_string(),
     "+---+------------+\n| a | long value |\n| b |            |\n| c |            |\n|   |            |\n|   |            |\n|   |            |\n+---+------------+\n| d | x          |\n| e | y          |\n+---+------------+\n|   |            |\n+---+------------+",
   )
-  assert_eq(table.get_dimension().get_widths(), None)
-  assert_eq(table.get_dimension().get_heights(), None)
+  assert_eq(table.dimension_snapshot().get_widths(), None)
+  assert_eq(table.dimension_snapshot().get_heights(), None)
   assert_eq(table.total_width(), 18)
   assert_eq(table.total_height(), 13)
   assert_eq(table.rows, [
@@ -880,8 +884,8 @@ test "height state reference markdown" {
     table.to_string(),
     "| a | long value |\n|---|------------|\n| d | x          |",
   )
-  assert_eq(table.get_dimension().get_widths(), None)
-  assert_eq(table.get_dimension().get_heights(), Some([1, 1, 0]))
+  assert_eq(table.dimension_snapshot().get_widths(), None)
+  assert_eq(table.dimension_snapshot().get_heights(), Some([1, 1, 0]))
   assert_eq(table.total_width(), 18)
   assert_eq(table.total_height(), 3)
   assert_eq(table.rows, [["a", "long value"], ["d", "x"], ["", ""]])
@@ -898,8 +902,8 @@ test "height state reference empty-style" {
   table.apply(@tabular.Style::empty()).with_(@tabular.Height::limit(0))
   |> ignore
   assert_eq(table.to_string(), "")
-  assert_eq(table.get_dimension().get_widths(), None)
-  assert_eq(table.get_dimension().get_heights(), Some([0, 0, 0]))
+  assert_eq(table.dimension_snapshot().get_widths(), None)
+  assert_eq(table.dimension_snapshot().get_heights(), Some([0, 0, 0]))
   assert_eq(table.total_width(), 4)
   assert_eq(table.total_height(), 0)
   assert_eq(table.rows, [["", ""], ["", ""], ["", ""]])

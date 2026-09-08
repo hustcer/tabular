@@ -72,7 +72,7 @@ fn measure_max_width(table : Table) -> Int {
 
 ///|
 fn measure_min_width(table : Table) -> Int {
-  let columns = table.count_columns()
+  let columns = table.count_cols()
   let mut width = 0
   for row in table.rows {
     let mut smallest = if columns == 0 { 0 } else { 0x7fffffff }
@@ -101,7 +101,7 @@ fn row_height(row : Array[String], columns : Int) -> Int {
 
 ///|
 pub impl Measurement for Max with fn measure(_self, table, attribute) {
-  let columns = table.count_columns()
+  let columns = table.count_cols()
   match attribute {
     Width => measure_max_width(table)
     Height =>
@@ -113,7 +113,7 @@ pub impl Measurement for Max with fn measure(_self, table, attribute) {
 
 ///|
 pub impl Measurement for Min with fn measure(_self, table, attribute) {
-  let columns = table.count_columns()
+  let columns = table.count_cols()
   match attribute {
     Width => measure_min_width(table)
     Height =>
@@ -141,8 +141,8 @@ fn percent_of(total : Int, percent : Int) -> Int {
 pub impl Measurement for Percent with fn measure(self, table, attribute) {
   let records = @papergrid.IterRecords::new(table.rows)
   let total = match attribute {
-    Width => @papergrid.IterGridDimension::width_total(records, table.config)
-    Height => @papergrid.IterGridDimension::height_total(records, table.config)
+    Width => @papergrid.IterGridDimension::total_width(records, table.config)
+    Height => @papergrid.IterGridDimension::total_height(records, table.config)
   }
   percent_of(total, self.0)
 }
