@@ -1,18 +1,18 @@
 ///|
 // Equivalent to papergrid/tests/util/grid_builder.rs::Grid::new defaults.
-fn upstream_formatting_config() -> SpannedConfig {
-  let config = SpannedConfig::default()
-  config.set_borders(Borders::ascii())
+fn upstream_formatting_config() -> @papergrid.SpannedConfig {
+  let config = @papergrid.SpannedConfig::default()
+  config.set_borders(@papergrid.Borders::ascii())
   config
 }
 
 ///|
 fn upstream_formatting_render(
   rows : Array[Array[String]],
-  config : SpannedConfig,
+  config : @papergrid.SpannedConfig,
 ) -> String {
-  let records = IterRecords::new(rows)
-  let dimension = IterGridDimension::default()
+  let records = @papergrid.IterRecords::new(rows)
+  let dimension = @papergrid.IterGridDimension::default()
   dimension.estimate(records, config)
-  IterGrid::new(records, config, dimension).to_string()
+  @papergrid.IterGrid::new(records, config, dimension).to_string()
 }

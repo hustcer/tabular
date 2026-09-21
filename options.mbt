@@ -27,8 +27,8 @@ impl CellOption with fn hint_change(_self) {
 ///
 /// ```mbt check
 /// test {
-///   let table = Table::from_rows([["a", "b"]])
-///   table.with_(Rotate::Left) |> ignore
+///   let table = @tabular.Table::from_rows([["a", "b"]])
+///   table.with_(@tabular.Rotate::Left) |> ignore
 ///   assert_eq(table.rows, [["b"], ["a"]])
 /// }
 /// ```
@@ -120,3 +120,12 @@ fn combine_entity(first : Entity, second : Entity) -> Entity {
     _ => Global
   }
 }
+
+///|
+pub extend Setting with CellOption::{
+  change as change_cell,
+  hint_change as hint_change_cell,
+}
+
+///|
+pub extend Setting with TableOption::{change, hint_change}

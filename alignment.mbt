@@ -79,3 +79,12 @@ pub impl TableOption for Alignment with fn change(self, table) {
 pub impl TableOption for Alignment with fn hint_change(_self) {
   None
 }
+
+///|
+pub extend Alignment with CellOption::{
+  change as change_cell,
+  hint_change as hint_change_cell,
+}
+
+///|
+pub extend Alignment with TableOption::{change, hint_change}

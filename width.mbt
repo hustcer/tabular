@@ -110,3 +110,15 @@ pub impl[M : Measurement, P : ResizeSelector] TableOption for Wrap[M, P] with fn
 ) {
   Some(Entity::Row(0))
 }
+
+///|
+pub extend Wrap with WidthOption::{to_mode}
+
+///|
+pub extend Wrap with CellOption::{
+  change as change_cell,
+  hint_change as hint_change_cell,
+}
+
+///|
+pub extend Wrap with TableOption::{change, hint_change}

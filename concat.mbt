@@ -30,9 +30,9 @@ pub fn Concat::default_cell(self : Concat, text : String) -> Concat {
 ///
 /// ```mbt check
 /// test {
-///   let table = Table::from_rows([["a"]])
-///   let other = Table::from_rows([["b"], ["c"]])
-///   table.concat(Concat::horizontal(other).default_cell("?")) |> ignore
+///   let table = @tabular.Table::from_rows([["a"]])
+///   let other = @tabular.Table::from_rows([["b"], ["c"]])
+///   table.concat(@tabular.Concat::horizontal(other).default_cell("?")) |> ignore
 ///   assert_eq(table.rows, [["a", "b"], ["?", "c"]])
 /// }
 /// ```

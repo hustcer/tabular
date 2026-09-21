@@ -295,9 +295,9 @@ fn unicode_width_step(ch : Char, next_info : Int) -> (Int, Int) {
 ///
 /// ```mbt check
 /// test {
-///   assert_eq(get_string_width("👩‍🔬"), 2)
-///   assert_eq(get_char_width('🏳'), 1)
-///   assert_eq(get_string_width("🏳️"), 2)
+///   assert_eq(@papergrid.get_string_width("👩‍🔬"), 2)
+///   assert_eq(@papergrid.get_char_width('🏳'), 1)
+///   assert_eq(@papergrid.get_string_width("🏳️"), 2)
 /// }
 /// ```
 pub fn get_string_width(text : String) -> Int {

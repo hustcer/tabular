@@ -85,11 +85,14 @@ pub fn IterGridDimension::widths(self : IterGridDimension) -> Array[Int] {
 ///
 /// ```mbt check
 /// test {
-///   let records = IterRecords::new([["abcdef"]])
-///   let config = SpannedConfig::default()
-///   config.set_width_mode(WidthMode::wrap(2))
-///   config.set_height_mode(HeightMode::increase(5))
-///   assert_eq(IterGridDimension::measure_rendered(records, config), ([2], [5]))
+///   let records = @papergrid.IterRecords::new([["abcdef"]])
+///   let config = @papergrid.SpannedConfig::default()
+///   config.set_width_mode(@papergrid.WidthMode::wrap(2))
+///   config.set_height_mode(@papergrid.HeightMode::increase(5))
+///   assert_eq(
+///     @papergrid.IterGridDimension::measure_rendered(records, config),
+///     ([2], [5]),
+///   )
 /// }
 /// ```
 pub fn IterGridDimension::measure_rendered(

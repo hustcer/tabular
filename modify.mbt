@@ -45,3 +45,6 @@ pub impl[O : Object, M : CellOption] TableOption for CellSettings[O, M] with fn 
 ) {
   CellOption::hint_change(self.options)
 }
+
+///|
+pub extend CellSettings with TableOption::{change, hint_change}

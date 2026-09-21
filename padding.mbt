@@ -8,8 +8,13 @@ pub using @papergrid {type Indent, type Sides}
 ///
 /// ```mbt check
 /// test {
-///   let table = Table::from_rows([["x"]]).with_(
-///     Padding::new(1, 1, 1, 1).fill(left='>', right='<', top='^', bottom='v'),
+///   let table = @tabular.Table::from_rows([["x"]]).with_(
+///     @tabular.Padding::new(1, 1, 1, 1).fill(
+///       left='>',
+///       right='<',
+///       top='^',
+///       bottom='v',
+///     ),
 ///   )
 ///   assert_eq(table.to_string(), "+---+\n|^^^|\n|>x<|\n|vvv|\n+---+")
 /// }
@@ -135,3 +140,21 @@ pub impl CellOption for PaddingExpand with fn change(self, table, entity) {
 pub impl TableOption for PaddingExpand with fn change(self, table) {
   CellOption::change(self, table, Entity::Global)
 }
+
+///|
+pub extend PaddingExpand with Eq::{not_equal, equal}
+
+///|
+pub extend PaddingExpand with Compare::{op_lt, op_le, op_ge, compare, op_gt}
+
+///|
+pub extend PaddingExpand with @debug.Debug::{to_repr}
+
+///|
+pub extend PaddingExpand with CellOption::{
+  change as change_cell,
+  hint_change as hint_change_cell,
+}
+
+///|
+pub extend PaddingExpand with TableOption::{change, hint_change}

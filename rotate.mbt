@@ -11,8 +11,8 @@ pub(all) enum Rotate {
 ///
 /// ```mbt check
 /// test {
-///   let table = Table::from_rows([["a", "b"], ["c", "d"]])
-///   table.rotate(Rotate::Left) |> ignore
+///   let table = @tabular.Table::from_rows([["a", "b"], ["c", "d"]])
+///   table.rotate(@tabular.Rotate::Left) |> ignore
 ///   assert_eq(table.rows, [["b", "d"], ["a", "c"]])
 /// }
 /// ```
@@ -36,3 +36,9 @@ pub fn Table::rotate(self : Table, rotation : Rotate) -> Table {
   }
   self.finish_legacy_change()
 }
+
+///|
+pub extend Rotate with Eq::{not_equal, equal}
+
+///|
+pub extend Rotate with @debug.Debug::{to_repr}

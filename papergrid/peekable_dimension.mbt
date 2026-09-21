@@ -78,3 +78,9 @@ pub fn IterGridDimension::set_heights(
 ) -> Unit {
   self.heights = Some(heights.copy())
 }
+
+///|
+pub extend PeekableGridDimension with Eq::{not_equal, equal}
+
+///|
+pub extend PeekableGridDimension with @debug.Debug::{to_repr}

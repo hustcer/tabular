@@ -207,3 +207,21 @@ fn truncate_content(
     truncate(text)
   }
 }
+
+///|
+pub extend SuffixLimit with Eq::{not_equal, equal}
+
+///|
+pub extend SuffixLimit with @debug.Debug::{to_repr}
+
+///|
+pub extend Truncate with WidthOption::{to_mode}
+
+///|
+pub extend Truncate with CellOption::{
+  change as change_cell,
+  hint_change as hint_change_cell,
+}
+
+///|
+pub extend Truncate with TableOption::{change, hint_change}

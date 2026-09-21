@@ -32,7 +32,9 @@ pub fn[M, P, Q] MinWidth::priority(
 ///
 /// ```mbt check
 /// test {
-///   let table = Table::from_rows([["a", "bb"]]).with_(Width::increase(20))
+///   let table = @tabular.Table::from_rows([["a", "bb"]]).with_(
+///     @tabular.Width::increase(20),
+///   )
 ///   assert_eq(table.total_width(), 20)
 ///   assert_eq(table.rows, [["a", "bb"]])
 /// }
@@ -172,3 +174,18 @@ pub impl TableOption for WidthList with fn change(self, table) {
 pub impl TableOption for WidthList with fn hint_change(_self) {
   None
 }
+
+///|
+pub extend MinWidth with CellOption::{
+  change as change_cell,
+  hint_change as hint_change_cell,
+}
+
+///|
+pub extend MinWidth with TableOption::{change, hint_change}
+
+///|
+pub extend UniformWidth with TableOption::{change, hint_change}
+
+///|
+pub extend WidthList with TableOption::{change, hint_change}

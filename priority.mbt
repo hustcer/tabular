@@ -5,11 +5,20 @@
 ///
 /// ```mbt check
 /// test {
-///   let priority = Priority::round_robin()
+///   let priority = @tabular.Priority::round_robin()
 ///   let values = [5, 0, 2]
-///   assert_eq(ResizeSelector::select(priority, [0, 0, 0], values), Some(0))
-///   assert_eq(ResizeSelector::select(priority, [0, 0, 0], values), Some(2))
-///   assert_eq(ResizeSelector::select(priority, [0, 0, 0], values), Some(0))
+///   assert_eq(
+///     @tabular.ResizeSelector::select(priority, [0, 0, 0], values),
+///     Some(0),
+///   )
+///   assert_eq(
+///     @tabular.ResizeSelector::select(priority, [0, 0, 0], values),
+///     Some(2),
+///   )
+///   assert_eq(
+///     @tabular.ResizeSelector::select(priority, [0, 0, 0], values),
+///     Some(0),
+///   )
 /// }
 /// ```
 pub(open) trait ResizeSelector {
@@ -234,3 +243,54 @@ pub fn Priority::min(tie_break~ : TieBreak) -> PriorityMin {
 pub fn Priority::max(tie_break~ : TieBreak) -> PriorityMax {
   PriorityMax::new(tie_break~)
 }
+
+///|
+pub extend TieBreak with Eq::{not_equal, equal}
+
+///|
+pub extend TieBreak with @debug.Debug::{to_repr}
+
+///|
+pub extend PriorityRoundRobin with Eq::{not_equal, equal}
+
+///|
+pub extend PriorityRoundRobin with @debug.Debug::{to_repr}
+
+///|
+pub extend PriorityRoundRobin with ResizeSelector::{select}
+
+///|
+pub extend PriorityFirst with Eq::{not_equal, equal}
+
+///|
+pub extend PriorityFirst with @debug.Debug::{to_repr}
+
+///|
+pub extend PriorityFirst with ResizeSelector::{select}
+
+///|
+pub extend PriorityLast with Eq::{not_equal, equal}
+
+///|
+pub extend PriorityLast with @debug.Debug::{to_repr}
+
+///|
+pub extend PriorityLast with ResizeSelector::{select}
+
+///|
+pub extend PriorityMin with Eq::{not_equal, equal}
+
+///|
+pub extend PriorityMin with @debug.Debug::{to_repr}
+
+///|
+pub extend PriorityMax with Eq::{not_equal, equal}
+
+///|
+pub extend PriorityMax with @debug.Debug::{to_repr}
+
+///|
+pub extend PriorityMin with ResizeSelector::{select}
+
+///|
+pub extend PriorityMax with ResizeSelector::{select}

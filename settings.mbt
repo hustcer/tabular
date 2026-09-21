@@ -95,3 +95,21 @@ pub impl[A : CellOption, B : CellOption] CellOption for Settings[A, B] with fn h
     CellOption::hint_change(self.second),
   ])
 }
+
+///|
+pub extend EmptySettings with TableOption::{change, hint_change}
+
+///|
+pub extend EmptySettings with CellOption::{
+  change as change_cell,
+  hint_change as hint_change_cell,
+}
+
+///|
+pub extend Settings with TableOption::{change, hint_change}
+
+///|
+pub extend Settings with CellOption::{
+  change as change_cell,
+  hint_change as hint_change_cell,
+}

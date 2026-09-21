@@ -117,7 +117,7 @@ fn split_at_width(text : String, limit : Int) -> (Int, Int, Bool) {
 /// ```mbt check
 /// test {
 ///   assert_eq(
-///     cut_str("\u001b[31m中文\u001b[39m", 3),
+///     @papergrid.cut_str("\u001b[31m中文\u001b[39m", 3),
 ///     "\u001b[31m中\u001b[39m�",
 ///   )
 /// }
@@ -148,7 +148,7 @@ pub fn cut_str(text : String, width : Int) -> String {
 ///
 /// ```mbt check
 /// test {
-///   assert_eq(wrap_text("ab中", 2), "ab\n中")
+///   assert_eq(@papergrid.wrap_text("ab中", 2), "ab\n中")
 /// }
 /// ```
 pub fn wrap_text(

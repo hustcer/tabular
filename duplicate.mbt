@@ -17,8 +17,13 @@ pub fn Duplicate::new(source~ : &Object, destination~ : &Object) -> Duplicate {
 ///
 /// ```mbt check
 /// test {
-///   let table = Table::from_rows([["a", "b"], ["c", "d"]])
-///   table.duplicate(Duplicate::new(source=Rows::one(0), destination=Rows::one(1)))
+///   let table = @tabular.Table::from_rows([["a", "b"], ["c", "d"]])
+///   table.duplicate(
+///     @tabular.Duplicate::new(
+///       source=@tabular.Rows::one(0),
+///       destination=@tabular.Rows::one(1),
+///     ),
+///   )
 ///   |> ignore
 ///   assert_eq(table.rows, [["a", "b"], ["a", "b"]])
 /// }

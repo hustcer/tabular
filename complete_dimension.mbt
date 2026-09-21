@@ -165,3 +165,9 @@ fn Table::finish_legacy_change(self : Table) -> Table {
   }
   self
 }
+
+///|
+pub extend CompleteDimension with Eq::{not_equal, equal}
+
+///|
+pub extend CompleteDimension with @debug.Debug::{to_repr}

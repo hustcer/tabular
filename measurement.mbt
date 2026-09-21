@@ -11,9 +11,23 @@ pub(all) enum Attribute {
 ///
 /// ```mbt check
 /// test {
-///   let table = Table::from_rows([["abcd", "x"]])
-///   assert_eq(Measurement::measure(Percent::new(50), table, Attribute::Width), 6)
-///   assert_eq(Measurement::measure(Max::new(), table, Attribute::Width), 4)
+///   let table = @tabular.Table::from_rows([["abcd", "x"]])
+///   assert_eq(
+///     @tabular.Measurement::measure(
+///       @tabular.Percent::new(50),
+///       table,
+///       @tabular.Attribute::Width,
+///     ),
+///     6,
+///   )
+///   assert_eq(
+///     @tabular.Measurement::measure(
+///       @tabular.Max::new(),
+///       table,
+///       @tabular.Attribute::Width,
+///     ),
+///     4,
+///   )
 /// }
 /// ```
 pub(open) trait Measurement {
@@ -146,3 +160,36 @@ pub impl Measurement for Percent with fn measure(self, table, attribute) {
   }
   percent_of(total, self.0)
 }
+
+///|
+pub extend Attribute with Eq::{not_equal, equal}
+
+///|
+pub extend Attribute with @debug.Debug::{to_repr}
+
+///|
+pub extend Max with Eq::{not_equal, equal}
+
+///|
+pub extend Max with @debug.Debug::{to_repr}
+
+///|
+pub extend Min with Eq::{not_equal, equal}
+
+///|
+pub extend Min with @debug.Debug::{to_repr}
+
+///|
+pub extend Percent with Eq::{not_equal, equal}
+
+///|
+pub extend Percent with @debug.Debug::{to_repr}
+
+///|
+pub extend Max with Measurement::{measure}
+
+///|
+pub extend Min with Measurement::{measure}
+
+///|
+pub extend Percent with Measurement::{measure}

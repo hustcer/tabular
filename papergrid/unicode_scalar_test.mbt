@@ -7,8 +7,11 @@ test "Unicode scalar width digests" {
   let mut strings = chars
   for cp in 0..<=0x10ffff {
     if cp.to_char() is Some(ch) {
-      chars = (chars ^ get_char_width(ch).to_uint64()) * 1099511628211UL
-      strings = (strings ^ get_string_width(ch.to_string()).to_uint64()) *
+      chars = (chars ^ @papergrid.get_char_width(ch).to_uint64()) *
+        1099511628211UL
+      strings = (
+          strings ^ @papergrid.get_string_width(ch.to_string()).to_uint64()
+        ) *
         1099511628211UL
     }
   }

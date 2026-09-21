@@ -112,3 +112,42 @@ pub impl CellOption for AlignmentFill with fn hint_change(_self) {
 pub impl TableOption for AlignmentFill with fn hint_change(_self) {
   None
 }
+
+///|
+pub extend TrimStrategy with Eq::{not_equal, equal}
+
+///|
+pub extend TrimStrategy with @debug.Debug::{to_repr}
+
+///|
+pub extend TrimStrategy with CellOption::{
+  change as change_cell,
+  hint_change as hint_change_cell,
+}
+
+///|
+pub extend TrimStrategy with TableOption::{change, hint_change}
+
+///|
+pub extend AlignmentStrategy with Eq::{not_equal, equal}
+
+///|
+pub extend AlignmentStrategy with @debug.Debug::{to_repr}
+
+///|
+pub extend AlignmentStrategy with CellOption::{
+  change as change_cell,
+  hint_change as hint_change_cell,
+}
+
+///|
+pub extend AlignmentStrategy with TableOption::{change, hint_change}
+
+///|
+pub extend AlignmentFill with CellOption::{
+  change as change_cell,
+  hint_change as hint_change_cell,
+}
+
+///|
+pub extend AlignmentFill with TableOption::{change, hint_change}

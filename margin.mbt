@@ -60,3 +60,9 @@ pub impl TableOption for Margin with fn change(self, table) {
     self.fill_right,
   )
 }
+
+///|
+pub extend Margin with @debug.Debug::{to_repr}
+
+///|
+pub extend Margin with TableOption::{change, hint_change}

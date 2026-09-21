@@ -120,3 +120,12 @@ pub enum Span {}
 
 ///|
 pub enum Panel {}
+
+///|
+pub extend Padding with Eq::{not_equal, equal}
+
+///|
+pub extend Padding with Compare::{op_lt, op_le, op_ge, compare, op_gt}
+
+///|
+pub extend Padding with @debug.Debug::{to_repr}

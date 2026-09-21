@@ -36,7 +36,7 @@ pub fn TextCleanup::expand_tabs(
 ///
 /// ```mbt check
 /// test {
-///   assert_eq(TextCleanup::clean_text("a\tb\r\nc"), "a    b\nc")
+///   assert_eq(@tabular.TextCleanup::clean_text("a\tb\r\nc"), "a    b\nc")
 /// }
 /// ```
 pub fn TextCleanup::clean_text(text : String) -> String {
@@ -83,3 +83,12 @@ pub impl CellOption for TextCleanup with fn change(self, table, entity) {
 pub impl TableOption for TextCleanup with fn change(self, table) {
   CellOption::change(self, table, Entity::Global)
 }
+
+///|
+pub extend TextCleanup with CellOption::{
+  change as change_cell,
+  hint_change as hint_change_cell,
+}
+
+///|
+pub extend TextCleanup with TableOption::{change, hint_change}

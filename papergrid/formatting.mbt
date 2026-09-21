@@ -234,3 +234,15 @@ fn SpannedConfig::remap_formatting(
   self.formatting_rules.clear()
   self.formatting_rules.append(rules)
 }
+
+///|
+pub extend Formatting with Eq::{not_equal, equal}
+
+///|
+pub extend Formatting with @debug.Debug::{to_repr}
+
+///|
+pub extend ANSIBuf with Eq::{not_equal, equal}
+
+///|
+pub extend ANSIBuf with @debug.Debug::{to_repr}

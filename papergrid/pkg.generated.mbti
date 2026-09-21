@@ -52,11 +52,16 @@ pub(all) struct ANSIBuf {
 pub fn ANSIBuf::as_ansi_str(Self) -> ANSIStr
 pub fn ANSIBuf::default() -> Self
 pub fn ANSIBuf::empty() -> Self
+pub fn ANSIBuf::equal(Self, Self) -> Bool
+pub fn ANSIBuf::fmt_ansi_prefix(Self, StringBuilder) -> Unit
+pub fn ANSIBuf::fmt_ansi_suffix(Self, StringBuilder) -> Unit
 pub fn ANSIBuf::from_ansi_str(ANSIStr) -> Self
 pub fn ANSIBuf::get_prefix(Self) -> String
 pub fn ANSIBuf::get_suffix(Self) -> String
 pub fn ANSIBuf::is_empty(Self) -> Bool
 pub fn ANSIBuf::new(String, String) -> Self
+pub fn ANSIBuf::not_equal(Self, Self) -> Bool
+pub fn ANSIBuf::to_repr(Self) -> @debug.Repr
 pub fn ANSIBuf::try_parse(String) -> Result[Self, Unit]
 pub impl ANSIFmt for ANSIBuf
 
@@ -66,10 +71,15 @@ pub(all) struct ANSIStr {
 } derive(Eq, @debug.Debug)
 pub fn ANSIStr::default() -> Self
 pub fn ANSIStr::empty() -> Self
+pub fn ANSIStr::equal(Self, Self) -> Bool
+pub fn ANSIStr::fmt_ansi_prefix(Self, StringBuilder) -> Unit
+pub fn ANSIStr::fmt_ansi_suffix(Self, StringBuilder) -> Unit
 pub fn ANSIStr::get_prefix(Self) -> String
 pub fn ANSIStr::get_suffix(Self) -> String
 pub fn ANSIStr::is_empty(Self) -> Bool
 pub fn ANSIStr::new(String, String) -> Self
+pub fn ANSIStr::not_equal(Self, Self) -> Bool
+pub fn ANSIStr::to_repr(Self) -> @debug.Repr
 pub impl ANSIFmt for ANSIStr
 
 pub struct Borders {
@@ -146,7 +156,10 @@ pub(all) enum Entity {
   Col(Int)
   Cell(Int, Int)
 } derive(Eq, @debug.Debug)
+pub fn Entity::equal(Self, Self) -> Bool
 pub fn Entity::iter(Self, Int, Int) -> Iter[(Int, Int)]
+pub fn Entity::not_equal(Self, Self) -> Bool
+pub fn Entity::to_repr(Self) -> @debug.Repr
 
 pub(all) struct Formatting {
   trim_horizontal : Bool
@@ -154,7 +167,10 @@ pub(all) struct Formatting {
   align_lines : Bool
 } derive(Eq, @debug.Debug)
 pub fn Formatting::default() -> Self
+pub fn Formatting::equal(Self, Self) -> Bool
 pub fn Formatting::new(trim_horizontal~ : Bool, trim_vertical~ : Bool, align_lines~ : Bool) -> Self
+pub fn Formatting::not_equal(Self, Self) -> Bool
+pub fn Formatting::to_repr(Self) -> @debug.Repr
 
 pub enum HAlign {
   Left
@@ -201,10 +217,20 @@ pub(all) struct Indent {
   fill : Char
   size : Int
 } derive(Compare, Eq, Hash, @debug.Debug)
+pub fn Indent::compare(Self, Self) -> Int
 pub fn Indent::default() -> Self
+pub fn Indent::equal(Self, Self) -> Bool
+pub fn Indent::hash(Self) -> Int
+pub fn Indent::hash_combine(Self, Hasher) -> Unit
 pub fn Indent::is_empty(Self) -> Bool
 pub fn Indent::new(Int, Char) -> Self
+pub fn Indent::not_equal(Self, Self) -> Bool
+pub fn Indent::op_ge(Self, Self) -> Bool
+pub fn Indent::op_gt(Self, Self) -> Bool
+pub fn Indent::op_le(Self, Self) -> Bool
+pub fn Indent::op_lt(Self, Self) -> Bool
 pub fn Indent::spaced(Int) -> Self
+pub fn Indent::to_repr(Self) -> @debug.Repr
 pub fn Indent::zero() -> Self
 pub impl Default for Indent
 
@@ -245,7 +271,17 @@ pub(all) enum Offset {
   Start(Int)
   End(Int)
 } derive(Compare, Eq, Hash, @debug.Debug)
+pub fn Offset::compare(Self, Self) -> Int
+pub fn Offset::equal(Self, Self) -> Bool
 pub fn Offset::from_int(Int) -> Self
+pub fn Offset::hash(Self) -> Int
+pub fn Offset::hash_combine(Self, Hasher) -> Unit
+pub fn Offset::not_equal(Self, Self) -> Bool
+pub fn Offset::op_ge(Self, Self) -> Bool
+pub fn Offset::op_gt(Self, Self) -> Bool
+pub fn Offset::op_le(Self, Self) -> Bool
+pub fn Offset::op_lt(Self, Self) -> Bool
+pub fn Offset::to_repr(Self) -> @debug.Repr
 
 pub struct PeekableGridDimension {
   mut widths : Array[Int]
@@ -253,12 +289,15 @@ pub struct PeekableGridDimension {
 } derive(Eq, @debug.Debug)
 pub fn PeekableGridDimension::default() -> Self
 pub fn PeekableGridDimension::dimensions(Self) -> (Array[Int], Array[Int])
+pub fn PeekableGridDimension::equal(Self, Self) -> Bool
 pub fn PeekableGridDimension::estimate(Self, IterRecords, SpannedConfig) -> Unit
 pub fn PeekableGridDimension::get_height(Self, Int) -> Int
 pub fn PeekableGridDimension::get_width(Self, Int) -> Int
 pub fn PeekableGridDimension::measure(IterRecords, SpannedConfig) -> (Array[Int], Array[Int])
 pub fn PeekableGridDimension::measure_heights(IterRecords, SpannedConfig) -> Array[Int]
 pub fn PeekableGridDimension::measure_widths(IterRecords, SpannedConfig) -> Array[Int]
+pub fn PeekableGridDimension::not_equal(Self, Self) -> Bool
+pub fn PeekableGridDimension::to_repr(Self) -> @debug.Repr
 
 type Scope
 
@@ -268,12 +307,22 @@ pub(all) struct Sides[T] {
   top : T
   bottom : T
 } derive(Compare, Eq, Hash, @debug.Debug)
+pub fn[T : Compare] Sides::compare(Self[T], Self[T]) -> Int
 pub fn[T : Default] Sides::default() -> Self[T]
+pub fn[T : Eq] Sides::equal(Self[T], Self[T]) -> Bool
 pub fn[T] Sides::filled(T) -> Self[T]
 pub fn[T, U] Sides::fold(Self[T], U, (U, T) -> U) -> U
+pub fn[T : Hash] Sides::hash(Self[T]) -> Int
+pub fn[T : Hash] Sides::hash_combine(Self[T], Hasher) -> Unit
 pub fn[T] Sides::is_empty(Self[T?]) -> Bool
 pub fn[T, U] Sides::map(Self[T], (T) -> U) -> Self[U]
 pub fn[T] Sides::new(left~ : T, right~ : T, top~ : T, bottom~ : T) -> Self[T]
+pub fn[T : Eq] Sides::not_equal(Self[T], Self[T]) -> Bool
+pub fn[T : Compare] Sides::op_ge(Self[T], Self[T]) -> Bool
+pub fn[T : Compare] Sides::op_gt(Self[T], Self[T]) -> Bool
+pub fn[T : Compare] Sides::op_le(Self[T], Self[T]) -> Bool
+pub fn[T : Compare] Sides::op_lt(Self[T], Self[T]) -> Bool
+pub fn[T : @debug.Debug] Sides::to_repr(Self[T]) -> @debug.Repr
 pub impl[T : Default] Default for Sides[T]
 
 pub struct SpannedConfig {

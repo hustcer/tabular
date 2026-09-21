@@ -46,3 +46,9 @@ pub fn Entity::iter(
     Some(position)
   })
 }
+
+///|
+pub extend Entity with Eq::{not_equal, equal}
+
+///|
+pub extend Entity with @debug.Debug::{to_repr}

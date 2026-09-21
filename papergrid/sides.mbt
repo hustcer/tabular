@@ -115,3 +115,39 @@ fn Offset::signed(self : Offset) -> Int {
     End(value) => -Int::max(0, value)
   }
 }
+
+///|
+pub extend Indent with Eq::{not_equal, equal}
+
+///|
+pub extend Indent with Compare::{op_lt, op_le, op_ge, compare, op_gt}
+
+///|
+pub extend Indent with @debug.Debug::{to_repr}
+
+///|
+pub extend Indent with Hash::{hash, hash_combine}
+
+///|
+pub extend Sides with Eq::{not_equal, equal}
+
+///|
+pub extend Sides with Compare::{op_lt, op_le, op_ge, compare, op_gt}
+
+///|
+pub extend Sides with @debug.Debug::{to_repr}
+
+///|
+pub extend Sides with Hash::{hash, hash_combine}
+
+///|
+pub extend Offset with Eq::{not_equal, equal}
+
+///|
+pub extend Offset with Compare::{op_lt, op_le, op_ge, compare, op_gt}
+
+///|
+pub extend Offset with @debug.Debug::{to_repr}
+
+///|
+pub extend Offset with Hash::{hash, hash_combine}

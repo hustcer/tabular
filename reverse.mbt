@@ -35,8 +35,8 @@ pub fn Reverse::take(self : Reverse, count : Int) -> Reverse {
 ///
 /// ```mbt check
 /// test {
-///   let table = Table::from_rows([["a"], ["b"], ["c"], ["d"], ["e"]])
-///   table.reverse(Reverse::rows(1).exclude_last(1)) |> ignore
+///   let table = @tabular.Table::from_rows([["a"], ["b"], ["c"], ["d"], ["e"]])
+///   table.reverse(@tabular.Reverse::rows(1).exclude_last(1)) |> ignore
 ///   assert_eq(table.rows, [["a"], ["d"], ["c"], ["b"], ["e"]])
 /// }
 /// ```
@@ -50,8 +50,8 @@ pub fn Reverse::exclude_last(self : Reverse, count : Int) -> Reverse {
 ///
 /// ```mbt check
 /// test {
-///   let table = Table::from_rows([["a"], ["b"], ["c"], ["d"]])
-///   table.reverse(Reverse::rows(1).take(2)) |> ignore
+///   let table = @tabular.Table::from_rows([["a"], ["b"], ["c"], ["d"]])
+///   table.reverse(@tabular.Reverse::rows(1).take(2)) |> ignore
 ///   assert_eq(table.rows, [["a"], ["c"], ["b"], ["d"]])
 /// }
 /// ```

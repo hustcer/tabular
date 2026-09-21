@@ -77,3 +77,15 @@ pub impl ANSIFmt for ANSIStr with fn fmt_ansi_prefix(self, out) {
 pub impl ANSIFmt for ANSIStr with fn fmt_ansi_suffix(self, out) {
   out.write_string(self.suffix)
 }
+
+///|
+pub extend ANSIStr with Eq::{not_equal, equal}
+
+///|
+pub extend ANSIStr with @debug.Debug::{to_repr}
+
+///|
+pub extend ANSIBuf with ANSIFmt::{fmt_ansi_suffix, fmt_ansi_prefix}
+
+///|
+pub extend ANSIStr with ANSIFmt::{fmt_ansi_suffix, fmt_ansi_prefix}

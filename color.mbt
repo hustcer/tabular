@@ -165,3 +165,24 @@ pub impl CellOption for Color with fn hint_change(_self) {
 pub impl TableOption for Color with fn hint_change(_self) {
   None
 }
+
+///|
+pub extend Color with Eq::{not_equal, equal}
+
+///|
+pub extend Color with @debug.Debug::{to_repr}
+
+///|
+pub extend Color with @papergrid.ANSIFmt::{fmt_ansi_suffix, fmt_ansi_prefix}
+
+///|
+pub extend Color with BitOr::{lor}
+
+///|
+pub extend Color with CellOption::{
+  change as change_cell,
+  hint_change as hint_change_cell,
+}
+
+///|
+pub extend Color with TableOption::{change, hint_change}

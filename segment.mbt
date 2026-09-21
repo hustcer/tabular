@@ -38,8 +38,8 @@ pub fn Padding::zero() -> Padding {
 ///
 /// ```mbt check
 /// test {
-///   let table = Table::from_rows([["hello world"]])
-///   table.modify((0, 0), Width::wrap(7).keep_words(true)) |> ignore
+///   let table = @tabular.Table::from_rows([["hello world"]])
+///   table.modify((0, 0), @tabular.Width::wrap(7).keep_words(true)) |> ignore
 ///   assert_eq(table.rows, [["hello \nworld"]])
 /// }
 /// ```

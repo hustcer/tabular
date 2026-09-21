@@ -14,10 +14,10 @@ pub impl HeightOption for @papergrid.HeightMode with fn to_mode(self) {
 ///
 /// ```mbt check
 /// test {
-///   let table = Table::from_rows([["a"], ["b"]])
-///   table.modify((0, 0), Height::increase(3)) |> ignore
+///   let table = @tabular.Table::from_rows([["a"], ["b"]])
+///   table.modify((0, 0), @tabular.Height::increase(3)) |> ignore
 ///   assert_eq(table.rows[0], ["a\n\n"])
-///   table.with_(Height::increase(10)) |> ignore
+///   table.with_(@tabular.Height::increase(10)) |> ignore
 ///   assert_eq(table.total_height(), 10)
 /// }
 /// ```
@@ -142,3 +142,39 @@ pub impl[M : Measurement] TableOption for CellHeightLimit[M] with fn hint_change
 fn height_limit_lines(text : String, height : Int) -> String {
   @papergrid.get_lines(text).iter().take(Int::max(0, height)).join("\n")
 }
+
+///|
+pub extend CellHeightIncrease with Eq::{not_equal, equal}
+
+///|
+pub extend CellHeightIncrease with @debug.Debug::{to_repr}
+
+///|
+pub extend CellHeightIncrease with HeightOption::{to_mode}
+
+///|
+pub extend CellHeightIncrease with CellOption::{
+  change as change_cell,
+  hint_change as hint_change_cell,
+}
+
+///|
+pub extend CellHeightIncrease with TableOption::{change, hint_change}
+
+///|
+pub extend CellHeightLimit with Eq::{not_equal, equal}
+
+///|
+pub extend CellHeightLimit with @debug.Debug::{to_repr}
+
+///|
+pub extend CellHeightLimit with HeightOption::{to_mode}
+
+///|
+pub extend CellHeightLimit with CellOption::{
+  change as change_cell,
+  hint_change as hint_change_cell,
+}
+
+///|
+pub extend CellHeightLimit with TableOption::{change, hint_change}

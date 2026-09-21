@@ -103,3 +103,18 @@ pub impl Object for ByColName with fn cells(self, table) {
     entity.iter(table.count_rows(), table.count_cols()).to_array()
   })
 }
+
+///|
+pub extend Rows with Object::{cells, entities}
+
+///|
+pub extend Cols with Object::{cells, entities}
+
+///|
+pub extend Cell with Object::{cells, entities}
+
+///|
+pub extend Segment with Object::{cells, entities}
+
+///|
+pub extend ByColName with Object::{cells, entities}

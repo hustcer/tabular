@@ -97,3 +97,24 @@ pub impl[C : @papergrid.ANSIFmt] TableOption for MarginColor[C] with fn change(
     self.colors.map(color => Some(indent_ansi_buffer(color))),
   )
 }
+
+///|
+pub extend PaddingColor with Eq::{not_equal, equal}
+
+///|
+pub extend PaddingColor with @debug.Debug::{to_repr}
+
+///|
+pub extend PaddingColor with CellOption::{
+  change as change_cell,
+  hint_change as hint_change_cell,
+}
+
+///|
+pub extend PaddingColor with TableOption::{change, hint_change}
+
+///|
+pub extend MarginColor with @debug.Debug::{to_repr}
+
+///|
+pub extend MarginColor with TableOption::{change, hint_change}

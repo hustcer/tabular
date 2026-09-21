@@ -150,7 +150,9 @@ pub fn HeightList::from_iter(heights : Iter[Int]) -> HeightList {
 ///
 /// ```mbt check
 /// test {
-///   let table = Table::from_rows([["one"], ["two"]]).with_(Height::list([0, 2]))
+///   let table = @tabular.Table::from_rows([["one"], ["two"]]).with_(
+///     @tabular.Height::list([0, 2]),
+///   )
 ///   assert_eq(table.to_string(), "+-----+\n+-----+\n| two |\n|     |\n+-----+")
 /// }
 /// ```
@@ -169,3 +171,21 @@ pub impl TableOption for HeightList with fn change(self, table) {
 pub impl TableOption for HeightList with fn hint_change(_self) {
   None
 }
+
+///|
+pub extend TableHeightIncrease with @debug.Debug::{to_repr}
+
+///|
+pub extend TableHeightIncrease with TableOption::{change, hint_change}
+
+///|
+pub extend TableHeightLimit with @debug.Debug::{to_repr}
+
+///|
+pub extend TableHeightLimit with TableOption::{change, hint_change}
+
+///|
+pub extend HeightList with @debug.Debug::{to_repr}
+
+///|
+pub extend HeightList with TableOption::{change, hint_change}

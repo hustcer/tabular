@@ -4,145 +4,145 @@
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 0 at 0" {
   let input = ""
-  assert_eq(cut_str(input, 0), "")
-  assert_eq(wrap_text(input, 0), "")
-  assert_eq(wrap_text(input, 0, keep_words=true), "")
+  assert_eq(@papergrid.cut_str(input, 0), "")
+  assert_eq(@papergrid.wrap_text(input, 0), "")
+  assert_eq(@papergrid.wrap_text(input, 0, keep_words=true), "")
 }
 
 ///|
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 0 at 1" {
   let input = ""
-  assert_eq(cut_str(input, 1), "")
-  assert_eq(wrap_text(input, 1), "")
-  assert_eq(wrap_text(input, 1, keep_words=true), "")
+  assert_eq(@papergrid.cut_str(input, 1), "")
+  assert_eq(@papergrid.wrap_text(input, 1), "")
+  assert_eq(@papergrid.wrap_text(input, 1, keep_words=true), "")
 }
 
 ///|
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 0 at 2" {
   let input = ""
-  assert_eq(cut_str(input, 2), "")
-  assert_eq(wrap_text(input, 2), "")
-  assert_eq(wrap_text(input, 2, keep_words=true), "")
+  assert_eq(@papergrid.cut_str(input, 2), "")
+  assert_eq(@papergrid.wrap_text(input, 2), "")
+  assert_eq(@papergrid.wrap_text(input, 2, keep_words=true), "")
 }
 
 ///|
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 0 at 3" {
   let input = ""
-  assert_eq(cut_str(input, 3), "")
-  assert_eq(wrap_text(input, 3), "")
-  assert_eq(wrap_text(input, 3, keep_words=true), "")
+  assert_eq(@papergrid.cut_str(input, 3), "")
+  assert_eq(@papergrid.wrap_text(input, 3), "")
+  assert_eq(@papergrid.wrap_text(input, 3, keep_words=true), "")
 }
 
 ///|
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 0 at 4" {
   let input = ""
-  assert_eq(cut_str(input, 4), "")
-  assert_eq(wrap_text(input, 4), "")
-  assert_eq(wrap_text(input, 4, keep_words=true), "")
+  assert_eq(@papergrid.cut_str(input, 4), "")
+  assert_eq(@papergrid.wrap_text(input, 4), "")
+  assert_eq(@papergrid.wrap_text(input, 4, keep_words=true), "")
 }
 
 ///|
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 0 at 6" {
   let input = ""
-  assert_eq(cut_str(input, 6), "")
-  assert_eq(wrap_text(input, 6), "")
-  assert_eq(wrap_text(input, 6, keep_words=true), "")
+  assert_eq(@papergrid.cut_str(input, 6), "")
+  assert_eq(@papergrid.wrap_text(input, 6), "")
+  assert_eq(@papergrid.wrap_text(input, 6, keep_words=true), "")
 }
 
 ///|
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 0 at 10" {
   let input = ""
-  assert_eq(cut_str(input, 10), "")
-  assert_eq(wrap_text(input, 10), "")
-  assert_eq(wrap_text(input, 10, keep_words=true), "")
+  assert_eq(@papergrid.cut_str(input, 10), "")
+  assert_eq(@papergrid.wrap_text(input, 10), "")
+  assert_eq(@papergrid.wrap_text(input, 10, keep_words=true), "")
 }
 
 ///|
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 1 at 0" {
   let input = "123456"
-  assert_eq(cut_str(input, 0), "")
-  assert_eq(wrap_text(input, 0), "")
-  assert_eq(wrap_text(input, 0, keep_words=true), "")
+  assert_eq(@papergrid.cut_str(input, 0), "")
+  assert_eq(@papergrid.wrap_text(input, 0), "")
+  assert_eq(@papergrid.wrap_text(input, 0, keep_words=true), "")
 }
 
 ///|
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 1 at 1" {
   let input = "123456"
-  assert_eq(cut_str(input, 1), "1")
-  assert_eq(wrap_text(input, 1), "1\n2\n3\n4\n5\n6")
-  assert_eq(wrap_text(input, 1, keep_words=true), "1\n2\n3\n4\n5\n6")
+  assert_eq(@papergrid.cut_str(input, 1), "1")
+  assert_eq(@papergrid.wrap_text(input, 1), "1\n2\n3\n4\n5\n6")
+  assert_eq(@papergrid.wrap_text(input, 1, keep_words=true), "1\n2\n3\n4\n5\n6")
 }
 
 ///|
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 1 at 2" {
   let input = "123456"
-  assert_eq(cut_str(input, 2), "12")
-  assert_eq(wrap_text(input, 2), "12\n34\n56")
-  assert_eq(wrap_text(input, 2, keep_words=true), "12\n34\n56")
+  assert_eq(@papergrid.cut_str(input, 2), "12")
+  assert_eq(@papergrid.wrap_text(input, 2), "12\n34\n56")
+  assert_eq(@papergrid.wrap_text(input, 2, keep_words=true), "12\n34\n56")
 }
 
 ///|
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 1 at 3" {
   let input = "123456"
-  assert_eq(cut_str(input, 3), "123")
-  assert_eq(wrap_text(input, 3), "123\n456")
-  assert_eq(wrap_text(input, 3, keep_words=true), "123\n456")
+  assert_eq(@papergrid.cut_str(input, 3), "123")
+  assert_eq(@papergrid.wrap_text(input, 3), "123\n456")
+  assert_eq(@papergrid.wrap_text(input, 3, keep_words=true), "123\n456")
 }
 
 ///|
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 1 at 4" {
   let input = "123456"
-  assert_eq(cut_str(input, 4), "1234")
-  assert_eq(wrap_text(input, 4), "1234\n56")
-  assert_eq(wrap_text(input, 4, keep_words=true), "1234\n56")
+  assert_eq(@papergrid.cut_str(input, 4), "1234")
+  assert_eq(@papergrid.wrap_text(input, 4), "1234\n56")
+  assert_eq(@papergrid.wrap_text(input, 4, keep_words=true), "1234\n56")
 }
 
 ///|
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 1 at 6" {
   let input = "123456"
-  assert_eq(cut_str(input, 6), "123456")
-  assert_eq(wrap_text(input, 6), "123456")
-  assert_eq(wrap_text(input, 6, keep_words=true), "123456")
+  assert_eq(@papergrid.cut_str(input, 6), "123456")
+  assert_eq(@papergrid.wrap_text(input, 6), "123456")
+  assert_eq(@papergrid.wrap_text(input, 6, keep_words=true), "123456")
 }
 
 ///|
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 1 at 10" {
   let input = "123456"
-  assert_eq(cut_str(input, 10), "123456")
-  assert_eq(wrap_text(input, 10), "123456")
-  assert_eq(wrap_text(input, 10, keep_words=true), "123456")
+  assert_eq(@papergrid.cut_str(input, 10), "123456")
+  assert_eq(@papergrid.wrap_text(input, 10), "123456")
+  assert_eq(@papergrid.wrap_text(input, 10, keep_words=true), "123456")
 }
 
 ///|
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 2 at 0" {
   let input = "123\n456789"
-  assert_eq(cut_str(input, 0), "")
-  assert_eq(wrap_text(input, 0), "")
-  assert_eq(wrap_text(input, 0, keep_words=true), "")
+  assert_eq(@papergrid.cut_str(input, 0), "")
+  assert_eq(@papergrid.wrap_text(input, 0), "")
+  assert_eq(@papergrid.wrap_text(input, 0, keep_words=true), "")
 }
 
 ///|
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 2 at 1" {
   let input = "123\n456789"
-  assert_eq(cut_str(input, 1), "1")
-  assert_eq(wrap_text(input, 1), "1\n2\n3\n4\n5\n6\n7\n8\n9")
+  assert_eq(@papergrid.cut_str(input, 1), "1")
+  assert_eq(@papergrid.wrap_text(input, 1), "1\n2\n3\n4\n5\n6\n7\n8\n9")
   assert_eq(
-    wrap_text(input, 1, keep_words=true),
+    @papergrid.wrap_text(input, 1, keep_words=true),
     "1\n2\n3\n\n\n4\n5\n6\n7\n8\n9",
   )
 }
@@ -151,316 +151,334 @@ test "ANSI width reference 2 at 1" {
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 2 at 2" {
   let input = "123\n456789"
-  assert_eq(cut_str(input, 2), "12")
-  assert_eq(wrap_text(input, 2), "12\n3\n45\n67\n89")
-  assert_eq(wrap_text(input, 2, keep_words=true), "12\n3\n\n45\n67\n89")
+  assert_eq(@papergrid.cut_str(input, 2), "12")
+  assert_eq(@papergrid.wrap_text(input, 2), "12\n3\n45\n67\n89")
+  assert_eq(
+    @papergrid.wrap_text(input, 2, keep_words=true),
+    "12\n3\n\n45\n67\n89",
+  )
 }
 
 ///|
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 2 at 3" {
   let input = "123\n456789"
-  assert_eq(cut_str(input, 3), "123")
-  assert_eq(wrap_text(input, 3), "123\n456\n789")
-  assert_eq(wrap_text(input, 3, keep_words=true), "123\n\n45\n678\n9")
+  assert_eq(@papergrid.cut_str(input, 3), "123")
+  assert_eq(@papergrid.wrap_text(input, 3), "123\n456\n789")
+  assert_eq(
+    @papergrid.wrap_text(input, 3, keep_words=true),
+    "123\n\n45\n678\n9",
+  )
 }
 
 ///|
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 2 at 4" {
   let input = "123\n456789"
-  assert_eq(cut_str(input, 4), "123\n4567")
-  assert_eq(wrap_text(input, 4), "123\n4567\n89")
-  assert_eq(wrap_text(input, 4, keep_words=true), "123\n\n4567\n89")
+  assert_eq(@papergrid.cut_str(input, 4), "123\n4567")
+  assert_eq(@papergrid.wrap_text(input, 4), "123\n4567\n89")
+  assert_eq(@papergrid.wrap_text(input, 4, keep_words=true), "123\n\n4567\n89")
 }
 
 ///|
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 2 at 6" {
   let input = "123\n456789"
-  assert_eq(cut_str(input, 6), "123\n456789")
-  assert_eq(wrap_text(input, 6), "123\n456789")
-  assert_eq(wrap_text(input, 6, keep_words=true), "123\n45\n6789")
+  assert_eq(@papergrid.cut_str(input, 6), "123\n456789")
+  assert_eq(@papergrid.wrap_text(input, 6), "123\n456789")
+  assert_eq(@papergrid.wrap_text(input, 6, keep_words=true), "123\n45\n6789")
 }
 
 ///|
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 2 at 10" {
   let input = "123\n456789"
-  assert_eq(cut_str(input, 10), "123\n456789")
-  assert_eq(wrap_text(input, 10), "123\n456789")
-  assert_eq(wrap_text(input, 10, keep_words=true), "123\n456789")
+  assert_eq(@papergrid.cut_str(input, 10), "123\n456789")
+  assert_eq(@papergrid.wrap_text(input, 10), "123\n456789")
+  assert_eq(@papergrid.wrap_text(input, 10, keep_words=true), "123\n456789")
 }
 
 ///|
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 3 at 0" {
   let input = "ab\n\ncd\n"
-  assert_eq(cut_str(input, 0), "")
-  assert_eq(wrap_text(input, 0), "")
-  assert_eq(wrap_text(input, 0, keep_words=true), "")
+  assert_eq(@papergrid.cut_str(input, 0), "")
+  assert_eq(@papergrid.wrap_text(input, 0), "")
+  assert_eq(@papergrid.wrap_text(input, 0, keep_words=true), "")
 }
 
 ///|
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 3 at 1" {
   let input = "ab\n\ncd\n"
-  assert_eq(cut_str(input, 1), "a")
-  assert_eq(wrap_text(input, 1), "a\nb\n\nc\nd\n")
-  assert_eq(wrap_text(input, 1, keep_words=true), "a\nb\n\n\n\n\nc\nd\n\n")
+  assert_eq(@papergrid.cut_str(input, 1), "a")
+  assert_eq(@papergrid.wrap_text(input, 1), "a\nb\n\nc\nd\n")
+  assert_eq(
+    @papergrid.wrap_text(input, 1, keep_words=true),
+    "a\nb\n\n\n\n\nc\nd\n\n",
+  )
 }
 
 ///|
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 3 at 2" {
   let input = "ab\n\ncd\n"
-  assert_eq(cut_str(input, 2), "ab")
-  assert_eq(wrap_text(input, 2), "ab\n\ncd\n")
-  assert_eq(wrap_text(input, 2, keep_words=true), "ab\n\n\n\ncd\n\n")
+  assert_eq(@papergrid.cut_str(input, 2), "ab")
+  assert_eq(@papergrid.wrap_text(input, 2), "ab\n\ncd\n")
+  assert_eq(@papergrid.wrap_text(input, 2, keep_words=true), "ab\n\n\n\ncd\n\n")
 }
 
 ///|
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 3 at 3" {
   let input = "ab\n\ncd\n"
-  assert_eq(cut_str(input, 3), "ab\n\ncd\n")
-  assert_eq(wrap_text(input, 3), "ab\n\ncd\n")
-  assert_eq(wrap_text(input, 3, keep_words=true), "ab\n\n\ncd\n\n")
+  assert_eq(@papergrid.cut_str(input, 3), "ab\n\ncd\n")
+  assert_eq(@papergrid.wrap_text(input, 3), "ab\n\ncd\n")
+  assert_eq(@papergrid.wrap_text(input, 3, keep_words=true), "ab\n\n\ncd\n\n")
 }
 
 ///|
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 3 at 4" {
   let input = "ab\n\ncd\n"
-  assert_eq(cut_str(input, 4), "ab\n\ncd\n")
-  assert_eq(wrap_text(input, 4), "ab\n\ncd\n")
-  assert_eq(wrap_text(input, 4, keep_words=true), "ab\n\n\ncd\n")
+  assert_eq(@papergrid.cut_str(input, 4), "ab\n\ncd\n")
+  assert_eq(@papergrid.wrap_text(input, 4), "ab\n\ncd\n")
+  assert_eq(@papergrid.wrap_text(input, 4, keep_words=true), "ab\n\n\ncd\n")
 }
 
 ///|
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 3 at 6" {
   let input = "ab\n\ncd\n"
-  assert_eq(cut_str(input, 6), "ab\n\ncd\n")
-  assert_eq(wrap_text(input, 6), "ab\n\ncd\n")
-  assert_eq(wrap_text(input, 6, keep_words=true), "ab\n\ncd\n\n")
+  assert_eq(@papergrid.cut_str(input, 6), "ab\n\ncd\n")
+  assert_eq(@papergrid.wrap_text(input, 6), "ab\n\ncd\n")
+  assert_eq(@papergrid.wrap_text(input, 6, keep_words=true), "ab\n\ncd\n\n")
 }
 
 ///|
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 3 at 10" {
   let input = "ab\n\ncd\n"
-  assert_eq(cut_str(input, 10), "ab\n\ncd\n")
-  assert_eq(wrap_text(input, 10), "ab\n\ncd\n")
-  assert_eq(wrap_text(input, 10, keep_words=true), "ab\n\ncd\n")
+  assert_eq(@papergrid.cut_str(input, 10), "ab\n\ncd\n")
+  assert_eq(@papergrid.wrap_text(input, 10), "ab\n\ncd\n")
+  assert_eq(@papergrid.wrap_text(input, 10, keep_words=true), "ab\n\ncd\n")
 }
 
 ///|
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 4 at 0" {
   let input = "😳😳😳"
-  assert_eq(cut_str(input, 0), "")
-  assert_eq(wrap_text(input, 0), "")
-  assert_eq(wrap_text(input, 0, keep_words=true), "")
+  assert_eq(@papergrid.cut_str(input, 0), "")
+  assert_eq(@papergrid.wrap_text(input, 0), "")
+  assert_eq(@papergrid.wrap_text(input, 0, keep_words=true), "")
 }
 
 ///|
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 4 at 1" {
   let input = "😳😳😳"
-  assert_eq(cut_str(input, 1), "�")
-  assert_eq(wrap_text(input, 1), "�\n�\n�")
-  assert_eq(wrap_text(input, 1, keep_words=true), "�\n�\n�")
+  assert_eq(@papergrid.cut_str(input, 1), "�")
+  assert_eq(@papergrid.wrap_text(input, 1), "�\n�\n�")
+  assert_eq(@papergrid.wrap_text(input, 1, keep_words=true), "�\n�\n�")
 }
 
 ///|
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 4 at 2" {
   let input = "😳😳😳"
-  assert_eq(cut_str(input, 2), "😳")
-  assert_eq(wrap_text(input, 2), "😳\n😳\n😳")
-  assert_eq(wrap_text(input, 2, keep_words=true), "😳\n😳\n😳")
+  assert_eq(@papergrid.cut_str(input, 2), "😳")
+  assert_eq(@papergrid.wrap_text(input, 2), "😳\n😳\n😳")
+  assert_eq(@papergrid.wrap_text(input, 2, keep_words=true), "😳\n😳\n😳")
 }
 
 ///|
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 4 at 3" {
   let input = "😳😳😳"
-  assert_eq(cut_str(input, 3), "😳�")
-  assert_eq(wrap_text(input, 3), "😳\n😳\n😳")
-  assert_eq(wrap_text(input, 3, keep_words=true), "😳\n😳\n😳")
+  assert_eq(@papergrid.cut_str(input, 3), "😳�")
+  assert_eq(@papergrid.wrap_text(input, 3), "😳\n😳\n😳")
+  assert_eq(@papergrid.wrap_text(input, 3, keep_words=true), "😳\n😳\n😳")
 }
 
 ///|
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 4 at 4" {
   let input = "😳😳😳"
-  assert_eq(cut_str(input, 4), "😳😳")
-  assert_eq(wrap_text(input, 4), "😳😳\n😳")
-  assert_eq(wrap_text(input, 4, keep_words=true), "😳😳\n😳")
+  assert_eq(@papergrid.cut_str(input, 4), "😳😳")
+  assert_eq(@papergrid.wrap_text(input, 4), "😳😳\n😳")
+  assert_eq(@papergrid.wrap_text(input, 4, keep_words=true), "😳😳\n😳")
 }
 
 ///|
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 4 at 6" {
   let input = "😳😳😳"
-  assert_eq(cut_str(input, 6), "😳😳😳")
-  assert_eq(wrap_text(input, 6), "😳😳😳")
-  assert_eq(wrap_text(input, 6, keep_words=true), "😳😳😳")
+  assert_eq(@papergrid.cut_str(input, 6), "😳😳😳")
+  assert_eq(@papergrid.wrap_text(input, 6), "😳😳😳")
+  assert_eq(@papergrid.wrap_text(input, 6, keep_words=true), "😳😳😳")
 }
 
 ///|
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 4 at 10" {
   let input = "😳😳😳"
-  assert_eq(cut_str(input, 10), "😳😳😳")
-  assert_eq(wrap_text(input, 10), "😳😳😳")
-  assert_eq(wrap_text(input, 10, keep_words=true), "😳😳😳")
+  assert_eq(@papergrid.cut_str(input, 10), "😳😳😳")
+  assert_eq(@papergrid.wrap_text(input, 10), "😳😳😳")
+  assert_eq(@papergrid.wrap_text(input, 10, keep_words=true), "😳😳😳")
 }
 
 ///|
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 5 at 0" {
   let input = "😳12😳3"
-  assert_eq(cut_str(input, 0), "")
-  assert_eq(wrap_text(input, 0), "")
-  assert_eq(wrap_text(input, 0, keep_words=true), "")
+  assert_eq(@papergrid.cut_str(input, 0), "")
+  assert_eq(@papergrid.wrap_text(input, 0), "")
+  assert_eq(@papergrid.wrap_text(input, 0, keep_words=true), "")
 }
 
 ///|
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 5 at 1" {
   let input = "😳12😳3"
-  assert_eq(cut_str(input, 1), "�")
-  assert_eq(wrap_text(input, 1), "�\n1\n2\n�\n3")
-  assert_eq(wrap_text(input, 1, keep_words=true), "�\n1\n2\n�\n3")
+  assert_eq(@papergrid.cut_str(input, 1), "�")
+  assert_eq(@papergrid.wrap_text(input, 1), "�\n1\n2\n�\n3")
+  assert_eq(
+    @papergrid.wrap_text(input, 1, keep_words=true),
+    "�\n1\n2\n�\n3",
+  )
 }
 
 ///|
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 5 at 2" {
   let input = "😳12😳3"
-  assert_eq(cut_str(input, 2), "😳")
-  assert_eq(wrap_text(input, 2), "😳\n12\n😳\n3")
-  assert_eq(wrap_text(input, 2, keep_words=true), "😳\n12\n😳\n3")
+  assert_eq(@papergrid.cut_str(input, 2), "😳")
+  assert_eq(@papergrid.wrap_text(input, 2), "😳\n12\n😳\n3")
+  assert_eq(
+    @papergrid.wrap_text(input, 2, keep_words=true),
+    "😳\n12\n😳\n3",
+  )
 }
 
 ///|
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 5 at 3" {
   let input = "😳12😳3"
-  assert_eq(cut_str(input, 3), "😳1")
-  assert_eq(wrap_text(input, 3), "😳1\n2😳\n3")
-  assert_eq(wrap_text(input, 3, keep_words=true), "😳1\n2😳\n3")
+  assert_eq(@papergrid.cut_str(input, 3), "😳1")
+  assert_eq(@papergrid.wrap_text(input, 3), "😳1\n2😳\n3")
+  assert_eq(@papergrid.wrap_text(input, 3, keep_words=true), "😳1\n2😳\n3")
 }
 
 ///|
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 5 at 4" {
   let input = "😳12😳3"
-  assert_eq(cut_str(input, 4), "😳12")
-  assert_eq(wrap_text(input, 4), "😳12\n😳3")
-  assert_eq(wrap_text(input, 4, keep_words=true), "😳12\n😳3")
+  assert_eq(@papergrid.cut_str(input, 4), "😳12")
+  assert_eq(@papergrid.wrap_text(input, 4), "😳12\n😳3")
+  assert_eq(@papergrid.wrap_text(input, 4, keep_words=true), "😳12\n😳3")
 }
 
 ///|
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 5 at 6" {
   let input = "😳12😳3"
-  assert_eq(cut_str(input, 6), "😳12😳")
-  assert_eq(wrap_text(input, 6), "😳12😳\n3")
-  assert_eq(wrap_text(input, 6, keep_words=true), "😳12😳\n3")
+  assert_eq(@papergrid.cut_str(input, 6), "😳12😳")
+  assert_eq(@papergrid.wrap_text(input, 6), "😳12😳\n3")
+  assert_eq(@papergrid.wrap_text(input, 6, keep_words=true), "😳12😳\n3")
 }
 
 ///|
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 5 at 10" {
   let input = "😳12😳3"
-  assert_eq(cut_str(input, 10), "😳12😳3")
-  assert_eq(wrap_text(input, 10), "😳12😳3")
-  assert_eq(wrap_text(input, 10, keep_words=true), "😳12😳3")
+  assert_eq(@papergrid.cut_str(input, 10), "😳12😳3")
+  assert_eq(@papergrid.wrap_text(input, 10), "😳12😳3")
+  assert_eq(@papergrid.wrap_text(input, 10, keep_words=true), "😳12😳3")
 }
 
 ///|
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 6 at 0" {
   let input = "中a中"
-  assert_eq(cut_str(input, 0), "")
-  assert_eq(wrap_text(input, 0), "")
-  assert_eq(wrap_text(input, 0, keep_words=true), "")
+  assert_eq(@papergrid.cut_str(input, 0), "")
+  assert_eq(@papergrid.wrap_text(input, 0), "")
+  assert_eq(@papergrid.wrap_text(input, 0, keep_words=true), "")
 }
 
 ///|
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 6 at 1" {
   let input = "中a中"
-  assert_eq(cut_str(input, 1), "�")
-  assert_eq(wrap_text(input, 1), "�\na\n�")
-  assert_eq(wrap_text(input, 1, keep_words=true), "�\na\n�")
+  assert_eq(@papergrid.cut_str(input, 1), "�")
+  assert_eq(@papergrid.wrap_text(input, 1), "�\na\n�")
+  assert_eq(@papergrid.wrap_text(input, 1, keep_words=true), "�\na\n�")
 }
 
 ///|
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 6 at 2" {
   let input = "中a中"
-  assert_eq(cut_str(input, 2), "中")
-  assert_eq(wrap_text(input, 2), "中\na\n中")
-  assert_eq(wrap_text(input, 2, keep_words=true), "中\na\n中")
+  assert_eq(@papergrid.cut_str(input, 2), "中")
+  assert_eq(@papergrid.wrap_text(input, 2), "中\na\n中")
+  assert_eq(@papergrid.wrap_text(input, 2, keep_words=true), "中\na\n中")
 }
 
 ///|
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 6 at 3" {
   let input = "中a中"
-  assert_eq(cut_str(input, 3), "中a")
-  assert_eq(wrap_text(input, 3), "中a\n中")
-  assert_eq(wrap_text(input, 3, keep_words=true), "中a\n中")
+  assert_eq(@papergrid.cut_str(input, 3), "中a")
+  assert_eq(@papergrid.wrap_text(input, 3), "中a\n中")
+  assert_eq(@papergrid.wrap_text(input, 3, keep_words=true), "中a\n中")
 }
 
 ///|
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 6 at 4" {
   let input = "中a中"
-  assert_eq(cut_str(input, 4), "中a�")
-  assert_eq(wrap_text(input, 4), "中a\n中")
-  assert_eq(wrap_text(input, 4, keep_words=true), "中a\n中")
+  assert_eq(@papergrid.cut_str(input, 4), "中a�")
+  assert_eq(@papergrid.wrap_text(input, 4), "中a\n中")
+  assert_eq(@papergrid.wrap_text(input, 4, keep_words=true), "中a\n中")
 }
 
 ///|
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 6 at 6" {
   let input = "中a中"
-  assert_eq(cut_str(input, 6), "中a中")
-  assert_eq(wrap_text(input, 6), "中a中")
-  assert_eq(wrap_text(input, 6, keep_words=true), "中a中")
+  assert_eq(@papergrid.cut_str(input, 6), "中a中")
+  assert_eq(@papergrid.wrap_text(input, 6), "中a中")
+  assert_eq(@papergrid.wrap_text(input, 6, keep_words=true), "中a中")
 }
 
 ///|
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 6 at 10" {
   let input = "中a中"
-  assert_eq(cut_str(input, 10), "中a中")
-  assert_eq(wrap_text(input, 10), "中a中")
-  assert_eq(wrap_text(input, 10, keep_words=true), "中a中")
+  assert_eq(@papergrid.cut_str(input, 10), "中a中")
+  assert_eq(@papergrid.wrap_text(input, 10), "中a中")
+  assert_eq(@papergrid.wrap_text(input, 10, keep_words=true), "中a中")
 }
 
 ///|
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 7 at 0" {
   let input = "a bb ccc dddd"
-  assert_eq(cut_str(input, 0), "")
-  assert_eq(wrap_text(input, 0), "")
-  assert_eq(wrap_text(input, 0, keep_words=true), "")
+  assert_eq(@papergrid.cut_str(input, 0), "")
+  assert_eq(@papergrid.wrap_text(input, 0), "")
+  assert_eq(@papergrid.wrap_text(input, 0, keep_words=true), "")
 }
 
 ///|
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 7 at 1" {
   let input = "a bb ccc dddd"
-  assert_eq(cut_str(input, 1), "a")
-  assert_eq(wrap_text(input, 1), "a\n \nb\nb\n \nc\nc\nc\n \nd\nd\nd\nd")
+  assert_eq(@papergrid.cut_str(input, 1), "a")
   assert_eq(
-    wrap_text(input, 1, keep_words=true),
+    @papergrid.wrap_text(input, 1),
+    "a\n \nb\nb\n \nc\nc\nc\n \nd\nd\nd\nd",
+  )
+  assert_eq(
+    @papergrid.wrap_text(input, 1, keep_words=true),
     "a\n \nb\nb\n \nc\nc\nc\n \nd\nd\nd\nd",
   )
 }
@@ -469,64 +487,79 @@ test "ANSI width reference 7 at 1" {
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 7 at 2" {
   let input = "a bb ccc dddd"
-  assert_eq(cut_str(input, 2), "a ")
-  assert_eq(wrap_text(input, 2), "a \nbb\n c\ncc\n d\ndd\nd")
-  assert_eq(wrap_text(input, 2, keep_words=true), "a \nbb\n c\ncc\n d\ndd\nd")
+  assert_eq(@papergrid.cut_str(input, 2), "a ")
+  assert_eq(@papergrid.wrap_text(input, 2), "a \nbb\n c\ncc\n d\ndd\nd")
+  assert_eq(
+    @papergrid.wrap_text(input, 2, keep_words=true),
+    "a \nbb\n c\ncc\n d\ndd\nd",
+  )
 }
 
 ///|
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 7 at 3" {
   let input = "a bb ccc dddd"
-  assert_eq(cut_str(input, 3), "a b")
-  assert_eq(wrap_text(input, 3), "a b\nb c\ncc \nddd\nd")
-  assert_eq(wrap_text(input, 3, keep_words=true), "a \nbb \nccc\n dd\ndd")
+  assert_eq(@papergrid.cut_str(input, 3), "a b")
+  assert_eq(@papergrid.wrap_text(input, 3), "a b\nb c\ncc \nddd\nd")
+  assert_eq(
+    @papergrid.wrap_text(input, 3, keep_words=true),
+    "a \nbb \nccc\n dd\ndd",
+  )
 }
 
 ///|
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 7 at 4" {
   let input = "a bb ccc dddd"
-  assert_eq(cut_str(input, 4), "a bb")
-  assert_eq(wrap_text(input, 4), "a bb\n ccc\n ddd\nd")
-  assert_eq(wrap_text(input, 4, keep_words=true), "a bb\n ccc\n \ndddd")
+  assert_eq(@papergrid.cut_str(input, 4), "a bb")
+  assert_eq(@papergrid.wrap_text(input, 4), "a bb\n ccc\n ddd\nd")
+  assert_eq(
+    @papergrid.wrap_text(input, 4, keep_words=true),
+    "a bb\n ccc\n \ndddd",
+  )
 }
 
 ///|
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 7 at 6" {
   let input = "a bb ccc dddd"
-  assert_eq(cut_str(input, 6), "a bb c")
-  assert_eq(wrap_text(input, 6), "a bb c\ncc ddd\nd")
-  assert_eq(wrap_text(input, 6, keep_words=true), "a bb \nccc \ndddd")
+  assert_eq(@papergrid.cut_str(input, 6), "a bb c")
+  assert_eq(@papergrid.wrap_text(input, 6), "a bb c\ncc ddd\nd")
+  assert_eq(
+    @papergrid.wrap_text(input, 6, keep_words=true),
+    "a bb \nccc \ndddd",
+  )
 }
 
 ///|
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 7 at 10" {
   let input = "a bb ccc dddd"
-  assert_eq(cut_str(input, 10), "a bb ccc d")
-  assert_eq(wrap_text(input, 10), "a bb ccc d\nddd")
-  assert_eq(wrap_text(input, 10, keep_words=true), "a bb ccc \ndddd")
+  assert_eq(@papergrid.cut_str(input, 10), "a bb ccc d")
+  assert_eq(@papergrid.wrap_text(input, 10), "a bb ccc d\nddd")
+  assert_eq(@papergrid.wrap_text(input, 10, keep_words=true), "a bb ccc \ndddd")
 }
 
 ///|
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 8 at 0" {
   let input = "  aaa   bbbb  "
-  assert_eq(cut_str(input, 0), "")
-  assert_eq(wrap_text(input, 0), "")
-  assert_eq(wrap_text(input, 0, keep_words=true), "")
+  assert_eq(@papergrid.cut_str(input, 0), "")
+  assert_eq(@papergrid.wrap_text(input, 0), "")
+  assert_eq(@papergrid.wrap_text(input, 0, keep_words=true), "")
 }
 
 ///|
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 8 at 1" {
   let input = "  aaa   bbbb  "
-  assert_eq(cut_str(input, 1), " ")
-  assert_eq(wrap_text(input, 1), " \n \na\na\na\n \n \n \nb\nb\nb\nb\n \n ")
+  assert_eq(@papergrid.cut_str(input, 1), " ")
   assert_eq(
-    wrap_text(input, 1, keep_words=true),
+    @papergrid.wrap_text(input, 1),
+    " \n \na\na\na\n \n \n \nb\nb\nb\nb\n \n ",
+  )
+  assert_eq(
+    @papergrid.wrap_text(input, 1, keep_words=true),
     " \n \na\na\na\n \n \n \nb\nb\nb\nb\n \n ",
   )
 }
@@ -535,67 +568,82 @@ test "ANSI width reference 8 at 1" {
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 8 at 2" {
   let input = "  aaa   bbbb  "
-  assert_eq(cut_str(input, 2), "  ")
-  assert_eq(wrap_text(input, 2), "  \naa\na \n  \nbb\nbb\n  ")
-  assert_eq(wrap_text(input, 2, keep_words=true), "  \naa\na \n  \nbb\nbb\n  ")
+  assert_eq(@papergrid.cut_str(input, 2), "  ")
+  assert_eq(@papergrid.wrap_text(input, 2), "  \naa\na \n  \nbb\nbb\n  ")
+  assert_eq(
+    @papergrid.wrap_text(input, 2, keep_words=true),
+    "  \naa\na \n  \nbb\nbb\n  ",
+  )
 }
 
 ///|
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 8 at 3" {
   let input = "  aaa   bbbb  "
-  assert_eq(cut_str(input, 3), "  a")
-  assert_eq(wrap_text(input, 3), "  a\naa \n  b\nbbb\n  ")
-  assert_eq(wrap_text(input, 3, keep_words=true), "  \naaa\n   \nbbb\nb  ")
+  assert_eq(@papergrid.cut_str(input, 3), "  a")
+  assert_eq(@papergrid.wrap_text(input, 3), "  a\naa \n  b\nbbb\n  ")
+  assert_eq(
+    @papergrid.wrap_text(input, 3, keep_words=true),
+    "  \naaa\n   \nbbb\nb  ",
+  )
 }
 
 ///|
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 8 at 4" {
   let input = "  aaa   bbbb  "
-  assert_eq(cut_str(input, 4), "  aa")
-  assert_eq(wrap_text(input, 4), "  aa\na   \nbbbb\n  ")
-  assert_eq(wrap_text(input, 4, keep_words=true), "  \naaa \n  \nbbbb\n  ")
+  assert_eq(@papergrid.cut_str(input, 4), "  aa")
+  assert_eq(@papergrid.wrap_text(input, 4), "  aa\na   \nbbbb\n  ")
+  assert_eq(
+    @papergrid.wrap_text(input, 4, keep_words=true),
+    "  \naaa \n  \nbbbb\n  ",
+  )
 }
 
 ///|
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 8 at 6" {
   let input = "  aaa   bbbb  "
-  assert_eq(cut_str(input, 6), "  aaa ")
-  assert_eq(wrap_text(input, 6), "  aaa \n  bbbb\n  ")
-  assert_eq(wrap_text(input, 6, keep_words=true), "  aaa \n  bbbb\n  ")
+  assert_eq(@papergrid.cut_str(input, 6), "  aaa ")
+  assert_eq(@papergrid.wrap_text(input, 6), "  aaa \n  bbbb\n  ")
+  assert_eq(
+    @papergrid.wrap_text(input, 6, keep_words=true),
+    "  aaa \n  bbbb\n  ",
+  )
 }
 
 ///|
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 8 at 10" {
   let input = "  aaa   bbbb  "
-  assert_eq(cut_str(input, 10), "  aaa   bb")
-  assert_eq(wrap_text(input, 10), "  aaa   bb\nbb  ")
-  assert_eq(wrap_text(input, 10, keep_words=true), "  aaa   \nbbbb  ")
+  assert_eq(@papergrid.cut_str(input, 10), "  aaa   bb")
+  assert_eq(@papergrid.wrap_text(input, 10), "  aaa   bb\nbb  ")
+  assert_eq(
+    @papergrid.wrap_text(input, 10, keep_words=true),
+    "  aaa   \nbbbb  ",
+  )
 }
 
 ///|
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 9 at 0" {
   let input = "zero 🏳️‍🌈 word"
-  assert_eq(cut_str(input, 0), "")
-  assert_eq(wrap_text(input, 0), "")
-  assert_eq(wrap_text(input, 0, keep_words=true), "")
+  assert_eq(@papergrid.cut_str(input, 0), "")
+  assert_eq(@papergrid.wrap_text(input, 0), "")
+  assert_eq(@papergrid.wrap_text(input, 0, keep_words=true), "")
 }
 
 ///|
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 9 at 1" {
   let input = "zero 🏳️‍🌈 word"
-  assert_eq(cut_str(input, 1), "z")
+  assert_eq(@papergrid.cut_str(input, 1), "z")
   assert_eq(
-    wrap_text(input, 1),
+    @papergrid.wrap_text(input, 1),
     "z\ne\nr\no\n \n🏳\n️\n‍\n�\n \nw\no\nr\nd",
   )
   assert_eq(
-    wrap_text(input, 1, keep_words=true),
+    @papergrid.wrap_text(input, 1, keep_words=true),
     "z\ne\nr\no\n \n🏳\n️\n‍\n�\n \nw\no\nr\nd",
   )
 }
@@ -604,10 +652,13 @@ test "ANSI width reference 9 at 1" {
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 9 at 2" {
   let input = "zero 🏳️‍🌈 word"
-  assert_eq(cut_str(input, 2), "ze")
-  assert_eq(wrap_text(input, 2), "ze\nro\n 🏳\n️‍\n🌈\n w\nor\nd")
+  assert_eq(@papergrid.cut_str(input, 2), "ze")
   assert_eq(
-    wrap_text(input, 2, keep_words=true),
+    @papergrid.wrap_text(input, 2),
+    "ze\nro\n 🏳\n️‍\n🌈\n w\nor\nd",
+  )
+  assert_eq(
+    @papergrid.wrap_text(input, 2, keep_words=true),
     "ze\nro\n \n🏳️‍🌈\n w\nor\nd",
   )
 }
@@ -616,10 +667,13 @@ test "ANSI width reference 9 at 2" {
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 9 at 3" {
   let input = "zero 🏳️‍🌈 word"
-  assert_eq(cut_str(input, 3), "zer")
-  assert_eq(wrap_text(input, 3), "zer\no 🏳\n️‍\n🌈 \nwor\nd")
+  assert_eq(@papergrid.cut_str(input, 3), "zer")
   assert_eq(
-    wrap_text(input, 3, keep_words=true),
+    @papergrid.wrap_text(input, 3),
+    "zer\no 🏳\n️‍\n🌈 \nwor\nd",
+  )
+  assert_eq(
+    @papergrid.wrap_text(input, 3, keep_words=true),
     "zer\no \n🏳️‍🌈 \nwor\nd",
   )
 }
@@ -628,10 +682,10 @@ test "ANSI width reference 9 at 3" {
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 9 at 4" {
   let input = "zero 🏳️‍🌈 word"
-  assert_eq(cut_str(input, 4), "zero")
-  assert_eq(wrap_text(input, 4), "zero\n 🏳️‍\n🌈 w\nord")
+  assert_eq(@papergrid.cut_str(input, 4), "zero")
+  assert_eq(@papergrid.wrap_text(input, 4), "zero\n 🏳️‍\n🌈 w\nord")
   assert_eq(
-    wrap_text(input, 4, keep_words=true),
+    @papergrid.wrap_text(input, 4, keep_words=true),
     "zero\n 🏳️‍🌈 \nword",
   )
 }
@@ -640,10 +694,10 @@ test "ANSI width reference 9 at 4" {
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 9 at 6" {
   let input = "zero 🏳️‍🌈 word"
-  assert_eq(cut_str(input, 6), "zero 🏳")
-  assert_eq(wrap_text(input, 6), "zero 🏳\n️‍🌈 w\nord")
+  assert_eq(@papergrid.cut_str(input, 6), "zero 🏳")
+  assert_eq(@papergrid.wrap_text(input, 6), "zero 🏳\n️‍🌈 w\nord")
   assert_eq(
-    wrap_text(input, 6, keep_words=true),
+    @papergrid.wrap_text(input, 6, keep_words=true),
     "zero \n🏳️‍🌈 \nword",
   )
 }
@@ -652,157 +706,163 @@ test "ANSI width reference 9 at 6" {
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 9 at 10" {
   let input = "zero 🏳️‍🌈 word"
-  assert_eq(cut_str(input, 10), "zero 🏳️‍🌈")
-  assert_eq(wrap_text(input, 10), "zero 🏳️‍🌈\n word")
-  assert_eq(wrap_text(input, 10, keep_words=true), "zero 🏳️‍🌈 \nword")
+  assert_eq(@papergrid.cut_str(input, 10), "zero 🏳️‍🌈")
+  assert_eq(@papergrid.wrap_text(input, 10), "zero 🏳️‍🌈\n word")
+  assert_eq(
+    @papergrid.wrap_text(input, 10, keep_words=true),
+    "zero 🏳️‍🌈 \nword",
+  )
 }
 
 ///|
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 10 at 0" {
   let input = "a\n\n b\n"
-  assert_eq(cut_str(input, 0), "")
-  assert_eq(wrap_text(input, 0), "")
-  assert_eq(wrap_text(input, 0, keep_words=true), "")
+  assert_eq(@papergrid.cut_str(input, 0), "")
+  assert_eq(@papergrid.wrap_text(input, 0), "")
+  assert_eq(@papergrid.wrap_text(input, 0, keep_words=true), "")
 }
 
 ///|
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 10 at 1" {
   let input = "a\n\n b\n"
-  assert_eq(cut_str(input, 1), "a")
-  assert_eq(wrap_text(input, 1), "a\n\n \nb\n")
-  assert_eq(wrap_text(input, 1, keep_words=true), "a\n\n\n\n\n \nb\n\n")
+  assert_eq(@papergrid.cut_str(input, 1), "a")
+  assert_eq(@papergrid.wrap_text(input, 1), "a\n\n \nb\n")
+  assert_eq(
+    @papergrid.wrap_text(input, 1, keep_words=true),
+    "a\n\n\n\n\n \nb\n\n",
+  )
 }
 
 ///|
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 10 at 2" {
   let input = "a\n\n b\n"
-  assert_eq(cut_str(input, 2), "a\n\n b")
-  assert_eq(wrap_text(input, 2), "a\n\n b\n")
-  assert_eq(wrap_text(input, 2, keep_words=true), "a\n\n\n \nb\n")
+  assert_eq(@papergrid.cut_str(input, 2), "a\n\n b")
+  assert_eq(@papergrid.wrap_text(input, 2), "a\n\n b\n")
+  assert_eq(@papergrid.wrap_text(input, 2, keep_words=true), "a\n\n\n \nb\n")
 }
 
 ///|
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 10 at 3" {
   let input = "a\n\n b\n"
-  assert_eq(cut_str(input, 3), "a\n\n b\n")
-  assert_eq(wrap_text(input, 3), "a\n\n b\n")
-  assert_eq(wrap_text(input, 3, keep_words=true), "a\n\n\n b\n")
+  assert_eq(@papergrid.cut_str(input, 3), "a\n\n b\n")
+  assert_eq(@papergrid.wrap_text(input, 3), "a\n\n b\n")
+  assert_eq(@papergrid.wrap_text(input, 3, keep_words=true), "a\n\n\n b\n")
 }
 
 ///|
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 10 at 4" {
   let input = "a\n\n b\n"
-  assert_eq(cut_str(input, 4), "a\n\n b\n")
-  assert_eq(wrap_text(input, 4), "a\n\n b\n")
-  assert_eq(wrap_text(input, 4, keep_words=true), "a\n\n \nb\n")
+  assert_eq(@papergrid.cut_str(input, 4), "a\n\n b\n")
+  assert_eq(@papergrid.wrap_text(input, 4), "a\n\n b\n")
+  assert_eq(@papergrid.wrap_text(input, 4, keep_words=true), "a\n\n \nb\n")
 }
 
 ///|
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 10 at 6" {
   let input = "a\n\n b\n"
-  assert_eq(cut_str(input, 6), "a\n\n b\n")
-  assert_eq(wrap_text(input, 6), "a\n\n b\n")
-  assert_eq(wrap_text(input, 6, keep_words=true), "a\n\n b\n")
+  assert_eq(@papergrid.cut_str(input, 6), "a\n\n b\n")
+  assert_eq(@papergrid.wrap_text(input, 6), "a\n\n b\n")
+  assert_eq(@papergrid.wrap_text(input, 6, keep_words=true), "a\n\n b\n")
 }
 
 ///|
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 10 at 10" {
   let input = "a\n\n b\n"
-  assert_eq(cut_str(input, 10), "a\n\n b\n")
-  assert_eq(wrap_text(input, 10), "a\n\n b\n")
-  assert_eq(wrap_text(input, 10, keep_words=true), "a\n\n b\n")
+  assert_eq(@papergrid.cut_str(input, 10), "a\n\n b\n")
+  assert_eq(@papergrid.wrap_text(input, 10), "a\n\n b\n")
+  assert_eq(@papergrid.wrap_text(input, 10, keep_words=true), "a\n\n b\n")
 }
 
 ///|
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 11 at 0" {
   let input = "á bb"
-  assert_eq(cut_str(input, 0), "")
-  assert_eq(wrap_text(input, 0), "")
-  assert_eq(wrap_text(input, 0, keep_words=true), "")
+  assert_eq(@papergrid.cut_str(input, 0), "")
+  assert_eq(@papergrid.wrap_text(input, 0), "")
+  assert_eq(@papergrid.wrap_text(input, 0, keep_words=true), "")
 }
 
 ///|
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 11 at 1" {
   let input = "á bb"
-  assert_eq(cut_str(input, 1), "a")
-  assert_eq(wrap_text(input, 1), "a\ń\n \nb\nb")
-  assert_eq(wrap_text(input, 1, keep_words=true), "á\n \nb\nb")
+  assert_eq(@papergrid.cut_str(input, 1), "a")
+  assert_eq(@papergrid.wrap_text(input, 1), "a\ń\n \nb\nb")
+  assert_eq(@papergrid.wrap_text(input, 1, keep_words=true), "á\n \nb\nb")
 }
 
 ///|
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 11 at 2" {
   let input = "á bb"
-  assert_eq(cut_str(input, 2), "á")
-  assert_eq(wrap_text(input, 2), "á\n b\nb")
-  assert_eq(wrap_text(input, 2, keep_words=true), "á \nbb")
+  assert_eq(@papergrid.cut_str(input, 2), "á")
+  assert_eq(@papergrid.wrap_text(input, 2), "á\n b\nb")
+  assert_eq(@papergrid.wrap_text(input, 2, keep_words=true), "á \nbb")
 }
 
 ///|
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 11 at 3" {
   let input = "á bb"
-  assert_eq(cut_str(input, 3), "á ")
-  assert_eq(wrap_text(input, 3), "á \nbb")
-  assert_eq(wrap_text(input, 3, keep_words=true), "á \nbb")
+  assert_eq(@papergrid.cut_str(input, 3), "á ")
+  assert_eq(@papergrid.wrap_text(input, 3), "á \nbb")
+  assert_eq(@papergrid.wrap_text(input, 3, keep_words=true), "á \nbb")
 }
 
 ///|
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 11 at 4" {
   let input = "á bb"
-  assert_eq(cut_str(input, 4), "á b")
-  assert_eq(wrap_text(input, 4), "á b\nb")
-  assert_eq(wrap_text(input, 4, keep_words=true), "á bb")
+  assert_eq(@papergrid.cut_str(input, 4), "á b")
+  assert_eq(@papergrid.wrap_text(input, 4), "á b\nb")
+  assert_eq(@papergrid.wrap_text(input, 4, keep_words=true), "á bb")
 }
 
 ///|
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 11 at 6" {
   let input = "á bb"
-  assert_eq(cut_str(input, 6), "á bb")
-  assert_eq(wrap_text(input, 6), "á bb")
-  assert_eq(wrap_text(input, 6, keep_words=true), "á bb")
+  assert_eq(@papergrid.cut_str(input, 6), "á bb")
+  assert_eq(@papergrid.wrap_text(input, 6), "á bb")
+  assert_eq(@papergrid.wrap_text(input, 6, keep_words=true), "á bb")
 }
 
 ///|
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 11 at 10" {
   let input = "á bb"
-  assert_eq(cut_str(input, 10), "á bb")
-  assert_eq(wrap_text(input, 10), "á bb")
-  assert_eq(wrap_text(input, 10, keep_words=true), "á bb")
+  assert_eq(@papergrid.cut_str(input, 10), "á bb")
+  assert_eq(@papergrid.wrap_text(input, 10), "á bb")
+  assert_eq(@papergrid.wrap_text(input, 10, keep_words=true), "á bb")
 }
 
 ///|
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 12 at 0" {
   let input = "\u001b[31ma b\u001b[39m cc"
-  assert_eq(cut_str(input, 0), "\u001b[31m\u001b[39m")
-  assert_eq(wrap_text(input, 0), "")
-  assert_eq(wrap_text(input, 0, keep_words=true), "")
+  assert_eq(@papergrid.cut_str(input, 0), "\u001b[31m\u001b[39m")
+  assert_eq(@papergrid.wrap_text(input, 0), "")
+  assert_eq(@papergrid.wrap_text(input, 0, keep_words=true), "")
 }
 
 ///|
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 12 at 1" {
   let input = "\u001b[31ma b\u001b[39m cc"
-  assert_eq(cut_str(input, 1), "\u001b[31ma\u001b[39m")
+  assert_eq(@papergrid.cut_str(input, 1), "\u001b[31ma\u001b[39m")
   assert_eq(
-    wrap_text(input, 1),
+    @papergrid.wrap_text(input, 1),
     "\u001b[31ma\u001b[39m\n\u001b[31m \u001b[39m\n\u001b[31mb\u001b[39m\n \nc\nc",
   )
   assert_eq(
-    wrap_text(input, 1, keep_words=true),
+    @papergrid.wrap_text(input, 1, keep_words=true),
     "\u001b[31ma\u001b[39m\n\u001b[31m \u001b[39m\n\u001b[31mb\u001b[39m\n \nc\nc",
   )
 }
@@ -811,13 +871,13 @@ test "ANSI width reference 12 at 1" {
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 12 at 2" {
   let input = "\u001b[31ma b\u001b[39m cc"
-  assert_eq(cut_str(input, 2), "\u001b[31ma \u001b[39m")
+  assert_eq(@papergrid.cut_str(input, 2), "\u001b[31ma \u001b[39m")
   assert_eq(
-    wrap_text(input, 2),
+    @papergrid.wrap_text(input, 2),
     "\u001b[31ma \u001b[39m\n\u001b[31mb\u001b[39m \ncc",
   )
   assert_eq(
-    wrap_text(input, 2, keep_words=true),
+    @papergrid.wrap_text(input, 2, keep_words=true),
     "\u001b[31ma \u001b[39m\n\u001b[31mb\u001b[39m \ncc",
   )
 }
@@ -826,10 +886,10 @@ test "ANSI width reference 12 at 2" {
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 12 at 3" {
   let input = "\u001b[31ma b\u001b[39m cc"
-  assert_eq(cut_str(input, 3), "\u001b[31ma b\u001b[39m")
-  assert_eq(wrap_text(input, 3), "\u001b[31ma b\u001b[39m\n cc")
+  assert_eq(@papergrid.cut_str(input, 3), "\u001b[31ma b\u001b[39m")
+  assert_eq(@papergrid.wrap_text(input, 3), "\u001b[31ma b\u001b[39m\n cc")
   assert_eq(
-    wrap_text(input, 3, keep_words=true),
+    @papergrid.wrap_text(input, 3, keep_words=true),
     "\u001b[31ma b\u001b[39m\n cc",
   )
 }
@@ -838,10 +898,10 @@ test "ANSI width reference 12 at 3" {
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 12 at 4" {
   let input = "\u001b[31ma b\u001b[39m cc"
-  assert_eq(cut_str(input, 4), "\u001b[31ma b\u001b[39m ")
-  assert_eq(wrap_text(input, 4), "\u001b[31ma b\u001b[39m \ncc")
+  assert_eq(@papergrid.cut_str(input, 4), "\u001b[31ma b\u001b[39m ")
+  assert_eq(@papergrid.wrap_text(input, 4), "\u001b[31ma b\u001b[39m \ncc")
   assert_eq(
-    wrap_text(input, 4, keep_words=true),
+    @papergrid.wrap_text(input, 4, keep_words=true),
     "\u001b[31ma b\u001b[39m \ncc",
   )
 }
@@ -850,40 +910,46 @@ test "ANSI width reference 12 at 4" {
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 12 at 6" {
   let input = "\u001b[31ma b\u001b[39m cc"
-  assert_eq(cut_str(input, 6), "\u001b[31ma b\u001b[39m cc")
-  assert_eq(wrap_text(input, 6), "\u001b[31ma b\u001b[39m cc")
-  assert_eq(wrap_text(input, 6, keep_words=true), "\u001b[31ma b\u001b[39m cc")
+  assert_eq(@papergrid.cut_str(input, 6), "\u001b[31ma b\u001b[39m cc")
+  assert_eq(@papergrid.wrap_text(input, 6), "\u001b[31ma b\u001b[39m cc")
+  assert_eq(
+    @papergrid.wrap_text(input, 6, keep_words=true),
+    "\u001b[31ma b\u001b[39m cc",
+  )
 }
 
 ///|
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 12 at 10" {
   let input = "\u001b[31ma b\u001b[39m cc"
-  assert_eq(cut_str(input, 10), "\u001b[31ma b\u001b[39m cc")
-  assert_eq(wrap_text(input, 10), "\u001b[31ma b\u001b[39m cc")
-  assert_eq(wrap_text(input, 10, keep_words=true), "\u001b[31ma b\u001b[39m cc")
+  assert_eq(@papergrid.cut_str(input, 10), "\u001b[31ma b\u001b[39m cc")
+  assert_eq(@papergrid.wrap_text(input, 10), "\u001b[31ma b\u001b[39m cc")
+  assert_eq(
+    @papergrid.wrap_text(input, 10, keep_words=true),
+    "\u001b[31ma b\u001b[39m cc",
+  )
 }
 
 ///|
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 13 at 0" {
   let input = "\u001b[31m中 中\u001b[0m"
-  assert_eq(cut_str(input, 0), "\u001b[31m\u001b[39m")
-  assert_eq(wrap_text(input, 0), "")
-  assert_eq(wrap_text(input, 0, keep_words=true), "")
+  assert_eq(@papergrid.cut_str(input, 0), "\u001b[31m\u001b[39m")
+  assert_eq(@papergrid.wrap_text(input, 0), "")
+  assert_eq(@papergrid.wrap_text(input, 0, keep_words=true), "")
 }
 
 ///|
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 13 at 1" {
   let input = "\u001b[31m中 中\u001b[0m"
-  assert_eq(cut_str(input, 1), "\u001b[31m\u001b[39m�")
+  assert_eq(@papergrid.cut_str(input, 1), "\u001b[31m\u001b[39m�")
   assert_eq(
-    wrap_text(input, 1),
+    @papergrid.wrap_text(input, 1),
     "\u001b[31m�\u001b[39m\n\u001b[31m \u001b[39m\n\u001b[31m�\u001b[39m",
   )
   assert_eq(
-    wrap_text(input, 1, keep_words=true),
+    @papergrid.wrap_text(input, 1, keep_words=true),
     "�\u001b[31m\u001b[39m\n\u001b[31m \u001b[39m\n\u001b[31m�\u001b[39m",
   )
 }
@@ -892,13 +958,13 @@ test "ANSI width reference 13 at 1" {
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 13 at 2" {
   let input = "\u001b[31m中 中\u001b[0m"
-  assert_eq(cut_str(input, 2), "\u001b[31m中\u001b[39m")
+  assert_eq(@papergrid.cut_str(input, 2), "\u001b[31m中\u001b[39m")
   assert_eq(
-    wrap_text(input, 2),
+    @papergrid.wrap_text(input, 2),
     "\u001b[31m中\u001b[39m\n\u001b[31m \u001b[39m\n\u001b[31m中\u001b[39m",
   )
   assert_eq(
-    wrap_text(input, 2, keep_words=true),
+    @papergrid.wrap_text(input, 2, keep_words=true),
     "\u001b[31m中\u001b[39m\n\u001b[31m \u001b[39m\n\u001b[31m中\u001b[39m",
   )
 }
@@ -907,13 +973,13 @@ test "ANSI width reference 13 at 2" {
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 13 at 3" {
   let input = "\u001b[31m中 中\u001b[0m"
-  assert_eq(cut_str(input, 3), "\u001b[31m中 \u001b[39m")
+  assert_eq(@papergrid.cut_str(input, 3), "\u001b[31m中 \u001b[39m")
   assert_eq(
-    wrap_text(input, 3),
+    @papergrid.wrap_text(input, 3),
     "\u001b[31m中 \u001b[39m\n\u001b[31m中\u001b[39m",
   )
   assert_eq(
-    wrap_text(input, 3, keep_words=true),
+    @papergrid.wrap_text(input, 3, keep_words=true),
     "\u001b[31m中 \u001b[39m\n\u001b[31m中\u001b[39m",
   )
 }
@@ -922,13 +988,13 @@ test "ANSI width reference 13 at 3" {
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 13 at 4" {
   let input = "\u001b[31m中 中\u001b[0m"
-  assert_eq(cut_str(input, 4), "\u001b[31m中 \u001b[39m�")
+  assert_eq(@papergrid.cut_str(input, 4), "\u001b[31m中 \u001b[39m�")
   assert_eq(
-    wrap_text(input, 4),
+    @papergrid.wrap_text(input, 4),
     "\u001b[31m中 \u001b[39m\n\u001b[31m中\u001b[39m",
   )
   assert_eq(
-    wrap_text(input, 4, keep_words=true),
+    @papergrid.wrap_text(input, 4, keep_words=true),
     "\u001b[31m中 \u001b[39m\n\u001b[31m中\u001b[39m",
   )
 }
@@ -937,19 +1003,22 @@ test "ANSI width reference 13 at 4" {
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 13 at 6" {
   let input = "\u001b[31m中 中\u001b[0m"
-  assert_eq(cut_str(input, 6), "\u001b[31m中 中\u001b[0m")
-  assert_eq(wrap_text(input, 6), "\u001b[31m中 中\u001b[39m")
-  assert_eq(wrap_text(input, 6, keep_words=true), "\u001b[31m中 中\u001b[39m")
+  assert_eq(@papergrid.cut_str(input, 6), "\u001b[31m中 中\u001b[0m")
+  assert_eq(@papergrid.wrap_text(input, 6), "\u001b[31m中 中\u001b[39m")
+  assert_eq(
+    @papergrid.wrap_text(input, 6, keep_words=true),
+    "\u001b[31m中 中\u001b[39m",
+  )
 }
 
 ///|
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 13 at 10" {
   let input = "\u001b[31m中 中\u001b[0m"
-  assert_eq(cut_str(input, 10), "\u001b[31m中 中\u001b[0m")
-  assert_eq(wrap_text(input, 10), "\u001b[31m中 中\u001b[39m")
+  assert_eq(@papergrid.cut_str(input, 10), "\u001b[31m中 中\u001b[0m")
+  assert_eq(@papergrid.wrap_text(input, 10), "\u001b[31m中 中\u001b[39m")
   assert_eq(
-    wrap_text(input, 10, keep_words=true),
+    @papergrid.wrap_text(input, 10, keep_words=true),
     "\u001b[31m中 中\u001b[39m",
   )
 }
@@ -958,22 +1027,22 @@ test "ANSI width reference 13 at 10" {
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 14 at 0" {
   let input = "\u001b[31ma\u001b[32m bb\u001b[0m cc"
-  assert_eq(cut_str(input, 0), "\u001b[31m\u001b[39m")
-  assert_eq(wrap_text(input, 0), "")
-  assert_eq(wrap_text(input, 0, keep_words=true), "")
+  assert_eq(@papergrid.cut_str(input, 0), "\u001b[31m\u001b[39m")
+  assert_eq(@papergrid.wrap_text(input, 0), "")
+  assert_eq(@papergrid.wrap_text(input, 0, keep_words=true), "")
 }
 
 ///|
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 14 at 1" {
   let input = "\u001b[31ma\u001b[32m bb\u001b[0m cc"
-  assert_eq(cut_str(input, 1), "\u001b[31ma\u001b[32m\u001b[39m")
+  assert_eq(@papergrid.cut_str(input, 1), "\u001b[31ma\u001b[32m\u001b[39m")
   assert_eq(
-    wrap_text(input, 1),
+    @papergrid.wrap_text(input, 1),
     "\u001b[31ma\u001b[39m\n\u001b[32m \u001b[39m\n\u001b[32mb\u001b[39m\n\u001b[32mb\u001b[39m\n \nc\nc",
   )
   assert_eq(
-    wrap_text(input, 1, keep_words=true),
+    @papergrid.wrap_text(input, 1, keep_words=true),
     "\u001b[31ma\u001b[39m\n\u001b[32m \u001b[39m\n\u001b[32mb\u001b[39m\n\u001b[32mb\u001b[39m\n \nc\nc",
   )
 }
@@ -982,13 +1051,13 @@ test "ANSI width reference 14 at 1" {
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 14 at 2" {
   let input = "\u001b[31ma\u001b[32m bb\u001b[0m cc"
-  assert_eq(cut_str(input, 2), "\u001b[31ma\u001b[32m \u001b[39m")
+  assert_eq(@papergrid.cut_str(input, 2), "\u001b[31ma\u001b[32m \u001b[39m")
   assert_eq(
-    wrap_text(input, 2),
+    @papergrid.wrap_text(input, 2),
     "\u001b[31ma\u001b[39m\u001b[32m \u001b[39m\n\u001b[32mbb\u001b[39m\n c\nc",
   )
   assert_eq(
-    wrap_text(input, 2, keep_words=true),
+    @papergrid.wrap_text(input, 2, keep_words=true),
     "\u001b[31ma\u001b[39m\u001b[32m \u001b[39m\n\u001b[32mbb\u001b[39m\n \ncc",
   )
 }
@@ -997,13 +1066,13 @@ test "ANSI width reference 14 at 2" {
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 14 at 3" {
   let input = "\u001b[31ma\u001b[32m bb\u001b[0m cc"
-  assert_eq(cut_str(input, 3), "\u001b[31ma\u001b[32m b\u001b[39m")
+  assert_eq(@papergrid.cut_str(input, 3), "\u001b[31ma\u001b[32m b\u001b[39m")
   assert_eq(
-    wrap_text(input, 3),
+    @papergrid.wrap_text(input, 3),
     "\u001b[31ma\u001b[39m\u001b[32m b\u001b[39m\n\u001b[32mb\u001b[39m c\nc",
   )
   assert_eq(
-    wrap_text(input, 3, keep_words=true),
+    @papergrid.wrap_text(input, 3, keep_words=true),
     "\u001b[31ma\u001b[39m\u001b[32m \u001b[39m\n\u001b[32mbb\u001b[39m \ncc",
   )
 }
@@ -1012,13 +1081,13 @@ test "ANSI width reference 14 at 3" {
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 14 at 4" {
   let input = "\u001b[31ma\u001b[32m bb\u001b[0m cc"
-  assert_eq(cut_str(input, 4), "\u001b[31ma\u001b[32m bb\u001b[0m")
+  assert_eq(@papergrid.cut_str(input, 4), "\u001b[31ma\u001b[32m bb\u001b[0m")
   assert_eq(
-    wrap_text(input, 4),
+    @papergrid.wrap_text(input, 4),
     "\u001b[31ma\u001b[39m\u001b[32m bb\u001b[39m\n cc",
   )
   assert_eq(
-    wrap_text(input, 4, keep_words=true),
+    @papergrid.wrap_text(input, 4, keep_words=true),
     "\u001b[31ma\u001b[39m\u001b[32m bb\u001b[39m\n cc",
   )
 }
@@ -1027,13 +1096,13 @@ test "ANSI width reference 14 at 4" {
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 14 at 6" {
   let input = "\u001b[31ma\u001b[32m bb\u001b[0m cc"
-  assert_eq(cut_str(input, 6), "\u001b[31ma\u001b[32m bb\u001b[0m c")
+  assert_eq(@papergrid.cut_str(input, 6), "\u001b[31ma\u001b[32m bb\u001b[0m c")
   assert_eq(
-    wrap_text(input, 6),
+    @papergrid.wrap_text(input, 6),
     "\u001b[31ma\u001b[39m\u001b[32m bb\u001b[39m c\nc",
   )
   assert_eq(
-    wrap_text(input, 6, keep_words=true),
+    @papergrid.wrap_text(input, 6, keep_words=true),
     "\u001b[31ma\u001b[39m\u001b[32m bb\u001b[39m \ncc",
   )
 }
@@ -1042,13 +1111,16 @@ test "ANSI width reference 14 at 6" {
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 14 at 10" {
   let input = "\u001b[31ma\u001b[32m bb\u001b[0m cc"
-  assert_eq(cut_str(input, 10), "\u001b[31ma\u001b[32m bb\u001b[0m cc")
   assert_eq(
-    wrap_text(input, 10),
+    @papergrid.cut_str(input, 10),
+    "\u001b[31ma\u001b[32m bb\u001b[0m cc",
+  )
+  assert_eq(
+    @papergrid.wrap_text(input, 10),
     "\u001b[31ma\u001b[39m\u001b[32m bb\u001b[39m cc",
   )
   assert_eq(
-    wrap_text(input, 10, keep_words=true),
+    @papergrid.wrap_text(input, 10, keep_words=true),
     "\u001b[31ma\u001b[39m\u001b[32m bb\u001b[39m cc",
   )
 }
@@ -1057,85 +1129,85 @@ test "ANSI width reference 14 at 10" {
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 15 at 0" {
   let input = "\u001b[11ma bb"
-  assert_eq(cut_str(input, 0), "\u001b[11m\u001b[10m")
-  assert_eq(wrap_text(input, 0), "")
-  assert_eq(wrap_text(input, 0, keep_words=true), "")
+  assert_eq(@papergrid.cut_str(input, 0), "\u001b[11m\u001b[10m")
+  assert_eq(@papergrid.wrap_text(input, 0), "")
+  assert_eq(@papergrid.wrap_text(input, 0, keep_words=true), "")
 }
 
 ///|
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 15 at 1" {
   let input = "\u001b[11ma bb"
-  assert_eq(cut_str(input, 1), "\u001b[11ma\u001b[10m")
-  assert_eq(wrap_text(input, 1), "a\n \nb\nb")
-  assert_eq(wrap_text(input, 1, keep_words=true), "a\n \nb\nb")
+  assert_eq(@papergrid.cut_str(input, 1), "\u001b[11ma\u001b[10m")
+  assert_eq(@papergrid.wrap_text(input, 1), "a\n \nb\nb")
+  assert_eq(@papergrid.wrap_text(input, 1, keep_words=true), "a\n \nb\nb")
 }
 
 ///|
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 15 at 2" {
   let input = "\u001b[11ma bb"
-  assert_eq(cut_str(input, 2), "\u001b[11ma \u001b[10m")
-  assert_eq(wrap_text(input, 2), "a \nbb")
-  assert_eq(wrap_text(input, 2, keep_words=true), "a \nbb")
+  assert_eq(@papergrid.cut_str(input, 2), "\u001b[11ma \u001b[10m")
+  assert_eq(@papergrid.wrap_text(input, 2), "a \nbb")
+  assert_eq(@papergrid.wrap_text(input, 2, keep_words=true), "a \nbb")
 }
 
 ///|
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 15 at 3" {
   let input = "\u001b[11ma bb"
-  assert_eq(cut_str(input, 3), "\u001b[11ma b\u001b[10m")
-  assert_eq(wrap_text(input, 3), "a b\nb")
-  assert_eq(wrap_text(input, 3, keep_words=true), "a \nbb")
+  assert_eq(@papergrid.cut_str(input, 3), "\u001b[11ma b\u001b[10m")
+  assert_eq(@papergrid.wrap_text(input, 3), "a b\nb")
+  assert_eq(@papergrid.wrap_text(input, 3, keep_words=true), "a \nbb")
 }
 
 ///|
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 15 at 4" {
   let input = "\u001b[11ma bb"
-  assert_eq(cut_str(input, 4), "\u001b[11ma bb\u001b[10m")
-  assert_eq(wrap_text(input, 4), "a bb")
-  assert_eq(wrap_text(input, 4, keep_words=true), "a bb")
+  assert_eq(@papergrid.cut_str(input, 4), "\u001b[11ma bb\u001b[10m")
+  assert_eq(@papergrid.wrap_text(input, 4), "a bb")
+  assert_eq(@papergrid.wrap_text(input, 4, keep_words=true), "a bb")
 }
 
 ///|
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 15 at 6" {
   let input = "\u001b[11ma bb"
-  assert_eq(cut_str(input, 6), "\u001b[11ma bb\u001b[10m")
-  assert_eq(wrap_text(input, 6), "a bb")
-  assert_eq(wrap_text(input, 6, keep_words=true), "a bb")
+  assert_eq(@papergrid.cut_str(input, 6), "\u001b[11ma bb\u001b[10m")
+  assert_eq(@papergrid.wrap_text(input, 6), "a bb")
+  assert_eq(@papergrid.wrap_text(input, 6, keep_words=true), "a bb")
 }
 
 ///|
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 15 at 10" {
   let input = "\u001b[11ma bb"
-  assert_eq(cut_str(input, 10), "\u001b[11ma bb\u001b[10m")
-  assert_eq(wrap_text(input, 10), "a bb")
-  assert_eq(wrap_text(input, 10, keep_words=true), "a bb")
+  assert_eq(@papergrid.cut_str(input, 10), "\u001b[11ma bb\u001b[10m")
+  assert_eq(@papergrid.wrap_text(input, 10), "a bb")
+  assert_eq(@papergrid.wrap_text(input, 10, keep_words=true), "a bb")
 }
 
 ///|
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 16 at 0" {
   let input = "\u001b[31m\u001b[2Ka bb cc"
-  assert_eq(cut_str(input, 0), "\u001b[31m\u001b[2K\u001b[39m")
-  assert_eq(wrap_text(input, 0), "")
-  assert_eq(wrap_text(input, 0, keep_words=true), "")
+  assert_eq(@papergrid.cut_str(input, 0), "\u001b[31m\u001b[2K\u001b[39m")
+  assert_eq(@papergrid.wrap_text(input, 0), "")
+  assert_eq(@papergrid.wrap_text(input, 0, keep_words=true), "")
 }
 
 ///|
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 16 at 1" {
   let input = "\u001b[31m\u001b[2Ka bb cc"
-  assert_eq(cut_str(input, 1), "\u001b[31m\u001b[2Ka\u001b[39m")
+  assert_eq(@papergrid.cut_str(input, 1), "\u001b[31m\u001b[2Ka\u001b[39m")
   assert_eq(
-    wrap_text(input, 1),
+    @papergrid.wrap_text(input, 1),
     "\u001b[31m\u001b\u001b[39m\n\u001b[31m[\u001b[39m\n\u001b[31m2\u001b[39m\n\u001b[31mK\u001b[39m\n\u001b[31ma\u001b[39m\n\u001b[31m \u001b[39m\n\u001b[31mb\u001b[39m\n\u001b[31mb\u001b[39m\n\u001b[31m \u001b[39m\n\u001b[31mc\u001b[39m\n\u001b[31mc\u001b[39m",
   )
   assert_eq(
-    wrap_text(input, 1, keep_words=true),
+    @papergrid.wrap_text(input, 1, keep_words=true),
     "\u001b[31m\u001b\u001b[39m\n\u001b[31m[\u001b[39m\n\u001b[31m2\u001b[39m\n\u001b[31mK\u001b[39m\n\u001b[31ma\u001b[39m\n\u001b[31m \u001b[39m\n\u001b[31mb",
   )
 }
@@ -1144,13 +1216,13 @@ test "ANSI width reference 16 at 1" {
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 16 at 2" {
   let input = "\u001b[31m\u001b[2Ka bb cc"
-  assert_eq(cut_str(input, 2), "\u001b[31m\u001b[2Ka \u001b[39m")
+  assert_eq(@papergrid.cut_str(input, 2), "\u001b[31m\u001b[2Ka \u001b[39m")
   assert_eq(
-    wrap_text(input, 2),
+    @papergrid.wrap_text(input, 2),
     "\u001b[31m\u001b[\u001b[39m\n\u001b[31m2K\u001b[39m\n\u001b[31ma \u001b[39m\n\u001b[31mbb\u001b[39m\n\u001b[31m c\u001b[39m\n\u001b[31mc\u001b[39m",
   )
   assert_eq(
-    wrap_text(input, 2, keep_words=true),
+    @papergrid.wrap_text(input, 2, keep_words=true),
     "\u001b[31m\u001b[\u001b[39m\n\u001b[31m2K\u001b[39m\n\u001b[31ma\u001b[39m\n\u001b[31m b",
   )
 }
@@ -1159,13 +1231,13 @@ test "ANSI width reference 16 at 2" {
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 16 at 3" {
   let input = "\u001b[31m\u001b[2Ka bb cc"
-  assert_eq(cut_str(input, 3), "\u001b[31m\u001b[2Ka b\u001b[39m")
+  assert_eq(@papergrid.cut_str(input, 3), "\u001b[31m\u001b[2Ka b\u001b[39m")
   assert_eq(
-    wrap_text(input, 3),
+    @papergrid.wrap_text(input, 3),
     "\u001b[31m\u001b[2\u001b[39m\n\u001b[31mKa \u001b[39m\n\u001b[31mbb \u001b[39m\n\u001b[31mcc\u001b[39m",
   )
   assert_eq(
-    wrap_text(input, 3, keep_words=true),
+    @papergrid.wrap_text(input, 3, keep_words=true),
     "\u001b[31m\u001b[\u001b[39m\n\u001b[31m2Ka\u001b[39m\n\u001b[31m b",
   )
 }
@@ -1174,13 +1246,13 @@ test "ANSI width reference 16 at 3" {
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 16 at 4" {
   let input = "\u001b[31m\u001b[2Ka bb cc"
-  assert_eq(cut_str(input, 4), "\u001b[31m\u001b[2Ka bb\u001b[39m")
+  assert_eq(@papergrid.cut_str(input, 4), "\u001b[31m\u001b[2Ka bb\u001b[39m")
   assert_eq(
-    wrap_text(input, 4),
+    @papergrid.wrap_text(input, 4),
     "\u001b[31m\u001b[2K\u001b[39m\n\u001b[31ma bb\u001b[39m\n\u001b[31m cc\u001b[39m",
   )
   assert_eq(
-    wrap_text(input, 4, keep_words=true),
+    @papergrid.wrap_text(input, 4, keep_words=true),
     "\u001b[31m\u001b[2K\u001b[39m\n\u001b[31ma b",
   )
 }
@@ -1189,13 +1261,13 @@ test "ANSI width reference 16 at 4" {
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 16 at 6" {
   let input = "\u001b[31m\u001b[2Ka bb cc"
-  assert_eq(cut_str(input, 6), "\u001b[31m\u001b[2Ka bb c\u001b[39m")
+  assert_eq(@papergrid.cut_str(input, 6), "\u001b[31m\u001b[2Ka bb c\u001b[39m")
   assert_eq(
-    wrap_text(input, 6),
+    @papergrid.wrap_text(input, 6),
     "\u001b[31m\u001b[2Ka \u001b[39m\n\u001b[31mbb cc\u001b[39m",
   )
   assert_eq(
-    wrap_text(input, 6, keep_words=true),
+    @papergrid.wrap_text(input, 6, keep_words=true),
     "\u001b[31m\u001b[2Ka\u001b[39m\n\u001b[31m b",
   )
 }
@@ -1204,12 +1276,18 @@ test "ANSI width reference 16 at 6" {
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 16 at 10" {
   let input = "\u001b[31m\u001b[2Ka bb cc"
-  assert_eq(cut_str(input, 10), "\u001b[31m\u001b[2Ka bb cc\u001b[39m")
   assert_eq(
-    wrap_text(input, 10),
+    @papergrid.cut_str(input, 10),
+    "\u001b[31m\u001b[2Ka bb cc\u001b[39m",
+  )
+  assert_eq(
+    @papergrid.wrap_text(input, 10),
     "\u001b[31m\u001b[2Ka bb c\u001b[39m\n\u001b[31mc\u001b[39m",
   )
-  assert_eq(wrap_text(input, 10, keep_words=true), "\u001b[31m\u001b[2Ka b")
+  assert_eq(
+    @papergrid.wrap_text(input, 10, keep_words=true),
+    "\u001b[31m\u001b[2Ka b",
+  )
 }
 
 ///|
@@ -1217,11 +1295,11 @@ test "ANSI width reference 16 at 10" {
 test "ANSI width reference 17 at 0" {
   let input = "\u001b]8;;https://example.com\u001b\\a bb cc\u001b]8;;\u001b\\"
   assert_eq(
-    cut_str(input, 0),
+    @papergrid.cut_str(input, 0),
     "\u001b]8;;https://example.com\u001b\\\u001b]8;;\u001b\\",
   )
-  assert_eq(wrap_text(input, 0), "")
-  assert_eq(wrap_text(input, 0, keep_words=true), "")
+  assert_eq(@papergrid.wrap_text(input, 0), "")
+  assert_eq(@papergrid.wrap_text(input, 0, keep_words=true), "")
 }
 
 ///|
@@ -1229,15 +1307,15 @@ test "ANSI width reference 17 at 0" {
 test "ANSI width reference 17 at 1" {
   let input = "\u001b]8;;https://example.com\u001b\\a bb cc\u001b]8;;\u001b\\"
   assert_eq(
-    cut_str(input, 1),
+    @papergrid.cut_str(input, 1),
     "\u001b]8;;https://example.com\u001b\\a\u001b]8;;\u001b\\",
   )
   assert_eq(
-    wrap_text(input, 1),
+    @papergrid.wrap_text(input, 1),
     "\u001b]8;;https://example.com\u001b\\a\u001b]8;;\u001b\\\n\u001b]8;;https://example.com\u001b\\ \u001b]8;;\u001b\\\n\u001b]8;;https://example.com\u001b\\b\u001b]8;;\u001b\\\n\u001b]8;;https://example.com\u001b\\b\u001b]8;;\u001b\\\n\u001b]8;;https://example.com\u001b\\ \u001b]8;;\u001b\\\n\u001b]8;;https://example.com\u001b\\c\u001b]8;;\u001b\\\n\u001b]8;;https://example.com\u001b\\c\u001b]8;;\u001b\\",
   )
   assert_eq(
-    wrap_text(input, 1, keep_words=true),
+    @papergrid.wrap_text(input, 1, keep_words=true),
     "\u001b]8;;https://example.com\u001b\\a\u001b]8;;\u001b\\\n\u001b]8;;https://example.com\u001b\\ \u001b]8;;\u001b\\\n\u001b]8;;https://example.com\u001b\\b\u001b]8;;\u001b\\\n\u001b]8;;https://example.com\u001b\\b\u001b]8;;\u001b\\\n\u001b]8;;https://example.com\u001b\\ \u001b]8;;\u001b\\\n\u001b]8;;https://example.com\u001b\\c\u001b]8;;\u001b\\\n\u001b]8;;https://example.com\u001b\\c\u001b]8;;\u001b\\",
   )
 }
@@ -1247,15 +1325,15 @@ test "ANSI width reference 17 at 1" {
 test "ANSI width reference 17 at 2" {
   let input = "\u001b]8;;https://example.com\u001b\\a bb cc\u001b]8;;\u001b\\"
   assert_eq(
-    cut_str(input, 2),
+    @papergrid.cut_str(input, 2),
     "\u001b]8;;https://example.com\u001b\\a \u001b]8;;\u001b\\",
   )
   assert_eq(
-    wrap_text(input, 2),
+    @papergrid.wrap_text(input, 2),
     "\u001b]8;;https://example.com\u001b\\a \u001b]8;;\u001b\\\n\u001b]8;;https://example.com\u001b\\bb\u001b]8;;\u001b\\\n\u001b]8;;https://example.com\u001b\\ c\u001b]8;;\u001b\\\n\u001b]8;;https://example.com\u001b\\c\u001b]8;;\u001b\\",
   )
   assert_eq(
-    wrap_text(input, 2, keep_words=true),
+    @papergrid.wrap_text(input, 2, keep_words=true),
     "\u001b]8;;https://example.com\u001b\\a \u001b]8;;\u001b\\\n\u001b]8;;https://example.com\u001b\\bb\u001b]8;;\u001b\\\n\u001b]8;;https://example.com\u001b\\ \u001b]8;;\u001b\\\n\u001b]8;;https://example.com\u001b\\cc\u001b]8;;\u001b\\",
   )
 }
@@ -1265,15 +1343,15 @@ test "ANSI width reference 17 at 2" {
 test "ANSI width reference 17 at 3" {
   let input = "\u001b]8;;https://example.com\u001b\\a bb cc\u001b]8;;\u001b\\"
   assert_eq(
-    cut_str(input, 3),
+    @papergrid.cut_str(input, 3),
     "\u001b]8;;https://example.com\u001b\\a b\u001b]8;;\u001b\\",
   )
   assert_eq(
-    wrap_text(input, 3),
+    @papergrid.wrap_text(input, 3),
     "\u001b]8;;https://example.com\u001b\\a b\u001b]8;;\u001b\\\n\u001b]8;;https://example.com\u001b\\b c\u001b]8;;\u001b\\\n\u001b]8;;https://example.com\u001b\\c\u001b]8;;\u001b\\",
   )
   assert_eq(
-    wrap_text(input, 3, keep_words=true),
+    @papergrid.wrap_text(input, 3, keep_words=true),
     "\u001b]8;;https://example.com\u001b\\a \u001b]8;;\u001b\\\n\u001b]8;;https://example.com\u001b\\bb \u001b]8;;\u001b\\\n\u001b]8;;https://example.com\u001b\\cc\u001b]8;;\u001b\\",
   )
 }
@@ -1283,15 +1361,15 @@ test "ANSI width reference 17 at 3" {
 test "ANSI width reference 17 at 4" {
   let input = "\u001b]8;;https://example.com\u001b\\a bb cc\u001b]8;;\u001b\\"
   assert_eq(
-    cut_str(input, 4),
+    @papergrid.cut_str(input, 4),
     "\u001b]8;;https://example.com\u001b\\a bb\u001b]8;;\u001b\\",
   )
   assert_eq(
-    wrap_text(input, 4),
+    @papergrid.wrap_text(input, 4),
     "\u001b]8;;https://example.com\u001b\\a bb\u001b]8;;\u001b\\\n\u001b]8;;https://example.com\u001b\\ cc\u001b]8;;\u001b\\",
   )
   assert_eq(
-    wrap_text(input, 4, keep_words=true),
+    @papergrid.wrap_text(input, 4, keep_words=true),
     "\u001b]8;;https://example.com\u001b\\a bb\u001b]8;;\u001b\\\n\u001b]8;;https://example.com\u001b\\ cc\u001b]8;;\u001b\\",
   )
 }
@@ -1301,15 +1379,15 @@ test "ANSI width reference 17 at 4" {
 test "ANSI width reference 17 at 6" {
   let input = "\u001b]8;;https://example.com\u001b\\a bb cc\u001b]8;;\u001b\\"
   assert_eq(
-    cut_str(input, 6),
+    @papergrid.cut_str(input, 6),
     "\u001b]8;;https://example.com\u001b\\a bb c\u001b]8;;\u001b\\",
   )
   assert_eq(
-    wrap_text(input, 6),
+    @papergrid.wrap_text(input, 6),
     "\u001b]8;;https://example.com\u001b\\a bb c\u001b]8;;\u001b\\\n\u001b]8;;https://example.com\u001b\\c\u001b]8;;\u001b\\",
   )
   assert_eq(
-    wrap_text(input, 6, keep_words=true),
+    @papergrid.wrap_text(input, 6, keep_words=true),
     "\u001b]8;;https://example.com\u001b\\a bb \u001b]8;;\u001b\\\n\u001b]8;;https://example.com\u001b\\cc\u001b]8;;\u001b\\",
   )
 }
@@ -1319,15 +1397,15 @@ test "ANSI width reference 17 at 6" {
 test "ANSI width reference 17 at 10" {
   let input = "\u001b]8;;https://example.com\u001b\\a bb cc\u001b]8;;\u001b\\"
   assert_eq(
-    cut_str(input, 10),
+    @papergrid.cut_str(input, 10),
     "\u001b]8;;https://example.com\u001b\\a bb cc\u001b]8;;\u001b\\",
   )
   assert_eq(
-    wrap_text(input, 10),
+    @papergrid.wrap_text(input, 10),
     "\u001b]8;;https://example.com\u001b\\a bb cc\u001b]8;;\u001b\\",
   )
   assert_eq(
-    wrap_text(input, 10, keep_words=true),
+    @papergrid.wrap_text(input, 10, keep_words=true),
     "\u001b]8;;https://example.com\u001b\\a bb cc\u001b]8;;\u001b\\",
   )
 }
@@ -1336,22 +1414,22 @@ test "ANSI width reference 17 at 10" {
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 18 at 0" {
   let input = "\u001b[31;100m123456\u001b[39m\u001b[49m"
-  assert_eq(cut_str(input, 0), "\u001b[31;100m\u001b[39m\u001b[49m")
-  assert_eq(wrap_text(input, 0), "")
-  assert_eq(wrap_text(input, 0, keep_words=true), "")
+  assert_eq(@papergrid.cut_str(input, 0), "\u001b[31;100m\u001b[39m\u001b[49m")
+  assert_eq(@papergrid.wrap_text(input, 0), "")
+  assert_eq(@papergrid.wrap_text(input, 0, keep_words=true), "")
 }
 
 ///|
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 18 at 1" {
   let input = "\u001b[31;100m123456\u001b[39m\u001b[49m"
-  assert_eq(cut_str(input, 1), "\u001b[31;100m1\u001b[39m\u001b[49m")
+  assert_eq(@papergrid.cut_str(input, 1), "\u001b[31;100m1\u001b[39m\u001b[49m")
   assert_eq(
-    wrap_text(input, 1),
+    @papergrid.wrap_text(input, 1),
     "\u001b[31m\u001b[100m1\u001b[39m\u001b[49m\n\u001b[31m\u001b[100m2\u001b[39m\u001b[49m\n\u001b[31m\u001b[100m3\u001b[39m\u001b[49m\n\u001b[31m\u001b[100m4\u001b[39m\u001b[49m\n\u001b[31m\u001b[100m5\u001b[39m\u001b[49m\n\u001b[31m\u001b[100m6\u001b[39m\u001b[49m",
   )
   assert_eq(
-    wrap_text(input, 1, keep_words=true),
+    @papergrid.wrap_text(input, 1, keep_words=true),
     "\u001b[31m\u001b[100m1\u001b[39m\u001b[49m\n\u001b[31m\u001b[100m2\u001b[39m\u001b[49m\n\u001b[31m\u001b[100m3\u001b[39m\u001b[49m\n\u001b[31m\u001b[100m4\u001b[39m\u001b[49m\n\u001b[31m\u001b[100m5\u001b[39m\u001b[49m\n\u001b[31m\u001b[100m6\u001b[39m\u001b[49m",
   )
 }
@@ -1360,13 +1438,16 @@ test "ANSI width reference 18 at 1" {
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 18 at 2" {
   let input = "\u001b[31;100m123456\u001b[39m\u001b[49m"
-  assert_eq(cut_str(input, 2), "\u001b[31;100m12\u001b[39m\u001b[49m")
   assert_eq(
-    wrap_text(input, 2),
+    @papergrid.cut_str(input, 2),
+    "\u001b[31;100m12\u001b[39m\u001b[49m",
+  )
+  assert_eq(
+    @papergrid.wrap_text(input, 2),
     "\u001b[31m\u001b[100m12\u001b[39m\u001b[49m\n\u001b[31m\u001b[100m34\u001b[39m\u001b[49m\n\u001b[31m\u001b[100m56\u001b[39m\u001b[49m",
   )
   assert_eq(
-    wrap_text(input, 2, keep_words=true),
+    @papergrid.wrap_text(input, 2, keep_words=true),
     "\u001b[31m\u001b[100m12\u001b[39m\u001b[49m\n\u001b[31m\u001b[100m34\u001b[39m\u001b[49m\n\u001b[31m\u001b[100m56\u001b[39m\u001b[49m",
   )
 }
@@ -1375,13 +1456,16 @@ test "ANSI width reference 18 at 2" {
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 18 at 3" {
   let input = "\u001b[31;100m123456\u001b[39m\u001b[49m"
-  assert_eq(cut_str(input, 3), "\u001b[31;100m123\u001b[39m\u001b[49m")
   assert_eq(
-    wrap_text(input, 3),
+    @papergrid.cut_str(input, 3),
+    "\u001b[31;100m123\u001b[39m\u001b[49m",
+  )
+  assert_eq(
+    @papergrid.wrap_text(input, 3),
     "\u001b[31m\u001b[100m123\u001b[39m\u001b[49m\n\u001b[31m\u001b[100m456\u001b[39m\u001b[49m",
   )
   assert_eq(
-    wrap_text(input, 3, keep_words=true),
+    @papergrid.wrap_text(input, 3, keep_words=true),
     "\u001b[31m\u001b[100m123\u001b[39m\u001b[49m\n\u001b[31m\u001b[100m456\u001b[39m\u001b[49m",
   )
 }
@@ -1390,13 +1474,16 @@ test "ANSI width reference 18 at 3" {
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 18 at 4" {
   let input = "\u001b[31;100m123456\u001b[39m\u001b[49m"
-  assert_eq(cut_str(input, 4), "\u001b[31;100m1234\u001b[39m\u001b[49m")
   assert_eq(
-    wrap_text(input, 4),
+    @papergrid.cut_str(input, 4),
+    "\u001b[31;100m1234\u001b[39m\u001b[49m",
+  )
+  assert_eq(
+    @papergrid.wrap_text(input, 4),
     "\u001b[31m\u001b[100m1234\u001b[39m\u001b[49m\n\u001b[31m\u001b[100m56\u001b[39m\u001b[49m",
   )
   assert_eq(
-    wrap_text(input, 4, keep_words=true),
+    @papergrid.wrap_text(input, 4, keep_words=true),
     "\u001b[31m\u001b[100m1234\u001b[39m\u001b[49m\n\u001b[31m\u001b[100m56\u001b[39m\u001b[49m",
   )
 }
@@ -1405,13 +1492,16 @@ test "ANSI width reference 18 at 4" {
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 18 at 6" {
   let input = "\u001b[31;100m123456\u001b[39m\u001b[49m"
-  assert_eq(cut_str(input, 6), "\u001b[31;100m123456\u001b[39m\u001b[49m")
   assert_eq(
-    wrap_text(input, 6),
+    @papergrid.cut_str(input, 6),
+    "\u001b[31;100m123456\u001b[39m\u001b[49m",
+  )
+  assert_eq(
+    @papergrid.wrap_text(input, 6),
     "\u001b[31m\u001b[100m123456\u001b[39m\u001b[49m",
   )
   assert_eq(
-    wrap_text(input, 6, keep_words=true),
+    @papergrid.wrap_text(input, 6, keep_words=true),
     "\u001b[31m\u001b[100m123456\u001b[39m\u001b[49m",
   )
 }
@@ -1420,13 +1510,16 @@ test "ANSI width reference 18 at 6" {
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 18 at 10" {
   let input = "\u001b[31;100m123456\u001b[39m\u001b[49m"
-  assert_eq(cut_str(input, 10), "\u001b[31;100m123456\u001b[39m\u001b[49m")
   assert_eq(
-    wrap_text(input, 10),
+    @papergrid.cut_str(input, 10),
+    "\u001b[31;100m123456\u001b[39m\u001b[49m",
+  )
+  assert_eq(
+    @papergrid.wrap_text(input, 10),
     "\u001b[31m\u001b[100m123456\u001b[39m\u001b[49m",
   )
   assert_eq(
-    wrap_text(input, 10, keep_words=true),
+    @papergrid.wrap_text(input, 10, keep_words=true),
     "\u001b[31m\u001b[100m123456\u001b[39m\u001b[49m",
   )
 }
@@ -1435,22 +1528,25 @@ test "ANSI width reference 18 at 10" {
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 19 at 0" {
   let input = "\u001b[31;100m😳😳😳\u001b[39m\u001b[49m"
-  assert_eq(cut_str(input, 0), "\u001b[31;100m\u001b[39m\u001b[49m")
-  assert_eq(wrap_text(input, 0), "")
-  assert_eq(wrap_text(input, 0, keep_words=true), "")
+  assert_eq(@papergrid.cut_str(input, 0), "\u001b[31;100m\u001b[39m\u001b[49m")
+  assert_eq(@papergrid.wrap_text(input, 0), "")
+  assert_eq(@papergrid.wrap_text(input, 0, keep_words=true), "")
 }
 
 ///|
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 19 at 1" {
   let input = "\u001b[31;100m😳😳😳\u001b[39m\u001b[49m"
-  assert_eq(cut_str(input, 1), "\u001b[31;100m\u001b[39m\u001b[49m�")
   assert_eq(
-    wrap_text(input, 1),
+    @papergrid.cut_str(input, 1),
+    "\u001b[31;100m\u001b[39m\u001b[49m�",
+  )
+  assert_eq(
+    @papergrid.wrap_text(input, 1),
     "\u001b[31m\u001b[100m�\u001b[39m\u001b[49m\n\u001b[31m\u001b[100m�\u001b[39m\u001b[49m\n\u001b[31m\u001b[100m�\u001b[39m\u001b[49m",
   )
   assert_eq(
-    wrap_text(input, 1, keep_words=true),
+    @papergrid.wrap_text(input, 1, keep_words=true),
     "�\u001b[31m\u001b[100m\u001b[39m\u001b[49m\n\u001b[31m\u001b[100m�\u001b[39m\u001b[49m\n\u001b[31m\u001b[100m�\u001b[39m\u001b[49m",
   )
 }
@@ -1459,13 +1555,16 @@ test "ANSI width reference 19 at 1" {
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 19 at 2" {
   let input = "\u001b[31;100m😳😳😳\u001b[39m\u001b[49m"
-  assert_eq(cut_str(input, 2), "\u001b[31;100m😳\u001b[39m\u001b[49m")
   assert_eq(
-    wrap_text(input, 2),
+    @papergrid.cut_str(input, 2),
+    "\u001b[31;100m😳\u001b[39m\u001b[49m",
+  )
+  assert_eq(
+    @papergrid.wrap_text(input, 2),
     "\u001b[31m\u001b[100m😳\u001b[39m\u001b[49m\n\u001b[31m\u001b[100m😳\u001b[39m\u001b[49m\n\u001b[31m\u001b[100m😳\u001b[39m\u001b[49m",
   )
   assert_eq(
-    wrap_text(input, 2, keep_words=true),
+    @papergrid.wrap_text(input, 2, keep_words=true),
     "\u001b[31m\u001b[100m😳\u001b[39m\u001b[49m\n\u001b[31m\u001b[100m😳\u001b[39m\u001b[49m\n\u001b[31m\u001b[100m😳\u001b[39m\u001b[49m",
   )
 }
@@ -1474,13 +1573,16 @@ test "ANSI width reference 19 at 2" {
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 19 at 3" {
   let input = "\u001b[31;100m😳😳😳\u001b[39m\u001b[49m"
-  assert_eq(cut_str(input, 3), "\u001b[31;100m😳\u001b[39m\u001b[49m�")
   assert_eq(
-    wrap_text(input, 3),
+    @papergrid.cut_str(input, 3),
+    "\u001b[31;100m😳\u001b[39m\u001b[49m�",
+  )
+  assert_eq(
+    @papergrid.wrap_text(input, 3),
     "\u001b[31m\u001b[100m😳\u001b[39m\u001b[49m\n\u001b[31m\u001b[100m😳\u001b[39m\u001b[49m\n\u001b[31m\u001b[100m😳\u001b[39m\u001b[49m",
   )
   assert_eq(
-    wrap_text(input, 3, keep_words=true),
+    @papergrid.wrap_text(input, 3, keep_words=true),
     "\u001b[31m\u001b[100m😳\u001b[39m\u001b[49m\n\u001b[31m\u001b[100m😳\u001b[39m\u001b[49m\n\u001b[31m\u001b[100m😳\u001b[39m\u001b[49m",
   )
 }
@@ -1489,13 +1591,16 @@ test "ANSI width reference 19 at 3" {
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 19 at 4" {
   let input = "\u001b[31;100m😳😳😳\u001b[39m\u001b[49m"
-  assert_eq(cut_str(input, 4), "\u001b[31;100m😳😳\u001b[39m\u001b[49m")
   assert_eq(
-    wrap_text(input, 4),
+    @papergrid.cut_str(input, 4),
+    "\u001b[31;100m😳😳\u001b[39m\u001b[49m",
+  )
+  assert_eq(
+    @papergrid.wrap_text(input, 4),
     "\u001b[31m\u001b[100m😳😳\u001b[39m\u001b[49m\n\u001b[31m\u001b[100m😳\u001b[39m\u001b[49m",
   )
   assert_eq(
-    wrap_text(input, 4, keep_words=true),
+    @papergrid.wrap_text(input, 4, keep_words=true),
     "\u001b[31m\u001b[100m😳😳\u001b[39m\u001b[49m\n\u001b[31m\u001b[100m😳\u001b[39m\u001b[49m",
   )
 }
@@ -1504,13 +1609,16 @@ test "ANSI width reference 19 at 4" {
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 19 at 6" {
   let input = "\u001b[31;100m😳😳😳\u001b[39m\u001b[49m"
-  assert_eq(cut_str(input, 6), "\u001b[31;100m😳😳😳\u001b[39m\u001b[49m")
   assert_eq(
-    wrap_text(input, 6),
+    @papergrid.cut_str(input, 6),
+    "\u001b[31;100m😳😳😳\u001b[39m\u001b[49m",
+  )
+  assert_eq(
+    @papergrid.wrap_text(input, 6),
     "\u001b[31m\u001b[100m😳😳😳\u001b[39m\u001b[49m",
   )
   assert_eq(
-    wrap_text(input, 6, keep_words=true),
+    @papergrid.wrap_text(input, 6, keep_words=true),
     "\u001b[31m\u001b[100m😳😳😳\u001b[39m\u001b[49m",
   )
 }
@@ -1520,15 +1628,15 @@ test "ANSI width reference 19 at 6" {
 test "ANSI width reference 19 at 10" {
   let input = "\u001b[31;100m😳😳😳\u001b[39m\u001b[49m"
   assert_eq(
-    cut_str(input, 10),
+    @papergrid.cut_str(input, 10),
     "\u001b[31;100m😳😳😳\u001b[39m\u001b[49m",
   )
   assert_eq(
-    wrap_text(input, 10),
+    @papergrid.wrap_text(input, 10),
     "\u001b[31m\u001b[100m😳😳😳\u001b[39m\u001b[49m",
   )
   assert_eq(
-    wrap_text(input, 10, keep_words=true),
+    @papergrid.wrap_text(input, 10, keep_words=true),
     "\u001b[31m\u001b[100m😳😳😳\u001b[39m\u001b[49m",
   )
 }
@@ -1537,22 +1645,22 @@ test "ANSI width reference 19 at 10" {
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 20 at 0" {
   let input = "\u001b[1mab\u001b[31mcd\u001b[22mef\u001b[0m"
-  assert_eq(cut_str(input, 0), "\u001b[1m\u001b[22m")
-  assert_eq(wrap_text(input, 0), "")
-  assert_eq(wrap_text(input, 0, keep_words=true), "")
+  assert_eq(@papergrid.cut_str(input, 0), "\u001b[1m\u001b[22m")
+  assert_eq(@papergrid.wrap_text(input, 0), "")
+  assert_eq(@papergrid.wrap_text(input, 0, keep_words=true), "")
 }
 
 ///|
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 20 at 1" {
   let input = "\u001b[1mab\u001b[31mcd\u001b[22mef\u001b[0m"
-  assert_eq(cut_str(input, 1), "\u001b[1ma\u001b[22m")
+  assert_eq(@papergrid.cut_str(input, 1), "\u001b[1ma\u001b[22m")
   assert_eq(
-    wrap_text(input, 1),
+    @papergrid.wrap_text(input, 1),
     "\u001b[1ma\u001b[22m\n\u001b[1mb\u001b[22m\n\u001b[1m\u001b[31mc\u001b[22m\u001b[39m\n\u001b[1m\u001b[31md\u001b[22m\u001b[39m\n\u001b[31me\u001b[39m\n\u001b[31mf\u001b[39m",
   )
   assert_eq(
-    wrap_text(input, 1, keep_words=true),
+    @papergrid.wrap_text(input, 1, keep_words=true),
     "\u001b[1ma\u001b[22m\n\u001b[1mb\u001b[22m\n\u001b[1m\u001b[31mc\u001b[22m\u001b[39m\n\u001b[1m\u001b[31md\u001b[22m\u001b[39m\n\u001b[31me\u001b[39m\n\u001b[31mf\u001b[39m",
   )
 }
@@ -1561,13 +1669,16 @@ test "ANSI width reference 20 at 1" {
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 20 at 2" {
   let input = "\u001b[1mab\u001b[31mcd\u001b[22mef\u001b[0m"
-  assert_eq(cut_str(input, 2), "\u001b[1mab\u001b[31m\u001b[22m\u001b[39m")
   assert_eq(
-    wrap_text(input, 2),
+    @papergrid.cut_str(input, 2),
+    "\u001b[1mab\u001b[31m\u001b[22m\u001b[39m",
+  )
+  assert_eq(
+    @papergrid.wrap_text(input, 2),
     "\u001b[1mab\u001b[22m\n\u001b[1m\u001b[31mcd\u001b[22m\u001b[39m\n\u001b[31mef\u001b[39m",
   )
   assert_eq(
-    wrap_text(input, 2, keep_words=true),
+    @papergrid.wrap_text(input, 2, keep_words=true),
     "\u001b[1mab\u001b[22m\n\u001b[1m\u001b[31mcd\u001b[22m\u001b[39m\n\u001b[31mef\u001b[39m",
   )
 }
@@ -1576,13 +1687,16 @@ test "ANSI width reference 20 at 2" {
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 20 at 3" {
   let input = "\u001b[1mab\u001b[31mcd\u001b[22mef\u001b[0m"
-  assert_eq(cut_str(input, 3), "\u001b[1mab\u001b[31mc\u001b[22m\u001b[39m")
   assert_eq(
-    wrap_text(input, 3),
+    @papergrid.cut_str(input, 3),
+    "\u001b[1mab\u001b[31mc\u001b[22m\u001b[39m",
+  )
+  assert_eq(
+    @papergrid.wrap_text(input, 3),
     "\u001b[1mab\u001b[22m\u001b[1m\u001b[31mc\u001b[22m\u001b[39m\n\u001b[1m\u001b[31md\u001b[22m\u001b[39m\u001b[31mef\u001b[39m",
   )
   assert_eq(
-    wrap_text(input, 3, keep_words=true),
+    @papergrid.wrap_text(input, 3, keep_words=true),
     "\u001b[1mab\u001b[22m\u001b[1m\u001b[31mc\u001b[22m\u001b[39m\n\u001b[1m\u001b[31md\u001b[22m\u001b[39m\u001b[31mef\u001b[39m",
   )
 }
@@ -1591,13 +1705,16 @@ test "ANSI width reference 20 at 3" {
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 20 at 4" {
   let input = "\u001b[1mab\u001b[31mcd\u001b[22mef\u001b[0m"
-  assert_eq(cut_str(input, 4), "\u001b[1mab\u001b[31mcd\u001b[22m\u001b[39m")
   assert_eq(
-    wrap_text(input, 4),
+    @papergrid.cut_str(input, 4),
+    "\u001b[1mab\u001b[31mcd\u001b[22m\u001b[39m",
+  )
+  assert_eq(
+    @papergrid.wrap_text(input, 4),
     "\u001b[1mab\u001b[22m\u001b[1m\u001b[31mcd\u001b[22m\u001b[39m\n\u001b[31mef\u001b[39m",
   )
   assert_eq(
-    wrap_text(input, 4, keep_words=true),
+    @papergrid.wrap_text(input, 4, keep_words=true),
     "\u001b[1mab\u001b[22m\u001b[1m\u001b[31mcd\u001b[22m\u001b[39m\n\u001b[31mef\u001b[39m",
   )
 }
@@ -1606,13 +1723,16 @@ test "ANSI width reference 20 at 4" {
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 20 at 6" {
   let input = "\u001b[1mab\u001b[31mcd\u001b[22mef\u001b[0m"
-  assert_eq(cut_str(input, 6), "\u001b[1mab\u001b[31mcd\u001b[22mef\u001b[0m")
   assert_eq(
-    wrap_text(input, 6),
+    @papergrid.cut_str(input, 6),
+    "\u001b[1mab\u001b[31mcd\u001b[22mef\u001b[0m",
+  )
+  assert_eq(
+    @papergrid.wrap_text(input, 6),
     "\u001b[1mab\u001b[22m\u001b[1m\u001b[31mcd\u001b[22m\u001b[39m\u001b[31mef\u001b[39m",
   )
   assert_eq(
-    wrap_text(input, 6, keep_words=true),
+    @papergrid.wrap_text(input, 6, keep_words=true),
     "\u001b[1mab\u001b[22m\u001b[1m\u001b[31mcd\u001b[22m\u001b[39m\u001b[31mef\u001b[39m",
   )
 }
@@ -1621,13 +1741,16 @@ test "ANSI width reference 20 at 6" {
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 20 at 10" {
   let input = "\u001b[1mab\u001b[31mcd\u001b[22mef\u001b[0m"
-  assert_eq(cut_str(input, 10), "\u001b[1mab\u001b[31mcd\u001b[22mef\u001b[0m")
   assert_eq(
-    wrap_text(input, 10),
+    @papergrid.cut_str(input, 10),
+    "\u001b[1mab\u001b[31mcd\u001b[22mef\u001b[0m",
+  )
+  assert_eq(
+    @papergrid.wrap_text(input, 10),
     "\u001b[1mab\u001b[22m\u001b[1m\u001b[31mcd\u001b[22m\u001b[39m\u001b[31mef\u001b[39m",
   )
   assert_eq(
-    wrap_text(input, 10, keep_words=true),
+    @papergrid.wrap_text(input, 10, keep_words=true),
     "\u001b[1mab\u001b[22m\u001b[1m\u001b[31mcd\u001b[22m\u001b[39m\u001b[31mef\u001b[39m",
   )
 }
@@ -1636,22 +1759,22 @@ test "ANSI width reference 20 at 10" {
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 21 at 0" {
   let input = "\u001b[31mab\n\ncd\n\u001b[39m"
-  assert_eq(cut_str(input, 0), "\u001b[31m\u001b[39m")
-  assert_eq(wrap_text(input, 0), "")
-  assert_eq(wrap_text(input, 0, keep_words=true), "")
+  assert_eq(@papergrid.cut_str(input, 0), "\u001b[31m\u001b[39m")
+  assert_eq(@papergrid.wrap_text(input, 0), "")
+  assert_eq(@papergrid.wrap_text(input, 0, keep_words=true), "")
 }
 
 ///|
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 21 at 1" {
   let input = "\u001b[31mab\n\ncd\n\u001b[39m"
-  assert_eq(cut_str(input, 1), "\u001b[31ma\u001b[39m")
+  assert_eq(@papergrid.cut_str(input, 1), "\u001b[31ma\u001b[39m")
   assert_eq(
-    wrap_text(input, 1),
+    @papergrid.wrap_text(input, 1),
     "\u001b[31ma\u001b[39m\n\u001b[31mb\u001b[39m\n\u001b[31m\u001b[39m\n\u001b[31mc\u001b[39m\n\u001b[31md\u001b[39m\n\u001b[31m",
   )
   assert_eq(
-    wrap_text(input, 1, keep_words=true),
+    @papergrid.wrap_text(input, 1, keep_words=true),
     "\u001b[31ma\u001b[39m\n\u001b[31mb\u001b[39m\n\u001b[31m\n\u001b[39m\n\u001b[31m\n\u001b[39m\n\u001b[31mc\u001b[39m\n\u001b[31md\u001b[39m\n\u001b[31m\n\u001b[39m",
   )
 }
@@ -1660,13 +1783,13 @@ test "ANSI width reference 21 at 1" {
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 21 at 2" {
   let input = "\u001b[31mab\n\ncd\n\u001b[39m"
-  assert_eq(cut_str(input, 2), "\u001b[31mab\u001b[39m")
+  assert_eq(@papergrid.cut_str(input, 2), "\u001b[31mab\u001b[39m")
   assert_eq(
-    wrap_text(input, 2),
+    @papergrid.wrap_text(input, 2),
     "\u001b[31mab\u001b[39m\n\u001b[31m\u001b[39m\n\u001b[31mcd\u001b[39m\n\u001b[31m",
   )
   assert_eq(
-    wrap_text(input, 2, keep_words=true),
+    @papergrid.wrap_text(input, 2, keep_words=true),
     "\u001b[31mab\u001b[39m\n\u001b[31m\n\n\u001b[39m\n\u001b[31mcd\u001b[39m\n\u001b[31m\n\u001b[39m",
   )
 }
@@ -1675,13 +1798,13 @@ test "ANSI width reference 21 at 2" {
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 21 at 3" {
   let input = "\u001b[31mab\n\ncd\n\u001b[39m"
-  assert_eq(cut_str(input, 3), "\u001b[31mab\n\ncd\n\u001b[39m")
+  assert_eq(@papergrid.cut_str(input, 3), "\u001b[31mab\n\ncd\n\u001b[39m")
   assert_eq(
-    wrap_text(input, 3),
+    @papergrid.wrap_text(input, 3),
     "\u001b[31mab\u001b[39m\n\u001b[31m\u001b[39m\n\u001b[31mcd\u001b[39m\n\u001b[31m",
   )
   assert_eq(
-    wrap_text(input, 3, keep_words=true),
+    @papergrid.wrap_text(input, 3, keep_words=true),
     "\u001b[31mab\n\u001b[39m\n\u001b[31m\ncd\u001b[39m\n\u001b[31m\n\u001b[39m",
   )
 }
@@ -1690,13 +1813,13 @@ test "ANSI width reference 21 at 3" {
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 21 at 4" {
   let input = "\u001b[31mab\n\ncd\n\u001b[39m"
-  assert_eq(cut_str(input, 4), "\u001b[31mab\n\ncd\n\u001b[39m")
+  assert_eq(@papergrid.cut_str(input, 4), "\u001b[31mab\n\ncd\n\u001b[39m")
   assert_eq(
-    wrap_text(input, 4),
+    @papergrid.wrap_text(input, 4),
     "\u001b[31mab\u001b[39m\n\u001b[31m\u001b[39m\n\u001b[31mcd\u001b[39m\n\u001b[31m",
   )
   assert_eq(
-    wrap_text(input, 4, keep_words=true),
+    @papergrid.wrap_text(input, 4, keep_words=true),
     "\u001b[31mab\n\n\u001b[39m\n\u001b[31mcd\n\u001b[39m",
   )
 }
@@ -1705,13 +1828,13 @@ test "ANSI width reference 21 at 4" {
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 21 at 6" {
   let input = "\u001b[31mab\n\ncd\n\u001b[39m"
-  assert_eq(cut_str(input, 6), "\u001b[31mab\n\ncd\n\u001b[39m")
+  assert_eq(@papergrid.cut_str(input, 6), "\u001b[31mab\n\ncd\n\u001b[39m")
   assert_eq(
-    wrap_text(input, 6),
+    @papergrid.wrap_text(input, 6),
     "\u001b[31mab\u001b[39m\n\u001b[31m\u001b[39m\n\u001b[31mcd\u001b[39m\n\u001b[31m",
   )
   assert_eq(
-    wrap_text(input, 6, keep_words=true),
+    @papergrid.wrap_text(input, 6, keep_words=true),
     "\u001b[31mab\n\ncd\u001b[39m\n\u001b[31m\n\u001b[39m",
   )
 }
@@ -1720,13 +1843,13 @@ test "ANSI width reference 21 at 6" {
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 21 at 10" {
   let input = "\u001b[31mab\n\ncd\n\u001b[39m"
-  assert_eq(cut_str(input, 10), "\u001b[31mab\n\ncd\n\u001b[39m")
+  assert_eq(@papergrid.cut_str(input, 10), "\u001b[31mab\n\ncd\n\u001b[39m")
   assert_eq(
-    wrap_text(input, 10),
+    @papergrid.wrap_text(input, 10),
     "\u001b[31mab\u001b[39m\n\u001b[31m\u001b[39m\n\u001b[31mcd\u001b[39m\n\u001b[31m",
   )
   assert_eq(
-    wrap_text(input, 10, keep_words=true),
+    @papergrid.wrap_text(input, 10, keep_words=true),
     "\u001b[31mab\n\ncd\n\u001b[39m",
   )
 }
@@ -1735,22 +1858,22 @@ test "ANSI width reference 21 at 10" {
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 22 at 0" {
   let input = "\u001b[31mab\n\ncd\n"
-  assert_eq(cut_str(input, 0), "\u001b[31m\u001b[39m")
-  assert_eq(wrap_text(input, 0), "")
-  assert_eq(wrap_text(input, 0, keep_words=true), "")
+  assert_eq(@papergrid.cut_str(input, 0), "\u001b[31m\u001b[39m")
+  assert_eq(@papergrid.wrap_text(input, 0), "")
+  assert_eq(@papergrid.wrap_text(input, 0, keep_words=true), "")
 }
 
 ///|
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 22 at 1" {
   let input = "\u001b[31mab\n\ncd\n"
-  assert_eq(cut_str(input, 1), "\u001b[31ma\u001b[39m")
+  assert_eq(@papergrid.cut_str(input, 1), "\u001b[31ma\u001b[39m")
   assert_eq(
-    wrap_text(input, 1),
+    @papergrid.wrap_text(input, 1),
     "\u001b[31ma\u001b[39m\n\u001b[31mb\u001b[39m\n\u001b[31m\u001b[39m\n\u001b[31mc\u001b[39m\n\u001b[31md\u001b[39m\n\u001b[31m",
   )
   assert_eq(
-    wrap_text(input, 1, keep_words=true),
+    @papergrid.wrap_text(input, 1, keep_words=true),
     "\u001b[31ma\u001b[39m\n\u001b[31mb\u001b[39m\n\u001b[31m\n\u001b[39m\n\u001b[31m\n\u001b[39m\n\u001b[31mc\u001b[39m\n\u001b[31md\u001b[39m\n\u001b[31m\n\u001b[39m",
   )
 }
@@ -1759,13 +1882,13 @@ test "ANSI width reference 22 at 1" {
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 22 at 2" {
   let input = "\u001b[31mab\n\ncd\n"
-  assert_eq(cut_str(input, 2), "\u001b[31mab\u001b[39m")
+  assert_eq(@papergrid.cut_str(input, 2), "\u001b[31mab\u001b[39m")
   assert_eq(
-    wrap_text(input, 2),
+    @papergrid.wrap_text(input, 2),
     "\u001b[31mab\u001b[39m\n\u001b[31m\u001b[39m\n\u001b[31mcd\u001b[39m\n\u001b[31m",
   )
   assert_eq(
-    wrap_text(input, 2, keep_words=true),
+    @papergrid.wrap_text(input, 2, keep_words=true),
     "\u001b[31mab\u001b[39m\n\u001b[31m\n\n\u001b[39m\n\u001b[31mcd\u001b[39m\n\u001b[31m\n\u001b[39m",
   )
 }
@@ -1774,13 +1897,13 @@ test "ANSI width reference 22 at 2" {
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 22 at 3" {
   let input = "\u001b[31mab\n\ncd\n"
-  assert_eq(cut_str(input, 3), "\u001b[31mab\n\ncd\n\u001b[39m")
+  assert_eq(@papergrid.cut_str(input, 3), "\u001b[31mab\n\ncd\n\u001b[39m")
   assert_eq(
-    wrap_text(input, 3),
+    @papergrid.wrap_text(input, 3),
     "\u001b[31mab\u001b[39m\n\u001b[31m\u001b[39m\n\u001b[31mcd\u001b[39m\n\u001b[31m",
   )
   assert_eq(
-    wrap_text(input, 3, keep_words=true),
+    @papergrid.wrap_text(input, 3, keep_words=true),
     "\u001b[31mab\n\u001b[39m\n\u001b[31m\ncd\u001b[39m\n\u001b[31m\n\u001b[39m",
   )
 }
@@ -1789,13 +1912,13 @@ test "ANSI width reference 22 at 3" {
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 22 at 4" {
   let input = "\u001b[31mab\n\ncd\n"
-  assert_eq(cut_str(input, 4), "\u001b[31mab\n\ncd\n\u001b[39m")
+  assert_eq(@papergrid.cut_str(input, 4), "\u001b[31mab\n\ncd\n\u001b[39m")
   assert_eq(
-    wrap_text(input, 4),
+    @papergrid.wrap_text(input, 4),
     "\u001b[31mab\u001b[39m\n\u001b[31m\u001b[39m\n\u001b[31mcd\u001b[39m\n\u001b[31m",
   )
   assert_eq(
-    wrap_text(input, 4, keep_words=true),
+    @papergrid.wrap_text(input, 4, keep_words=true),
     "\u001b[31mab\n\n\u001b[39m\n\u001b[31mcd\n\u001b[39m",
   )
 }
@@ -1804,13 +1927,13 @@ test "ANSI width reference 22 at 4" {
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 22 at 6" {
   let input = "\u001b[31mab\n\ncd\n"
-  assert_eq(cut_str(input, 6), "\u001b[31mab\n\ncd\n\u001b[39m")
+  assert_eq(@papergrid.cut_str(input, 6), "\u001b[31mab\n\ncd\n\u001b[39m")
   assert_eq(
-    wrap_text(input, 6),
+    @papergrid.wrap_text(input, 6),
     "\u001b[31mab\u001b[39m\n\u001b[31m\u001b[39m\n\u001b[31mcd\u001b[39m\n\u001b[31m",
   )
   assert_eq(
-    wrap_text(input, 6, keep_words=true),
+    @papergrid.wrap_text(input, 6, keep_words=true),
     "\u001b[31mab\n\ncd\u001b[39m\n\u001b[31m\n\u001b[39m",
   )
 }
@@ -1819,13 +1942,13 @@ test "ANSI width reference 22 at 6" {
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 22 at 10" {
   let input = "\u001b[31mab\n\ncd\n"
-  assert_eq(cut_str(input, 10), "\u001b[31mab\n\ncd\n\u001b[39m")
+  assert_eq(@papergrid.cut_str(input, 10), "\u001b[31mab\n\ncd\n\u001b[39m")
   assert_eq(
-    wrap_text(input, 10),
+    @papergrid.wrap_text(input, 10),
     "\u001b[31mab\u001b[39m\n\u001b[31m\u001b[39m\n\u001b[31mcd\u001b[39m\n\u001b[31m",
   )
   assert_eq(
-    wrap_text(input, 10, keep_words=true),
+    @papergrid.wrap_text(input, 10, keep_words=true),
     "\u001b[31mab\n\ncd\n\u001b[39m",
   )
 }
@@ -1834,85 +1957,85 @@ test "ANSI width reference 22 at 10" {
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 23 at 0" {
   let input = "\u001b[31m\u001b[39m"
-  assert_eq(cut_str(input, 0), "\u001b[31m\u001b[39m")
-  assert_eq(wrap_text(input, 0), "")
-  assert_eq(wrap_text(input, 0, keep_words=true), "")
+  assert_eq(@papergrid.cut_str(input, 0), "\u001b[31m\u001b[39m")
+  assert_eq(@papergrid.wrap_text(input, 0), "")
+  assert_eq(@papergrid.wrap_text(input, 0, keep_words=true), "")
 }
 
 ///|
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 23 at 1" {
   let input = "\u001b[31m\u001b[39m"
-  assert_eq(cut_str(input, 1), "\u001b[31m\u001b[39m")
-  assert_eq(wrap_text(input, 1), "")
-  assert_eq(wrap_text(input, 1, keep_words=true), "")
+  assert_eq(@papergrid.cut_str(input, 1), "\u001b[31m\u001b[39m")
+  assert_eq(@papergrid.wrap_text(input, 1), "")
+  assert_eq(@papergrid.wrap_text(input, 1, keep_words=true), "")
 }
 
 ///|
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 23 at 2" {
   let input = "\u001b[31m\u001b[39m"
-  assert_eq(cut_str(input, 2), "\u001b[31m\u001b[39m")
-  assert_eq(wrap_text(input, 2), "")
-  assert_eq(wrap_text(input, 2, keep_words=true), "")
+  assert_eq(@papergrid.cut_str(input, 2), "\u001b[31m\u001b[39m")
+  assert_eq(@papergrid.wrap_text(input, 2), "")
+  assert_eq(@papergrid.wrap_text(input, 2, keep_words=true), "")
 }
 
 ///|
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 23 at 3" {
   let input = "\u001b[31m\u001b[39m"
-  assert_eq(cut_str(input, 3), "\u001b[31m\u001b[39m")
-  assert_eq(wrap_text(input, 3), "")
-  assert_eq(wrap_text(input, 3, keep_words=true), "")
+  assert_eq(@papergrid.cut_str(input, 3), "\u001b[31m\u001b[39m")
+  assert_eq(@papergrid.wrap_text(input, 3), "")
+  assert_eq(@papergrid.wrap_text(input, 3, keep_words=true), "")
 }
 
 ///|
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 23 at 4" {
   let input = "\u001b[31m\u001b[39m"
-  assert_eq(cut_str(input, 4), "\u001b[31m\u001b[39m")
-  assert_eq(wrap_text(input, 4), "")
-  assert_eq(wrap_text(input, 4, keep_words=true), "")
+  assert_eq(@papergrid.cut_str(input, 4), "\u001b[31m\u001b[39m")
+  assert_eq(@papergrid.wrap_text(input, 4), "")
+  assert_eq(@papergrid.wrap_text(input, 4, keep_words=true), "")
 }
 
 ///|
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 23 at 6" {
   let input = "\u001b[31m\u001b[39m"
-  assert_eq(cut_str(input, 6), "\u001b[31m\u001b[39m")
-  assert_eq(wrap_text(input, 6), "")
-  assert_eq(wrap_text(input, 6, keep_words=true), "")
+  assert_eq(@papergrid.cut_str(input, 6), "\u001b[31m\u001b[39m")
+  assert_eq(@papergrid.wrap_text(input, 6), "")
+  assert_eq(@papergrid.wrap_text(input, 6, keep_words=true), "")
 }
 
 ///|
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 23 at 10" {
   let input = "\u001b[31m\u001b[39m"
-  assert_eq(cut_str(input, 10), "\u001b[31m\u001b[39m")
-  assert_eq(wrap_text(input, 10), "")
-  assert_eq(wrap_text(input, 10, keep_words=true), "")
+  assert_eq(@papergrid.cut_str(input, 10), "\u001b[31m\u001b[39m")
+  assert_eq(@papergrid.wrap_text(input, 10), "")
+  assert_eq(@papergrid.wrap_text(input, 10, keep_words=true), "")
 }
 
 ///|
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 24 at 0" {
   let input = "\u001b[38;2;1;2;3mabcdef\u001b[0m"
-  assert_eq(cut_str(input, 0), "\u001b[38;2;1;2;3m\u001b[39m")
-  assert_eq(wrap_text(input, 0), "")
-  assert_eq(wrap_text(input, 0, keep_words=true), "")
+  assert_eq(@papergrid.cut_str(input, 0), "\u001b[38;2;1;2;3m\u001b[39m")
+  assert_eq(@papergrid.wrap_text(input, 0), "")
+  assert_eq(@papergrid.wrap_text(input, 0, keep_words=true), "")
 }
 
 ///|
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 24 at 1" {
   let input = "\u001b[38;2;1;2;3mabcdef\u001b[0m"
-  assert_eq(cut_str(input, 1), "\u001b[38;2;1;2;3ma\u001b[39m")
+  assert_eq(@papergrid.cut_str(input, 1), "\u001b[38;2;1;2;3ma\u001b[39m")
   assert_eq(
-    wrap_text(input, 1),
+    @papergrid.wrap_text(input, 1),
     "\u001b[38;2;1;2;3ma\u001b[39m\n\u001b[38;2;1;2;3mb\u001b[39m\n\u001b[38;2;1;2;3mc\u001b[39m\n\u001b[38;2;1;2;3md\u001b[39m\n\u001b[38;2;1;2;3me\u001b[39m\n\u001b[38;2;1;2;3mf\u001b[39m",
   )
   assert_eq(
-    wrap_text(input, 1, keep_words=true),
+    @papergrid.wrap_text(input, 1, keep_words=true),
     "\u001b[38;2;1;2;3ma\u001b[39m\n\u001b[38;2;1;2;3mb\u001b[39m\n\u001b[38;2;1;2;3mc\u001b[39m\n\u001b[38;2;1;2;3md\u001b[39m\n\u001b[38;2;1;2;3me\u001b[39m\n\u001b[38;2;1;2;3mf\u001b[39m",
   )
 }
@@ -1921,13 +2044,13 @@ test "ANSI width reference 24 at 1" {
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 24 at 2" {
   let input = "\u001b[38;2;1;2;3mabcdef\u001b[0m"
-  assert_eq(cut_str(input, 2), "\u001b[38;2;1;2;3mab\u001b[39m")
+  assert_eq(@papergrid.cut_str(input, 2), "\u001b[38;2;1;2;3mab\u001b[39m")
   assert_eq(
-    wrap_text(input, 2),
+    @papergrid.wrap_text(input, 2),
     "\u001b[38;2;1;2;3mab\u001b[39m\n\u001b[38;2;1;2;3mcd\u001b[39m\n\u001b[38;2;1;2;3mef\u001b[39m",
   )
   assert_eq(
-    wrap_text(input, 2, keep_words=true),
+    @papergrid.wrap_text(input, 2, keep_words=true),
     "\u001b[38;2;1;2;3mab\u001b[39m\n\u001b[38;2;1;2;3mcd\u001b[39m\n\u001b[38;2;1;2;3mef\u001b[39m",
   )
 }
@@ -1936,13 +2059,13 @@ test "ANSI width reference 24 at 2" {
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 24 at 3" {
   let input = "\u001b[38;2;1;2;3mabcdef\u001b[0m"
-  assert_eq(cut_str(input, 3), "\u001b[38;2;1;2;3mabc\u001b[39m")
+  assert_eq(@papergrid.cut_str(input, 3), "\u001b[38;2;1;2;3mabc\u001b[39m")
   assert_eq(
-    wrap_text(input, 3),
+    @papergrid.wrap_text(input, 3),
     "\u001b[38;2;1;2;3mabc\u001b[39m\n\u001b[38;2;1;2;3mdef\u001b[39m",
   )
   assert_eq(
-    wrap_text(input, 3, keep_words=true),
+    @papergrid.wrap_text(input, 3, keep_words=true),
     "\u001b[38;2;1;2;3mabc\u001b[39m\n\u001b[38;2;1;2;3mdef\u001b[39m",
   )
 }
@@ -1951,13 +2074,13 @@ test "ANSI width reference 24 at 3" {
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 24 at 4" {
   let input = "\u001b[38;2;1;2;3mabcdef\u001b[0m"
-  assert_eq(cut_str(input, 4), "\u001b[38;2;1;2;3mabcd\u001b[39m")
+  assert_eq(@papergrid.cut_str(input, 4), "\u001b[38;2;1;2;3mabcd\u001b[39m")
   assert_eq(
-    wrap_text(input, 4),
+    @papergrid.wrap_text(input, 4),
     "\u001b[38;2;1;2;3mabcd\u001b[39m\n\u001b[38;2;1;2;3mef\u001b[39m",
   )
   assert_eq(
-    wrap_text(input, 4, keep_words=true),
+    @papergrid.wrap_text(input, 4, keep_words=true),
     "\u001b[38;2;1;2;3mabcd\u001b[39m\n\u001b[38;2;1;2;3mef\u001b[39m",
   )
 }
@@ -1966,10 +2089,13 @@ test "ANSI width reference 24 at 4" {
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 24 at 6" {
   let input = "\u001b[38;2;1;2;3mabcdef\u001b[0m"
-  assert_eq(cut_str(input, 6), "\u001b[38;2;1;2;3mabcdef\u001b[0m")
-  assert_eq(wrap_text(input, 6), "\u001b[38;2;1;2;3mabcdef\u001b[39m")
+  assert_eq(@papergrid.cut_str(input, 6), "\u001b[38;2;1;2;3mabcdef\u001b[0m")
   assert_eq(
-    wrap_text(input, 6, keep_words=true),
+    @papergrid.wrap_text(input, 6),
+    "\u001b[38;2;1;2;3mabcdef\u001b[39m",
+  )
+  assert_eq(
+    @papergrid.wrap_text(input, 6, keep_words=true),
     "\u001b[38;2;1;2;3mabcdef\u001b[39m",
   )
 }
@@ -1978,10 +2104,13 @@ test "ANSI width reference 24 at 6" {
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 24 at 10" {
   let input = "\u001b[38;2;1;2;3mabcdef\u001b[0m"
-  assert_eq(cut_str(input, 10), "\u001b[38;2;1;2;3mabcdef\u001b[0m")
-  assert_eq(wrap_text(input, 10), "\u001b[38;2;1;2;3mabcdef\u001b[39m")
+  assert_eq(@papergrid.cut_str(input, 10), "\u001b[38;2;1;2;3mabcdef\u001b[0m")
   assert_eq(
-    wrap_text(input, 10, keep_words=true),
+    @papergrid.wrap_text(input, 10),
+    "\u001b[38;2;1;2;3mabcdef\u001b[39m",
+  )
+  assert_eq(
+    @papergrid.wrap_text(input, 10, keep_words=true),
     "\u001b[38;2;1;2;3mabcdef\u001b[39m",
   )
 }
@@ -1991,11 +2120,11 @@ test "ANSI width reference 24 at 10" {
 test "ANSI width reference 25 at 0" {
   let input = "\u001b]8;;https://example.com\u001b\\abcdef\u001b]8;;\u001b\\"
   assert_eq(
-    cut_str(input, 0),
+    @papergrid.cut_str(input, 0),
     "\u001b]8;;https://example.com\u001b\\\u001b]8;;\u001b\\",
   )
-  assert_eq(wrap_text(input, 0), "")
-  assert_eq(wrap_text(input, 0, keep_words=true), "")
+  assert_eq(@papergrid.wrap_text(input, 0), "")
+  assert_eq(@papergrid.wrap_text(input, 0, keep_words=true), "")
 }
 
 ///|
@@ -2003,15 +2132,15 @@ test "ANSI width reference 25 at 0" {
 test "ANSI width reference 25 at 1" {
   let input = "\u001b]8;;https://example.com\u001b\\abcdef\u001b]8;;\u001b\\"
   assert_eq(
-    cut_str(input, 1),
+    @papergrid.cut_str(input, 1),
     "\u001b]8;;https://example.com\u001b\\a\u001b]8;;\u001b\\",
   )
   assert_eq(
-    wrap_text(input, 1),
+    @papergrid.wrap_text(input, 1),
     "\u001b]8;;https://example.com\u001b\\a\u001b]8;;\u001b\\\n\u001b]8;;https://example.com\u001b\\b\u001b]8;;\u001b\\\n\u001b]8;;https://example.com\u001b\\c\u001b]8;;\u001b\\\n\u001b]8;;https://example.com\u001b\\d\u001b]8;;\u001b\\\n\u001b]8;;https://example.com\u001b\\e\u001b]8;;\u001b\\\n\u001b]8;;https://example.com\u001b\\f\u001b]8;;\u001b\\",
   )
   assert_eq(
-    wrap_text(input, 1, keep_words=true),
+    @papergrid.wrap_text(input, 1, keep_words=true),
     "\u001b]8;;https://example.com\u001b\\a\u001b]8;;\u001b\\\n\u001b]8;;https://example.com\u001b\\b\u001b]8;;\u001b\\\n\u001b]8;;https://example.com\u001b\\c\u001b]8;;\u001b\\\n\u001b]8;;https://example.com\u001b\\d\u001b]8;;\u001b\\\n\u001b]8;;https://example.com\u001b\\e\u001b]8;;\u001b\\\n\u001b]8;;https://example.com\u001b\\f\u001b]8;;\u001b\\",
   )
 }
@@ -2021,15 +2150,15 @@ test "ANSI width reference 25 at 1" {
 test "ANSI width reference 25 at 2" {
   let input = "\u001b]8;;https://example.com\u001b\\abcdef\u001b]8;;\u001b\\"
   assert_eq(
-    cut_str(input, 2),
+    @papergrid.cut_str(input, 2),
     "\u001b]8;;https://example.com\u001b\\ab\u001b]8;;\u001b\\",
   )
   assert_eq(
-    wrap_text(input, 2),
+    @papergrid.wrap_text(input, 2),
     "\u001b]8;;https://example.com\u001b\\ab\u001b]8;;\u001b\\\n\u001b]8;;https://example.com\u001b\\cd\u001b]8;;\u001b\\\n\u001b]8;;https://example.com\u001b\\ef\u001b]8;;\u001b\\",
   )
   assert_eq(
-    wrap_text(input, 2, keep_words=true),
+    @papergrid.wrap_text(input, 2, keep_words=true),
     "\u001b]8;;https://example.com\u001b\\ab\u001b]8;;\u001b\\\n\u001b]8;;https://example.com\u001b\\cd\u001b]8;;\u001b\\\n\u001b]8;;https://example.com\u001b\\ef\u001b]8;;\u001b\\",
   )
 }
@@ -2039,15 +2168,15 @@ test "ANSI width reference 25 at 2" {
 test "ANSI width reference 25 at 3" {
   let input = "\u001b]8;;https://example.com\u001b\\abcdef\u001b]8;;\u001b\\"
   assert_eq(
-    cut_str(input, 3),
+    @papergrid.cut_str(input, 3),
     "\u001b]8;;https://example.com\u001b\\abc\u001b]8;;\u001b\\",
   )
   assert_eq(
-    wrap_text(input, 3),
+    @papergrid.wrap_text(input, 3),
     "\u001b]8;;https://example.com\u001b\\abc\u001b]8;;\u001b\\\n\u001b]8;;https://example.com\u001b\\def\u001b]8;;\u001b\\",
   )
   assert_eq(
-    wrap_text(input, 3, keep_words=true),
+    @papergrid.wrap_text(input, 3, keep_words=true),
     "\u001b]8;;https://example.com\u001b\\abc\u001b]8;;\u001b\\\n\u001b]8;;https://example.com\u001b\\def\u001b]8;;\u001b\\",
   )
 }
@@ -2057,15 +2186,15 @@ test "ANSI width reference 25 at 3" {
 test "ANSI width reference 25 at 4" {
   let input = "\u001b]8;;https://example.com\u001b\\abcdef\u001b]8;;\u001b\\"
   assert_eq(
-    cut_str(input, 4),
+    @papergrid.cut_str(input, 4),
     "\u001b]8;;https://example.com\u001b\\abcd\u001b]8;;\u001b\\",
   )
   assert_eq(
-    wrap_text(input, 4),
+    @papergrid.wrap_text(input, 4),
     "\u001b]8;;https://example.com\u001b\\abcd\u001b]8;;\u001b\\\n\u001b]8;;https://example.com\u001b\\ef\u001b]8;;\u001b\\",
   )
   assert_eq(
-    wrap_text(input, 4, keep_words=true),
+    @papergrid.wrap_text(input, 4, keep_words=true),
     "\u001b]8;;https://example.com\u001b\\abcd\u001b]8;;\u001b\\\n\u001b]8;;https://example.com\u001b\\ef\u001b]8;;\u001b\\",
   )
 }
@@ -2075,15 +2204,15 @@ test "ANSI width reference 25 at 4" {
 test "ANSI width reference 25 at 6" {
   let input = "\u001b]8;;https://example.com\u001b\\abcdef\u001b]8;;\u001b\\"
   assert_eq(
-    cut_str(input, 6),
+    @papergrid.cut_str(input, 6),
     "\u001b]8;;https://example.com\u001b\\abcdef\u001b]8;;\u001b\\",
   )
   assert_eq(
-    wrap_text(input, 6),
+    @papergrid.wrap_text(input, 6),
     "\u001b]8;;https://example.com\u001b\\abcdef\u001b]8;;\u001b\\",
   )
   assert_eq(
-    wrap_text(input, 6, keep_words=true),
+    @papergrid.wrap_text(input, 6, keep_words=true),
     "\u001b]8;;https://example.com\u001b\\abcdef\u001b]8;;\u001b\\",
   )
 }
@@ -2093,15 +2222,15 @@ test "ANSI width reference 25 at 6" {
 test "ANSI width reference 25 at 10" {
   let input = "\u001b]8;;https://example.com\u001b\\abcdef\u001b]8;;\u001b\\"
   assert_eq(
-    cut_str(input, 10),
+    @papergrid.cut_str(input, 10),
     "\u001b]8;;https://example.com\u001b\\abcdef\u001b]8;;\u001b\\",
   )
   assert_eq(
-    wrap_text(input, 10),
+    @papergrid.wrap_text(input, 10),
     "\u001b]8;;https://example.com\u001b\\abcdef\u001b]8;;\u001b\\",
   )
   assert_eq(
-    wrap_text(input, 10, keep_words=true),
+    @papergrid.wrap_text(input, 10, keep_words=true),
     "\u001b]8;;https://example.com\u001b\\abcdef\u001b]8;;\u001b\\",
   )
 }
@@ -2111,11 +2240,11 @@ test "ANSI width reference 25 at 10" {
 test "ANSI width reference 26 at 0" {
   let input = "\u001b]8;;https://example.com\u001b\\ab\ncd\u001b]8;;\u001b\\"
   assert_eq(
-    cut_str(input, 0),
+    @papergrid.cut_str(input, 0),
     "\u001b]8;;https://example.com\u001b\\\u001b]8;;\u001b\\",
   )
-  assert_eq(wrap_text(input, 0), "")
-  assert_eq(wrap_text(input, 0, keep_words=true), "")
+  assert_eq(@papergrid.wrap_text(input, 0), "")
+  assert_eq(@papergrid.wrap_text(input, 0, keep_words=true), "")
 }
 
 ///|
@@ -2123,15 +2252,15 @@ test "ANSI width reference 26 at 0" {
 test "ANSI width reference 26 at 1" {
   let input = "\u001b]8;;https://example.com\u001b\\ab\ncd\u001b]8;;\u001b\\"
   assert_eq(
-    cut_str(input, 1),
+    @papergrid.cut_str(input, 1),
     "\u001b]8;;https://example.com\u001b\\a\u001b]8;;\u001b\\",
   )
   assert_eq(
-    wrap_text(input, 1),
+    @papergrid.wrap_text(input, 1),
     "\u001b]8;;https://example.com\u001b\\a\u001b]8;;\u001b\\\n\u001b]8;;https://example.com\u001b\\b\u001b]8;;\u001b\\\n\u001b]8;;https://example.com\u001b\\c\u001b]8;;\u001b\\\n\u001b]8;;https://example.com\u001b\\d\u001b]8;;\u001b\\",
   )
   assert_eq(
-    wrap_text(input, 1, keep_words=true),
+    @papergrid.wrap_text(input, 1, keep_words=true),
     "\u001b]8;;https://example.com\u001b\\a\u001b]8;;\u001b\\\n\u001b]8;;https://example.com\u001b\\b\u001b]8;;\u001b\\\n\u001b]8;;https://example.com\u001b\\\n\u001b]8;;\u001b\\\n\u001b]8;;https://example.com\u001b\\c\u001b]8;;\u001b\\\n\u001b]8;;https://example.com\u001b\\d\u001b]8;;\u001b\\",
   )
 }
@@ -2141,15 +2270,15 @@ test "ANSI width reference 26 at 1" {
 test "ANSI width reference 26 at 2" {
   let input = "\u001b]8;;https://example.com\u001b\\ab\ncd\u001b]8;;\u001b\\"
   assert_eq(
-    cut_str(input, 2),
+    @papergrid.cut_str(input, 2),
     "\u001b]8;;https://example.com\u001b\\ab\u001b]8;;\u001b\\",
   )
   assert_eq(
-    wrap_text(input, 2),
+    @papergrid.wrap_text(input, 2),
     "\u001b]8;;https://example.com\u001b\\ab\u001b]8;;\u001b\\\n\u001b]8;;https://example.com\u001b\\cd\u001b]8;;\u001b\\",
   )
   assert_eq(
-    wrap_text(input, 2, keep_words=true),
+    @papergrid.wrap_text(input, 2, keep_words=true),
     "\u001b]8;;https://example.com\u001b\\ab\u001b]8;;\u001b\\\n\u001b]8;;https://example.com\u001b\\\nc\u001b]8;;\u001b\\\n\u001b]8;;https://example.com\u001b\\d\u001b]8;;\u001b\\",
   )
 }
@@ -2159,15 +2288,15 @@ test "ANSI width reference 26 at 2" {
 test "ANSI width reference 26 at 3" {
   let input = "\u001b]8;;https://example.com\u001b\\ab\ncd\u001b]8;;\u001b\\"
   assert_eq(
-    cut_str(input, 3),
+    @papergrid.cut_str(input, 3),
     "\u001b]8;;https://example.com\u001b\\ab\u001b]8;;\u001b\\\n\u001b]8;;https://example.com\u001b\\cd\u001b]8;;\u001b\\",
   )
   assert_eq(
-    wrap_text(input, 3),
+    @papergrid.wrap_text(input, 3),
     "\u001b]8;;https://example.com\u001b\\ab\u001b]8;;\u001b\\\n\u001b]8;;https://example.com\u001b\\cd\u001b]8;;\u001b\\",
   )
   assert_eq(
-    wrap_text(input, 3, keep_words=true),
+    @papergrid.wrap_text(input, 3, keep_words=true),
     "\u001b]8;;https://example.com\u001b\\ab\n\u001b]8;;\u001b\\\n\u001b]8;;https://example.com\u001b\\cd\u001b]8;;\u001b\\",
   )
 }
@@ -2177,15 +2306,15 @@ test "ANSI width reference 26 at 3" {
 test "ANSI width reference 26 at 4" {
   let input = "\u001b]8;;https://example.com\u001b\\ab\ncd\u001b]8;;\u001b\\"
   assert_eq(
-    cut_str(input, 4),
+    @papergrid.cut_str(input, 4),
     "\u001b]8;;https://example.com\u001b\\ab\u001b]8;;\u001b\\\n\u001b]8;;https://example.com\u001b\\cd\u001b]8;;\u001b\\",
   )
   assert_eq(
-    wrap_text(input, 4),
+    @papergrid.wrap_text(input, 4),
     "\u001b]8;;https://example.com\u001b\\ab\u001b]8;;\u001b\\\n\u001b]8;;https://example.com\u001b\\cd\u001b]8;;\u001b\\",
   )
   assert_eq(
-    wrap_text(input, 4, keep_words=true),
+    @papergrid.wrap_text(input, 4, keep_words=true),
     "\u001b]8;;https://example.com\u001b\\ab\nc\u001b]8;;\u001b\\\n\u001b]8;;https://example.com\u001b\\d\u001b]8;;\u001b\\",
   )
 }
@@ -2195,15 +2324,15 @@ test "ANSI width reference 26 at 4" {
 test "ANSI width reference 26 at 6" {
   let input = "\u001b]8;;https://example.com\u001b\\ab\ncd\u001b]8;;\u001b\\"
   assert_eq(
-    cut_str(input, 6),
+    @papergrid.cut_str(input, 6),
     "\u001b]8;;https://example.com\u001b\\ab\u001b]8;;\u001b\\\n\u001b]8;;https://example.com\u001b\\cd\u001b]8;;\u001b\\",
   )
   assert_eq(
-    wrap_text(input, 6),
+    @papergrid.wrap_text(input, 6),
     "\u001b]8;;https://example.com\u001b\\ab\u001b]8;;\u001b\\\n\u001b]8;;https://example.com\u001b\\cd\u001b]8;;\u001b\\",
   )
   assert_eq(
-    wrap_text(input, 6, keep_words=true),
+    @papergrid.wrap_text(input, 6, keep_words=true),
     "\u001b]8;;https://example.com\u001b\\ab\ncd\u001b]8;;\u001b\\",
   )
 }
@@ -2213,15 +2342,15 @@ test "ANSI width reference 26 at 6" {
 test "ANSI width reference 26 at 10" {
   let input = "\u001b]8;;https://example.com\u001b\\ab\ncd\u001b]8;;\u001b\\"
   assert_eq(
-    cut_str(input, 10),
+    @papergrid.cut_str(input, 10),
     "\u001b]8;;https://example.com\u001b\\ab\u001b]8;;\u001b\\\n\u001b]8;;https://example.com\u001b\\cd\u001b]8;;\u001b\\",
   )
   assert_eq(
-    wrap_text(input, 10),
+    @papergrid.wrap_text(input, 10),
     "\u001b]8;;https://example.com\u001b\\ab\u001b]8;;\u001b\\\n\u001b]8;;https://example.com\u001b\\cd\u001b]8;;\u001b\\",
   )
   assert_eq(
-    wrap_text(input, 10, keep_words=true),
+    @papergrid.wrap_text(input, 10, keep_words=true),
     "\u001b]8;;https://example.com\u001b\\ab\ncd\u001b]8;;\u001b\\",
   )
 }
@@ -2230,22 +2359,22 @@ test "ANSI width reference 26 at 10" {
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 27 at 0" {
   let input = "prefix\u001b]8;;https://example.com\u001b\\abcdef\u001b]8;;\u001b\\suffix"
-  assert_eq(cut_str(input, 0), "")
-  assert_eq(wrap_text(input, 0), "")
-  assert_eq(wrap_text(input, 0, keep_words=true), "")
+  assert_eq(@papergrid.cut_str(input, 0), "")
+  assert_eq(@papergrid.wrap_text(input, 0), "")
+  assert_eq(@papergrid.wrap_text(input, 0, keep_words=true), "")
 }
 
 ///|
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 27 at 1" {
   let input = "prefix\u001b]8;;https://example.com\u001b\\abcdef\u001b]8;;\u001b\\suffix"
-  assert_eq(cut_str(input, 1), "p")
+  assert_eq(@papergrid.cut_str(input, 1), "p")
   assert_eq(
-    wrap_text(input, 1),
+    @papergrid.wrap_text(input, 1),
     "p\nr\ne\nf\ni\nx\na\nb\nc\nd\ne\nf\ns\nu\nf\nf\ni\nx",
   )
   assert_eq(
-    wrap_text(input, 1, keep_words=true),
+    @papergrid.wrap_text(input, 1, keep_words=true),
     "p\nr\ne\nf\ni\nx\na\nb\nc\nd\ne\nf\ns\nu\nf\nf\ni\nx",
   )
 }
@@ -2254,10 +2383,13 @@ test "ANSI width reference 27 at 1" {
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 27 at 2" {
   let input = "prefix\u001b]8;;https://example.com\u001b\\abcdef\u001b]8;;\u001b\\suffix"
-  assert_eq(cut_str(input, 2), "pr")
-  assert_eq(wrap_text(input, 2), "pr\nef\nix\nab\ncd\nef\nsu\nff\nix")
+  assert_eq(@papergrid.cut_str(input, 2), "pr")
   assert_eq(
-    wrap_text(input, 2, keep_words=true),
+    @papergrid.wrap_text(input, 2),
+    "pr\nef\nix\nab\ncd\nef\nsu\nff\nix",
+  )
+  assert_eq(
+    @papergrid.wrap_text(input, 2, keep_words=true),
     "pr\nef\nix\nab\ncd\nef\nsu\nff\nix",
   )
 }
@@ -2266,10 +2398,10 @@ test "ANSI width reference 27 at 2" {
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 27 at 3" {
   let input = "prefix\u001b]8;;https://example.com\u001b\\abcdef\u001b]8;;\u001b\\suffix"
-  assert_eq(cut_str(input, 3), "pre")
-  assert_eq(wrap_text(input, 3), "pre\nfix\nabc\ndef\nsuf\nfix")
+  assert_eq(@papergrid.cut_str(input, 3), "pre")
+  assert_eq(@papergrid.wrap_text(input, 3), "pre\nfix\nabc\ndef\nsuf\nfix")
   assert_eq(
-    wrap_text(input, 3, keep_words=true),
+    @papergrid.wrap_text(input, 3, keep_words=true),
     "pre\nfix\nabc\ndef\nsuf\nfix",
   )
 }
@@ -2278,90 +2410,99 @@ test "ANSI width reference 27 at 3" {
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 27 at 4" {
   let input = "prefix\u001b]8;;https://example.com\u001b\\abcdef\u001b]8;;\u001b\\suffix"
-  assert_eq(cut_str(input, 4), "pref")
-  assert_eq(wrap_text(input, 4), "pref\nixab\ncdef\nsuff\nix")
-  assert_eq(wrap_text(input, 4, keep_words=true), "pref\nixab\ncdef\nsuff\nix")
+  assert_eq(@papergrid.cut_str(input, 4), "pref")
+  assert_eq(@papergrid.wrap_text(input, 4), "pref\nixab\ncdef\nsuff\nix")
+  assert_eq(
+    @papergrid.wrap_text(input, 4, keep_words=true),
+    "pref\nixab\ncdef\nsuff\nix",
+  )
 }
 
 ///|
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 27 at 6" {
   let input = "prefix\u001b]8;;https://example.com\u001b\\abcdef\u001b]8;;\u001b\\suffix"
-  assert_eq(cut_str(input, 6), "prefix")
-  assert_eq(wrap_text(input, 6), "prefix\nabcdef\nsuffix")
-  assert_eq(wrap_text(input, 6, keep_words=true), "prefix\nabcdef\nsuffix")
+  assert_eq(@papergrid.cut_str(input, 6), "prefix")
+  assert_eq(@papergrid.wrap_text(input, 6), "prefix\nabcdef\nsuffix")
+  assert_eq(
+    @papergrid.wrap_text(input, 6, keep_words=true),
+    "prefix\nabcdef\nsuffix",
+  )
 }
 
 ///|
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 27 at 10" {
   let input = "prefix\u001b]8;;https://example.com\u001b\\abcdef\u001b]8;;\u001b\\suffix"
-  assert_eq(cut_str(input, 10), "prefixabcd")
-  assert_eq(wrap_text(input, 10), "prefixabcd\nefsuffix")
-  assert_eq(wrap_text(input, 10, keep_words=true), "prefixabcd\nefsuffix")
+  assert_eq(@papergrid.cut_str(input, 10), "prefixabcd")
+  assert_eq(@papergrid.wrap_text(input, 10), "prefixabcd\nefsuffix")
+  assert_eq(
+    @papergrid.wrap_text(input, 10, keep_words=true),
+    "prefixabcd\nefsuffix",
+  )
 }
 
 ///|
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 28 at 0" {
   let input = "\u001b]8;;https://example.com\u001b\\abc\u001b]8;;\u001b\\\u001b]8;;https://example.com\u001b\\def\u001b]8;;\u001b\\"
-  assert_eq(cut_str(input, 0), "")
-  assert_eq(wrap_text(input, 0), "")
-  assert_eq(wrap_text(input, 0, keep_words=true), "")
+  assert_eq(@papergrid.cut_str(input, 0), "")
+  assert_eq(@papergrid.wrap_text(input, 0), "")
+  assert_eq(@papergrid.wrap_text(input, 0, keep_words=true), "")
 }
 
 ///|
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 28 at 1" {
   let input = "\u001b]8;;https://example.com\u001b\\abc\u001b]8;;\u001b\\\u001b]8;;https://example.com\u001b\\def\u001b]8;;\u001b\\"
-  assert_eq(cut_str(input, 1), "a")
-  assert_eq(wrap_text(input, 1), "a\nb\nc\nd\ne\nf")
-  assert_eq(wrap_text(input, 1, keep_words=true), "a\nb\nc\nd\ne\nf")
+  assert_eq(@papergrid.cut_str(input, 1), "a")
+  assert_eq(@papergrid.wrap_text(input, 1), "a\nb\nc\nd\ne\nf")
+  assert_eq(@papergrid.wrap_text(input, 1, keep_words=true), "a\nb\nc\nd\ne\nf")
 }
 
 ///|
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 28 at 2" {
   let input = "\u001b]8;;https://example.com\u001b\\abc\u001b]8;;\u001b\\\u001b]8;;https://example.com\u001b\\def\u001b]8;;\u001b\\"
-  assert_eq(cut_str(input, 2), "ab")
-  assert_eq(wrap_text(input, 2), "ab\ncd\nef")
-  assert_eq(wrap_text(input, 2, keep_words=true), "ab\ncd\nef")
+  assert_eq(@papergrid.cut_str(input, 2), "ab")
+  assert_eq(@papergrid.wrap_text(input, 2), "ab\ncd\nef")
+  assert_eq(@papergrid.wrap_text(input, 2, keep_words=true), "ab\ncd\nef")
 }
 
 ///|
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 28 at 3" {
   let input = "\u001b]8;;https://example.com\u001b\\abc\u001b]8;;\u001b\\\u001b]8;;https://example.com\u001b\\def\u001b]8;;\u001b\\"
-  assert_eq(cut_str(input, 3), "abc")
-  assert_eq(wrap_text(input, 3), "abc\ndef")
-  assert_eq(wrap_text(input, 3, keep_words=true), "abc\ndef")
+  assert_eq(@papergrid.cut_str(input, 3), "abc")
+  assert_eq(@papergrid.wrap_text(input, 3), "abc\ndef")
+  assert_eq(@papergrid.wrap_text(input, 3, keep_words=true), "abc\ndef")
 }
 
 ///|
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 28 at 4" {
   let input = "\u001b]8;;https://example.com\u001b\\abc\u001b]8;;\u001b\\\u001b]8;;https://example.com\u001b\\def\u001b]8;;\u001b\\"
-  assert_eq(cut_str(input, 4), "abcd")
-  assert_eq(wrap_text(input, 4), "abcd\nef")
-  assert_eq(wrap_text(input, 4, keep_words=true), "abcd\nef")
+  assert_eq(@papergrid.cut_str(input, 4), "abcd")
+  assert_eq(@papergrid.wrap_text(input, 4), "abcd\nef")
+  assert_eq(@papergrid.wrap_text(input, 4, keep_words=true), "abcd\nef")
 }
 
 ///|
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 28 at 6" {
   let input = "\u001b]8;;https://example.com\u001b\\abc\u001b]8;;\u001b\\\u001b]8;;https://example.com\u001b\\def\u001b]8;;\u001b\\"
-  assert_eq(cut_str(input, 6), "abcdef")
-  assert_eq(wrap_text(input, 6), "abcdef")
-  assert_eq(wrap_text(input, 6, keep_words=true), "abcdef")
+  assert_eq(@papergrid.cut_str(input, 6), "abcdef")
+  assert_eq(@papergrid.wrap_text(input, 6), "abcdef")
+  assert_eq(@papergrid.wrap_text(input, 6, keep_words=true), "abcdef")
 }
 
 ///|
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 28 at 10" {
   let input = "\u001b]8;;https://example.com\u001b\\abc\u001b]8;;\u001b\\\u001b]8;;https://example.com\u001b\\def\u001b]8;;\u001b\\"
-  assert_eq(cut_str(input, 10), "abcdef")
-  assert_eq(wrap_text(input, 10), "abcdef")
-  assert_eq(wrap_text(input, 10, keep_words=true), "abcdef")
+  assert_eq(@papergrid.cut_str(input, 10), "abcdef")
+  assert_eq(@papergrid.wrap_text(input, 10), "abcdef")
+  assert_eq(@papergrid.wrap_text(input, 10, keep_words=true), "abcdef")
 }
 
 ///|
@@ -2369,11 +2510,11 @@ test "ANSI width reference 28 at 10" {
 test "ANSI width reference 29 at 0" {
   let input = "\u001b]8;;https://example.com\u001b\\\u001b[31mabcdef\u001b[0m\u001b]8;;\u001b\\"
   assert_eq(
-    cut_str(input, 0),
+    @papergrid.cut_str(input, 0),
     "\u001b]8;;https://example.com\u001b\\\u001b[31m\u001b[39m\u001b]8;;\u001b\\",
   )
-  assert_eq(wrap_text(input, 0), "")
-  assert_eq(wrap_text(input, 0, keep_words=true), "")
+  assert_eq(@papergrid.wrap_text(input, 0), "")
+  assert_eq(@papergrid.wrap_text(input, 0, keep_words=true), "")
 }
 
 ///|
@@ -2381,15 +2522,15 @@ test "ANSI width reference 29 at 0" {
 test "ANSI width reference 29 at 1" {
   let input = "\u001b]8;;https://example.com\u001b\\\u001b[31mabcdef\u001b[0m\u001b]8;;\u001b\\"
   assert_eq(
-    cut_str(input, 1),
+    @papergrid.cut_str(input, 1),
     "\u001b]8;;https://example.com\u001b\\\u001b[31ma\u001b[39m\u001b]8;;\u001b\\",
   )
   assert_eq(
-    wrap_text(input, 1),
+    @papergrid.wrap_text(input, 1),
     "\u001b]8;;https://example.com\u001b\\\u001b[31ma\u001b[39m\u001b]8;;\u001b\\\n\u001b]8;;https://example.com\u001b\\\u001b[31mb\u001b[39m\u001b]8;;\u001b\\\n\u001b]8;;https://example.com\u001b\\\u001b[31mc\u001b[39m\u001b]8;;\u001b\\\n\u001b]8;;https://example.com\u001b\\\u001b[31md\u001b[39m\u001b]8;;\u001b\\\n\u001b]8;;https://example.com\u001b\\\u001b[31me\u001b[39m\u001b]8;;\u001b\\\n\u001b]8;;https://example.com\u001b\\\u001b[31mf\u001b[39m\u001b]8;;\u001b\\",
   )
   assert_eq(
-    wrap_text(input, 1, keep_words=true),
+    @papergrid.wrap_text(input, 1, keep_words=true),
     "\u001b]8;;https://example.com\u001b\\\u001b[31ma\u001b[39m\u001b]8;;\u001b\\\n\u001b]8;;https://example.com\u001b\\\u001b[31mb\u001b[39m\u001b]8;;\u001b\\\n\u001b]8;;https://example.com\u001b\\\u001b[31mc\u001b[39m\u001b]8;;\u001b\\\n\u001b]8;;https://example.com\u001b\\\u001b[31md\u001b[39m\u001b]8;;\u001b\\\n\u001b]8;;https://example.com\u001b\\\u001b[31me\u001b[39m\u001b]8;;\u001b\\\n\u001b]8;;https://example.com\u001b\\\u001b[31mf\u001b[39m\u001b]8;;\u001b\\",
   )
 }
@@ -2399,15 +2540,15 @@ test "ANSI width reference 29 at 1" {
 test "ANSI width reference 29 at 2" {
   let input = "\u001b]8;;https://example.com\u001b\\\u001b[31mabcdef\u001b[0m\u001b]8;;\u001b\\"
   assert_eq(
-    cut_str(input, 2),
+    @papergrid.cut_str(input, 2),
     "\u001b]8;;https://example.com\u001b\\\u001b[31mab\u001b[39m\u001b]8;;\u001b\\",
   )
   assert_eq(
-    wrap_text(input, 2),
+    @papergrid.wrap_text(input, 2),
     "\u001b]8;;https://example.com\u001b\\\u001b[31mab\u001b[39m\u001b]8;;\u001b\\\n\u001b]8;;https://example.com\u001b\\\u001b[31mcd\u001b[39m\u001b]8;;\u001b\\\n\u001b]8;;https://example.com\u001b\\\u001b[31mef\u001b[39m\u001b]8;;\u001b\\",
   )
   assert_eq(
-    wrap_text(input, 2, keep_words=true),
+    @papergrid.wrap_text(input, 2, keep_words=true),
     "\u001b]8;;https://example.com\u001b\\\u001b[31mab\u001b[39m\u001b]8;;\u001b\\\n\u001b]8;;https://example.com\u001b\\\u001b[31mcd\u001b[39m\u001b]8;;\u001b\\\n\u001b]8;;https://example.com\u001b\\\u001b[31mef\u001b[39m\u001b]8;;\u001b\\",
   )
 }
@@ -2417,15 +2558,15 @@ test "ANSI width reference 29 at 2" {
 test "ANSI width reference 29 at 3" {
   let input = "\u001b]8;;https://example.com\u001b\\\u001b[31mabcdef\u001b[0m\u001b]8;;\u001b\\"
   assert_eq(
-    cut_str(input, 3),
+    @papergrid.cut_str(input, 3),
     "\u001b]8;;https://example.com\u001b\\\u001b[31mabc\u001b[39m\u001b]8;;\u001b\\",
   )
   assert_eq(
-    wrap_text(input, 3),
+    @papergrid.wrap_text(input, 3),
     "\u001b]8;;https://example.com\u001b\\\u001b[31mabc\u001b[39m\u001b]8;;\u001b\\\n\u001b]8;;https://example.com\u001b\\\u001b[31mdef\u001b[39m\u001b]8;;\u001b\\",
   )
   assert_eq(
-    wrap_text(input, 3, keep_words=true),
+    @papergrid.wrap_text(input, 3, keep_words=true),
     "\u001b]8;;https://example.com\u001b\\\u001b[31mabc\u001b[39m\u001b]8;;\u001b\\\n\u001b]8;;https://example.com\u001b\\\u001b[31mdef\u001b[39m\u001b]8;;\u001b\\",
   )
 }
@@ -2435,15 +2576,15 @@ test "ANSI width reference 29 at 3" {
 test "ANSI width reference 29 at 4" {
   let input = "\u001b]8;;https://example.com\u001b\\\u001b[31mabcdef\u001b[0m\u001b]8;;\u001b\\"
   assert_eq(
-    cut_str(input, 4),
+    @papergrid.cut_str(input, 4),
     "\u001b]8;;https://example.com\u001b\\\u001b[31mabcd\u001b[39m\u001b]8;;\u001b\\",
   )
   assert_eq(
-    wrap_text(input, 4),
+    @papergrid.wrap_text(input, 4),
     "\u001b]8;;https://example.com\u001b\\\u001b[31mabcd\u001b[39m\u001b]8;;\u001b\\\n\u001b]8;;https://example.com\u001b\\\u001b[31mef\u001b[39m\u001b]8;;\u001b\\",
   )
   assert_eq(
-    wrap_text(input, 4, keep_words=true),
+    @papergrid.wrap_text(input, 4, keep_words=true),
     "\u001b]8;;https://example.com\u001b\\\u001b[31mabcd\u001b[39m\u001b]8;;\u001b\\\n\u001b]8;;https://example.com\u001b\\\u001b[31mef\u001b[39m\u001b]8;;\u001b\\",
   )
 }
@@ -2453,15 +2594,15 @@ test "ANSI width reference 29 at 4" {
 test "ANSI width reference 29 at 6" {
   let input = "\u001b]8;;https://example.com\u001b\\\u001b[31mabcdef\u001b[0m\u001b]8;;\u001b\\"
   assert_eq(
-    cut_str(input, 6),
+    @papergrid.cut_str(input, 6),
     "\u001b]8;;https://example.com\u001b\\\u001b[31mabcdef\u001b[0m\u001b]8;;\u001b\\",
   )
   assert_eq(
-    wrap_text(input, 6),
+    @papergrid.wrap_text(input, 6),
     "\u001b]8;;https://example.com\u001b\\\u001b[31mabcdef\u001b[39m\u001b]8;;\u001b\\",
   )
   assert_eq(
-    wrap_text(input, 6, keep_words=true),
+    @papergrid.wrap_text(input, 6, keep_words=true),
     "\u001b]8;;https://example.com\u001b\\\u001b[31mabcdef\u001b[39m\u001b]8;;\u001b\\",
   )
 }
@@ -2471,15 +2612,15 @@ test "ANSI width reference 29 at 6" {
 test "ANSI width reference 29 at 10" {
   let input = "\u001b]8;;https://example.com\u001b\\\u001b[31mabcdef\u001b[0m\u001b]8;;\u001b\\"
   assert_eq(
-    cut_str(input, 10),
+    @papergrid.cut_str(input, 10),
     "\u001b]8;;https://example.com\u001b\\\u001b[31mabcdef\u001b[0m\u001b]8;;\u001b\\",
   )
   assert_eq(
-    wrap_text(input, 10),
+    @papergrid.wrap_text(input, 10),
     "\u001b]8;;https://example.com\u001b\\\u001b[31mabcdef\u001b[39m\u001b]8;;\u001b\\",
   )
   assert_eq(
-    wrap_text(input, 10, keep_words=true),
+    @papergrid.wrap_text(input, 10, keep_words=true),
     "\u001b]8;;https://example.com\u001b\\\u001b[31mabcdef\u001b[39m\u001b]8;;\u001b\\",
   )
 }
@@ -2488,124 +2629,127 @@ test "ANSI width reference 29 at 10" {
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 30 at 0" {
   let input = "\u001b]8;;https://example.com\u0007abcdef\u001b]8;;\u0007"
-  assert_eq(cut_str(input, 0), "")
-  assert_eq(wrap_text(input, 0), "")
-  assert_eq(wrap_text(input, 0, keep_words=true), "")
+  assert_eq(@papergrid.cut_str(input, 0), "")
+  assert_eq(@papergrid.wrap_text(input, 0), "")
+  assert_eq(@papergrid.wrap_text(input, 0, keep_words=true), "")
 }
 
 ///|
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 30 at 1" {
   let input = "\u001b]8;;https://example.com\u0007abcdef\u001b]8;;\u0007"
-  assert_eq(cut_str(input, 1), "a")
-  assert_eq(wrap_text(input, 1), "a\nb\nc\nd\ne\nf")
-  assert_eq(wrap_text(input, 1, keep_words=true), "a\nb\nc\nd\ne\nf")
+  assert_eq(@papergrid.cut_str(input, 1), "a")
+  assert_eq(@papergrid.wrap_text(input, 1), "a\nb\nc\nd\ne\nf")
+  assert_eq(@papergrid.wrap_text(input, 1, keep_words=true), "a\nb\nc\nd\ne\nf")
 }
 
 ///|
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 30 at 2" {
   let input = "\u001b]8;;https://example.com\u0007abcdef\u001b]8;;\u0007"
-  assert_eq(cut_str(input, 2), "ab")
-  assert_eq(wrap_text(input, 2), "ab\ncd\nef")
-  assert_eq(wrap_text(input, 2, keep_words=true), "ab\ncd\nef")
+  assert_eq(@papergrid.cut_str(input, 2), "ab")
+  assert_eq(@papergrid.wrap_text(input, 2), "ab\ncd\nef")
+  assert_eq(@papergrid.wrap_text(input, 2, keep_words=true), "ab\ncd\nef")
 }
 
 ///|
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 30 at 3" {
   let input = "\u001b]8;;https://example.com\u0007abcdef\u001b]8;;\u0007"
-  assert_eq(cut_str(input, 3), "abc")
-  assert_eq(wrap_text(input, 3), "abc\ndef")
-  assert_eq(wrap_text(input, 3, keep_words=true), "abc\ndef")
+  assert_eq(@papergrid.cut_str(input, 3), "abc")
+  assert_eq(@papergrid.wrap_text(input, 3), "abc\ndef")
+  assert_eq(@papergrid.wrap_text(input, 3, keep_words=true), "abc\ndef")
 }
 
 ///|
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 30 at 4" {
   let input = "\u001b]8;;https://example.com\u0007abcdef\u001b]8;;\u0007"
-  assert_eq(cut_str(input, 4), "abcd")
-  assert_eq(wrap_text(input, 4), "abcd\nef")
-  assert_eq(wrap_text(input, 4, keep_words=true), "abcd\nef")
+  assert_eq(@papergrid.cut_str(input, 4), "abcd")
+  assert_eq(@papergrid.wrap_text(input, 4), "abcd\nef")
+  assert_eq(@papergrid.wrap_text(input, 4, keep_words=true), "abcd\nef")
 }
 
 ///|
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 30 at 6" {
   let input = "\u001b]8;;https://example.com\u0007abcdef\u001b]8;;\u0007"
-  assert_eq(cut_str(input, 6), "abcdef")
-  assert_eq(wrap_text(input, 6), "abcdef")
-  assert_eq(wrap_text(input, 6, keep_words=true), "abcdef")
+  assert_eq(@papergrid.cut_str(input, 6), "abcdef")
+  assert_eq(@papergrid.wrap_text(input, 6), "abcdef")
+  assert_eq(@papergrid.wrap_text(input, 6, keep_words=true), "abcdef")
 }
 
 ///|
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 30 at 10" {
   let input = "\u001b]8;;https://example.com\u0007abcdef\u001b]8;;\u0007"
-  assert_eq(cut_str(input, 10), "abcdef")
-  assert_eq(wrap_text(input, 10), "abcdef")
-  assert_eq(wrap_text(input, 10, keep_words=true), "abcdef")
+  assert_eq(@papergrid.cut_str(input, 10), "abcdef")
+  assert_eq(@papergrid.wrap_text(input, 10), "abcdef")
+  assert_eq(@papergrid.wrap_text(input, 10, keep_words=true), "abcdef")
 }
 
 ///|
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 31 at 0" {
   let input = "\u001b[2Kabcdef"
-  assert_eq(cut_str(input, 0), "\u001b[2K")
-  assert_eq(wrap_text(input, 0), "")
-  assert_eq(wrap_text(input, 0, keep_words=true), "")
+  assert_eq(@papergrid.cut_str(input, 0), "\u001b[2K")
+  assert_eq(@papergrid.wrap_text(input, 0), "")
+  assert_eq(@papergrid.wrap_text(input, 0, keep_words=true), "")
 }
 
 ///|
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 31 at 1" {
   let input = "\u001b[2Kabcdef"
-  assert_eq(cut_str(input, 1), "\u001b[2Ka")
-  assert_eq(wrap_text(input, 1), "\u001b\n[\n2\nK\na\nb\nc\nd\ne\nf")
-  assert_eq(wrap_text(input, 1, keep_words=true), "\u001b\n[\n2\nK\na\nb")
+  assert_eq(@papergrid.cut_str(input, 1), "\u001b[2Ka")
+  assert_eq(@papergrid.wrap_text(input, 1), "\u001b\n[\n2\nK\na\nb\nc\nd\ne\nf")
+  assert_eq(
+    @papergrid.wrap_text(input, 1, keep_words=true),
+    "\u001b\n[\n2\nK\na\nb",
+  )
 }
 
 ///|
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 31 at 2" {
   let input = "\u001b[2Kabcdef"
-  assert_eq(cut_str(input, 2), "\u001b[2Kab")
-  assert_eq(wrap_text(input, 2), "\u001b[\n2K\nab\ncd\nef")
-  assert_eq(wrap_text(input, 2, keep_words=true), "\u001b[\n2K\nab")
+  assert_eq(@papergrid.cut_str(input, 2), "\u001b[2Kab")
+  assert_eq(@papergrid.wrap_text(input, 2), "\u001b[\n2K\nab\ncd\nef")
+  assert_eq(@papergrid.wrap_text(input, 2, keep_words=true), "\u001b[\n2K\nab")
 }
 
 ///|
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 31 at 3" {
   let input = "\u001b[2Kabcdef"
-  assert_eq(cut_str(input, 3), "\u001b[2Kabc")
-  assert_eq(wrap_text(input, 3), "\u001b[2\nKab\ncde\nf")
-  assert_eq(wrap_text(input, 3, keep_words=true), "\u001b[2\nKab")
+  assert_eq(@papergrid.cut_str(input, 3), "\u001b[2Kabc")
+  assert_eq(@papergrid.wrap_text(input, 3), "\u001b[2\nKab\ncde\nf")
+  assert_eq(@papergrid.wrap_text(input, 3, keep_words=true), "\u001b[2\nKab")
 }
 
 ///|
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 31 at 4" {
   let input = "\u001b[2Kabcdef"
-  assert_eq(cut_str(input, 4), "\u001b[2Kabcd")
-  assert_eq(wrap_text(input, 4), "\u001b[2K\nabcd\nef")
-  assert_eq(wrap_text(input, 4, keep_words=true), "\u001b[2K\nab")
+  assert_eq(@papergrid.cut_str(input, 4), "\u001b[2Kabcd")
+  assert_eq(@papergrid.wrap_text(input, 4), "\u001b[2K\nabcd\nef")
+  assert_eq(@papergrid.wrap_text(input, 4, keep_words=true), "\u001b[2K\nab")
 }
 
 ///|
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 31 at 6" {
   let input = "\u001b[2Kabcdef"
-  assert_eq(cut_str(input, 6), "\u001b[2Kabcdef")
-  assert_eq(wrap_text(input, 6), "\u001b[2Kab\ncdef")
-  assert_eq(wrap_text(input, 6, keep_words=true), "\u001b[2Kab")
+  assert_eq(@papergrid.cut_str(input, 6), "\u001b[2Kabcdef")
+  assert_eq(@papergrid.wrap_text(input, 6), "\u001b[2Kab\ncdef")
+  assert_eq(@papergrid.wrap_text(input, 6, keep_words=true), "\u001b[2Kab")
 }
 
 ///|
 // Reference: tabled Truncate::truncate and Wrap::wrap with ansi enabled.
 test "ANSI width reference 31 at 10" {
   let input = "\u001b[2Kabcdef"
-  assert_eq(cut_str(input, 10), "\u001b[2Kabcdef")
-  assert_eq(wrap_text(input, 10), "\u001b[2Kabcdef")
-  assert_eq(wrap_text(input, 10, keep_words=true), "\u001b[2Kab")
+  assert_eq(@papergrid.cut_str(input, 10), "\u001b[2Kabcdef")
+  assert_eq(@papergrid.wrap_text(input, 10), "\u001b[2Kabcdef")
+  assert_eq(@papergrid.wrap_text(input, 10, keep_words=true), "\u001b[2Kab")
 }

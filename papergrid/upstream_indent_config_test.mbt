@@ -5,10 +5,10 @@
 test "upstream padding scope entity_row_overrides_column_intersection_0" {
   let cfg = upstream_formatting_config()
 
-  cfg.set_borders(Borders::empty())
-  cfg.set_padding_sides(Entity::Col(0), {
-    ..Sides::default(),
-    bottom: Indent::new(3, '$'),
+  cfg.set_borders(@papergrid.Borders::empty())
+  cfg.set_padding_sides(@papergrid.Entity::Col(0), {
+    ..@papergrid.Sides::default(),
+    bottom: @papergrid.Indent::new(3, '$'),
   })
 
   assert_eq(
@@ -24,14 +24,14 @@ test "upstream padding scope entity_row_overrides_column_intersection_0" {
 test "upstream padding scope entity_row_overrides_column_intersection_1" {
   let cfg = upstream_formatting_config()
 
-  cfg.set_borders(Borders::empty())
-  cfg.set_padding_sides(Entity::Col(0), {
-    ..Sides::default(),
-    bottom: Indent::new(3, '$'),
+  cfg.set_borders(@papergrid.Borders::empty())
+  cfg.set_padding_sides(@papergrid.Entity::Col(0), {
+    ..@papergrid.Sides::default(),
+    bottom: @papergrid.Indent::new(3, '$'),
   })
-  cfg.set_padding_sides(Entity::Row(1), {
-    ..Sides::default(),
-    bottom: Indent::new(2, '#'),
+  cfg.set_padding_sides(@papergrid.Entity::Row(1), {
+    ..@papergrid.Sides::default(),
+    bottom: @papergrid.Indent::new(2, '#'),
   })
 
   assert_eq(
@@ -47,10 +47,10 @@ test "upstream padding scope entity_row_overrides_column_intersection_1" {
 test "upstream padding scope entity_column_overrides_row_intersection_0" {
   let cfg = upstream_formatting_config()
 
-  cfg.set_borders(Borders::empty())
-  cfg.set_padding_sides(Entity::Row(0), {
-    ..Sides::default(),
-    bottom: Indent::new(3, '$'),
+  cfg.set_borders(@papergrid.Borders::empty())
+  cfg.set_padding_sides(@papergrid.Entity::Row(0), {
+    ..@papergrid.Sides::default(),
+    bottom: @papergrid.Indent::new(3, '$'),
   })
 
   assert_eq(
@@ -70,23 +70,23 @@ test "upstream padding scope entity_column_overrides_row_intersection_0" {
 test "upstream padding scope entity_column_overrides_row_intersection_1" {
   let cfg = upstream_formatting_config()
 
-  cfg.set_borders(Borders::empty())
+  cfg.set_borders(@papergrid.Borders::empty())
   cfg.set_padding_sides(
-    Entity::Row(0),
-    Sides::new(
-      left=Indent::default(),
-      right=Indent::default(),
-      top=Indent::default(),
-      bottom=Indent::new(3, '$'),
+    @papergrid.Entity::Row(0),
+    @papergrid.Sides::new(
+      left=@papergrid.Indent::default(),
+      right=@papergrid.Indent::default(),
+      top=@papergrid.Indent::default(),
+      bottom=@papergrid.Indent::new(3, '$'),
     ),
   )
   cfg.set_padding_sides(
-    Entity::Col(1),
-    Sides::new(
-      left=Indent::default(),
-      right=Indent::default(),
-      top=Indent::default(),
-      bottom=Indent::new(2, '#'),
+    @papergrid.Entity::Col(1),
+    @papergrid.Sides::new(
+      left=@papergrid.Indent::default(),
+      right=@papergrid.Indent::default(),
+      top=@papergrid.Indent::default(),
+      bottom=@papergrid.Indent::new(2, '#'),
     ),
   )
 
