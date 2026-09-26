@@ -82,8 +82,9 @@ pub impl[M : Measurement, P : ResizeSelector] TableOption for MinWidth[M, P] wit
   let target = Measurement::measure(self.width, table, Attribute::Width)
   let widths = table.column_widths()
   let total = table_width(table, widths)
+  let priority = ResizeSelector::fresh(self.priority)
   for _ in total..<target {
-    guard ResizeSelector::select(self.priority, [], widths) is Some(col) else {
+    guard ResizeSelector::select(priority, [], widths) is Some(col) else {
       break
     }
     widths[col] += 1

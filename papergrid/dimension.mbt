@@ -121,11 +121,15 @@ pub fn IterGridDimension::measure_widths(
 }
 
 ///|
+/// Measure row heights using the upstream per-axis span rules. By default this
+/// counts raw text lines; `apply_modes=true` includes render-time width and
+/// height modes without changing those span rules or using cached dimensions.
 pub fn IterGridDimension::measure_heights(
   records : IterRecords,
   config : SpannedConfig,
+  apply_modes? : Bool = false,
 ) -> Array[Int] {
-  measure_axis(records, config, false)
+  measure_axis(records, config, false, apply_modes~)
 }
 
 ///|
@@ -156,6 +160,7 @@ fn measure_axis(
   config : SpannedConfig,
   horizontal : Bool,
   cached? : Bool = false,
+  apply_modes? : Bool = false,
 ) -> Array[Int] {
   let count = if horizontal {
     records.count_cols()
@@ -188,6 +193,14 @@ fn measure_axis(
         (if cached { get_text_dimension(text).1 } else { get_text_width(text) }) +
         left +
         right
+      } else if apply_modes {
+        processed_lines(
+          text,
+          config.width_mode_at(source.0, source.1),
+          config.height_mode_at(source.0, source.1),
+        ).length() +
+        top +
+        bottom
       } else {
         count_lines(text) + top + bottom
       }

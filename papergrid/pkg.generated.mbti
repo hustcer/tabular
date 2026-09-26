@@ -248,7 +248,7 @@ pub struct IterGridDimension {
 }
 pub fn IterGridDimension::default() -> Self
 pub fn IterGridDimension::estimate(Self, IterRecords, SpannedConfig) -> Unit
-pub fn IterGridDimension::measure_heights(IterRecords, SpannedConfig) -> Array[Int]
+pub fn IterGridDimension::measure_heights(IterRecords, SpannedConfig, apply_modes? : Bool) -> Array[Int]
 pub fn IterGridDimension::measure_rendered(IterRecords, SpannedConfig) -> (Array[Int], Array[Int])
 pub fn IterGridDimension::measure_widths(IterRecords, SpannedConfig) -> Array[Int]
 pub fn IterGridDimension::set_heights(Self, Array[Int]) -> Unit

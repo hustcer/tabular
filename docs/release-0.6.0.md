@@ -55,3 +55,29 @@ moon package
 归档检查使用 `moon package`；该命令及文件清单检查方式见 [MoonBit 官方模块文档](https://docs.moonbitlang.com/en/latest/toolchain/moon/module.html)。此前以 0.5.2 执行的 `moon publish --dry-run` 返回重复版本 409，未完成发布；后续使用本地打包验证，没有再次调用发布接口。
 
 本次收尾发现：Standards 3 项，已处理 3 项；Spec 当前实现错误 1 项，已处理 1 项。原全量移植目标仍未完成，0.6.0 的发布范围以 CHANGELOG 和移植对照为准。
+
+## 2026-09-26 发布复核
+
+针对 `99b8caa...9570653` 的后续审查发现三项 P2 和一项 P3。本轮均已修复：
+
+- 跨行单元格保留边界位置的 Padding 和空内容行，输出高度与尺寸查询一致。
+- 表级高度操作计入旧 setter 的渲染模式，并保留上游高度轴的跨度测量规则；
+  零高度行也能重新增长，五种内置优先级均有回归覆盖。
+- 宽高选项每次应用使用独立的选择器状态，`Priority::last()` 适应当前形状。
+  `ResizeSelector::fresh()` 返回 `&ResizeSelector`，保留动态选择器支持；
+  自定义状态与负下界契约已写入迁移指南。
+- ANSI 扫描对齐固定上游的 DEL、OSC 取消和 DCS 终止边界。
+
+验证环境为 `moon 0.1.20260920`。新增 19 项运行测试，原有快照与 Rust 参考期望未修改：
+
+- `moon info`、`moon fmt --check`、`git diff --check` 通过，生成接口变化符合预期。
+- `moon check/build/test --target all --deny-warn` 通过；wasm、wasm-gc、JS、native
+  各 **1350/1350** 项测试通过，无 Warning。
+- 前次审查额外生成的 463 个 ANSI 差分场景，在隔离归档副本的四后端全部通过；
+  先前 11 个失败场景已消除，关键边界已纳入仓库永久回归测试。
+- 本地 `moon package` 归档解压后独立通过检查及全部 1350 项默认后端测试。
+- Standards 和 Spec 两轴复审均无剩余阻断项；另独立覆盖多种样式、混合零高度、
+  配置复用及 10 个 Unicode DCS 边界场景。
+
+当前修复达到本地发布检查标准；本轮未推送或发布，新提交的远端 CI 尚未运行。
+此前指出的多行渲染重复解析性能问题属于后续优化项。

@@ -493,7 +493,11 @@ fn render_split_line(
       has_content = true
     }
   }
-  if !has_uncovered && !has_content {
+  // A configured boundary occupies a line in span dimensions even when the
+  // spanning cell places padding or an empty content line at that position.
+  if !has_uncovered &&
+    !has_content &&
+    !config.has_horizontal(boundary_row, records.count_rows()) {
     return ""
   }
 

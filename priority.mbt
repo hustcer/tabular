@@ -2,6 +2,11 @@
 /// Select the next column or row to resize. Returning None stops resizing.
 /// Arguments after the selector are minimum sizes and current sizes, in index order.
 /// An empty minimum-size array means no explicit lower bounds were supplied.
+/// Zero sizes are skipped by default. A negative minimum makes a zero-sized
+/// entry eligible, allowing growth operations to expand an initially empty row.
+/// Table options call `fresh` once per resize operation. Stateful selectors
+/// should return an independent initial state; stateless selectors can use the
+/// default implementation, which returns the selector unchanged.
 ///
 /// ```mbt check
 /// test {
@@ -19,10 +24,19 @@
 ///     @tabular.ResizeSelector::select(priority, [0, 0, 0], values),
 ///     Some(0),
 ///   )
+///   let independent = priority.fresh()
+///   assert_eq(independent.select([], values), Some(0))
+///   assert_eq(priority.select([], values), Some(2))
 /// }
 /// ```
 pub(open) trait ResizeSelector {
   fn select(Self, Array[Int], Array[Int]) -> Int?
+  fn fresh(Self) -> &ResizeSelector = _
+}
+
+///|
+impl ResizeSelector with fn fresh(self) {
+  self
 }
 
 ///|
@@ -38,7 +52,8 @@ pub(all) enum TieBreak {
 } derive(Eq, Debug)
 
 ///|
-/// Round-robin selection skips zero-sized entries, retaining its next index.
+/// Round-robin selection retains its next index. Zero sizes are skipped unless
+/// a negative minimum explicitly makes them eligible for growth.
 pub struct PriorityRoundRobin {
   priv mut index : Int
 } derive(Eq, Debug)
@@ -54,9 +69,14 @@ pub fn PriorityRoundRobin::default() -> PriorityRoundRobin {
 }
 
 ///|
+pub impl ResizeSelector for PriorityRoundRobin with fn fresh(_self) {
+  PriorityRoundRobin::new()
+}
+
+///|
 pub impl ResizeSelector for PriorityRoundRobin with fn select(
   self,
-  _minimums,
+  minimums,
   sizes,
 ) {
   if sizes.is_empty() {
@@ -64,7 +84,7 @@ pub impl ResizeSelector for PriorityRoundRobin with fn select(
   }
   let mut index = self.index % sizes.length()
   for _ in 0..<sizes.length() {
-    if sizes[index] != 0 {
+    if sizes[index] != 0 || minimums.get(index).unwrap_or(0) < 0 {
       self.index = (index + 1) % sizes.length()
       return Some(index)
     }
@@ -99,13 +119,11 @@ pub impl ResizeSelector for PriorityFirst with fn select(_self, minimums, sizes)
 
 ///|
 /// Select from the highest eligible index (rightmost column or bottommost row).
-pub struct PriorityLast {
-  priv mut index : Int?
-} derive(Eq, Debug)
+pub struct PriorityLast {} derive(Eq, Debug)
 
 ///|
 pub fn PriorityLast::new() -> PriorityLast {
-  { index: None, }
+  PriorityLast::{ }
 }
 
 ///|
@@ -114,15 +132,8 @@ pub fn PriorityLast::default() -> PriorityLast {
 }
 
 ///|
-pub impl ResizeSelector for PriorityLast with fn select(self, minimums, sizes) {
-  if sizes.is_empty() {
-    return None
-  }
-  if self.index is None {
-    self.index = Some(sizes.length() - 1)
-  }
-  let start = Int::min(self.index.unwrap_or(0), sizes.length() - 1)
-  for index = start; index >= 0; index = index - 1 {
+pub impl ResizeSelector for PriorityLast with fn select(_self, minimums, sizes) {
+  for index = sizes.length() - 1; index >= 0; index = index - 1 {
     if sizes[index] > minimums.get(index).unwrap_or(0) {
       return Some(index)
     }
@@ -206,7 +217,9 @@ fn select_extreme(
         }
     }
   }
-  chosen.filter(index => sizes[index] != 0)
+  chosen.filter(index => {
+    sizes[index] != 0 || minimums.get(index).unwrap_or(0) < 0
+  })
 }
 
 ///|
@@ -257,7 +270,7 @@ pub extend PriorityRoundRobin with Eq::{not_equal, equal}
 pub extend PriorityRoundRobin with @debug.Debug::{to_repr}
 
 ///|
-pub extend PriorityRoundRobin with ResizeSelector::{select}
+pub extend PriorityRoundRobin with ResizeSelector::{select, fresh}
 
 ///|
 pub extend PriorityFirst with Eq::{not_equal, equal}
@@ -266,7 +279,7 @@ pub extend PriorityFirst with Eq::{not_equal, equal}
 pub extend PriorityFirst with @debug.Debug::{to_repr}
 
 ///|
-pub extend PriorityFirst with ResizeSelector::{select}
+pub extend PriorityFirst with ResizeSelector::{select, fresh}
 
 ///|
 pub extend PriorityLast with Eq::{not_equal, equal}
@@ -275,7 +288,7 @@ pub extend PriorityLast with Eq::{not_equal, equal}
 pub extend PriorityLast with @debug.Debug::{to_repr}
 
 ///|
-pub extend PriorityLast with ResizeSelector::{select}
+pub extend PriorityLast with ResizeSelector::{select, fresh}
 
 ///|
 pub extend PriorityMin with Eq::{not_equal, equal}
@@ -290,7 +303,7 @@ pub extend PriorityMax with Eq::{not_equal, equal}
 pub extend PriorityMax with @debug.Debug::{to_repr}
 
 ///|
-pub extend PriorityMin with ResizeSelector::{select}
+pub extend PriorityMin with ResizeSelector::{select, fresh}
 
 ///|
-pub extend PriorityMax with ResizeSelector::{select}
+pub extend PriorityMax with ResizeSelector::{select, fresh}

@@ -34,8 +34,12 @@ pub impl[M : Measurement, P : ResizeSelector] TableOption for TableHeightIncreas
   if total >= target {
     return
   }
+  let priority = ResizeSelector::fresh(self.priority)
+  // A legacy height limit can render zero lines. A lower bound below zero
+  // keeps those rows selectable for growth without changing their real sizes.
+  let minimums = Array::make(heights.length(), -1)
   for _ in total..<target {
-    guard ResizeSelector::select(self.priority, [], heights) is Some(row) else {
+    guard ResizeSelector::select(priority, minimums, heights) is Some(row) else {
       break
     }
     heights[row] += 1
@@ -85,8 +89,9 @@ pub impl[M : Measurement, P : ResizeSelector] TableOption for TableHeightLimit[
   if total <= target {
     return
   }
+  let priority = ResizeSelector::fresh(self.priority)
   for _ in target..<total {
-    guard ResizeSelector::select(self.priority, [], heights) is Some(row) else {
+    guard ResizeSelector::select(priority, [], heights) is Some(row) else {
       break
     }
     heights[row] -= 1
@@ -111,12 +116,13 @@ pub impl[M : Measurement, P : ResizeSelector] TableOption for TableHeightLimit[
 }
 
 ///|
-// Upstream height operations measure records afresh, independently of cached
-// dimensions, and include all horizontal borders and both vertical margins.
+// Measure records afresh, independently of cached dimensions. Include legacy
+// render-time modes so height options use the same layout as the renderer.
 fn height_table_measure(table : Table) -> (Int, Array[Int]) {
   let heights = @papergrid.IterGridDimension::measure_heights(
     @papergrid.IterRecords::new(table.rows),
     table.config,
+    apply_modes=true,
   )
   let total = heights.fold(init=0, (sum, value) => sum + value) +
     table.config.count_horizontal(table.count_rows()) +

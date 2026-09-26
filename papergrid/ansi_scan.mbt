@@ -67,12 +67,15 @@ fn AnsiParser::advance(self : AnsiParser, ch : Char) -> Unit {
     return
   }
   if ch == '\u0018' || ch == '\u001a' {
+    if self.mode is Osc {
+      self.pending = Some(Osc)
+    }
     self.mode = Ground
     self.text_length += 1
     return
   }
   match self.mode {
-    Ground => if ch != '\u007f' { self.text_length += 1 }
+    Ground => self.text_length += 1
     Escape | EscapeIntermediate =>
       if ch < ' ' {
         self.text_length += 1
@@ -154,7 +157,14 @@ fn AnsiParser::advance(self : AnsiParser, ch : Char) -> Unit {
         self.mode = Ground
       }
     DcsHeader => if ch >= '@' && ch <= '~' { self.mode = DcsBody }
-    DcsBody | StringIgnore => ()
+    DcsBody =>
+      // VTE scans DCS payload bytes rather than decoded scalars. Its 0x9C
+      // terminator can therefore occur inside another character's UTF-8 bytes.
+      if ch >= '\u0080' &&
+        @utf8.encode(ch.to_string()).iter().any(byte => byte == b'\x9c') {
+        self.mode = Ground
+      }
+    StringIgnore => ()
   }
 }
 

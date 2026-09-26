@@ -585,6 +585,7 @@ pub struct PriorityFirst {
 } derive(Eq, @debug.Debug)
 pub fn PriorityFirst::default() -> Self
 pub fn PriorityFirst::equal(Self, Self) -> Bool
+pub fn PriorityFirst::fresh(Self) -> &ResizeSelector
 pub fn PriorityFirst::new() -> Self
 pub fn PriorityFirst::not_equal(Self, Self) -> Bool
 pub fn PriorityFirst::select(Self, Array[Int], Array[Int]) -> Int?
@@ -592,10 +593,10 @@ pub fn PriorityFirst::to_repr(Self) -> @debug.Repr
 pub impl ResizeSelector for PriorityFirst
 
 pub struct PriorityLast {
-  // private fields
 } derive(Eq, @debug.Debug)
 pub fn PriorityLast::default() -> Self
 pub fn PriorityLast::equal(Self, Self) -> Bool
+pub fn PriorityLast::fresh(Self) -> &ResizeSelector
 pub fn PriorityLast::new() -> Self
 pub fn PriorityLast::not_equal(Self, Self) -> Bool
 pub fn PriorityLast::select(Self, Array[Int], Array[Int]) -> Int?
@@ -607,6 +608,7 @@ pub struct PriorityMax {
 } derive(Eq, @debug.Debug)
 pub fn PriorityMax::default() -> Self
 pub fn PriorityMax::equal(Self, Self) -> Bool
+pub fn PriorityMax::fresh(Self) -> &ResizeSelector
 pub fn PriorityMax::new(tie_break~ : TieBreak) -> Self
 pub fn PriorityMax::not_equal(Self, Self) -> Bool
 pub fn PriorityMax::prefer_first() -> Self
@@ -620,6 +622,7 @@ pub struct PriorityMin {
 } derive(Eq, @debug.Debug)
 pub fn PriorityMin::default() -> Self
 pub fn PriorityMin::equal(Self, Self) -> Bool
+pub fn PriorityMin::fresh(Self) -> &ResizeSelector
 pub fn PriorityMin::new(tie_break~ : TieBreak) -> Self
 pub fn PriorityMin::not_equal(Self, Self) -> Bool
 pub fn PriorityMin::prefer_first() -> Self
@@ -633,6 +636,7 @@ pub struct PriorityRoundRobin {
 } derive(Eq, @debug.Debug)
 pub fn PriorityRoundRobin::default() -> Self
 pub fn PriorityRoundRobin::equal(Self, Self) -> Bool
+pub fn PriorityRoundRobin::fresh(Self) -> &ResizeSelector
 pub fn PriorityRoundRobin::new() -> Self
 pub fn PriorityRoundRobin::not_equal(Self, Self) -> Bool
 pub fn PriorityRoundRobin::select(Self, Array[Int], Array[Int]) -> Int?
@@ -1095,6 +1099,7 @@ pub impl Object for (Int, Int)
 
 pub(open) trait ResizeSelector {
   fn select(Self, Array[Int], Array[Int]) -> Int?
+  fn fresh(Self) -> &ResizeSelector = _
 }
 
 pub(open) trait TableOption {

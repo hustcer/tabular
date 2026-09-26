@@ -8,6 +8,17 @@ This release expands the MoonBit port of `tabled`. Full workspace parity is stil
 in progress; see [the parity inventory](docs/tabled-parity.md) and
 [the 0.6 migration guide](docs/migration-0.6.md).
 
+### Release Review Fixes
+
+- Preserve padding and empty content lines at configured row-span boundaries.
+- Include legacy render-time width and height modes in table height operations
+  while preserving upstream per-axis span measurement rules.
+- Start independent resize priority sequences when options are reused, and make
+  the last-item priority follow the current table shape. Stateful custom
+  selectors can provide an independent initial state through `fresh()`.
+- Match the pinned ANSI parser's DEL, OSC cancellation, and DCS termination
+  boundaries, with dedicated control-character regressions.
+
 ### Breaking Changes
 
 - Replace calls to `Builder::extend(row)` with `Builder::push_record(row)` to

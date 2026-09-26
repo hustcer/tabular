@@ -43,6 +43,7 @@ fn[P : ResizeSelector] decrease_widths(
   amount : Int,
   priority : P,
 ) -> Unit {
+  let priority = ResizeSelector::fresh(priority)
   let mut remaining = amount
   let mut available = 0
   for col in 0..<widths.length() {

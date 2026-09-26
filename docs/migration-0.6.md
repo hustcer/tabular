@@ -82,6 +82,13 @@ builder.push_record(["Alice", "30", "NYC"])
 
 自定义 `TableOption` / `CellOption` 的 `hint_change` 决定维度缓存失效范围。默认全局失效；组合选项按上游规则汇总提示，在选项执行结束后清理缓存。自定义 `Measurement` 使用 `measure(table, Attribute::Width/Height)`，代替 Rust 的泛型属性参数。
 
+尺寸选项在每次调整开始时调用 `ResizeSelector::fresh()`，使内置轮询优先级的
+游标不会在复用选项时泄漏到下一张表。直接连续调用 `select()` 仍保留轮询状态。
+无状态的自定义选择器可使用默认 `fresh()`；有状态的实现应返回保留配置、但重置
+执行状态的独立选择器。`Priority::last()` 始终按当前数组长度选择最后一个可调整项。
+高度增长时会传入 `-1` 下界，让旧 `Height::limit(0)` 产生的零高度行也能参与
+扩展；选择器仍接收真实的当前尺寸。直接调用时使用空下界或零下界，仍跳过零尺寸。
+
 ## 直接修改记录和配置
 
 `Table::from_rows` 保留输入数组引用，`rows`、`config` 和 `dimension_cache()` 是底层可变入口。绕过配置选项直接修改内容、边框或填充后，应调用 `table.dimension_cache().clear()`，再执行依赖尺寸的操作。
@@ -93,6 +100,11 @@ builder.push_record(["Alice", "30", "NYC"])
 因此 `total_width/total_height` 也会计入兼容 setter 和 `Setting` 的渲染时宽高处理；
 显式宽高列表仍优先。`PeekableGridDimension` 与静态 `IterGridDimension::measure_widths/measure_heights`
 保持原有上游测量规则，直接使用底层 API 时应按需要选择原始记录测量或渲染尺寸测量。
+
+表级高度选项通过 `measure_heights(..., apply_modes=true)` 计入旧 setter 和
+`Setting` 的渲染时换行、截断及高度处理，同时保留上游高度轴的跨度分配和重新测量
+规则。`measure_heights` 默认不应用这些模式；`measure_rendered` 继续返回渲染器
+所用的完整尺寸。这样旧 setter 可与新的整表高度选项组合使用。
 
 ## 发布范围
 

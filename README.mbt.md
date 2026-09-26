@@ -416,6 +416,9 @@ test {
 `Table::with_` accepts any `TableOption`; `Table::modify` applies a `CellOption`
 to an object. Options can be reused and combined with `Settings`, tuples, or
 arrays. The trailing underscore avoids MoonBit's `with` keyword.
+Built-in resize priorities start an independent selection sequence for each
+application. Stateful custom `ResizeSelector` implementations should override
+`fresh()` to return an independent initial state while retaining their settings.
 
 ```mbt check
 ///|
