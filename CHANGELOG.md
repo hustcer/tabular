@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## v0.6.0 - Unreleased
+## v0.6.0 - 2026-09-26
 
 This release expands the MoonBit port of `tabled`. Full workspace parity is still
 in progress; see [the parity inventory](docs/tabled-parity.md) and
